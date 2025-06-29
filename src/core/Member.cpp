@@ -1,0 +1,173 @@
+/**
+ * @file Member.cpp
+ * @brief Implementation of the Member class
+ * @version 2.0.0
+ */
+
+#include "Member.hpp"
+#include <cmath>
+#include <limits>
+#include <stdexcept>
+
+namespace truss::core {
+
+Member::Member(MemberId id, std::shared_ptr<Node> startNode, std::shared_ptr<Node> endNode, const MaterialProperties& material, const SectionProperties& section)
+    : m_id(id), m_startNode(std::move(startNode)), m_endNode(std::move(endNode)), m_material(material), m_section(section) {
+    validateNodes();
+    m_label = "Member_" + std::to_string(m_id);
+    updateResults();
+}
+
+Member::Member(const Member& other)
+    : m_id(other.m_id), m_startNode(other.m_startNode), m_endNode(other.m_endNode),
+      m_material(other.m_material), m_section(other.m_section), m_label(other.m_label),
+      m_results(other.m_results) {}
+
+Member& Member::operator=(const Member& other) {
+    if (this != &other) {
+        m_id = other.m_id;
+        m_startNode = other.m_startNode;
+        m_endNode = other.m_endNode;
+        m_material = other.m_material;
+        m_section = other.m_section;
+        m_label = other.m_label;
+        m_results = other.m_results;
+    }
+    return *this;
+}
+
+Real Member::getLength() const {
+    return m_startNode->getPosition().distance(m_endNode->getPosition());
+}
+
+Real Member::getAngle() const {
+    Vector2d dir = getDirection();
+    return std::atan2(dir.y(), dir.x());
+}
+
+Real Member::getAngleDegrees() const {
+    return Utils::radiansToDegrees(getAngle());
+}
+
+Vector2d Member::getUnitVector() const {
+    Vector2d dir = getDirection();
+    return dir.normalized();
+}
+
+Vector2d Member::getDirection() const {
+    return m_endNode->getPosition().toEigen() - m_startNode->getPosition().toEigen();
+}
+
+Real Member::getStiffness() const {
+    return (m_material.youngModulus * m_section.area) / getLength();
+}
+
+Real Member::getWeight() const {
+    return m_section.area * getLength() * m_material.density;
+}
+
+void Member::setAxialForce(Real force) {
+    m_results.axialForce = force;
+    updateResults();
+}
+
+bool Member::isConnectedTo(const Node& node) const {
+    return (m_startNode == &node || m_endNode == &node);
+}
+
+bool Member::isConnectedTo(NodeId nodeId) const {
+    return (m_startNode->getId() == nodeId || m_endNode->getId() == nodeId);
+}
+
+std::shared_ptr<Node> Member::getOtherNode(const Node& node) const {
+    if (m_startNode == &node) return m_endNode;
+    if (m_endNode == &node) return m_startNode;
+    throw std::invalid_argument("Node is not connected to member");
+}
+
+std::shared_ptr<Node> Member::getOtherNode(NodeId nodeId) const {
+    if (m_startNode->getId() == nodeId) return m_endNode;
+    if (m_endNode->getId() == nodeId) return m_startNode;
+    throw std::invalid_argument("Node ID is not connected to member");
+}
+
+bool Member::isVertical(Real tolerance) const {
+    return Utils::isZero(getDirection().x(), tolerance);
+}
+
+bool Member::isHorizontal(Real tolerance) const {
+    return Utils::isZero(getDirection().y(), tolerance);
+}
+
+bool Member::isParallelTo(const Member& other, Real tolerance) const {
+    return Utils::isZero(getDirection().cross(other.getDirection()), tolerance);
+}
+
+bool Member::isPerpendicularTo(const Member& other, Real tolerance) const {
+    return Utils::isZero(getDirection().dot(other.getDirection()), tolerance);
+}
+
+bool Member::isValid() const {
+    return !(hasZeroLength() || !m_startNode || !m_endNode);
+}
+
+bool Member::hasZeroLength(Real tolerance) const {
+    return Utils::isZero(getLength(), tolerance);
+}
+
+Matrix2d Member::getTransformationMatrix() const {
+    Vector2d unitVec = getUnitVector();
+    Matrix2d transformation;
+    transformation << unitVec.x(), unitVec.y(),
+                      -unitVec.y(), unitVec.x();
+    return transformation;
+}
+
+std::vector<Index> Member::getGlobalDofIndices() const {
+    return {m_startNode->getDofX(), m_startNode->getDofY(), m_endNode->getDofX(), m_endNode->getDofY()};
+}
+
+Point2D Member::getMidpoint() const {
+    return Point2D((m_startNode->getX() + m_endNode->getX()) / 2.0,
+                   (m_startNode->getY() + m_endNode->getY()) / 2.0);
+}
+
+Real Member::getSlope() const {
+    Vector2d dir = getDirection();
+    if (dir.x() == 0) return std::numeric_limits<Real>::infinity();
+    return dir.y() / dir.x();
+}
+
+bool Member::intersectsWith(const Member& other, Real tolerance) const {
+    // Implement intersection logic here
+    return false; // Placeholder
+}
+
+Point2D Member::getIntersectionPoint(const Member& other) const {
+    // Implement intersection point calculation
+    return Point2D();  // Placeholder
+}
+
+bool Member::operator==(const Member& other) const {
+    return m_id == other.m_id && *m_startNode == *other.m_startNode && *m_endNode == *other.m_endNode;
+}
+
+bool Member::operator!=(const Member& other) const {
+    return !(*this == other);
+}
+
+void Member::updateResults() {
+    m_results.axialStress = m_results.axialForce / m_section.area;
+    m_results.utilizationRatio = m_results.axialStress / m_material.yieldStrength;
+    m_results.inTension = m_results.axialForce > 0;
+    m_results.yielded = m_results.utilizationRatio > 1.0;
+}
+
+void Member::validateNodes() const {
+    if (!m_startNode || !m_endNode) {
+        throw std::invalid_argument("Member must have valid start and end nodes");
+    }
+}
+
+} // namespace truss::core
+
