@@ -5,6 +5,12 @@ add_library(TrussCore STATIC
     Application.hpp
     Logger.cpp
     Logger.hpp
+    Types.hpp
+    Node.cpp
+    Node.hpp
+    Member.cpp
+    Member.hpp
+    Truss.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -13,6 +19,7 @@ target_include_directories(TrussCore PUBLIC
 
 target_link_libraries(TrussCore PUBLIC
     Qt6::Core
+    Eigen3::Eigen
 )
 
 # Set target properties
