@@ -1,0 +1,7 @@
+{
+	"InstallScripts" : 
+	[
+		"/Users/neil/dev/repos/2D_Truss_Analysis/build_test/cmake_install.cmake"
+	],
+	"Parallel" : false
+}

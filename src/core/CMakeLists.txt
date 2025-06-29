@@ -11,6 +11,8 @@ add_library(TrussCore STATIC
     Member.cpp
     Member.hpp
     Truss.hpp
+    AnalysisEngine.cpp
+    AnalysisEngine.hpp
 )
 
 target_include_directories(TrussCore PUBLIC

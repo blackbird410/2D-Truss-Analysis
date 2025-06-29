@@ -72,7 +72,7 @@ void Member::setAxialForce(Real force) {
 }
 
 bool Member::isConnectedTo(const Node& node) const {
-    return (m_startNode == &node || m_endNode == &node);
+    return (m_startNode.get() == &node || m_endNode.get() == &node);
 }
 
 bool Member::isConnectedTo(NodeId nodeId) const {
@@ -80,8 +80,8 @@ bool Member::isConnectedTo(NodeId nodeId) const {
 }
 
 std::shared_ptr<Node> Member::getOtherNode(const Node& node) const {
-    if (m_startNode == &node) return m_endNode;
-    if (m_endNode == &node) return m_startNode;
+    if (m_startNode.get() == &node) return m_endNode;
+    if (m_endNode.get() == &node) return m_startNode;
     throw std::invalid_argument("Node is not connected to member");
 }
 
@@ -100,7 +100,11 @@ bool Member::isHorizontal(Real tolerance) const {
 }
 
 bool Member::isParallelTo(const Member& other, Real tolerance) const {
-    return Utils::isZero(getDirection().cross(other.getDirection()), tolerance);
+    // For 2D vectors, cross product is the z-component of 3D cross product
+    Vector2d dir1 = getDirection();
+    Vector2d dir2 = other.getDirection();
+    Real crossProduct = dir1.x() * dir2.y() - dir1.y() * dir2.x();
+    return Utils::isZero(crossProduct, tolerance);
 }
 
 bool Member::isPerpendicularTo(const Member& other, Real tolerance) const {
@@ -161,6 +165,33 @@ void Member::updateResults() {
     m_results.utilizationRatio = m_results.axialStress / m_material.yieldStrength;
     m_results.inTension = m_results.axialForce > 0;
     m_results.yielded = m_results.utilizationRatio > 1.0;
+}
+
+MatrixXd Member::getLocalStiffnessMatrix() const {
+    Real k = getStiffness();
+    MatrixXd local(4, 4);
+    local << k, 0, -k,  0,
+             0, 0,  0,  0,
+            -k, 0,  k,  0,
+             0, 0,  0,  0;
+    return local;
+}
+
+MatrixXd Member::getGlobalStiffnessMatrix() const {
+    MatrixXd local = getLocalStiffnessMatrix();
+    
+    // Create full transformation matrix
+    Vector2d unitVec = getUnitVector();
+    Real c = unitVec.x();
+    Real s = unitVec.y();
+    
+    MatrixXd T(4, 4);
+    T << c, s, 0, 0,
+        -s, c, 0, 0,
+         0, 0, c, s,
+         0, 0,-s, c;
+    
+    return T.transpose() * local * T;
 }
 
 void Member::validateNodes() const {
