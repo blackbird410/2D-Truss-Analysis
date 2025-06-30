@@ -979,9 +979,17 @@ void PropertyPanel::updateFromSelection() {
             m_nodeXSpin->blockSignals(false);
             m_nodeYSpin->blockSignals(false);
             
-            // Update support type
+            // Update support type with correct mapping
             m_supportCombo->blockSignals(true);
-            m_supportCombo->setCurrentIndex(static_cast<int>(node->getSupportType()));
+            int comboIndex = 0; // Default to Free
+            switch (node->getSupportType()) {
+                case truss::core::SupportType::Free: comboIndex = 0; break;
+                case truss::core::SupportType::Pinned: comboIndex = 1; break;
+                case truss::core::SupportType::RollerX: comboIndex = 2; break;
+                case truss::core::SupportType::RollerY: comboIndex = 3; break;
+                default: comboIndex = 0; break;
+            }
+            m_supportCombo->setCurrentIndex(comboIndex);
             m_supportCombo->blockSignals(false);
             
             // Update load values
@@ -1223,7 +1231,16 @@ void PropertyPanel::onSupportChanged() {
         if (selectedNodes[0] < nodes.size()) {
             auto node = nodes[selectedNodes[0]];
             
-            auto supportType = static_cast<truss::core::SupportType>(m_supportCombo->currentIndex());
+            // Map combo box index to correct SupportType enum value
+            truss::core::SupportType supportType;
+            switch (m_supportCombo->currentIndex()) {
+                case 0: supportType = truss::core::SupportType::Free; break;
+                case 1: supportType = truss::core::SupportType::Pinned; break;
+                case 2: supportType = truss::core::SupportType::RollerX; break;
+                case 3: supportType = truss::core::SupportType::RollerY; break;
+                default: supportType = truss::core::SupportType::Free; break;
+            }
+            
             node->setSupportType(supportType);
             m_canvas->update();
         }
