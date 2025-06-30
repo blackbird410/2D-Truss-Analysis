@@ -16,6 +16,7 @@ ResultsWidget::ResultsWidget(QWidget *parent)
       m_displacementsTable(new QTableWidget(this)),
       m_forcesTable(new QTableWidget(this)),
       m_reactionsTable(new QTableWidget(this)),
+      m_stiffnessTable(new QTableWidget(this)),
       m_summaryText(new QTextEdit(this)) {
     
     setupUI();
@@ -52,6 +53,12 @@ void ResultsWidget::setupUI() {
     m_reactionsTable->setAlternatingRowColors(true);
     m_reactionsTable->setSelectionBehavior(QAbstractItemView::SelectRows);
     
+    // Set up stiffness matrix table
+    m_stiffnessTable->setAlternatingRowColors(true);
+    m_stiffnessTable->setSelectionBehavior(QAbstractItemView::SelectItems);
+    m_stiffnessTable->horizontalHeader()->setDefaultSectionSize(80);
+    m_stiffnessTable->verticalHeader()->setDefaultSectionSize(25);
+    
     // Set up summary text
     m_summaryText->setReadOnly(true);
     m_summaryText->setMaximumHeight(150);
@@ -60,6 +67,7 @@ void ResultsWidget::setupUI() {
     tabWidget->addTab(m_displacementsTable, "Displacements");
     tabWidget->addTab(m_forcesTable, "Member Forces");
     tabWidget->addTab(m_reactionsTable, "Reactions");
+    tabWidget->addTab(m_stiffnessTable, "Stiffness Matrix");
     tabWidget->addTab(m_summaryText, "Summary");
     
     layout->addWidget(tabWidget);
@@ -69,6 +77,7 @@ void ResultsWidget::updateResults() {
     updateDisplacementsTable();
     updateForcesTable();
     updateReactionsTable();
+    updateStiffnessTable();
     updateSummary();
 }
 
@@ -76,6 +85,8 @@ void ResultsWidget::clearResults() {
     m_displacementsTable->setRowCount(0);
     m_forcesTable->setRowCount(0);
     m_reactionsTable->setRowCount(0);
+    m_stiffnessTable->setRowCount(0);
+    m_stiffnessTable->setColumnCount(0);
     m_summaryText->clear();
 }
 
@@ -237,6 +248,75 @@ void ResultsWidget::updateSummary() {
     }
     
     m_summaryText->setPlainText(summary);
+}
+
+void ResultsWidget::updateStiffnessTable() {
+    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
+    if (!mainWindow || !mainWindow->hasResults()) {
+        m_stiffnessTable->setRowCount(0);
+        m_stiffnessTable->setColumnCount(0);
+        return;
+    }
+    
+    const auto& results = mainWindow->getLastResults();
+    const auto& stiffnessMatrix = results.stiffnessMatrix;
+    
+    if (stiffnessMatrix.empty()) {
+        m_stiffnessTable->setRowCount(0);
+        m_stiffnessTable->setColumnCount(0);
+        return;
+    }
+    
+    int matrixSize = static_cast<int>(stiffnessMatrix.size());
+    m_stiffnessTable->setRowCount(matrixSize);
+    m_stiffnessTable->setColumnCount(matrixSize);
+    
+    // Set headers for DOF numbers
+    QStringList headers;
+    for (int i = 0; i < matrixSize; ++i) {
+        headers << QString("DOF %1").arg(i);
+    }
+    m_stiffnessTable->setHorizontalHeaderLabels(headers);
+    m_stiffnessTable->setVerticalHeaderLabels(headers);
+    
+    // Fill the table with stiffness matrix values
+    for (int i = 0; i < matrixSize; ++i) {
+        for (int j = 0; j < static_cast<int>(stiffnessMatrix[i].size()); ++j) {
+            double value = stiffnessMatrix[i][j];
+            
+            // Format values for better readability
+            QString valueStr;
+            if (std::abs(value) < 1e-10) {
+                valueStr = "0";
+            } else if (std::abs(value) < 1e3) {
+                valueStr = QString::number(value, 'f', 2);
+            } else {
+                valueStr = QString::number(value, 'e', 2);
+            }
+            
+            auto* item = new QTableWidgetItem(valueStr);
+            item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+            
+            // Color code diagonal elements
+            if (i == j && std::abs(value) > 1e-10) {
+                item->setBackground(QColor(240, 248, 255)); // Light blue for diagonal
+            } else if (std::abs(value) < 1e-10) {
+                item->setBackground(QColor(248, 248, 248)); // Light gray for zeros
+            }
+            
+            m_stiffnessTable->setItem(i, j, item);
+        }
+    }
+    
+    // Adjust column widths for better display
+    m_stiffnessTable->resizeColumnsToContents();
+    
+    // Ensure minimum column width for readability
+    for (int col = 0; col < matrixSize; ++col) {
+        if (m_stiffnessTable->columnWidth(col) < 80) {
+            m_stiffnessTable->setColumnWidth(col, 80);
+        }
+    }
 }
 
 } // namespace truss::gui
