@@ -143,16 +143,72 @@ Real Member::getSlope() const {
 }
 
 bool Member::intersectsWith(const Member& other, Real tolerance) const {
-    (void)other;     // Mark parameter as intentionally unused
-    (void)tolerance; // Mark parameter as intentionally unused
-    // TODO: Implement intersection logic here
-    return false; // Placeholder
+    // Get line segments
+    Point2D p1 = m_startNode->getPosition();
+    Point2D q1 = m_endNode->getPosition();
+    Point2D p2 = other.m_startNode->getPosition();
+    Point2D q2 = other.m_endNode->getPosition();
+    
+    // Check if lines are collinear or parallel
+    Vector2d dir1 = getDirection();
+    Vector2d dir2 = other.getDirection();
+    Real crossProduct = dir1.x() * dir2.y() - dir1.y() * dir2.x();
+    
+    if (Utils::isZero(crossProduct, tolerance)) {
+        // Lines are parallel or collinear
+        return false;
+    }
+    
+    // Calculate intersection parameters
+    Real dx1 = q1.x - p1.x;
+    Real dy1 = q1.y - p1.y;
+    Real dx2 = q2.x - p2.x;
+    Real dy2 = q2.y - p2.y;
+    Real dx12 = p1.x - p2.x;
+    Real dy12 = p1.y - p2.y;
+    
+    Real denom = dx1 * dy2 - dy1 * dx2;
+    if (Utils::isZero(denom, tolerance)) {
+        return false;
+    }
+    
+    Real t1 = (dx2 * dy12 - dy2 * dx12) / denom;
+    Real t2 = (dx1 * dy12 - dy1 * dx12) / denom;
+    
+    // Check if intersection point lies within both line segments
+    return (t1 >= -tolerance && t1 <= 1.0 + tolerance && 
+            t2 >= -tolerance && t2 <= 1.0 + tolerance);
 }
 
 Point2D Member::getIntersectionPoint(const Member& other) const {
-    (void)other; // Mark parameter as intentionally unused
-    // TODO: Implement intersection point calculation
-    return Point2D();  // Placeholder
+    // Get line segments
+    Point2D p1 = m_startNode->getPosition();
+    Point2D q1 = m_endNode->getPosition();
+    Point2D p2 = other.m_startNode->getPosition();
+    Point2D q2 = other.m_endNode->getPosition();
+    
+    // Calculate intersection using parametric line equations
+    Real dx1 = q1.x - p1.x;
+    Real dy1 = q1.y - p1.y;
+    Real dx2 = q2.x - p2.x;
+    Real dy2 = q2.y - p2.y;
+    Real dx12 = p1.x - p2.x;
+    Real dy12 = p1.y - p2.y;
+    
+    Real denom = dx1 * dy2 - dy1 * dx2;
+    if (Utils::isZero(denom)) {
+        // Lines are parallel or collinear - no unique intersection
+        throw std::runtime_error("Cannot calculate intersection point: lines are parallel or collinear");
+    }
+    
+    Real t1 = (dx2 * dy12 - dy2 * dx12) / denom;
+    
+    // Calculate intersection point using parameter t1
+    Point2D intersection;
+    intersection.x = p1.x + t1 * dx1;
+    intersection.y = p1.y + t1 * dy1;
+    
+    return intersection;
 }
 
 bool Member::operator==(const Member& other) const {
