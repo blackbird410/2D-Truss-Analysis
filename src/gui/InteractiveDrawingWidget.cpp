@@ -356,7 +356,7 @@ void DrawingCanvas::drawLoads(QPainter& painter) {
         
         QPoint forceEnd(
             nodePos.x() + static_cast<int>(length * force.fx / magnitude),
-            nodePos.y() + static_cast<int>(length * force.fy / magnitude)
+            nodePos.y() - static_cast<int>(length * force.fy / magnitude)  // Inverted Y for screen coordinates
         );
         
         // Draw force arrow
@@ -364,7 +364,7 @@ void DrawingCanvas::drawLoads(QPainter& painter) {
         
         // Draw arrowhead
         QVector<QPoint> arrowHead;
-        double angle = std::atan2(-force.fy, force.fx);
+        double angle = std::atan2(force.fy, force.fx);  // Correct angle calculation for screen coordinates
         int arrowSize = 8;
         
         arrowHead << forceEnd
