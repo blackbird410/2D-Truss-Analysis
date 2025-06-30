@@ -1,7 +1,7 @@
 CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o: \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/main_app.cpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/AnalysisEngine.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Types.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/main_app.cpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/AnalysisEngine.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Types.hpp \
   /opt/homebrew/include/eigen3/Eigen/Dense \
   /opt/homebrew/include/eigen3/Eigen/Core \
   /opt/homebrew/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -1129,9 +1129,9 @@ CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o: \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Truss.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Node.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Member.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Truss.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Node.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Member.hpp \
   /opt/homebrew/include/eigen3/Eigen/Sparse \
   /opt/homebrew/include/eigen3/Eigen/SparseCore \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/map \
@@ -1208,7 +1208,7 @@ CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o: \
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/list \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Logger.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Logger.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/iostream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/fstream \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/filesystem \

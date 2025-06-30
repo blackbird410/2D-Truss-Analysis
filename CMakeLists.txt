@@ -40,6 +40,8 @@ add_library(TrussCore STATIC
     src/core/Truss.hpp
     src/core/AnalysisEngine.cpp
     src/core/AnalysisEngine.hpp
+    src/core/Application.cpp
+    src/core/Application.hpp
 )
 
 target_include_directories(TrussCore PUBLIC

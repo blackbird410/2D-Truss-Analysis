@@ -4,9 +4,9 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = -DQT_CORE_LIB -DQT_GUI_LIB -DQT_NO_DEBUG -DQT_WIDGETS_LIB
 
-CXX_INCLUDES = -I/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/include -I/Users/neil/dev/repos/2D_Truss_Analysis/src/core -isystem /opt/homebrew/include/eigen3 -isystem /opt/homebrew/lib/QtCore.framework/Headers -iframework /opt/homebrew/lib -isystem /opt/homebrew/share/qt/mkspecs/macx-clang -isystem /opt/homebrew/include -isystem /opt/homebrew/lib/QtWidgets.framework/Headers -isystem /opt/homebrew/lib/QtGui.framework/Headers
+CXX_INCLUDES = -I/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/include -I/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core -isystem /opt/homebrew/include/eigen3 -isystem /opt/homebrew/lib/QtCore.framework/Headers -iframework /opt/homebrew/lib -isystem /opt/homebrew/share/qt/mkspecs/macx-clang -isystem /opt/homebrew/include -isystem /opt/homebrew/lib/QtWidgets.framework/Headers -isystem /opt/homebrew/lib/QtGui.framework/Headers
 
-CXX_FLAGSarm64 = -O3 -DNDEBUG -std=c++20 -arch arm64 -mmacosx-version-min=10.15 -Wall -Wextra -Wpedantic -O3 -march=native
+CXX_FLAGSarm64 = -O3 -DNDEBUG -std=c++20 -arch arm64 -Wall -Wextra -Wpedantic -O3 -march=native
 
-CXX_FLAGS = -O3 -DNDEBUG -std=c++20 -arch arm64 -mmacosx-version-min=10.15 -Wall -Wextra -Wpedantic -O3 -march=native
+CXX_FLAGS = -O3 -DNDEBUG -std=c++20 -arch arm64 -Wall -Wextra -Wpedantic -O3 -march=native
 

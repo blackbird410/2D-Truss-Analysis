@@ -150,7 +150,6 @@ void MainWindow::analyze() {
             updatePlot();
             
             QString message = QString("Analysis completed successfully!\n")
-                + QString("Converged in %1 iterations\n").arg(analysisResults.iterations)
                 + QString("Max displacement: %1 m\n").arg(analysisResults.maxDisplacement, 0, 'e', 3)
                 + QString("Max stress: %1 Pa").arg(analysisResults.maxStress, 0, 'e', 3);
             

@@ -1,6 +1,6 @@
 CMakeFiles/TrussAnalysisGUI.dir/src/gui/MainWindow.cpp.o: \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/gui/MainWindow.cpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/gui/MainWindow.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/MainWindow.cpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/MainWindow.hpp \
   /opt/homebrew/include/QtWidgets/QMainWindow \
   /opt/homebrew/include/QtWidgets/qmainwindow.h \
   /opt/homebrew/include/QtWidgets/qtwidgetsglobal.h \
@@ -1232,8 +1232,8 @@ CMakeFiles/TrussAnalysisGUI.dir/src/gui/MainWindow.cpp.o: \
   /opt/homebrew/include/QtGui/QAction \
   /opt/homebrew/include/QtCore/QTimer \
   /opt/homebrew/include/QtCore/qtimer.h \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Truss.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Types.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Truss.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Types.hpp \
   /opt/homebrew/include/eigen3/Eigen/Dense \
   /opt/homebrew/include/eigen3/Eigen/Core \
   /opt/homebrew/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -1427,9 +1427,9 @@ CMakeFiles/TrussAnalysisGUI.dir/src/gui/MainWindow.cpp.o: \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Node.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Member.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/AnalysisEngine.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Node.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Member.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/AnalysisEngine.hpp \
   /opt/homebrew/include/eigen3/Eigen/Sparse \
   /opt/homebrew/include/eigen3/Eigen/SparseCore \
   /opt/homebrew/include/eigen3/Eigen/src/SparseCore/SparseUtil.h \

@@ -7,8 +7,8 @@ set(CMAKE_DEPENDS_GENERATOR "Unix Makefiles")
 # The top level Makefile was generated from the following files:
 set(CMAKE_MAKEFILE_DEPENDS
   "CMakeCache.txt"
-  "/Users/neil/dev/repos/2D_Truss_Analysis/CMakeLists.txt"
-  "/Users/neil/dev/repos/2D_Truss_Analysis/Info.plist.in"
+  "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/CMakeLists.txt"
+  "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/Info.plist.in"
   "CMakeFiles/4.0.3/CMakeCXXCompiler.cmake"
   "CMakeFiles/4.0.3/CMakeSystem.cmake"
   "/opt/homebrew/Cellar/qt/6.9.1/lib/cmake/Qt6/FindWrapAtomic.cmake"

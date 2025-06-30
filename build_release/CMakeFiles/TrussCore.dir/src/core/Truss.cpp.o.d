@@ -1,7 +1,7 @@
 CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o: \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Truss.cpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Truss.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Types.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Truss.cpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Truss.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Types.hpp \
   /opt/homebrew/include/eigen3/Eigen/Dense \
   /opt/homebrew/include/eigen3/Eigen/Core \
   /opt/homebrew/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -1129,5 +1129,5 @@ CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o: \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Node.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Member.hpp
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Node.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Member.hpp

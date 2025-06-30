@@ -1,15 +1,15 @@
 {
-	"BUILD_DIR" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen",
-	"CMAKE_BINARY_DIR" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release",
-	"CMAKE_CURRENT_BINARY_DIR" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release",
-	"CMAKE_CURRENT_SOURCE_DIR" : "/Users/neil/dev/repos/2D_Truss_Analysis",
+	"BUILD_DIR" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen",
+	"CMAKE_BINARY_DIR" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release",
+	"CMAKE_CURRENT_BINARY_DIR" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release",
+	"CMAKE_CURRENT_SOURCE_DIR" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp",
 	"CMAKE_EXECUTABLE" : "/opt/homebrew/bin/cmake",
 	"CMAKE_LIST_FILES" : 
 	[
-		"/Users/neil/dev/repos/2D_Truss_Analysis/CMakeLists.txt",
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/CMakeLists.txt",
 		"/opt/homebrew/share/cmake/Modules/CMakeDetermineSystem.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeSystem.cmake.in",
-		"/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/4.0.3/CMakeSystem.cmake",
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/4.0.3/CMakeSystem.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeUnixFindMake.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeSystemSpecificInitialize.cmake",
 		"/opt/homebrew/share/cmake/Modules/Platform/Darwin-Initialize.cmake",
@@ -62,7 +62,7 @@
 		"/opt/homebrew/share/cmake/Modules/Compiler/IBMCPP-CXX-DetermineVersionInternal.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeFindBinUtils.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeCXXCompiler.cmake.in",
-		"/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/4.0.3/CMakeCXXCompiler.cmake",
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/4.0.3/CMakeCXXCompiler.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeSystemSpecificInformation.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeGenericSystem.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeInitializeConfigs.cmake",
@@ -91,7 +91,7 @@
 		"/opt/homebrew/share/cmake/Modules/CMakeDetermineCompilerSupport.cmake",
 		"/opt/homebrew/share/cmake/Modules/Internal/FeatureTesting.cmake",
 		"/opt/homebrew/share/cmake/Modules/CMakeCXXCompiler.cmake.in",
-		"/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/4.0.3/CMakeCXXCompiler.cmake",
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/4.0.3/CMakeCXXCompiler.cmake",
 		"/opt/homebrew/share/cmake/Modules/Internal/CMakeCXXLinkerInformation.cmake",
 		"/opt/homebrew/share/cmake/Modules/Internal/CMakeCommonLinkerInformation.cmake",
 		"/opt/homebrew/share/cmake/Modules/Linker/AppleClang-CXX.cmake",
@@ -467,22 +467,22 @@
 		"/opt/homebrew/share/cmake/Templates/CPackConfig.cmake.in",
 		"/opt/homebrew/share/cmake/Templates/CPackConfig.cmake.in"
 	],
-	"CMAKE_SOURCE_DIR" : "/Users/neil/dev/repos/2D_Truss_Analysis",
+	"CMAKE_SOURCE_DIR" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp",
 	"CROSS_CONFIG" : false,
-	"DEP_FILE" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/deps",
+	"DEP_FILE" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/deps",
 	"DEP_FILE_RULE_NAME" : "TrussAnalysisGUI_autogen/timestamp",
 	"HEADERS" : 
 	[
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/MainWindow.hpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/MainWindow.hpp",
 			"MU",
 			"MXUWEOXILK/moc_MainWindow.cpp",
 			null
 		]
 	],
 	"HEADER_EXTENSIONS" : [ "h", "hh", "h++", "hm", "hpp", "hxx", "in", "txx" ],
-	"INCLUDE_DIR" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/include",
-	"MOC_COMPILATION_FILE" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/mocs_compilation.cpp",
+	"INCLUDE_DIR" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/include",
+	"MOC_COMPILATION_FILE" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/mocs_compilation.cpp",
 	"MOC_DEFINITIONS" : [ "QT_CORE_LIB", "QT_GUI_LIB", "QT_NO_DEBUG", "QT_WIDGETS_LIB" ],
 	"MOC_DEPEND_FILTERS" : 
 	[
@@ -493,7 +493,7 @@
 	],
 	"MOC_INCLUDES" : 
 	[
-		"/Users/neil/dev/repos/2D_Truss_Analysis/src/core",
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core",
 		"/opt/homebrew/include/eigen3",
 		"/opt/homebrew/lib/QtCore.framework/Headers",
 		"/opt/homebrew/lib/QtCore.framework",
@@ -529,60 +529,60 @@
 		"-E",
 		"/opt/homebrew/share/cmake/Modules/CMakeCXXCompilerABI.cpp"
 	],
-	"MOC_PREDEFS_FILE" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/moc_predefs.h",
+	"MOC_PREDEFS_FILE" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/moc_predefs.h",
 	"MOC_RELAXED_MODE" : false,
 	"MOC_SKIP" : 
 	[
-		"/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisCLI_autogen/mocs_compilation.cpp",
-		"/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussCore_autogen/mocs_compilation.cpp"
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisCLI_autogen/mocs_compilation.cpp",
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussCore_autogen/mocs_compilation.cpp"
 	],
 	"MULTI_CONFIG" : false,
 	"PARALLEL" : 8,
-	"PARSE_CACHE_FILE" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/ParseCache.txt",
+	"PARSE_CACHE_FILE" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/ParseCache.txt",
 	"QT_MOC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/moc",
 	"QT_UIC_EXECUTABLE" : "/opt/homebrew/share/qt/libexec/uic",
 	"QT_VERSION_MAJOR" : 6,
 	"QT_VERSION_MINOR" : 9,
-	"SETTINGS_FILE" : "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/AutogenUsed.txt",
+	"SETTINGS_FILE" : "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/AutogenUsed.txt",
 	"SOURCES" : 
 	[
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/DataTableWidget.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DataTableWidget.cpp",
 			"MU",
 			null
 		],
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/LoadInputWidget.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/LoadInputWidget.cpp",
 			"MU",
 			null
 		],
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/MainWindow.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/MainWindow.cpp",
 			"MU",
 			null
 		],
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/MemberInputWidget.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/MemberInputWidget.cpp",
 			"MU",
 			null
 		],
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/NodeInputWidget.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/NodeInputWidget.cpp",
 			"MU",
 			null
 		],
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/PlotWidget.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/PlotWidget.cpp",
 			"MU",
 			null
 		],
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/ResultsWidget.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/ResultsWidget.cpp",
 			"MU",
 			null
 		],
 		[
-			"/Users/neil/dev/repos/2D_Truss_Analysis/src/gui/main.cpp",
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/main.cpp",
 			"MU",
 			null
 		]
@@ -591,8 +591,8 @@
 	"UIC_SEARCH_PATHS" : [],
 	"UIC_SKIP" : 
 	[
-		"/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisCLI_autogen/mocs_compilation.cpp",
-		"/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussCore_autogen/mocs_compilation.cpp"
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisCLI_autogen/mocs_compilation.cpp",
+		"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussCore_autogen/mocs_compilation.cpp"
 	],
 	"UIC_UI_FILES" : [],
 	"USE_BETTER_GRAPH" : true,
