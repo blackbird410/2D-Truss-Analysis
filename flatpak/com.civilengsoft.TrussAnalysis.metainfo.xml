@@ -1,0 +1,117 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>com.civilengsoft.TrussAnalysis</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>2D Truss Analysis</name>
+  <summary>Professional 2D truss structural analysis software</summary>
+  
+  <description>
+    <p>
+      2D Truss Analysis is a professional-grade structural analysis application built with modern C++20 and Qt6.
+      It features an intuitive interactive drawing interface and robust computational engine for analyzing truss structures.
+    </p>
+    <p>
+      Key features include:
+    </p>
+    <ul>
+      <li>Interactive drawing canvas with mouse-based node and member placement</li>
+      <li>Direct stiffness method implementation</li>
+      <li>Support for various load types and boundary conditions</li>
+      <li>Professional results display with comprehensive tables</li>
+      <li>Visual deformation plots and force diagrams</li>
+      <li>Material and section property management</li>
+    </ul>
+    <p>
+      This tool is invaluable for Civil Engineering students and professionals working with truss structures,
+      helping validate manual calculations and providing insights into structural behavior.
+    </p>
+  </description>
+  
+  <launchable type="desktop-id">com.civilengsoft.TrussAnalysis.desktop</launchable>
+  
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main application interface with interactive drawing canvas</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis-cpp/main/images/screenshot-main.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Results display with comprehensive analysis tables</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis-cpp/main/images/screenshot-results.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Deformed structure visualization</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis-cpp/main/images/screenshot-deformed.png</image>
+    </screenshot>
+  </screenshots>
+  
+  <url type="homepage">https://github.com/blackbird410/2D-Truss-Analysis-cpp</url>
+  <url type="bugtracker">https://github.com/blackbird410/2D-Truss-Analysis-cpp/issues</url>
+  <url type="donation">https://github.com/sponsors/blackbird410</url>
+  <url type="vcs-browser">https://github.com/blackbird410/2D-Truss-Analysis-cpp</url>
+  
+  <developer_name>Civil Engineering Software Solutions</developer_name>
+  
+  <categories>
+    <category>Engineering</category>
+    <category>Education</category>
+    <category>Science</category>
+  </categories>
+  
+  <keywords>
+    <keyword>truss</keyword>
+    <keyword>structural</keyword>
+    <keyword>analysis</keyword>
+    <keyword>engineering</keyword>
+    <keyword>civil</keyword>
+    <keyword>mechanics</keyword>
+    <keyword>finite element</keyword>
+    <keyword>stiffness method</keyword>
+  </keywords>
+  
+  <releases>
+    <release version="2.2.0" date="2025-06-30">
+      <description>
+        <p>Cross-Platform Linux Support Release</p>
+        <ul>
+          <li>Complete Linux support with automated build system</li>
+          <li>Professional desktop integration for Linux environments</li>
+          <li>Windows support with vcpkg dependency management</li>
+          <li>CI/CD pipeline with GitHub Actions</li>
+          <li>Flatpak package for universal Linux distribution</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.1.3" date="2025-06-30">
+      <description>
+        <p>Code Signing Integration Release</p>
+        <ul>
+          <li>Automatic ad-hoc code signing for macOS builds</li>
+          <li>Enhanced build system with signing integration</li>
+          <li>Improved security and deployment reliability</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+  
+  <provides>
+    <binary>TrussAnalysisGUI</binary>
+    <binary>TrussAnalysisCLI</binary>
+  </provides>
+  
+  <content_rating type="oars-1.1"/>
+  
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+  
+  <requires>
+    <display_length compare="ge">800</display_length>
+  </requires>
+  
+  <recommends>
+    <display_length compare="ge">1200</display_length>
+    <memory compare="ge">2048</memory>
+  </recommends>
+</component>
