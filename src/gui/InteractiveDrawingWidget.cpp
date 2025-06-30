@@ -356,7 +356,7 @@ void DrawingCanvas::drawLoads(QPainter& painter) {
         
         QPoint forceEnd(
             nodePos.x() + static_cast<int>(length * force.fx / magnitude),
-            nodePos.y() - static_cast<int>(length * force.fy / magnitude)
+            nodePos.y() + static_cast<int>(length * force.fy / magnitude)
         );
         
         // Draw force arrow

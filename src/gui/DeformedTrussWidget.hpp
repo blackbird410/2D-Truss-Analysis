@@ -231,6 +231,7 @@ private:
     double m_maxForce;
 
     // Control widgets
+    QWidget* m_controlPanel;
     QSlider* m_scaleSlider;
     QLabel* m_scaleLabel;
     QCheckBox* m_originalCheckBox;
