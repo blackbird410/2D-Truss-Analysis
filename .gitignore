@@ -20,6 +20,9 @@ install_manifest.txt
 compile_commands.json
 CTestTestfile.cmake
 _deps
+*.cmake
+!CMakeLists.txt
+!cmake/*.cmake
 
 # Qt
 *.pro.user
@@ -36,17 +39,86 @@ ui_*.h
 .qmake.stash
 *.pro.user*
 *_qmlcache.qrc
+*_autogen/
 
-# IDE
+# IDE and Editors
 .vscode/
 .idea/
 *.swp
 *.swo
 *~
+*.code-workspace
+.vs/
+*.vcxproj.user
+*.vcxproj.filters
 
-# System
+# System Files
 .DS_Store
 Thumbs.db
+.directory
+*.tmp
+*.temp
+
+# Logs and temporary files
+*.log
+*.out
+*.err
+*.bak
+
+# Package/Distribution
+*.dmg
+*.pkg
+*.deb
+*.rpm
+*.tar.gz
+*.zip
+*.7z
+
+# Documentation artifacts
+docs/_build/
+docs/html/
+docs/latex/
+*.pdf
+!docs/*.pdf
+
+# Code Coverage
+*.gcov
+*.gcno
+*.gcda
+coverage.info
+coverage/
+
+# Static Analysis
+.clang-tidy
+.cppcheck
+scan-build/
+
+# Performance profiling
+*.perf
+*.prof
+callgrind.out.*
+massif.out.*
+
+# Dependency directories
+third_party/
+external/
+!third_party/.gitkeep
+!external/.gitkeep
+
+# Environment files
+.env
+.env.local
+.env.*.local
+
+# User-specific files
+*.user
+local.properties
+.settings/
+
+# Backup files
+*~
+*.orig
+*.rej
 
 # Python (legacy files if any remain)
 __pycache__/
