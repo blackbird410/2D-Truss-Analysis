@@ -1,0 +1,66 @@
+# C++ build artifacts
+build/
+build_*/
+*.o
+*.obj
+*.so
+*.dylib
+*.dll
+*.exe
+*.app
+
+# CMake
+CMakeCache.txt
+CMakeFiles/
+CMakeScripts/
+Testing/
+Makefile
+cmake_install.cmake
+install_manifest.txt
+compile_commands.json
+CTestTestfile.cmake
+_deps
+
+# Qt
+*.pro.user
+*.pro.user.*
+*.qbs.user
+*.qbs.user.*
+*.moc
+moc_*.cpp
+moc_*.h
+qrc_*.cpp
+ui_*.h
+*.qm
+.qmake.cache
+.qmake.stash
+*.pro.user*
+*_qmlcache.qrc
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# System
+.DS_Store
+Thumbs.db
+
+# Python (legacy files if any remain)
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+.Python
+*.so
+.tox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+.hypothesis/
+.pytest_cache/
