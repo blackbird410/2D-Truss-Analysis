@@ -9,8 +9,7 @@
       "name": "qt6",
       "features": [
         "core",
-        "widgets",
-        "charts"
+        "widgets"
       ]
     },
     {
