@@ -231,9 +231,34 @@ void AnalysisEngine::updateTrussResults(Truss& truss, const AnalysisResults& res
         nodeResult.displacement.y = results.displacements(dofY);
         
         // Set reactions for constrained nodes
-        // This would require mapping constrained DOFs back to nodes
-        // For now, we'll set reactions to zero
-        nodeResult.reaction = Force2D{0.0, 0.0};
+        std::vector<Index> constrainedDofs = getConstrainedDofIndices(truss);
+        
+        // Find if this node's DOFs are constrained and get their reactions
+        Real reactionX = 0.0, reactionY = 0.0;
+        SupportType support = nodes[i]->getSupportType();
+        
+        if (support != SupportType::Free) {
+            // Check if X DOF is constrained
+            if (support == SupportType::Pinned || support == SupportType::PinnedX) {
+                auto it = std::find(constrainedDofs.begin(), constrainedDofs.end(), dofX);
+                if (it != constrainedDofs.end()) {
+                    size_t reactionIndex = std::distance(constrainedDofs.begin(), it);
+                    reactionX = results.reactions(reactionIndex);
+                }
+            }
+            
+            // Check if Y DOF is constrained
+            if (support == SupportType::Pinned || support == SupportType::PinnedY || 
+                support == SupportType::RollerX || support == SupportType::RollerY) {
+                auto it = std::find(constrainedDofs.begin(), constrainedDofs.end(), dofY);
+                if (it != constrainedDofs.end()) {
+                    size_t reactionIndex = std::distance(constrainedDofs.begin(), it);
+                    reactionY = results.reactions(reactionIndex);
+                }
+            }
+        }
+        
+        nodeResult.reaction = Force2D{reactionX, reactionY};
         
         nodes[i]->setResults(nodeResult);
     }
