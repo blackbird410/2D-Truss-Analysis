@@ -49,8 +49,17 @@ AnalysisResults AnalysisEngine::analyze(Truss& truss) {
     
     // Prepare results
     AnalysisResults results;
-    results.displacements = displacements;
-    results.reactions = reactions;
+    
+    // Convert Eigen vectors to std::vectors to avoid memory issues
+    results.displacements.resize(displacements.size());
+    for (int i = 0; i < displacements.size(); ++i) {
+        results.displacements[i] = displacements(i);
+    }
+    
+    results.reactions.resize(reactions.size());
+    for (int i = 0; i < reactions.size(); ++i) {
+        results.reactions[i] = reactions(i);
+    }
     results.memberForces = memberForces;
     
     // Compute member stresses and utilization ratios
@@ -227,8 +236,8 @@ void AnalysisEngine::updateTrussResults(Truss& truss, const AnalysisResults& res
         Index dofY = nodes[i]->getDofY();
         
         NodeResults nodeResult;
-        nodeResult.displacement.x = results.displacements(dofX);
-        nodeResult.displacement.y = results.displacements(dofY);
+        nodeResult.displacement.x = results.displacements[dofX];
+        nodeResult.displacement.y = results.displacements[dofY];
         
         // Set reactions for constrained nodes
         std::vector<Index> constrainedDofs = getConstrainedDofIndices(truss);
@@ -243,7 +252,7 @@ void AnalysisEngine::updateTrussResults(Truss& truss, const AnalysisResults& res
                 auto it = std::find(constrainedDofs.begin(), constrainedDofs.end(), dofX);
                 if (it != constrainedDofs.end()) {
                     size_t reactionIndex = std::distance(constrainedDofs.begin(), it);
-                    reactionX = results.reactions(reactionIndex);
+                    reactionX = results.reactions[reactionIndex];
                 }
             }
             
@@ -253,7 +262,7 @@ void AnalysisEngine::updateTrussResults(Truss& truss, const AnalysisResults& res
                 auto it = std::find(constrainedDofs.begin(), constrainedDofs.end(), dofY);
                 if (it != constrainedDofs.end()) {
                     size_t reactionIndex = std::distance(constrainedDofs.begin(), it);
-                    reactionY = results.reactions(reactionIndex);
+                    reactionY = results.reactions[reactionIndex];
                 }
             }
         }

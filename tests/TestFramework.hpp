@@ -16,6 +16,7 @@
 #include <sstream>
 #include <iomanip>
 #include <cmath>
+#include <algorithm>
 
 namespace truss::testing {
 
