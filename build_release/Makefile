@@ -195,17 +195,180 @@ TrussCore/fast:
 .PHONY : TrussCore/fast
 
 #=============================================================================
-# Target rules for targets named TrussAnalysis
+# Target rules for targets named TrussAnalysisCLI
 
 # Build rule for target.
-TrussAnalysis: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussAnalysis
-.PHONY : TrussAnalysis
+TrussAnalysisCLI: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussAnalysisCLI
+.PHONY : TrussAnalysisCLI
 
 # fast build rule for target.
-TrussAnalysis/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysis.dir/build.make CMakeFiles/TrussAnalysis.dir/build
-.PHONY : TrussAnalysis/fast
+TrussAnalysisCLI/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI.dir/build.make CMakeFiles/TrussAnalysisCLI.dir/build
+.PHONY : TrussAnalysisCLI/fast
+
+#=============================================================================
+# Target rules for targets named TrussAnalysisGUI
+
+# Build rule for target.
+TrussAnalysisGUI: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussAnalysisGUI
+.PHONY : TrussAnalysisGUI
+
+# fast build rule for target.
+TrussAnalysisGUI/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/build
+.PHONY : TrussAnalysisGUI/fast
+
+#=============================================================================
+# Target rules for targets named TrussCore_autogen_timestamp_deps
+
+# Build rule for target.
+TrussCore_autogen_timestamp_deps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussCore_autogen_timestamp_deps
+.PHONY : TrussCore_autogen_timestamp_deps
+
+# fast build rule for target.
+TrussCore_autogen_timestamp_deps/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore_autogen_timestamp_deps.dir/build.make CMakeFiles/TrussCore_autogen_timestamp_deps.dir/build
+.PHONY : TrussCore_autogen_timestamp_deps/fast
+
+#=============================================================================
+# Target rules for targets named TrussCore_autogen
+
+# Build rule for target.
+TrussCore_autogen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussCore_autogen
+.PHONY : TrussCore_autogen
+
+# fast build rule for target.
+TrussCore_autogen/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore_autogen.dir/build.make CMakeFiles/TrussCore_autogen.dir/build
+.PHONY : TrussCore_autogen/fast
+
+#=============================================================================
+# Target rules for targets named TrussAnalysisCLI_autogen_timestamp_deps
+
+# Build rule for target.
+TrussAnalysisCLI_autogen_timestamp_deps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussAnalysisCLI_autogen_timestamp_deps
+.PHONY : TrussAnalysisCLI_autogen_timestamp_deps
+
+# fast build rule for target.
+TrussAnalysisCLI_autogen_timestamp_deps/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI_autogen_timestamp_deps.dir/build.make CMakeFiles/TrussAnalysisCLI_autogen_timestamp_deps.dir/build
+.PHONY : TrussAnalysisCLI_autogen_timestamp_deps/fast
+
+#=============================================================================
+# Target rules for targets named TrussAnalysisCLI_autogen
+
+# Build rule for target.
+TrussAnalysisCLI_autogen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussAnalysisCLI_autogen
+.PHONY : TrussAnalysisCLI_autogen
+
+# fast build rule for target.
+TrussAnalysisCLI_autogen/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI_autogen.dir/build.make CMakeFiles/TrussAnalysisCLI_autogen.dir/build
+.PHONY : TrussAnalysisCLI_autogen/fast
+
+#=============================================================================
+# Target rules for targets named TrussAnalysisGUI_autogen_timestamp_deps
+
+# Build rule for target.
+TrussAnalysisGUI_autogen_timestamp_deps: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussAnalysisGUI_autogen_timestamp_deps
+.PHONY : TrussAnalysisGUI_autogen_timestamp_deps
+
+# fast build rule for target.
+TrussAnalysisGUI_autogen_timestamp_deps/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/build.make CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/build
+.PHONY : TrussAnalysisGUI_autogen_timestamp_deps/fast
+
+#=============================================================================
+# Target rules for targets named TrussAnalysisGUI_autogen
+
+# Build rule for target.
+TrussAnalysisGUI_autogen: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 TrussAnalysisGUI_autogen
+.PHONY : TrussAnalysisGUI_autogen
+
+# fast build rule for target.
+TrussAnalysisGUI_autogen/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI_autogen.dir/build.make CMakeFiles/TrussAnalysisGUI_autogen.dir/build
+.PHONY : TrussAnalysisGUI_autogen/fast
+
+TrussAnalysisCLI_autogen/mocs_compilation.o: TrussAnalysisCLI_autogen/mocs_compilation.cpp.o
+.PHONY : TrussAnalysisCLI_autogen/mocs_compilation.o
+
+# target to build an object file
+TrussAnalysisCLI_autogen/mocs_compilation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI.dir/build.make CMakeFiles/TrussAnalysisCLI.dir/TrussAnalysisCLI_autogen/mocs_compilation.cpp.o
+.PHONY : TrussAnalysisCLI_autogen/mocs_compilation.cpp.o
+
+TrussAnalysisCLI_autogen/mocs_compilation.i: TrussAnalysisCLI_autogen/mocs_compilation.cpp.i
+.PHONY : TrussAnalysisCLI_autogen/mocs_compilation.i
+
+# target to preprocess a source file
+TrussAnalysisCLI_autogen/mocs_compilation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI.dir/build.make CMakeFiles/TrussAnalysisCLI.dir/TrussAnalysisCLI_autogen/mocs_compilation.cpp.i
+.PHONY : TrussAnalysisCLI_autogen/mocs_compilation.cpp.i
+
+TrussAnalysisCLI_autogen/mocs_compilation.s: TrussAnalysisCLI_autogen/mocs_compilation.cpp.s
+.PHONY : TrussAnalysisCLI_autogen/mocs_compilation.s
+
+# target to generate assembly for a file
+TrussAnalysisCLI_autogen/mocs_compilation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI.dir/build.make CMakeFiles/TrussAnalysisCLI.dir/TrussAnalysisCLI_autogen/mocs_compilation.cpp.s
+.PHONY : TrussAnalysisCLI_autogen/mocs_compilation.cpp.s
+
+TrussAnalysisGUI_autogen/mocs_compilation.o: TrussAnalysisGUI_autogen/mocs_compilation.cpp.o
+.PHONY : TrussAnalysisGUI_autogen/mocs_compilation.o
+
+# target to build an object file
+TrussAnalysisGUI_autogen/mocs_compilation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.o
+.PHONY : TrussAnalysisGUI_autogen/mocs_compilation.cpp.o
+
+TrussAnalysisGUI_autogen/mocs_compilation.i: TrussAnalysisGUI_autogen/mocs_compilation.cpp.i
+.PHONY : TrussAnalysisGUI_autogen/mocs_compilation.i
+
+# target to preprocess a source file
+TrussAnalysisGUI_autogen/mocs_compilation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.i
+.PHONY : TrussAnalysisGUI_autogen/mocs_compilation.cpp.i
+
+TrussAnalysisGUI_autogen/mocs_compilation.s: TrussAnalysisGUI_autogen/mocs_compilation.cpp.s
+.PHONY : TrussAnalysisGUI_autogen/mocs_compilation.s
+
+# target to generate assembly for a file
+TrussAnalysisGUI_autogen/mocs_compilation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.s
+.PHONY : TrussAnalysisGUI_autogen/mocs_compilation.cpp.s
+
+TrussCore_autogen/mocs_compilation.o: TrussCore_autogen/mocs_compilation.cpp.o
+.PHONY : TrussCore_autogen/mocs_compilation.o
+
+# target to build an object file
+TrussCore_autogen/mocs_compilation.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o
+.PHONY : TrussCore_autogen/mocs_compilation.cpp.o
+
+TrussCore_autogen/mocs_compilation.i: TrussCore_autogen/mocs_compilation.cpp.i
+.PHONY : TrussCore_autogen/mocs_compilation.i
+
+# target to preprocess a source file
+TrussCore_autogen/mocs_compilation.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.i
+.PHONY : TrussCore_autogen/mocs_compilation.cpp.i
+
+TrussCore_autogen/mocs_compilation.s: TrussCore_autogen/mocs_compilation.cpp.s
+.PHONY : TrussCore_autogen/mocs_compilation.s
+
+# target to generate assembly for a file
+TrussCore_autogen/mocs_compilation.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.s
+.PHONY : TrussCore_autogen/mocs_compilation.cpp.s
 
 src/core/AnalysisEngine.o: src/core/AnalysisEngine.cpp.o
 .PHONY : src/core/AnalysisEngine.o
@@ -327,12 +490,204 @@ src/core/Truss.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/src/core/Truss.cpp.s
 .PHONY : src/core/Truss.cpp.s
 
+src/gui/DataTableWidget.o: src/gui/DataTableWidget.cpp.o
+.PHONY : src/gui/DataTableWidget.o
+
+# target to build an object file
+src/gui/DataTableWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/DataTableWidget.cpp.o
+.PHONY : src/gui/DataTableWidget.cpp.o
+
+src/gui/DataTableWidget.i: src/gui/DataTableWidget.cpp.i
+.PHONY : src/gui/DataTableWidget.i
+
+# target to preprocess a source file
+src/gui/DataTableWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/DataTableWidget.cpp.i
+.PHONY : src/gui/DataTableWidget.cpp.i
+
+src/gui/DataTableWidget.s: src/gui/DataTableWidget.cpp.s
+.PHONY : src/gui/DataTableWidget.s
+
+# target to generate assembly for a file
+src/gui/DataTableWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/DataTableWidget.cpp.s
+.PHONY : src/gui/DataTableWidget.cpp.s
+
+src/gui/LoadInputWidget.o: src/gui/LoadInputWidget.cpp.o
+.PHONY : src/gui/LoadInputWidget.o
+
+# target to build an object file
+src/gui/LoadInputWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/LoadInputWidget.cpp.o
+.PHONY : src/gui/LoadInputWidget.cpp.o
+
+src/gui/LoadInputWidget.i: src/gui/LoadInputWidget.cpp.i
+.PHONY : src/gui/LoadInputWidget.i
+
+# target to preprocess a source file
+src/gui/LoadInputWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/LoadInputWidget.cpp.i
+.PHONY : src/gui/LoadInputWidget.cpp.i
+
+src/gui/LoadInputWidget.s: src/gui/LoadInputWidget.cpp.s
+.PHONY : src/gui/LoadInputWidget.s
+
+# target to generate assembly for a file
+src/gui/LoadInputWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/LoadInputWidget.cpp.s
+.PHONY : src/gui/LoadInputWidget.cpp.s
+
+src/gui/MainWindow.o: src/gui/MainWindow.cpp.o
+.PHONY : src/gui/MainWindow.o
+
+# target to build an object file
+src/gui/MainWindow.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/MainWindow.cpp.o
+.PHONY : src/gui/MainWindow.cpp.o
+
+src/gui/MainWindow.i: src/gui/MainWindow.cpp.i
+.PHONY : src/gui/MainWindow.i
+
+# target to preprocess a source file
+src/gui/MainWindow.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/MainWindow.cpp.i
+.PHONY : src/gui/MainWindow.cpp.i
+
+src/gui/MainWindow.s: src/gui/MainWindow.cpp.s
+.PHONY : src/gui/MainWindow.s
+
+# target to generate assembly for a file
+src/gui/MainWindow.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/MainWindow.cpp.s
+.PHONY : src/gui/MainWindow.cpp.s
+
+src/gui/MemberInputWidget.o: src/gui/MemberInputWidget.cpp.o
+.PHONY : src/gui/MemberInputWidget.o
+
+# target to build an object file
+src/gui/MemberInputWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/MemberInputWidget.cpp.o
+.PHONY : src/gui/MemberInputWidget.cpp.o
+
+src/gui/MemberInputWidget.i: src/gui/MemberInputWidget.cpp.i
+.PHONY : src/gui/MemberInputWidget.i
+
+# target to preprocess a source file
+src/gui/MemberInputWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/MemberInputWidget.cpp.i
+.PHONY : src/gui/MemberInputWidget.cpp.i
+
+src/gui/MemberInputWidget.s: src/gui/MemberInputWidget.cpp.s
+.PHONY : src/gui/MemberInputWidget.s
+
+# target to generate assembly for a file
+src/gui/MemberInputWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/MemberInputWidget.cpp.s
+.PHONY : src/gui/MemberInputWidget.cpp.s
+
+src/gui/NodeInputWidget.o: src/gui/NodeInputWidget.cpp.o
+.PHONY : src/gui/NodeInputWidget.o
+
+# target to build an object file
+src/gui/NodeInputWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/NodeInputWidget.cpp.o
+.PHONY : src/gui/NodeInputWidget.cpp.o
+
+src/gui/NodeInputWidget.i: src/gui/NodeInputWidget.cpp.i
+.PHONY : src/gui/NodeInputWidget.i
+
+# target to preprocess a source file
+src/gui/NodeInputWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/NodeInputWidget.cpp.i
+.PHONY : src/gui/NodeInputWidget.cpp.i
+
+src/gui/NodeInputWidget.s: src/gui/NodeInputWidget.cpp.s
+.PHONY : src/gui/NodeInputWidget.s
+
+# target to generate assembly for a file
+src/gui/NodeInputWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/NodeInputWidget.cpp.s
+.PHONY : src/gui/NodeInputWidget.cpp.s
+
+src/gui/PlotWidget.o: src/gui/PlotWidget.cpp.o
+.PHONY : src/gui/PlotWidget.o
+
+# target to build an object file
+src/gui/PlotWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.o
+.PHONY : src/gui/PlotWidget.cpp.o
+
+src/gui/PlotWidget.i: src/gui/PlotWidget.cpp.i
+.PHONY : src/gui/PlotWidget.i
+
+# target to preprocess a source file
+src/gui/PlotWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.i
+.PHONY : src/gui/PlotWidget.cpp.i
+
+src/gui/PlotWidget.s: src/gui/PlotWidget.cpp.s
+.PHONY : src/gui/PlotWidget.s
+
+# target to generate assembly for a file
+src/gui/PlotWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.s
+.PHONY : src/gui/PlotWidget.cpp.s
+
+src/gui/ResultsWidget.o: src/gui/ResultsWidget.cpp.o
+.PHONY : src/gui/ResultsWidget.o
+
+# target to build an object file
+src/gui/ResultsWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/ResultsWidget.cpp.o
+.PHONY : src/gui/ResultsWidget.cpp.o
+
+src/gui/ResultsWidget.i: src/gui/ResultsWidget.cpp.i
+.PHONY : src/gui/ResultsWidget.i
+
+# target to preprocess a source file
+src/gui/ResultsWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/ResultsWidget.cpp.i
+.PHONY : src/gui/ResultsWidget.cpp.i
+
+src/gui/ResultsWidget.s: src/gui/ResultsWidget.cpp.s
+.PHONY : src/gui/ResultsWidget.s
+
+# target to generate assembly for a file
+src/gui/ResultsWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/ResultsWidget.cpp.s
+.PHONY : src/gui/ResultsWidget.cpp.s
+
+src/gui/main.o: src/gui/main.cpp.o
+.PHONY : src/gui/main.o
+
+# target to build an object file
+src/gui/main.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/main.cpp.o
+.PHONY : src/gui/main.cpp.o
+
+src/gui/main.i: src/gui/main.cpp.i
+.PHONY : src/gui/main.i
+
+# target to preprocess a source file
+src/gui/main.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/main.cpp.i
+.PHONY : src/gui/main.cpp.i
+
+src/gui/main.s: src/gui/main.cpp.s
+.PHONY : src/gui/main.s
+
+# target to generate assembly for a file
+src/gui/main.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/main.cpp.s
+.PHONY : src/gui/main.cpp.s
+
 src/main_app.o: src/main_app.cpp.o
 .PHONY : src/main_app.o
 
 # target to build an object file
 src/main_app.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysis.dir/build.make CMakeFiles/TrussAnalysis.dir/src/main_app.cpp.o
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI.dir/build.make CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o
 .PHONY : src/main_app.cpp.o
 
 src/main_app.i: src/main_app.cpp.i
@@ -340,7 +695,7 @@ src/main_app.i: src/main_app.cpp.i
 
 # target to preprocess a source file
 src/main_app.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysis.dir/build.make CMakeFiles/TrussAnalysis.dir/src/main_app.cpp.i
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI.dir/build.make CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.i
 .PHONY : src/main_app.cpp.i
 
 src/main_app.s: src/main_app.cpp.s
@@ -348,7 +703,7 @@ src/main_app.s: src/main_app.cpp.s
 
 # target to generate assembly for a file
 src/main_app.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysis.dir/build.make CMakeFiles/TrussAnalysis.dir/src/main_app.cpp.s
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisCLI.dir/build.make CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.s
 .PHONY : src/main_app.cpp.s
 
 # Help Target
@@ -365,8 +720,24 @@ help:
 	@echo "... package"
 	@echo "... package_source"
 	@echo "... rebuild_cache"
-	@echo "... TrussAnalysis"
+	@echo "... TrussAnalysisCLI_autogen"
+	@echo "... TrussAnalysisCLI_autogen_timestamp_deps"
+	@echo "... TrussAnalysisGUI_autogen"
+	@echo "... TrussAnalysisGUI_autogen_timestamp_deps"
+	@echo "... TrussCore_autogen"
+	@echo "... TrussCore_autogen_timestamp_deps"
+	@echo "... TrussAnalysisCLI"
+	@echo "... TrussAnalysisGUI"
 	@echo "... TrussCore"
+	@echo "... TrussAnalysisCLI_autogen/mocs_compilation.o"
+	@echo "... TrussAnalysisCLI_autogen/mocs_compilation.i"
+	@echo "... TrussAnalysisCLI_autogen/mocs_compilation.s"
+	@echo "... TrussAnalysisGUI_autogen/mocs_compilation.o"
+	@echo "... TrussAnalysisGUI_autogen/mocs_compilation.i"
+	@echo "... TrussAnalysisGUI_autogen/mocs_compilation.s"
+	@echo "... TrussCore_autogen/mocs_compilation.o"
+	@echo "... TrussCore_autogen/mocs_compilation.i"
+	@echo "... TrussCore_autogen/mocs_compilation.s"
 	@echo "... src/core/AnalysisEngine.o"
 	@echo "... src/core/AnalysisEngine.i"
 	@echo "... src/core/AnalysisEngine.s"
@@ -382,6 +753,30 @@ help:
 	@echo "... src/core/Truss.o"
 	@echo "... src/core/Truss.i"
 	@echo "... src/core/Truss.s"
+	@echo "... src/gui/DataTableWidget.o"
+	@echo "... src/gui/DataTableWidget.i"
+	@echo "... src/gui/DataTableWidget.s"
+	@echo "... src/gui/LoadInputWidget.o"
+	@echo "... src/gui/LoadInputWidget.i"
+	@echo "... src/gui/LoadInputWidget.s"
+	@echo "... src/gui/MainWindow.o"
+	@echo "... src/gui/MainWindow.i"
+	@echo "... src/gui/MainWindow.s"
+	@echo "... src/gui/MemberInputWidget.o"
+	@echo "... src/gui/MemberInputWidget.i"
+	@echo "... src/gui/MemberInputWidget.s"
+	@echo "... src/gui/NodeInputWidget.o"
+	@echo "... src/gui/NodeInputWidget.i"
+	@echo "... src/gui/NodeInputWidget.s"
+	@echo "... src/gui/PlotWidget.o"
+	@echo "... src/gui/PlotWidget.i"
+	@echo "... src/gui/PlotWidget.s"
+	@echo "... src/gui/ResultsWidget.o"
+	@echo "... src/gui/ResultsWidget.i"
+	@echo "... src/gui/ResultsWidget.s"
+	@echo "... src/gui/main.o"
+	@echo "... src/gui/main.i"
+	@echo "... src/gui/main.s"
 	@echo "... src/main_app.o"
 	@echo "... src/main_app.i"
 	@echo "... src/main_app.s"

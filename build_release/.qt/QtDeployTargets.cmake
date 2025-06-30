@@ -1,0 +1,6 @@
+set(__QT_DEPLOY_TARGET_TrussCore_FILE /Users/neil/dev/repos/2D_Truss_Analysis/build_release/libTrussCore.a)
+set(__QT_DEPLOY_TARGET_TrussCore_TYPE STATIC_LIBRARY)
+set(__QT_DEPLOY_TARGET_TrussAnalysisCLI_FILE /Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisCLI)
+set(__QT_DEPLOY_TARGET_TrussAnalysisCLI_TYPE EXECUTABLE)
+set(__QT_DEPLOY_TARGET_TrussAnalysisGUI_FILE /Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI)
+set(__QT_DEPLOY_TARGET_TrussAnalysisGUI_TYPE EXECUTABLE)
