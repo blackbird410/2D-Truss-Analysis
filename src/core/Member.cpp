@@ -143,12 +143,15 @@ Real Member::getSlope() const {
 }
 
 bool Member::intersectsWith(const Member& other, Real tolerance) const {
-    // Implement intersection logic here
+    (void)other;     // Mark parameter as intentionally unused
+    (void)tolerance; // Mark parameter as intentionally unused
+    // TODO: Implement intersection logic here
     return false; // Placeholder
 }
 
 Point2D Member::getIntersectionPoint(const Member& other) const {
-    // Implement intersection point calculation
+    (void)other; // Mark parameter as intentionally unused
+    // TODO: Implement intersection point calculation
     return Point2D();  // Placeholder
 }
 
