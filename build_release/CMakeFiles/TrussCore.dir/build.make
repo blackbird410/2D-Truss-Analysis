@@ -72,10 +72,24 @@ include CMakeFiles/TrussCore.dir/flags.make
 CMakeFiles/TrussCore.dir/codegen:
 .PHONY : CMakeFiles/TrussCore.dir/codegen
 
+CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o: CMakeFiles/TrussCore.dir/flags.make
+CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o: TrussCore_autogen/mocs_compilation.cpp
+CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o: CMakeFiles/TrussCore.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o -MF CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o.d -o CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o -c /Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussCore_autogen/mocs_compilation.cpp
+
+CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussCore_autogen/mocs_compilation.cpp > CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.i
+
+CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussCore_autogen/mocs_compilation.cpp -o CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.s
+
 CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o: CMakeFiles/TrussCore.dir/flags.make
 CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o: /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Logger.cpp
 CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o: CMakeFiles/TrussCore.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o -MF CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o.d -o CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o -c /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Logger.cpp
 
 CMakeFiles/TrussCore.dir/src/core/Logger.cpp.i: cmake_force
@@ -89,7 +103,7 @@ CMakeFiles/TrussCore.dir/src/core/Logger.cpp.s: cmake_force
 CMakeFiles/TrussCore.dir/src/core/Node.cpp.o: CMakeFiles/TrussCore.dir/flags.make
 CMakeFiles/TrussCore.dir/src/core/Node.cpp.o: /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Node.cpp
 CMakeFiles/TrussCore.dir/src/core/Node.cpp.o: CMakeFiles/TrussCore.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Node.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Node.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussCore.dir/src/core/Node.cpp.o -MF CMakeFiles/TrussCore.dir/src/core/Node.cpp.o.d -o CMakeFiles/TrussCore.dir/src/core/Node.cpp.o -c /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Node.cpp
 
 CMakeFiles/TrussCore.dir/src/core/Node.cpp.i: cmake_force
@@ -103,7 +117,7 @@ CMakeFiles/TrussCore.dir/src/core/Node.cpp.s: cmake_force
 CMakeFiles/TrussCore.dir/src/core/Member.cpp.o: CMakeFiles/TrussCore.dir/flags.make
 CMakeFiles/TrussCore.dir/src/core/Member.cpp.o: /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Member.cpp
 CMakeFiles/TrussCore.dir/src/core/Member.cpp.o: CMakeFiles/TrussCore.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Member.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Member.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussCore.dir/src/core/Member.cpp.o -MF CMakeFiles/TrussCore.dir/src/core/Member.cpp.o.d -o CMakeFiles/TrussCore.dir/src/core/Member.cpp.o -c /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Member.cpp
 
 CMakeFiles/TrussCore.dir/src/core/Member.cpp.i: cmake_force
@@ -117,7 +131,7 @@ CMakeFiles/TrussCore.dir/src/core/Member.cpp.s: cmake_force
 CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o: CMakeFiles/TrussCore.dir/flags.make
 CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o: /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Truss.cpp
 CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o: CMakeFiles/TrussCore.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_4) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o -MF CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o.d -o CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o -c /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Truss.cpp
 
 CMakeFiles/TrussCore.dir/src/core/Truss.cpp.i: cmake_force
@@ -131,7 +145,7 @@ CMakeFiles/TrussCore.dir/src/core/Truss.cpp.s: cmake_force
 CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o: CMakeFiles/TrussCore.dir/flags.make
 CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o: /Users/neil/dev/repos/2D_Truss_Analysis/src/core/AnalysisEngine.cpp
 CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o: CMakeFiles/TrussCore.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_5) "Building CXX object CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Building CXX object CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o -MF CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o.d -o CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o -c /Users/neil/dev/repos/2D_Truss_Analysis/src/core/AnalysisEngine.cpp
 
 CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.i: cmake_force
@@ -144,6 +158,7 @@ CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.s: cmake_force
 
 # Object files for target TrussCore
 TrussCore_OBJECTS = \
+"CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o" \
 "CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o" \
 "CMakeFiles/TrussCore.dir/src/core/Node.cpp.o" \
 "CMakeFiles/TrussCore.dir/src/core/Member.cpp.o" \
@@ -153,6 +168,7 @@ TrussCore_OBJECTS = \
 # External object files for target TrussCore
 TrussCore_EXTERNAL_OBJECTS =
 
+libTrussCore.a: CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o
 libTrussCore.a: CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o
 libTrussCore.a: CMakeFiles/TrussCore.dir/src/core/Node.cpp.o
 libTrussCore.a: CMakeFiles/TrussCore.dir/src/core/Member.cpp.o
@@ -160,7 +176,7 @@ libTrussCore.a: CMakeFiles/TrussCore.dir/src/core/Truss.cpp.o
 libTrussCore.a: CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o
 libTrussCore.a: CMakeFiles/TrussCore.dir/build.make
 libTrussCore.a: CMakeFiles/TrussCore.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_6) "Linking CXX static library libTrussCore.a"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_7) "Linking CXX static library libTrussCore.a"
 	$(CMAKE_COMMAND) -P CMakeFiles/TrussCore.dir/cmake_clean_target.cmake
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TrussCore.dir/link.txt --verbose=$(VERBOSE)
 

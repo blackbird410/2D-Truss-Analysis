@@ -20,6 +20,12 @@ endif()
 
 # Find required packages
 find_package(Eigen3 REQUIRED)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+
+# Enable Qt6 automatic MOC, UIC, and RCC
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON)
+set(CMAKE_AUTOUIC ON)
 
 # Create library for core functionality
 add_library(TrussCore STATIC
@@ -51,31 +57,56 @@ set_target_properties(TrussCore PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
-# Main executable
-add_executable(TrussAnalysis
+# Main application CLI executable
+add_executable(TrussAnalysisCLI
     src/main_app.cpp
 )
 
-target_link_libraries(TrussAnalysis PRIVATE
+target_link_libraries(TrussAnalysisCLI PRIVATE
     TrussCore
 )
 
-# Set target properties for executable
-set_target_properties(TrussAnalysis PROPERTIES
+# Set target properties for CLI executable
+set_target_properties(TrussAnalysisCLI PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
-    OUTPUT_NAME "TrussAnalysis"
+    OUTPUT_NAME "TrussAnalysisCLI"
+)
+
+# GUI executable
+add_executable(TrussAnalysisGUI
+    src/gui/main.cpp
+    src/gui/MainWindow.cpp
+    src/gui/NodeInputWidget.cpp
+    src/gui/MemberInputWidget.cpp
+    src/gui/LoadInputWidget.cpp
+    src/gui/DataTableWidget.cpp
+    src/gui/ResultsWidget.cpp
+    src/gui/PlotWidget.cpp
+)
+
+target_link_libraries(TrussAnalysisGUI PRIVATE
+    TrussCore
+    Qt6::Core
+    Qt6::Widgets
+)
+
+# Set target properties for GUI executable
+set_target_properties(TrussAnalysisGUI PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    OUTPUT_NAME "TrussAnalysisGUI"
 )
 
 # Install rules for packaging
-install(TARGETS TrussAnalysis
+install(TARGETS TrussAnalysisCLI TrussAnalysisGUI
     BUNDLE DESTINATION .
     RUNTIME DESTINATION bin
 )
 
 # macOS Bundle settings
 if(APPLE)
-    set_target_properties(TrussAnalysis PROPERTIES
+    set_target_properties(TrussAnalysisGUI PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist.in
         MACOSX_BUNDLE_BUNDLE_NAME "2D Truss Analysis"

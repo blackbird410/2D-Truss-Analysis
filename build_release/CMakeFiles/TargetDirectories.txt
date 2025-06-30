@@ -1,5 +1,6 @@
 /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussCore.dir
-/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysis.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisCLI.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI.dir
 /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/package.dir
 /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/package_source.dir
 /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/edit_cache.dir
@@ -8,3 +9,9 @@
 /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/install.dir
 /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/install/local.dir
 /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/install/strip.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussCore_autogen_timestamp_deps.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussCore_autogen.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisCLI_autogen_timestamp_deps.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisCLI_autogen.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir
+/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir

@@ -1,2 +1,0 @@
-/Users/neil/dev/repos/2D_Truss_Analysis/build_release/_CPack_Packages/Darwin/DragNDrop/2D_Truss_Analysis-2.0.0-Darwin/bin/TrussAnalysis.app/Contents/MacOS/TrussAnalysis
-/Users/neil/dev/repos/2D_Truss_Analysis/build_release/_CPack_Packages/Darwin/DragNDrop/2D_Truss_Analysis-2.0.0-Darwin/bin/TrussAnalysis.app/Contents/Info.plist
