@@ -1,9 +1,9 @@
 CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.o: \
   /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/mocs_compilation.cpp \
-  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/moc_MainWindow.cpp \
-  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/MainWindow.hpp \
-  /opt/homebrew/include/QtWidgets/QMainWindow \
-  /opt/homebrew/include/QtWidgets/qmainwindow.h \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/moc_DeformedTrussWidget.cpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/DeformedTrussWidget.hpp \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QWidget \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qwidget.h \
   /opt/homebrew/include/QtWidgets/qtwidgetsglobal.h \
   /opt/homebrew/include/QtGui/qtguiglobal.h \
   /opt/homebrew/include/QtCore/qglobal.h \
@@ -814,7 +814,6 @@ CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.o:
   /opt/homebrew/include/QtGui/qtguiexports.h \
   /opt/homebrew/include/QtWidgets/qtwidgets-config.h \
   /opt/homebrew/include/QtWidgets/qtwidgetsexports.h \
-  /opt/homebrew/include/QtWidgets/qwidget.h \
   /opt/homebrew/include/QtGui/qwindowdefs.h \
   /opt/homebrew/include/QtCore/qobjectdefs.h \
   /opt/homebrew/include/QtCore/qnamespace.h \
@@ -1150,91 +1149,76 @@ CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.o:
   /opt/homebrew/include/QtWidgets/qsizepolicy.h \
   /opt/homebrew/include/QtGui/qcursor.h \
   /opt/homebrew/include/QtGui/qbitmap.h \
-  /opt/homebrew/include/QtWidgets/qtabwidget.h \
-  /opt/homebrew/include/QtWidgets/QWidget \
-  /opt/homebrew/include/QtWidgets/QVBoxLayout \
-  /opt/homebrew/include/QtWidgets/qboxlayout.h \
-  /opt/homebrew/include/QtWidgets/qlayout.h \
-  /opt/homebrew/include/QtWidgets/qlayoutitem.h \
-  /opt/homebrew/include/QtWidgets/qgridlayout.h \
-  /opt/homebrew/include/QtWidgets/QHBoxLayout \
-  /opt/homebrew/include/QtWidgets/QGridLayout \
-  /opt/homebrew/include/QtWidgets/QPushButton \
-  /opt/homebrew/include/QtWidgets/qpushbutton.h \
-  /opt/homebrew/include/QtWidgets/qabstractbutton.h \
-  /opt/homebrew/include/QtWidgets/QLabel \
-  /opt/homebrew/include/QtWidgets/qlabel.h \
-  /opt/homebrew/include/QtWidgets/qframe.h \
-  /opt/homebrew/include/QtGui/qpicture.h \
-  /opt/homebrew/include/QtCore/qiodevice.h \
-  /opt/homebrew/include/QtGui/qtextdocument.h \
-  /opt/homebrew/include/QtCore/qurl.h \
-  /opt/homebrew/include/QtWidgets/QLineEdit \
-  /opt/homebrew/include/QtWidgets/qlineedit.h \
-  /opt/homebrew/include/QtGui/qtextcursor.h \
-  /opt/homebrew/include/QtGui/qtextformat.h \
-  /opt/homebrew/include/QtGui/qpen.h \
+  /opt/homebrew/lib/QtGui.framework/Headers/QPainter \
+  /opt/homebrew/lib/QtGui.framework/Headers/qpainter.h \
   /opt/homebrew/include/QtGui/qtextoption.h \
-  /opt/homebrew/include/QtWidgets/QTableWidget \
-  /opt/homebrew/include/QtWidgets/qtablewidget.h \
-  /opt/homebrew/include/QtWidgets/qtableview.h \
-  /opt/homebrew/include/QtWidgets/qabstractitemview.h \
-  /opt/homebrew/include/QtWidgets/qabstractscrollarea.h \
-  /opt/homebrew/include/QtCore/qabstractitemmodel.h \
-  /opt/homebrew/include/QtCore/qitemselectionmodel.h \
-  /opt/homebrew/include/QtWidgets/qabstractitemdelegate.h \
-  /opt/homebrew/include/QtWidgets/qstyleoption.h \
-  /opt/homebrew/include/QtCore/qlocale.h \
-  /opt/homebrew/include/QtWidgets/qabstractspinbox.h \
-  /opt/homebrew/include/QtGui/qvalidator.h \
-  /opt/homebrew/include/QtCore/qregularexpression.h \
-  /opt/homebrew/include/QtWidgets/qslider.h \
-  /opt/homebrew/include/QtWidgets/qabstractslider.h \
-  /opt/homebrew/include/QtWidgets/qstyle.h \
-  /opt/homebrew/include/QtWidgets/qtabbar.h \
-  /opt/homebrew/include/QtWidgets/qrubberband.h \
-  /opt/homebrew/include/QtWidgets/QComboBox \
-  /opt/homebrew/include/QtWidgets/qcombobox.h \
-  /opt/homebrew/include/QtWidgets/QTextEdit \
-  /opt/homebrew/include/QtWidgets/qtextedit.h \
-  /opt/homebrew/include/QtWidgets/QGroupBox \
-  /opt/homebrew/include/QtWidgets/qgroupbox.h \
-  /opt/homebrew/include/QtWidgets/QTabWidget \
-  /opt/homebrew/include/QtWidgets/QSplitter \
-  /opt/homebrew/include/QtWidgets/qsplitter.h \
-  /opt/homebrew/include/QtWidgets/QScrollArea \
-  /opt/homebrew/include/QtWidgets/qscrollarea.h \
-  /opt/homebrew/include/QtWidgets/QMessageBox \
-  /opt/homebrew/include/QtWidgets/qmessagebox.h \
-  /opt/homebrew/include/QtWidgets/qdialog.h \
-  /opt/homebrew/include/QtWidgets/qdialogbuttonbox.h \
-  /opt/homebrew/include/QtWidgets/QApplication \
-  /opt/homebrew/include/QtWidgets/qapplication.h \
-  /opt/homebrew/include/QtCore/qcoreapplication.h \
+  /opt/homebrew/include/QtGui/qpen.h \
+  /opt/homebrew/lib/QtGui.framework/Headers/QMouseEvent \
+  /opt/homebrew/lib/QtGui.framework/Headers/qevent.h \
   /opt/homebrew/include/QtCore/qcoreevent.h \
   /opt/homebrew/include/QtCore/qbasictimer.h \
   /opt/homebrew/include/QtCore/qabstracteventdispatcher.h \
   /opt/homebrew/include/QtCore/qeventloop.h \
   /opt/homebrew/include/QtCore/qdeadlinetimer.h \
   /opt/homebrew/include/QtCore/qelapsedtimer.h \
+  /opt/homebrew/include/QtCore/qiodevice.h \
+  /opt/homebrew/include/QtCore/qurl.h \
+  /opt/homebrew/include/QtGui/qeventpoint.h \
+  /opt/homebrew/include/QtGui/qvector2d.h \
+  /opt/homebrew/include/QtGui/qvectornd.h \
+  /opt/homebrew/include/QtGui/qpointingdevice.h \
+  /opt/homebrew/include/QtGui/qinputdevice.h \
+  /opt/homebrew/include/QtGui/qscreen.h \
+  /opt/homebrew/include/QtCore/QList \
+  /opt/homebrew/include/QtCore/QObject \
+  /opt/homebrew/include/QtCore/QRect /opt/homebrew/include/QtCore/QSize \
+  /opt/homebrew/include/QtCore/QSizeF \
+  /opt/homebrew/include/QtGui/QTransform \
   /opt/homebrew/include/QtCore/qnativeinterface.h \
-  /opt/homebrew/include/QtCore/qcoreapplication_platform.h \
+  /opt/homebrew/include/QtGui/qscreen_platform.h \
   /opt/homebrew/include/QtGui/qguiapplication.h \
+  /opt/homebrew/include/QtCore/qcoreapplication.h \
+  /opt/homebrew/include/QtCore/qcoreapplication_platform.h \
   /opt/homebrew/include/QtGui/qinputmethod.h \
+  /opt/homebrew/include/QtCore/qlocale.h \
   /opt/homebrew/include/QtGui/qguiapplication_platform.h \
-  /opt/homebrew/include/QtWidgets/QMenuBar \
-  /opt/homebrew/include/QtWidgets/qmenubar.h \
-  /opt/homebrew/include/QtWidgets/qmenu.h \
-  /opt/homebrew/include/QtWidgets/QMenu \
-  /opt/homebrew/include/QtWidgets/QToolBar \
-  /opt/homebrew/include/QtWidgets/qtoolbar.h \
-  /opt/homebrew/include/QtWidgets/QStatusBar \
-  /opt/homebrew/include/QtWidgets/qstatusbar.h \
-  /opt/homebrew/include/QtGui/QAction \
-  /opt/homebrew/include/QtCore/QTimer \
-  /opt/homebrew/include/QtCore/qtimer.h \
-  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Truss.hpp \
-  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Types.hpp \
+  /opt/homebrew/lib/QtGui.framework/Headers/QWheelEvent \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QSlider \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qslider.h \
+  /opt/homebrew/include/QtWidgets/qabstractslider.h \
+  /opt/homebrew/include/QtWidgets/qwidget.h \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QLabel \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qlabel.h \
+  /opt/homebrew/include/QtWidgets/qframe.h \
+  /opt/homebrew/include/QtGui/qpicture.h \
+  /opt/homebrew/include/QtGui/qtextdocument.h \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QVBoxLayout \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qboxlayout.h \
+  /opt/homebrew/include/QtWidgets/qlayout.h \
+  /opt/homebrew/include/QtWidgets/qlayoutitem.h \
+  /opt/homebrew/include/QtWidgets/qboxlayout.h \
+  /opt/homebrew/include/QtWidgets/qgridlayout.h \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QHBoxLayout \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QCheckBox \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qcheckbox.h \
+  /opt/homebrew/include/QtWidgets/qabstractbutton.h \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QGroupBox \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qgroupbox.h \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QComboBox \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/qcombobox.h \
+  /opt/homebrew/include/QtWidgets/qabstractitemdelegate.h \
+  /opt/homebrew/include/QtWidgets/qstyleoption.h \
+  /opt/homebrew/include/QtWidgets/qabstractspinbox.h \
+  /opt/homebrew/include/QtGui/qvalidator.h \
+  /opt/homebrew/include/QtCore/qregularexpression.h \
+  /opt/homebrew/include/QtWidgets/qslider.h \
+  /opt/homebrew/include/QtWidgets/qstyle.h \
+  /opt/homebrew/include/QtWidgets/qtabbar.h \
+  /opt/homebrew/include/QtWidgets/qtabwidget.h \
+  /opt/homebrew/include/QtWidgets/qrubberband.h \
+  /opt/homebrew/include/QtCore/qabstractitemmodel.h \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/../core/Truss.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/../core/Types.hpp \
   /opt/homebrew/include/eigen3/Eigen/Dense \
   /opt/homebrew/include/eigen3/Eigen/Core \
   /opt/homebrew/include/eigen3/Eigen/src/Core/util/DisableStupidWarnings.h \
@@ -1428,9 +1412,9 @@ CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.o:
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/GeneralizedEigenSolver.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/./RealQZ.h \
   /opt/homebrew/include/eigen3/Eigen/src/Eigenvalues/MatrixBaseEigenvalues.h \
-  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Node.hpp \
-  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Member.hpp \
-  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/AnalysisEngine.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/../core/Node.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/../core/Member.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/../core/AnalysisEngine.hpp \
   /opt/homebrew/include/eigen3/Eigen/Sparse \
   /opt/homebrew/include/eigen3/Eigen/SparseCore \
   /opt/homebrew/include/eigen3/Eigen/src/SparseCore/SparseUtil.h \
@@ -1504,7 +1488,71 @@ CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.o:
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
+  /opt/homebrew/include/QtGui/qtextcursor.h \
+  /opt/homebrew/include/QtGui/qtextformat.h \
   /opt/homebrew/include/QtCore/qtmochelpers.h \
   /opt/homebrew/include/QtCore/qtmocconstants.h \
   /opt/homebrew/include/QtCore/q20algorithm.h \
-  /opt/homebrew/include/QtCore/q23type_traits.h
+  /opt/homebrew/include/QtCore/q23type_traits.h \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/moc_InteractiveDrawingWidget.cpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/InteractiveDrawingWidget.hpp \
+  /opt/homebrew/include/QtWidgets/QWidget \
+  /opt/homebrew/include/QtWidgets/QVBoxLayout \
+  /opt/homebrew/include/QtWidgets/QHBoxLayout \
+  /opt/homebrew/include/QtWidgets/QGridLayout \
+  /opt/homebrew/include/QtWidgets/QPushButton \
+  /opt/homebrew/include/QtWidgets/qpushbutton.h \
+  /opt/homebrew/include/QtWidgets/QLabel \
+  /opt/homebrew/include/QtWidgets/QLineEdit \
+  /opt/homebrew/include/QtWidgets/qlineedit.h \
+  /opt/homebrew/include/QtWidgets/QComboBox \
+  /opt/homebrew/include/QtWidgets/QSpinBox \
+  /opt/homebrew/include/QtWidgets/qspinbox.h \
+  /opt/homebrew/include/QtWidgets/QDoubleSpinBox \
+  /opt/homebrew/include/QtWidgets/QGroupBox \
+  /opt/homebrew/include/QtWidgets/QToolBar \
+  /opt/homebrew/include/QtWidgets/qtoolbar.h \
+  /opt/homebrew/include/QtGui/QAction \
+  /opt/homebrew/include/QtGui/QActionGroup \
+  /opt/homebrew/include/QtGui/qactiongroup.h \
+  /opt/homebrew/include/QtWidgets/QSlider \
+  /opt/homebrew/include/QtWidgets/QCheckBox \
+  /opt/homebrew/include/QtWidgets/QSplitter \
+  /opt/homebrew/include/QtWidgets/qsplitter.h \
+  /opt/homebrew/include/QtCore/QTimer \
+  /opt/homebrew/include/QtCore/qtimer.h \
+  /opt/homebrew/include/QtGui/QPainter /opt/homebrew/include/QtGui/QPen \
+  /opt/homebrew/include/QtGui/QBrush \
+  /opt/homebrew/include/QtGui/QMouseEvent \
+  /opt/homebrew/include/QtGui/QKeyEvent \
+  /opt/homebrew/include/QtGui/qevent.h \
+  /opt/homebrew/include/QtGui/QWheelEvent \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Truss.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/AnalysisEngine.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/moc_MainWindow.cpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/../../../src/gui/MainWindow.hpp \
+  /opt/homebrew/include/QtWidgets/QMainWindow \
+  /opt/homebrew/include/QtWidgets/qmainwindow.h \
+  /opt/homebrew/include/QtWidgets/QTableWidget \
+  /opt/homebrew/include/QtWidgets/qtablewidget.h \
+  /opt/homebrew/include/QtWidgets/qtableview.h \
+  /opt/homebrew/include/QtWidgets/qabstractitemview.h \
+  /opt/homebrew/include/QtWidgets/qabstractscrollarea.h \
+  /opt/homebrew/include/QtCore/qitemselectionmodel.h \
+  /opt/homebrew/include/QtWidgets/QTextEdit \
+  /opt/homebrew/include/QtWidgets/qtextedit.h \
+  /opt/homebrew/include/QtWidgets/QTabWidget \
+  /opt/homebrew/include/QtWidgets/QScrollArea \
+  /opt/homebrew/include/QtWidgets/qscrollarea.h \
+  /opt/homebrew/include/QtWidgets/QMessageBox \
+  /opt/homebrew/include/QtWidgets/qmessagebox.h \
+  /opt/homebrew/include/QtWidgets/qdialog.h \
+  /opt/homebrew/include/QtWidgets/qdialogbuttonbox.h \
+  /opt/homebrew/include/QtWidgets/QApplication \
+  /opt/homebrew/include/QtWidgets/qapplication.h \
+  /opt/homebrew/include/QtWidgets/QMenuBar \
+  /opt/homebrew/include/QtWidgets/qmenubar.h \
+  /opt/homebrew/include/QtWidgets/qmenu.h \
+  /opt/homebrew/include/QtWidgets/QMenu \
+  /opt/homebrew/include/QtWidgets/QStatusBar \
+  /opt/homebrew/include/QtWidgets/qstatusbar.h

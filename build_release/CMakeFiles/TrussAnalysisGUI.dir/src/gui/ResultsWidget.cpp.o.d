@@ -1503,5 +1503,47 @@ CMakeFiles/TrussAnalysisGUI.dir/src/gui/ResultsWidget.cpp.o: \
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/BiCGSTAB.h \
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteLUT.h \
   /opt/homebrew/include/eigen3/Eigen/src/IterativeLinearSolvers/IncompleteCholesky.h \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/InteractiveDrawingWidget.hpp \
+  /opt/homebrew/include/QtWidgets/QSpinBox \
+  /opt/homebrew/include/QtWidgets/qspinbox.h \
+  /opt/homebrew/include/QtWidgets/QDoubleSpinBox \
+  /opt/homebrew/include/QtGui/QActionGroup \
+  /opt/homebrew/include/QtGui/qactiongroup.h \
+  /opt/homebrew/include/QtWidgets/QSlider \
+  /opt/homebrew/include/QtWidgets/QCheckBox \
+  /opt/homebrew/include/QtWidgets/qcheckbox.h \
+  /opt/homebrew/include/QtGui/QPainter \
+  /opt/homebrew/include/QtGui/qpainter.h \
+  /opt/homebrew/include/QtGui/QPen /opt/homebrew/include/QtGui/QBrush \
+  /opt/homebrew/include/QtGui/QMouseEvent \
+  /opt/homebrew/include/QtGui/qevent.h \
+  /opt/homebrew/include/QtGui/qeventpoint.h \
+  /opt/homebrew/include/QtGui/qvector2d.h \
+  /opt/homebrew/include/QtGui/qvectornd.h \
+  /opt/homebrew/include/QtGui/qpointingdevice.h \
+  /opt/homebrew/include/QtGui/qinputdevice.h \
+  /opt/homebrew/include/QtGui/qscreen.h \
+  /opt/homebrew/include/QtCore/QList \
+  /opt/homebrew/include/QtCore/QObject \
+  /opt/homebrew/include/QtCore/QRect /opt/homebrew/include/QtCore/QSize \
+  /opt/homebrew/include/QtCore/QSizeF \
+  /opt/homebrew/include/QtGui/QTransform \
+  /opt/homebrew/include/QtGui/qscreen_platform.h \
+  /opt/homebrew/include/QtGui/QKeyEvent \
+  /opt/homebrew/include/QtGui/QWheelEvent \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DeformedTrussWidget.hpp \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QWidget \
+  /opt/homebrew/lib/QtGui.framework/Headers/QPainter \
+  /opt/homebrew/lib/QtGui.framework/Headers/QMouseEvent \
+  /opt/homebrew/lib/QtGui.framework/Headers/QWheelEvent \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QSlider \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QLabel \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QVBoxLayout \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QHBoxLayout \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QCheckBox \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QGroupBox \
+  /opt/homebrew/lib/QtWidgets.framework/Headers/QComboBox \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/../core/Truss.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/../core/AnalysisEngine.hpp \
   /opt/homebrew/include/QtWidgets/QHeaderView \
   /opt/homebrew/include/QtWidgets/qheaderview.h

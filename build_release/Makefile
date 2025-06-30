@@ -538,6 +538,54 @@ src/gui/DataTableWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/DataTableWidget.cpp.s
 .PHONY : src/gui/DataTableWidget.cpp.s
 
+src/gui/DeformedTrussWidget.o: src/gui/DeformedTrussWidget.cpp.o
+.PHONY : src/gui/DeformedTrussWidget.o
+
+# target to build an object file
+src/gui/DeformedTrussWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o
+.PHONY : src/gui/DeformedTrussWidget.cpp.o
+
+src/gui/DeformedTrussWidget.i: src/gui/DeformedTrussWidget.cpp.i
+.PHONY : src/gui/DeformedTrussWidget.i
+
+# target to preprocess a source file
+src/gui/DeformedTrussWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.i
+.PHONY : src/gui/DeformedTrussWidget.cpp.i
+
+src/gui/DeformedTrussWidget.s: src/gui/DeformedTrussWidget.cpp.s
+.PHONY : src/gui/DeformedTrussWidget.s
+
+# target to generate assembly for a file
+src/gui/DeformedTrussWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.s
+.PHONY : src/gui/DeformedTrussWidget.cpp.s
+
+src/gui/InteractiveDrawingWidget.o: src/gui/InteractiveDrawingWidget.cpp.o
+.PHONY : src/gui/InteractiveDrawingWidget.o
+
+# target to build an object file
+src/gui/InteractiveDrawingWidget.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o
+.PHONY : src/gui/InteractiveDrawingWidget.cpp.o
+
+src/gui/InteractiveDrawingWidget.i: src/gui/InteractiveDrawingWidget.cpp.i
+.PHONY : src/gui/InteractiveDrawingWidget.i
+
+# target to preprocess a source file
+src/gui/InteractiveDrawingWidget.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.i
+.PHONY : src/gui/InteractiveDrawingWidget.cpp.i
+
+src/gui/InteractiveDrawingWidget.s: src/gui/InteractiveDrawingWidget.cpp.s
+.PHONY : src/gui/InteractiveDrawingWidget.s
+
+# target to generate assembly for a file
+src/gui/InteractiveDrawingWidget.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.s
+.PHONY : src/gui/InteractiveDrawingWidget.cpp.s
+
 src/gui/LoadInputWidget.o: src/gui/LoadInputWidget.cpp.o
 .PHONY : src/gui/LoadInputWidget.o
 
@@ -657,6 +705,30 @@ src/gui/PlotWidget.s: src/gui/PlotWidget.cpp.s
 src/gui/PlotWidget.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.s
 .PHONY : src/gui/PlotWidget.cpp.s
+
+src/gui/ProjectFileManager.o: src/gui/ProjectFileManager.cpp.o
+.PHONY : src/gui/ProjectFileManager.o
+
+# target to build an object file
+src/gui/ProjectFileManager.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o
+.PHONY : src/gui/ProjectFileManager.cpp.o
+
+src/gui/ProjectFileManager.i: src/gui/ProjectFileManager.cpp.i
+.PHONY : src/gui/ProjectFileManager.i
+
+# target to preprocess a source file
+src/gui/ProjectFileManager.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.i
+.PHONY : src/gui/ProjectFileManager.cpp.i
+
+src/gui/ProjectFileManager.s: src/gui/ProjectFileManager.cpp.s
+.PHONY : src/gui/ProjectFileManager.s
+
+# target to generate assembly for a file
+src/gui/ProjectFileManager.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussAnalysisGUI.dir/build.make CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.s
+.PHONY : src/gui/ProjectFileManager.cpp.s
 
 src/gui/ResultsWidget.o: src/gui/ResultsWidget.cpp.o
 .PHONY : src/gui/ResultsWidget.o
@@ -783,6 +855,12 @@ help:
 	@echo "... src/gui/DataTableWidget.o"
 	@echo "... src/gui/DataTableWidget.i"
 	@echo "... src/gui/DataTableWidget.s"
+	@echo "... src/gui/DeformedTrussWidget.o"
+	@echo "... src/gui/DeformedTrussWidget.i"
+	@echo "... src/gui/DeformedTrussWidget.s"
+	@echo "... src/gui/InteractiveDrawingWidget.o"
+	@echo "... src/gui/InteractiveDrawingWidget.i"
+	@echo "... src/gui/InteractiveDrawingWidget.s"
 	@echo "... src/gui/LoadInputWidget.o"
 	@echo "... src/gui/LoadInputWidget.i"
 	@echo "... src/gui/LoadInputWidget.s"
@@ -798,6 +876,9 @@ help:
 	@echo "... src/gui/PlotWidget.o"
 	@echo "... src/gui/PlotWidget.i"
 	@echo "... src/gui/PlotWidget.s"
+	@echo "... src/gui/ProjectFileManager.o"
+	@echo "... src/gui/ProjectFileManager.i"
+	@echo "... src/gui/ProjectFileManager.s"
 	@echo "... src/gui/ResultsWidget.o"
 	@echo "... src/gui/ResultsWidget.i"
 	@echo "... src/gui/ResultsWidget.s"

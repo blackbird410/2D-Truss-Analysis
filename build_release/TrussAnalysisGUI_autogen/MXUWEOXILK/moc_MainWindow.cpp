@@ -40,37 +40,46 @@ template <> constexpr inline auto truss::gui::MainWindow::qt_create_metaobjectda
     namespace QMC = QtMocConstants;
     QtMocHelpers::StringRefStorage qt_stringData {
         "truss::gui::MainWindow",
-        "addNode",
-        "",
-        "addMember",
-        "addLoad",
-        "showData",
         "analyze",
-        "showResults",
+        "",
         "clearAll",
         "exitApplication",
-        "updatePlot"
+        "newProject",
+        "openProject",
+        "saveProject",
+        "saveProjectAs",
+        "exportResults",
+        "showAbout",
+        "onTrussModified",
+        "updateStatusMessage",
+        "message"
     };
 
     QtMocHelpers::UintData qt_methods {
-        // Slot 'addNode'
-        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'addMember'
-        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'addLoad'
-        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'showData'
-        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'analyze'
-        QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'showResults'
-        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(1, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'clearAll'
-        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
+        QtMocHelpers::SlotData<void()>(3, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'exitApplication'
+        QtMocHelpers::SlotData<void()>(4, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'newProject'
+        QtMocHelpers::SlotData<void()>(5, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'openProject'
+        QtMocHelpers::SlotData<void()>(6, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'saveProject'
+        QtMocHelpers::SlotData<void()>(7, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'saveProjectAs'
+        QtMocHelpers::SlotData<void()>(8, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'exportResults'
         QtMocHelpers::SlotData<void()>(9, 2, QMC::AccessPrivate, QMetaType::Void),
-        // Slot 'updatePlot'
+        // Slot 'showAbout'
         QtMocHelpers::SlotData<void()>(10, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'onTrussModified'
+        QtMocHelpers::SlotData<void()>(11, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'updateStatusMessage'
+        QtMocHelpers::SlotData<void(const QString &)>(12, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::QString, 13 },
+        }}),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -94,19 +103,20 @@ void truss::gui::MainWindow::qt_static_metacall(QObject *_o, QMetaObject::Call _
     auto *_t = static_cast<MainWindow *>(_o);
     if (_c == QMetaObject::InvokeMetaMethod) {
         switch (_id) {
-        case 0: _t->addNode(); break;
-        case 1: _t->addMember(); break;
-        case 2: _t->addLoad(); break;
-        case 3: _t->showData(); break;
-        case 4: _t->analyze(); break;
-        case 5: _t->showResults(); break;
-        case 6: _t->clearAll(); break;
-        case 7: _t->exitApplication(); break;
-        case 8: _t->updatePlot(); break;
+        case 0: _t->analyze(); break;
+        case 1: _t->clearAll(); break;
+        case 2: _t->exitApplication(); break;
+        case 3: _t->newProject(); break;
+        case 4: _t->openProject(); break;
+        case 5: _t->saveProject(); break;
+        case 6: _t->saveProjectAs(); break;
+        case 7: _t->exportResults(); break;
+        case 8: _t->showAbout(); break;
+        case 9: _t->onTrussModified(); break;
+        case 10: _t->updateStatusMessage((*reinterpret_cast< std::add_pointer_t<QString>>(_a[1]))); break;
         default: ;
         }
     }
-    (void)_a;
 }
 
 const QMetaObject *truss::gui::MainWindow::metaObject() const
@@ -128,14 +138,14 @@ int truss::gui::MainWindow::qt_metacall(QMetaObject::Call _c, int _id, void **_a
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 9)
+        if (_id < 11)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 9;
+        _id -= 11;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 9)
+        if (_id < 11)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 9;
+        _id -= 11;
     }
     return _id;
 }
