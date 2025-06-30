@@ -22,7 +22,7 @@ int main(int argc, char *argv[]) {
     app.setOrganizationDomain("truss-analysis.com");
     
     // Set application icon if available
-    app.setWindowIcon(QIcon(":/icons/app-icon.png"));
+    // app.setWindowIcon(QIcon(":/icons/app-icon.png"));
     
     try {
         // Create and show the main window

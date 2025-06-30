@@ -23,7 +23,7 @@ bool Application::initialize() {
     }
     
     try {
-        Logger::info("Initializing application: {} v{}", m_name, m_version);
+        Logger::info("Initializing application: " + m_name + " v" + m_version);
         
         // Initialize application components here
         // For now, just mark as initialized
@@ -33,7 +33,7 @@ bool Application::initialize() {
         return true;
         
     } catch (const std::exception& e) {
-        Logger::error("Application initialization failed: {}", e.what());
+        Logger::error("Application initialization failed: " + std::string(e.what()));
         return false;
     }
 }

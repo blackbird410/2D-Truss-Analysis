@@ -53,10 +53,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/neil/dev/repos/2D_Truss_Analysis
+CMAKE_SOURCE_DIR = /Users/neil/dev/repos/2D-Truss-Analysis-cpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/neil/dev/repos/2D_Truss_Analysis/build_release
+CMAKE_BINARY_DIR = /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release
 
 # Utility rule file for TrussAnalysisGUI_autogen_timestamp_deps.
 
@@ -81,6 +81,6 @@ CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/clean:
 .PHONY : CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/clean
 
 CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/depend:
-	cd /Users/neil/dev/repos/2D_Truss_Analysis/build_release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/neil/dev/repos/2D_Truss_Analysis /Users/neil/dev/repos/2D_Truss_Analysis /Users/neil/dev/repos/2D_Truss_Analysis/build_release /Users/neil/dev/repos/2D_Truss_Analysis/build_release /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/neil/dev/repos/2D-Truss-Analysis-cpp /Users/neil/dev/repos/2D-Truss-Analysis-cpp /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/TrussAnalysisGUI_autogen_timestamp_deps.dir/depend
 

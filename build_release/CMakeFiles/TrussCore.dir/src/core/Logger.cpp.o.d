@@ -1,6 +1,6 @@
 CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o: \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Logger.cpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Logger.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Logger.cpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Logger.hpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/string \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/max.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX.sdk/usr/include/c++/v1/__algorithm/comp.h \

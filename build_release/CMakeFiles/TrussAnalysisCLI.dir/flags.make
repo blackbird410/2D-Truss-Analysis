@@ -4,9 +4,9 @@
 # compile CXX with /usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisCLI_autogen/include -I/Users/neil/dev/repos/2D_Truss_Analysis/src/core -isystem /opt/homebrew/include/eigen3
+CXX_INCLUDES = -I/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisCLI_autogen/include -I/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core -isystem /opt/homebrew/include/eigen3
 
-CXX_FLAGSarm64 = -O3 -DNDEBUG -std=c++20 -arch arm64 -mmacosx-version-min=10.15 -Wall -Wextra -Wpedantic -O3 -march=native
+CXX_FLAGSarm64 = -O3 -DNDEBUG -std=c++20 -arch arm64 -Wall -Wextra -Wpedantic -O3 -march=native
 
-CXX_FLAGS = -O3 -DNDEBUG -std=c++20 -arch arm64 -mmacosx-version-min=10.15 -Wall -Wextra -Wpedantic -O3 -march=native
+CXX_FLAGS = -O3 -DNDEBUG -std=c++20 -arch arm64 -Wall -Wextra -Wpedantic -O3 -march=native
 

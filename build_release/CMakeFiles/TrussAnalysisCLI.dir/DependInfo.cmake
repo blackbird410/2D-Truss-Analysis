@@ -8,8 +8,8 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisCLI_autogen/mocs_compilation.cpp" "CMakeFiles/TrussAnalysisCLI.dir/TrussAnalysisCLI_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/TrussAnalysisCLI.dir/TrussAnalysisCLI_autogen/mocs_compilation.cpp.o.d"
-  "/Users/neil/dev/repos/2D_Truss_Analysis/src/main_app.cpp" "CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o" "gcc" "CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o.d"
+  "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisCLI_autogen/mocs_compilation.cpp" "CMakeFiles/TrussAnalysisCLI.dir/TrussAnalysisCLI_autogen/mocs_compilation.cpp.o" "gcc" "CMakeFiles/TrussAnalysisCLI.dir/TrussAnalysisCLI_autogen/mocs_compilation.cpp.o.d"
+  "/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/main_app.cpp" "CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o" "gcc" "CMakeFiles/TrussAnalysisCLI.dir/src/main_app.cpp.o.d"
   )
 
 # Targets to which this target links which contain Fortran sources.

@@ -1,8 +1,8 @@
 TrussAnalysisCLI_autogen/timestamp: \
-	/Users/neil/dev/repos/2D_Truss_Analysis/CMakeLists.txt \
-	/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/4.0.3/CMakeCXXCompiler.cmake \
-	/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/4.0.3/CMakeSystem.cmake \
-	/Users/neil/dev/repos/2D_Truss_Analysis/src/main_app.cpp \
+	/Users/neil/dev/repos/2D-Truss-Analysis-cpp/CMakeLists.txt \
+	/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/4.0.3/CMakeCXXCompiler.cmake \
+	/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/4.0.3/CMakeSystem.cmake \
+	/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/main_app.cpp \
 	/opt/homebrew/Cellar/qt/6.9.1/lib/cmake/Qt6/FindWrapAtomic.cmake \
 	/opt/homebrew/Cellar/qt/6.9.1/lib/cmake/Qt6/FindWrapOpenGL.cmake \
 	/opt/homebrew/Cellar/qt/6.9.1/lib/cmake/Qt6/FindWrapVulkanHeaders.cmake \

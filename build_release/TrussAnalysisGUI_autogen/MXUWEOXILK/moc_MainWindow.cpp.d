@@ -1,5 +1,5 @@
-/Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/moc_MainWindow.cpp: /Users/neil/dev/repos/2D_Truss_Analysis/src/gui/MainWindow.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/moc_predefs.h \
+/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/MXUWEOXILK/moc_MainWindow.cpp: /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/MainWindow.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/moc_predefs.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/Availability.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/AvailabilityInternal.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX15.5.sdk/usr/include/AvailabilityInternalLegacy.h \
@@ -914,11 +914,11 @@
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/arm_vector_types.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/limits.h \
   /Library/Developer/CommandLineTools/usr/lib/clang/17/include/stdarg.h \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/AnalysisEngine.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Member.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Node.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Truss.hpp \
-  /Users/neil/dev/repos/2D_Truss_Analysis/src/core/Types.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/AnalysisEngine.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Member.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Node.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Truss.hpp \
+  /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/core/Types.hpp \
   /opt/homebrew/Cellar/eigen/3.4.0_1/include/eigen3/Eigen/Cholesky \
   /opt/homebrew/Cellar/eigen/3.4.0_1/include/eigen3/Eigen/Core \
   /opt/homebrew/Cellar/eigen/3.4.0_1/include/eigen3/Eigen/Dense \

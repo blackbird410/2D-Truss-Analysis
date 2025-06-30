@@ -53,10 +53,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/neil/dev/repos/2D_Truss_Analysis
+CMAKE_SOURCE_DIR = /Users/neil/dev/repos/2D-Truss-Analysis-cpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/neil/dev/repos/2D_Truss_Analysis/build_release
+CMAKE_BINARY_DIR = /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release
 
 # Utility rule file for TrussAnalysisGUI_autogen.
 
@@ -71,9 +71,9 @@ CMakeFiles/TrussAnalysisGUI_autogen: TrussAnalysisGUI_autogen/timestamp
 TrussAnalysisGUI_autogen/timestamp: /opt/homebrew/share/qt/libexec/moc
 TrussAnalysisGUI_autogen/timestamp: /opt/homebrew/share/qt/libexec/uic
 TrussAnalysisGUI_autogen/timestamp: CMakeFiles/TrussAnalysisGUI_autogen.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target TrussAnalysisGUI"
-	/opt/homebrew/bin/cmake -E cmake_autogen /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/AutogenInfo.json Release
-	/opt/homebrew/bin/cmake -E touch /Users/neil/dev/repos/2D_Truss_Analysis/build_release/TrussAnalysisGUI_autogen/timestamp
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --blue --bold --progress-dir=/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_1) "Automatic MOC and UIC for target TrussAnalysisGUI"
+	/opt/homebrew/bin/cmake -E cmake_autogen /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/AutogenInfo.json Release
+	/opt/homebrew/bin/cmake -E touch /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/TrussAnalysisGUI_autogen/timestamp
 
 CMakeFiles/TrussAnalysisGUI_autogen.dir/codegen:
 .PHONY : CMakeFiles/TrussAnalysisGUI_autogen.dir/codegen
@@ -92,6 +92,6 @@ CMakeFiles/TrussAnalysisGUI_autogen.dir/clean:
 .PHONY : CMakeFiles/TrussAnalysisGUI_autogen.dir/clean
 
 CMakeFiles/TrussAnalysisGUI_autogen.dir/depend:
-	cd /Users/neil/dev/repos/2D_Truss_Analysis/build_release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/neil/dev/repos/2D_Truss_Analysis /Users/neil/dev/repos/2D_Truss_Analysis /Users/neil/dev/repos/2D_Truss_Analysis/build_release /Users/neil/dev/repos/2D_Truss_Analysis/build_release /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
+	cd /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/neil/dev/repos/2D-Truss-Analysis-cpp /Users/neil/dev/repos/2D-Truss-Analysis-cpp /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles/TrussAnalysisGUI_autogen.dir/DependInfo.cmake "--color=$(COLOR)"
 .PHONY : CMakeFiles/TrussAnalysisGUI_autogen.dir/depend
 

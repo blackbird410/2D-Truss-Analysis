@@ -57,10 +57,10 @@ RM = /opt/homebrew/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/neil/dev/repos/2D_Truss_Analysis
+CMAKE_SOURCE_DIR = /Users/neil/dev/repos/2D-Truss-Analysis-cpp
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/neil/dev/repos/2D_Truss_Analysis/build_release
+CMAKE_BINARY_DIR = /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release
 
 #=============================================================================
 # Targets provided globally by CMake.
@@ -78,7 +78,7 @@ package/fast: package
 # Special rule for the target package_source
 package_source:
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --cyan "Run CPack packaging tool for source..."
-	/opt/homebrew/bin/cpack --config ./CPackSourceConfig.cmake /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CPackSourceConfig.cmake
+	/opt/homebrew/bin/cpack --config ./CPackSourceConfig.cmake /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CPackSourceConfig.cmake
 .PHONY : package_source
 
 # Special rule for the target package_source
@@ -152,9 +152,9 @@ install/strip/fast: preinstall/fast
 
 # The main all target
 all: cmake_check_build_system
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles /Users/neil/dev/repos/2D_Truss_Analysis/build_release//CMakeFiles/progress.marks
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release//CMakeFiles/progress.marks
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 all
-	$(CMAKE_COMMAND) -E cmake_progress_start /Users/neil/dev/repos/2D_Truss_Analysis/build_release/CMakeFiles 0
+	$(CMAKE_COMMAND) -E cmake_progress_start /Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles 0
 .PHONY : all
 
 # The main clean target
@@ -393,6 +393,30 @@ src/core/AnalysisEngine.s: src/core/AnalysisEngine.cpp.s
 src/core/AnalysisEngine.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.s
 .PHONY : src/core/AnalysisEngine.cpp.s
+
+src/core/Application.o: src/core/Application.cpp.o
+.PHONY : src/core/Application.o
+
+# target to build an object file
+src/core/Application.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/src/core/Application.cpp.o
+.PHONY : src/core/Application.cpp.o
+
+src/core/Application.i: src/core/Application.cpp.i
+.PHONY : src/core/Application.i
+
+# target to preprocess a source file
+src/core/Application.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/src/core/Application.cpp.i
+.PHONY : src/core/Application.cpp.i
+
+src/core/Application.s: src/core/Application.cpp.s
+.PHONY : src/core/Application.s
+
+# target to generate assembly for a file
+src/core/Application.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/TrussCore.dir/build.make CMakeFiles/TrussCore.dir/src/core/Application.cpp.s
+.PHONY : src/core/Application.cpp.s
 
 src/core/Logger.o: src/core/Logger.cpp.o
 .PHONY : src/core/Logger.o
@@ -741,6 +765,9 @@ help:
 	@echo "... src/core/AnalysisEngine.o"
 	@echo "... src/core/AnalysisEngine.i"
 	@echo "... src/core/AnalysisEngine.s"
+	@echo "... src/core/Application.o"
+	@echo "... src/core/Application.i"
+	@echo "... src/core/Application.s"
 	@echo "... src/core/Logger.o"
 	@echo "... src/core/Logger.i"
 	@echo "... src/core/Logger.s"

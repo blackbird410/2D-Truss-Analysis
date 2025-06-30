@@ -6,6 +6,8 @@ file(REMOVE_RECURSE
   "CMakeFiles/TrussCore.dir/TrussCore_autogen/mocs_compilation.cpp.o.d"
   "CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o"
   "CMakeFiles/TrussCore.dir/src/core/AnalysisEngine.cpp.o.d"
+  "CMakeFiles/TrussCore.dir/src/core/Application.cpp.o"
+  "CMakeFiles/TrussCore.dir/src/core/Application.cpp.o.d"
   "CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o"
   "CMakeFiles/TrussCore.dir/src/core/Logger.cpp.o.d"
   "CMakeFiles/TrussCore.dir/src/core/Member.cpp.o"
