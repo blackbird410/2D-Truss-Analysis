@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(TrussAnalysis VERSION 2.0.0 LANGUAGES CXX)
+project(TrussAnalysis VERSION 2.1.1 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
