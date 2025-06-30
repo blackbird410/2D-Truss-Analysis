@@ -110,6 +110,23 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 
 ## 🚀 Quick Start
 
+### One-Step Installation (Linux) - **Recommended**
+
+```bash
+# Clone and install in one command
+git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
+cd 2D-Truss-Analysis-cpp
+./install.sh
+```
+
+**Installation Options:**
+```bash
+./install.sh           # System-wide installation (requires sudo)
+./install.sh --user    # User installation (~/.local)
+./install.sh --prefix /opt/truss  # Custom location
+./install.sh --help    # See all options
+```
+
 ### Installation (macOS)
 
 **Recommended Method:**
@@ -125,17 +142,6 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 1. Right-click on the app → "Open"
 2. Click "Open" in the security dialog
 3. This only needs to be done once
-
-### Installation (Linux)
-
-**Recommended Method:**
-```bash
-./build_linux.sh && ./install_linux.sh
-```
-
-**Alternative Methods:**
-- See [INSTALL_LINUX.md](INSTALL_LINUX.md) for comprehensive guide
-- Manual build and install steps below
 
 ### Building from Source
 

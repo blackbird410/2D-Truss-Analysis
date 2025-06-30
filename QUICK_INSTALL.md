@@ -1,6 +1,28 @@
 # 🚀 Quick Install Guide - 2D Truss Analysis
 
-## For End Users (Simple Installation)
+## Linux Installation (Recommended)
+
+### One-Step Installation (Easiest)
+```bash
+# Clone and install in one command
+git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
+cd 2D-Truss-Analysis-cpp
+./install.sh
+```
+
+### User Installation (No sudo required)
+```bash
+# Install to ~/.local (user directory only)
+./install.sh --user
+```
+
+### Custom Installation Location
+```bash
+# Install to custom directory
+./install.sh --prefix /opt/truss
+```
+
+## macOS Installation
 
 ### Option 1: Double-Click Installation (Easiest)
 1. **Double-click** `2D_Truss_Analysis-2.1.0-Darwin.dmg`
