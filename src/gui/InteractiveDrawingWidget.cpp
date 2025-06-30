@@ -265,14 +265,14 @@ void DrawingCanvas::drawTruss(QPainter& painter) {
     // Draw members first (behind nodes)
     drawMembers(painter);
     
-    // Draw supports
-    drawSupports(painter);
-    
     // Draw loads
     drawLoads(painter);
     
-    // Draw nodes (on top)
+    // Draw nodes
     drawNodes(painter);
+    
+    // Draw supports (on top of nodes)
+    drawSupports(painter);
     
     // Draw selection highlights
     drawSelection(painter);
