@@ -1,7 +1,12 @@
-# Planar Truss Analysis
+# 2D Truss Analysis - C++ Version
+
+This is the C++ implementation of the 2D Truss Analysis program, originally developed in Python. This version provides enhanced performance, a modern Qt-based GUI, and cross-platform compatibility.
+
+## Overview
+
 Before transitioning to a career in Computer Science, I pursued my studies as a third-year Civil Engineering student. During this time, I constantly pondered how I could leverage my coding skills within the realm of my academic pursuits, seeking to create something valuable not only for myself but also for fellow students. One particular structural aspect that captivated my interest was the truss.
 
-As the culmination of my coursework in the CS50 and CS50P courses on EdX, I embarked on a project to develop a Python-based 2D Truss Analysis program. This software is designed to comprehensively analyze truss structures, providing insights into support reactions, node displacements, and even presenting a visual representation of the deformed structure.
+This C++ version builds upon the original Python implementation, offering improved computational efficiency and a more robust architecture. The software is designed to comprehensively analyze truss structures, providing insights into support reactions, node displacements, and presenting a visual representation of the deformed structure.
 
 I firmly believe that this tool will prove invaluable to second and third-year Civil Engineering students enrolled in Structural Analysis courses. It will assist them in validating their manual calculations, fostering a deeper understanding of the subject matter.
 
@@ -62,3 +67,84 @@ In this program, we employ the Stiffness Method, specifically the displacement m
 The Stiffness Method necessitates breaking down the structure into discrete finite elements and designating their endpoints as nodes. In the context of truss analysis, these finite elements correspond to individual truss members, while the nodes signify the joints or connections. We determine the force-displacement characteristics of each element and subsequently interrelate them through the force equilibrium equations established at the nodes. These interconnected relationships are then consolidated into what is referred to as the structure's **stiffness matrix**, denoted as ***K**.
 
 Once the stiffness matrix is defined, we can ascertain the unknown displacements of the nodes under any given load applied to the structure. With knowledge of these displacements, we can subsequently compute both the external and internal forces within the structure by leveraging the force-displacement relations for each individual member.
+
+## Features
+
+- **Modern C++ Implementation**: Built with C++17 standards
+- **Qt6 GUI**: Professional cross-platform graphical user interface
+- **Command Line Interface**: CLI version for batch processing and automation
+- **High Performance**: Optimized matrix operations and computational efficiency
+- **Cross-Platform**: Supports Windows, macOS, and Linux
+- **Visual Output**: Graphical representation of truss structures and deformed shapes
+
+## Requirements
+
+- CMake 3.16 or higher
+- Qt6 (Qt6Core, Qt6Widgets, Qt6Charts)
+- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
+- Eigen3 library for matrix operations
+
+## Building from Source
+
+### macOS
+```bash
+# Install dependencies using Homebrew
+brew install cmake qt6 eigen
+
+# Clone the repository
+git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
+cd 2D-Truss-Analysis-cpp
+
+# Create build directory
+mkdir build && cd build
+
+# Configure and build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc)
+```
+
+### Linux (Ubuntu/Debian)
+```bash
+# Install dependencies
+sudo apt update
+sudo apt install cmake qt6-base-dev qt6-charts-dev libeigen3-dev build-essential
+
+# Clone and build (same as macOS)
+git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
+cd 2D-Truss-Analysis-cpp
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+make -j$(nproc)
+```
+
+### Windows
+```cmd
+# Install Qt6 and CMake from their official websites
+# Or use vcpkg for dependencies
+
+git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
+cd 2D-Truss-Analysis-cpp
+mkdir build && cd build
+cmake -DCMAKE_BUILD_TYPE=Release ..
+cmake --build . --config Release
+```
+
+## Usage
+
+### GUI Application
+Run the GUI version:
+```bash
+./TrussAnalysisGUI  # On Unix systems
+# or
+TrussAnalysisGUI.exe  # On Windows
+```
+
+### Command Line Interface
+Run the CLI version:
+```bash
+./TrussAnalysisCLI input_file.json
+```
+
+## Related Projects
+
+- [2D Truss Analysis (Python)](https://github.com/blackbird410/2D_Truss_Analysis) - Original Python implementation
