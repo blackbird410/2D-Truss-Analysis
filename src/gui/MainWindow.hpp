@@ -251,11 +251,13 @@ private:
     void updateDisplacementsTable();
     void updateForcesTable();
     void updateReactionsTable();
+    void updateStiffnessTable();
     void updateSummary();
     
     QTableWidget* m_displacementsTable;
     QTableWidget* m_forcesTable;
     QTableWidget* m_reactionsTable;
+    QTableWidget* m_stiffnessTable;
     QTextEdit* m_summaryText;
     
     friend class MainWindow;
