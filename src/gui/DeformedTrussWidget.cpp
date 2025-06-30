@@ -34,9 +34,9 @@ DeformedTrussWidget::DeformedTrussWidget(QWidget* parent)
 }
 
 void DeformedTrussWidget::setupControls() {
-    // Create compact floating control panel
+    // Create optimized floating control panel
     auto* controlPanel = new QWidget(this);
-    controlPanel->setFixedSize(240, 180);
+    controlPanel->setFixedSize(280, 220);
     controlPanel->setStyleSheet(
         "QWidget#controlPanel { "
         "  background-color: rgba(45, 45, 45, 240); "
@@ -93,8 +93,9 @@ void DeformedTrussWidget::setupControls() {
         "  margin: -3px 0; "
         "} "
         "QComboBox { "
-        "  font-size: 10px; "
-        "  padding: 2px; "
+        "  font-size: 11px; "
+        "  padding: 4px 8px; "
+        "  min-height: 20px; "
         "  background-color: rgba(70, 70, 70, 200); "
         "  color: white; "
         "  border: 1px solid gray; "
@@ -103,8 +104,22 @@ void DeformedTrussWidget::setupControls() {
         "QComboBox::drop-down { "
         "  subcontrol-origin: padding; "
         "  subcontrol-position: top right; "
-        "  width: 15px; "
+        "  width: 20px; "
         "  border-left: 1px solid gray; "
+        "  border-top-right-radius: 3px; "
+        "  border-bottom-right-radius: 3px; "
+        "} "
+        "QComboBox::down-arrow { "
+        "  image: none; "
+        "  border-left: 4px solid transparent; "
+        "  border-right: 4px solid transparent; "
+        "  border-top: 4px solid white; "
+        "} "
+        "QComboBox QAbstractItemView { "
+        "  background-color: rgba(60, 60, 60, 240); "
+        "  color: white; "
+        "  selection-background-color: #4CAF50; "
+        "  border: 1px solid gray; "
         "} "
         "QLabel { "
         "  color: #E0E0E0; "
@@ -115,8 +130,8 @@ void DeformedTrussWidget::setupControls() {
     controlPanel->setObjectName("controlPanel");
     
     auto* controlLayout = new QVBoxLayout(controlPanel);
-    controlLayout->setContentsMargins(8, 8, 8, 8);
-    controlLayout->setSpacing(4);
+    controlLayout->setContentsMargins(10, 10, 10, 10);
+    controlLayout->setSpacing(6);
     
     // Compact deformation scale control
     auto* scaleGroup = new QGroupBox("Scale", controlPanel);
@@ -180,6 +195,7 @@ void DeformedTrussWidget::setupControls() {
     displayLayout->addWidget(m_forcesCheckBox);
     displayLayout->addWidget(m_displacementsCheckBox);
     displayLayout->addWidget(m_reactionsCheckBox);
+    displayLayout->addSpacing(4);  // Add space before dropdown
     displayLayout->addWidget(m_forceVisualizationCombo);
     
     controlLayout->addWidget(scaleGroup);
