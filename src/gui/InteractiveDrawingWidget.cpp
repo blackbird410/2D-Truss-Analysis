@@ -1034,14 +1034,19 @@ void PropertyPanel::updateFromSelection() {
 
 void PropertyPanel::setupUI() {
     // Make panel more responsive to different screen sizes
-    setMinimumWidth(320);
+    setMinimumWidth(380);  // Increased from 320 to accommodate input fields
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     
     auto* layout = new QVBoxLayout(this);
+    layout->setContentsMargins(8, 8, 8, 8);
+    layout->setSpacing(8);
     
     // Material Group
     m_materialGroup = new QGroupBox("Material Properties", this);
     auto* materialLayout = new QGridLayout(m_materialGroup);
+    materialLayout->setContentsMargins(8, 8, 8, 8);
+    materialLayout->setHorizontalSpacing(8);
+    materialLayout->setVerticalSpacing(6);
     
     materialLayout->addWidget(new QLabel("Material:"), 0, 0);
     m_materialCombo = new QComboBox();
@@ -1076,11 +1081,18 @@ void PropertyPanel::setupUI() {
     m_yieldStrengthSpin->setAccessibleDescription("Material yield strength in megapascals");
     materialLayout->addWidget(m_yieldStrengthSpin, 3, 1);
     
+    // Set column stretch to give more space to input widgets
+    materialLayout->setColumnStretch(0, 0);  // Labels don't stretch
+    materialLayout->setColumnStretch(1, 1);  // Input widgets get available space
+    
     layout->addWidget(m_materialGroup);
     
     // Section Group
     m_sectionGroup = new QGroupBox("Section Properties", this);
     auto* sectionLayout = new QGridLayout(m_sectionGroup);
+    sectionLayout->setContentsMargins(8, 8, 8, 8);
+    sectionLayout->setHorizontalSpacing(8);
+    sectionLayout->setVerticalSpacing(6);
     
     sectionLayout->addWidget(new QLabel("Section:"), 0, 0);
     m_sectionCombo = new QComboBox();
@@ -1097,11 +1109,18 @@ void PropertyPanel::setupUI() {
     m_areaSpin->setAccessibleDescription("Cross-sectional area in square centimeters");
     sectionLayout->addWidget(m_areaSpin, 1, 1);
     
+    // Set column stretch for section layout
+    sectionLayout->setColumnStretch(0, 0);  // Labels don't stretch
+    sectionLayout->setColumnStretch(1, 1);  // Input widgets get available space
+    
     layout->addWidget(m_sectionGroup);
     
     // Node Properties Group
     m_nodeGroup = new QGroupBox("Node Properties", this);
     auto* nodeLayout = new QGridLayout(m_nodeGroup);
+    nodeLayout->setContentsMargins(8, 8, 8, 8);
+    nodeLayout->setHorizontalSpacing(8);
+    nodeLayout->setVerticalSpacing(6);
     
     nodeLayout->addWidget(new QLabel("X Position (m):"), 0, 0);
     m_nodeXSpin = new QDoubleSpinBox();
@@ -1128,12 +1147,19 @@ void PropertyPanel::setupUI() {
     m_supportCombo->setAccessibleDescription("Support boundary condition for selected node");
     nodeLayout->addWidget(m_supportCombo, 2, 1);
     
+    // Set column stretch for node layout
+    nodeLayout->setColumnStretch(0, 0);  // Labels don't stretch
+    nodeLayout->setColumnStretch(1, 1);  // Input widgets get available space
+    
     m_nodeGroup->setEnabled(false);
     layout->addWidget(m_nodeGroup);
     
     // Load Properties Group
     m_loadGroup = new QGroupBox("Applied Loads", this);
     auto* loadLayout = new QGridLayout(m_loadGroup);
+    loadLayout->setContentsMargins(8, 8, 8, 8);
+    loadLayout->setHorizontalSpacing(8);
+    loadLayout->setVerticalSpacing(6);
     
     loadLayout->addWidget(new QLabel("Force X (kN):"), 0, 0);
     m_forceXSpin = new QDoubleSpinBox();
@@ -1153,10 +1179,32 @@ void PropertyPanel::setupUI() {
     m_forceYSpin->setAccessibleDescription("Applied vertical force in kilonewtons");
     loadLayout->addWidget(m_forceYSpin, 1, 1);
     
+    // Set column stretch for load layout
+    loadLayout->setColumnStretch(0, 0);  // Labels don't stretch
+    loadLayout->setColumnStretch(1, 1);  // Input widgets get available space
+    
     m_loadGroup->setEnabled(false);
     layout->addWidget(m_loadGroup);
     
     layout->addStretch();
+    
+    // Set all input widgets to have proper sizing policies
+    auto setInputWidgetProperties = [](QWidget* widget) {
+        widget->setMinimumWidth(140);
+        widget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+    };
+    
+    setInputWidgetProperties(m_materialCombo);
+    setInputWidgetProperties(m_youngModulusSpin);
+    setInputWidgetProperties(m_densitySpin);
+    setInputWidgetProperties(m_yieldStrengthSpin);
+    setInputWidgetProperties(m_sectionCombo);
+    setInputWidgetProperties(m_areaSpin);
+    setInputWidgetProperties(m_nodeXSpin);
+    setInputWidgetProperties(m_nodeYSpin);
+    setInputWidgetProperties(m_supportCombo);
+    setInputWidgetProperties(m_forceXSpin);
+    setInputWidgetProperties(m_forceYSpin);
     
     // Connect signals
     connect(m_materialCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
