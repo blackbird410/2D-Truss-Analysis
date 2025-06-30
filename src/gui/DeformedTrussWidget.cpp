@@ -488,7 +488,7 @@ void DeformedTrussWidget::drawSupportReactions(QPainter& painter) {
     for (const auto& node : m_truss->getNodes()) {
         if (node->getSupportType() == truss::core::SupportType::Free) continue;
         
-        auto reactions = node->getResults().reaction;
+        auto reactions = node->getReaction();
         QPointF pos = worldToScreen(getDeformedPosition(node.get()));
         
         // Draw reaction forces as arrows
