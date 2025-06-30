@@ -389,7 +389,7 @@ void DrawingCanvas::drawSupports(QPainter& painter) {
     if (!m_truss) return;
     
     const auto& nodes = m_truss->getNodes();
-    painter.setPen(m_supportPen);
+    painter.setPen(QPen(m_supportPen.color(), 2));
     painter.setBrush(QBrush(m_supportPen.color()));
     
     for (const auto& node : nodes) {
@@ -399,28 +399,51 @@ void DrawingCanvas::drawSupports(QPainter& painter) {
         
         switch (node->getSupportType()) {
             case truss::core::SupportType::Pinned: {
-                // Draw triangle
+                // Draw triangle below the node
                 QVector<QPoint> triangle;
-                triangle << nodePos + QPoint(-10, 10)
-                        << nodePos + QPoint(10, 10)
-                        << nodePos;
+                triangle << nodePos + QPoint(-8, NODE_RADIUS + 2)
+                        << nodePos + QPoint(8, NODE_RADIUS + 2)
+                        << nodePos + QPoint(0, NODE_RADIUS + 12);
                 painter.drawPolygon(triangle);
+                // Draw hatching for fixed support
+                painter.setPen(QPen(m_supportPen.color(), 1));
+                for (int i = -6; i <= 6; i += 3) {
+                    painter.drawLine(nodePos + QPoint(i, NODE_RADIUS + 12), 
+                                   nodePos + QPoint(i + 2, NODE_RADIUS + 16));
+                }
+                painter.setPen(QPen(m_supportPen.color(), 2));
                 break;
             }
             
             case truss::core::SupportType::RollerX: {
-                // Draw circle
-                painter.drawEllipse(nodePos + QPoint(-8, 2), 16, 16);
+                // Draw circle below the node
+                painter.drawEllipse(nodePos + QPoint(-6, NODE_RADIUS + 2), 12, 12);
                 // Draw ground line
-                painter.drawLine(nodePos + QPoint(-12, 18), nodePos + QPoint(12, 18));
+                painter.drawLine(nodePos + QPoint(-10, NODE_RADIUS + 16), 
+                               nodePos + QPoint(10, NODE_RADIUS + 16));
+                // Draw hatching
+                painter.setPen(QPen(m_supportPen.color(), 1));
+                for (int i = -8; i <= 8; i += 3) {
+                    painter.drawLine(nodePos + QPoint(i, NODE_RADIUS + 16), 
+                                   nodePos + QPoint(i + 2, NODE_RADIUS + 20));
+                }
+                painter.setPen(QPen(m_supportPen.color(), 2));
                 break;
             }
             
             case truss::core::SupportType::RollerY: {
-                // Draw circle to the side
-                painter.drawEllipse(nodePos + QPoint(-18, -8), 16, 16);
+                // Draw circle to the left of the node
+                painter.drawEllipse(nodePos + QPoint(-NODE_RADIUS - 14, -6), 12, 12);
                 // Draw ground line
-                painter.drawLine(nodePos + QPoint(-18, -12), nodePos + QPoint(-18, 12));
+                painter.drawLine(nodePos + QPoint(-NODE_RADIUS - 16, -10), 
+                               nodePos + QPoint(-NODE_RADIUS - 16, 10));
+                // Draw hatching
+                painter.setPen(QPen(m_supportPen.color(), 1));
+                for (int i = -8; i <= 8; i += 3) {
+                    painter.drawLine(nodePos + QPoint(-NODE_RADIUS - 16, i), 
+                                   nodePos + QPoint(-NODE_RADIUS - 20, i + 2));
+                }
+                painter.setPen(QPen(m_supportPen.color(), 2));
                 break;
             }
             

@@ -202,7 +202,7 @@ private:
     static constexpr double MIN_SCALE = 10.0;
     static constexpr double MAX_SCALE = 1000.0;
     static constexpr double GRID_SPACING_DEFAULT = 1.0; // meters
-    static constexpr int NODE_RADIUS = 6;
+    static constexpr int NODE_RADIUS = 4;
     static constexpr int SELECTION_TOLERANCE = 10;
     
     // Visual elements
