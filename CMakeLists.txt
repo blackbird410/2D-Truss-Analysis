@@ -22,6 +22,10 @@ endif()
 find_package(Eigen3 REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 
+# Enable testing
+include(CTest)
+enable_testing()
+
 # Enable Qt6 automatic MOC, UIC, and RCC
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -69,6 +73,68 @@ add_executable(TrussAnalysisCLI
 target_link_libraries(TrussAnalysisCLI PRIVATE
     TrussCore
 )
+
+# ============================================================================
+# UNIT TESTS CONFIGURATION
+# ============================================================================
+
+if(BUILD_TESTING)
+    message(STATUS "Building unit tests")
+    
+    # Create a function to add unit tests
+    function(add_unit_test TEST_NAME TEST_SOURCE)
+        add_executable(${TEST_NAME} ${TEST_SOURCE})
+        target_link_libraries(${TEST_NAME} PRIVATE TrussCore)
+        target_include_directories(${TEST_NAME} PRIVATE
+            ${CMAKE_SOURCE_DIR}/tests
+            ${CMAKE_SOURCE_DIR}/src/core
+        )
+        target_compile_definitions(${TEST_NAME} PRIVATE DEBUG_TESTING)
+        
+        # Add as a CTest
+        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
+        
+        # Set test properties
+        set_tests_properties(${TEST_NAME} PROPERTIES
+            TIMEOUT 30
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        )
+    endfunction()
+    
+    # Add unit tests
+    add_unit_test(test_Integration tests/unit/test_Integration.cpp)
+    add_unit_test(test_Member tests/unit/test_Member.cpp)
+    add_unit_test(test_Truss tests/unit/test_Truss.cpp)
+    add_unit_test(test_Node tests/unit/test_Node.cpp)
+    add_unit_test(test_ConstraintDebug tests/unit/test_ConstraintDebug.cpp)
+    add_unit_test(test_DebugAnalysis tests/unit/test_DebugAnalysis.cpp)
+    add_unit_test(test_FreeSystemDebug tests/unit/test_FreeSystemDebug.cpp)
+    add_unit_test(test_ManualConstraints tests/unit/test_ManualConstraints.cpp)
+    add_unit_test(test_MemberDebug tests/unit/test_MemberDebug.cpp)
+    add_unit_test(test_MinimalAnalysis tests/unit/test_MinimalAnalysis.cpp)
+    add_unit_test(test_PointerAnalysis tests/unit/test_PointerAnalysis.cpp)
+    add_unit_test(test_SimpleIntegration tests/unit/test_SimpleIntegration.cpp)
+    add_unit_test(test_WorkingIntegration tests/unit/test_WorkingIntegration.cpp)
+    
+    # Add a custom target to run all tests
+    add_custom_target(run_tests
+        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --verbose
+        DEPENDS 
+            test_Integration test_Member test_Truss test_Node
+            test_ConstraintDebug test_DebugAnalysis test_FreeSystemDebug
+            test_ManualConstraints test_MemberDebug test_MinimalAnalysis
+            test_PointerAnalysis test_SimpleIntegration test_WorkingIntegration
+        COMMENT "Running all unit tests"
+    )
+    
+    # Add a custom target that uses our shell script
+    add_custom_target(run_shell_tests
+        COMMAND bash ${CMAKE_SOURCE_DIR}/tests/run_all_tests.sh
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Running unit tests with our custom test runner"
+    )
+    
+endif()
 
 # Set target properties for CLI executable
 set_target_properties(TrussAnalysisCLI PROPERTIES
