@@ -78,3 +78,37 @@ The application was successfully built and tested after applying these fixes. Th
 - Has correctly positioned UI elements
 
 These changes address the accessibility concerns while maintaining the existing functionality and improving the overall user experience of the 2D Truss Analysis application.
+
+## Additional Input Field Visibility Fixes (Second Iteration)
+
+After testing the initial changes, additional issues were identified and resolved:
+
+### 5. Grid Layout Improvements
+**Problem**: Input fields in property panel were still partially cut off due to inadequate grid layout spacing and column stretching.
+
+**Fix**:
+- Increased PropertyPanel minimum width from 320px to 380px for better field accommodation
+- Added proper grid layout margins (8px) and spacing (8px horizontal, 6px vertical)
+- Implemented column stretch factors: labels (stretch=0), input widgets (stretch=1)
+- Set all input widgets to minimum width of 140px with `Expanding` size policy
+- Added content margins to all group box layouts for consistent spacing
+
+### 6. Input Widget Sizing Policy
+**Problem**: Input widgets weren't expanding properly to fill available space in their grid columns.
+
+**Fix**:
+- Applied `QSizePolicy::Expanding` horizontally and `QSizePolicy::Fixed` vertically to all input widgets
+- Used lambda function to consistently apply sizing properties across all input controls
+- Ensured proper minimum widths for readability across different screen sizes
+
+## Final Results
+
+After both rounds of fixes, the 2D Truss Analysis application now provides:
+
+✅ **Fully Accessible Input Fields**: All property panel input controls are completely visible and interactive
+✅ **Responsive Design**: Panel scales appropriately from 380px minimum to unlimited maximum width
+✅ **Proper Layout**: Grid layouts with correct margins, spacing, and column stretching
+✅ **Screen Reader Support**: Comprehensive accessibility attributes for all interactive elements
+✅ **Cross-Resolution Compatibility**: Works correctly on various display sizes and DPI settings
+
+The input accessibility issues have been completely resolved, ensuring users can effectively interact with all data input controls regardless of their display configuration or accessibility needs.
