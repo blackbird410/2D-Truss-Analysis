@@ -99,7 +99,7 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 - **GUI Framework**: Qt6 (Core, Widgets, GUI)
 - **Linear Algebra**: Eigen3 library
 - **Build System**: CMake 3.20+
-- **Platform**: macOS with Apple Silicon support
+- **Platform**: Cross-platform (macOS, Linux)
 
 ## Requirements
 
@@ -125,6 +125,17 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 1. Right-click on the app → "Open"
 2. Click "Open" in the security dialog
 3. This only needs to be done once
+
+### Installation (Linux)
+
+**Recommended Method:**
+```bash
+./build_linux.sh && ./install_linux.sh
+```
+
+**Alternative Methods:**
+- See [INSTALL_LINUX.md](INSTALL_LINUX.md) for comprehensive guide
+- Manual build and install steps below
 
 ### Building from Source
 

@@ -109,8 +109,9 @@ install(TARGETS TrussAnalysisCLI TrussAnalysisGUI
     RUNTIME DESTINATION bin
 )
 
-# macOS Bundle settings
+# Platform-specific settings
 if(APPLE)
+    # macOS Bundle settings
     set_target_properties(TrussAnalysisGUI PROPERTIES
         MACOSX_BUNDLE TRUE
         MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist.in
@@ -143,6 +144,37 @@ if(APPLE)
     else()
         message(WARNING "codesign not found - applications will not be signed")
     endif()
+elseif(UNIX AND NOT APPLE)
+    # Linux-specific settings
+    message(STATUS "Configuring for Linux build")
+    
+    # Set RPATH for better library linking
+    set_target_properties(TrussAnalysisGUI PROPERTIES
+        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH ON
+    )
+    
+    set_target_properties(TrussAnalysisCLI PROPERTIES
+        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH ON
+    )
+    
+    # Strip debug symbols in release builds for smaller binaries
+    if(CMAKE_BUILD_TYPE STREQUAL "Release")
+        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
+            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
+            COMMENT "Stripping debug symbols from TrussAnalysisGUI"
+        )
+        
+        add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
+            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisCLI>"
+            COMMENT "Stripping debug symbols from TrussAnalysisCLI"
+        )
+    endif()
+    
+    message(STATUS "Linux optimizations enabled")
 endif()
 
 # CPack configuration for DMG creation
