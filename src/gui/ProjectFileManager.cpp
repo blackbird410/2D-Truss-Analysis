@@ -107,7 +107,6 @@ QJsonObject ProjectFileManager::trussToJson(const truss::core::Truss& truss) {
     
     // Basic properties
     trussJson["name"] = QString::fromStdString(truss.getName());
-    trussJson["description"] = QString::fromStdString(truss.getDescription());
     
     // Nodes
     QJsonArray nodesArray;
@@ -134,9 +133,6 @@ std::unique_ptr<truss::core::Truss> ProjectFileManager::jsonToTruss(const QJsonO
         if (json.contains("name")) {
             truss->setName(json["name"].toString().toStdString());
         }
-        if (json.contains("description")) {
-            truss->setDescription(json["description"].toString().toStdString());
-        }
         
         // Load nodes first
         std::map<truss::core::NodeId, std::shared_ptr<truss::core::Node>> nodeMap;
@@ -154,11 +150,12 @@ std::unique_ptr<truss::core::Truss> ProjectFileManager::jsonToTruss(const QJsonO
             // Set support conditions
             if (nodeJson.contains("supports")) {
                 QJsonObject supportsJson = nodeJson["supports"].toObject();
-                if (supportsJson["fixedX"].toBool()) {
-                    node->setSupport(truss::core::SupportType::FixedX);
-                }
-                if (supportsJson["fixedY"].toBool()) {
-                    node->setSupport(truss::core::SupportType::FixedY);
+                if (supportsJson["fixedX"].toBool() && supportsJson["fixedY"].toBool()) {
+                    node->setSupportType(truss::core::SupportType::Pinned);
+                } else if (supportsJson["fixedX"].toBool()) {
+                    node->setSupportType(truss::core::SupportType::PinnedX);
+                } else if (supportsJson["fixedY"].toBool()) {
+                    node->setSupportType(truss::core::SupportType::PinnedY);
                 }
             }
             
@@ -231,8 +228,8 @@ QJsonObject ProjectFileManager::nodeToJson(const truss::core::Node& node) {
     
     // Support conditions
     QJsonObject supportsJson;
-    supportsJson["fixedX"] = node.isFixedX();
-    supportsJson["fixedY"] = node.isFixedY();
+    supportsJson["fixedX"] = node.isConstrainedX();
+    supportsJson["fixedY"] = node.isConstrainedY();
     nodeJson["supports"] = supportsJson;
     
     // Applied forces

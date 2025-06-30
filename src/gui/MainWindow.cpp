@@ -18,6 +18,7 @@ MainWindow::MainWindow(QWidget* parent)
       m_drawingWidget(new InteractiveDrawingWidget(this)),
       m_resultsTabWidget(new QTabWidget(this)),
       m_resultsWidget(new ResultsWidget(this)),
+      m_deformedTrussWidget(new DeformedTrussWidget(this)),
       m_logTextEdit(new QTextEdit(this)),
       m_analyzeButton(new QPushButton("Analyze Structure", this)),
       m_clearButton(new QPushButton("Clear All", this)),
@@ -57,6 +58,7 @@ void MainWindow::setupUI() {
     
     // Setup results area
     m_resultsTabWidget->addTab(m_resultsWidget, "Analysis Results");
+    m_resultsTabWidget->addTab(m_deformedTrussWidget, "Deformed Structure");
     m_logTextEdit->setReadOnly(true);
     m_logTextEdit->setMaximumHeight(150);
     m_resultsTabWidget->addTab(m_logTextEdit, "Analysis Log");
@@ -361,15 +363,25 @@ void MainWindow::exportResults() {
 
 void MainWindow::showAbout() {
     QMessageBox::about(this, "About 2D Truss Analysis",
-        "<h3>2D Truss Analysis v2.0.0</h3>"
-        "<p>Professional structural analysis software for 2D truss structures.</p>"
-        "<p>Features:</p>"
+        "<h3>2D Truss Analysis v2.1.1</h3>"
+        "<p>Professional structural analysis software for 2D truss structures with advanced visualization capabilities.</p>"
+        "<p><b>New Features in v2.1.1:</b></p>"
         "<ul>"
-        "<li>Interactive drawing interface</li>"
-        "<li>Real-time coordinate feedback</li>"
+        "<li>Deformed structure visualization with interactive controls</li>"
+        "<li>Color-coded member force display (tension/compression)</li>"
+        "<li>Displacement vector arrows with configurable scaling</li>"
+        "<li>Support reaction force visualization</li>"
+        "<li>Complete project save/load functionality with JSON format</li>"
+        "<li>Member intersection detection and geometric analysis</li>"
+        "<li>Professional pan/zoom controls with grid overlay</li>"
+        "</ul>"
+        "<p><b>Core Features:</b></p>"
+        "<ul>"
+        "<li>Interactive drawing interface with real-time feedback</li>"
+        "<li>Advanced finite element analysis engine</li>"
         "<li>Material and section property management</li>"
-        "<li>Advanced finite element analysis</li>"
-        "<li>Comprehensive results visualization</li>"
+        "<li>Comprehensive results analysis and reporting</li>"
+        "<li>Professional-grade accuracy and performance</li>"
         "</ul>"
         "<p><b>© 2024 Civil Engineering Software Solutions</b></p>");
 }
@@ -391,6 +403,13 @@ void MainWindow::updateStatusMessage(const QString& message) {
 
 void MainWindow::updateResultsDisplay() {
     m_resultsWidget->updateResults();
+    
+    // Update deformed truss visualization
+    auto* truss = getTruss();
+    if (truss && m_hasResults) {
+        m_deformedTrussWidget->setTruss(truss);
+        m_deformedTrussWidget->setAnalysisResults(m_analysisEngine->getLastResults());
+    }
 }
 
 void MainWindow::showErrorMessage(const QString& message) {

@@ -35,6 +35,7 @@
 #include "Truss.hpp"
 #include "AnalysisEngine.hpp"
 #include "InteractiveDrawingWidget.hpp"
+#include "DeformedTrussWidget.hpp"
 
 namespace truss::gui {
 
@@ -96,6 +97,7 @@ private:
     // Results display
     QTabWidget* m_resultsTabWidget;
     ResultsWidget* m_resultsWidget;
+    DeformedTrussWidget* m_deformedTrussWidget;
     QTextEdit* m_logTextEdit;
     
     // Control buttons

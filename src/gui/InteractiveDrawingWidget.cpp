@@ -780,6 +780,17 @@ bool DrawingCanvas::isNearLine(const QPoint& point, const QPoint& lineStart,
 void DrawingCanvas::addNodeAtPosition(const truss::core::Point2D& position) {
     if (!m_truss) return;
     
+    // Check for duplicate coordinates
+    const auto& nodes = m_truss->getNodes();
+    for (const auto& existingNode : nodes) {
+        if (std::abs(existingNode->getX() - position.x) < 1e-6 && 
+            std::abs(existingNode->getY() - position.y) < 1e-6) {
+            emit statusMessage(QString("Cannot add node: A node already exists at coordinates (%1, %2)")
+                              .arg(position.x, 0, 'f', 3).arg(position.y, 0, 'f', 3));
+            return;
+        }
+    }
+    
     try {
         auto node = m_truss->addNode(position);
         emit trussModified();

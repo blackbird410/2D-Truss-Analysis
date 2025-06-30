@@ -121,18 +121,14 @@ void DeformedTrussWidget::setAnalysisResults(const truss::core::AnalysisResults&
     
     if (m_truss) {
         for (const auto& node : m_truss->getNodes()) {
-            if (node->hasResults()) {
-                auto displacement = node->getResults().displacement;
-                double totalDisp = std::sqrt(displacement.dx * displacement.dx + displacement.dy * displacement.dy);
-                m_maxDisplacement = std::max(m_maxDisplacement, totalDisp);
-            }
+            auto displacement = node->getResults().displacement;
+            double totalDisp = std::sqrt(displacement.x * displacement.x + displacement.y * displacement.y);
+            m_maxDisplacement = std::max(m_maxDisplacement, totalDisp);
         }
         
         for (const auto& member : m_truss->getMembers()) {
-            if (member->hasResults()) {
-                double force = std::abs(member->getResults().axialForce);
-                m_maxForce = std::max(m_maxForce, force);
-            }
+            double force = std::abs(member->getResults().axialForce);
+            m_maxForce = std::max(m_maxForce, force);
         }
     }
     
@@ -322,7 +318,6 @@ void DeformedTrussWidget::drawMemberForces(QPainter& painter) {
     if (m_maxForce <= 0) return;
     
     for (const auto& member : m_truss->getMembers()) {
-        if (!member->hasResults()) continue;
         
         double force = member->getResults().axialForce;
         QColor color = getMemberForceColor(force, m_maxForce);
@@ -353,10 +348,8 @@ void DeformedTrussWidget::drawDisplacementVectors(QPainter& painter) {
     painter.setBrush(Qt::blue);
     
     for (const auto& node : m_truss->getNodes()) {
-        if (!node->hasResults()) continue;
-        
         auto displacement = node->getResults().displacement;
-        if (std::abs(displacement.dx) < 1e-10 && std::abs(displacement.dy) < 1e-10) continue;
+        if (std::abs(displacement.x) < 1e-10 && std::abs(displacement.y) < 1e-10) continue;
         
         QPointF original(node->getX(), node->getY());
         QPointF displaced = getDeformedPosition(node.get());
@@ -389,9 +382,9 @@ void DeformedTrussWidget::drawSupportReactions(QPainter& painter) {
     painter.setBrush(Qt::magenta);
     
     for (const auto& node : m_truss->getNodes()) {
-        if (!node->hasResults() || node->getSupportType() == truss::core::SupportType::Free) continue;
+        if (node->getSupportType() == truss::core::SupportType::Free) continue;
         
-        auto reactions = node->getResults().reactions;
+        auto reactions = node->getResults().reaction;
         QPointF pos = worldToScreen(getDeformedPosition(node.get()));
         
         // Draw reaction forces as arrows
@@ -471,7 +464,7 @@ void DeformedTrussWidget::drawLegend(QPainter& painter) {
 QPointF DeformedTrussWidget::getDeformedPosition(const truss::core::Node* node) const {
     QPointF original(node->getX(), node->getY());
     
-    if (!node->hasResults() || m_maxDisplacement <= 0) {
+    if (m_maxDisplacement <= 0) {
         return original;
     }
     
@@ -485,8 +478,8 @@ QPointF DeformedTrussWidget::getDeformedPosition(const truss::core::Node* node) 
         scaleFactor *= std::min(structureSize * 0.1 / m_maxDisplacement, 100.0);
     }
     
-    return QPointF(original.x() + displacement.dx * scaleFactor,
-                   original.y() + displacement.dy * scaleFactor);
+    return QPointF(original.x() + displacement.x * scaleFactor,
+                   original.y() + displacement.y * scaleFactor);
 }
 
 QColor DeformedTrussWidget::getMemberForceColor(double force, double maxForce) const {
@@ -600,4 +593,3 @@ void DeformedTrussWidget::resizeEvent(QResizeEvent* event) {
 
 } // namespace truss::gui
 
-#include "DeformedTrussWidget.moc"
