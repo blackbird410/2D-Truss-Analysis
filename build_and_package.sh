@@ -49,11 +49,19 @@ fi
 echo "📦 Creating DMG package..."
 make package
 
+# Fix code signature that gets corrupted during packaging
+echo "🔧 Fixing code signature in packaged app..."
+if [ -d "TrussAnalysisGUI.app" ]; then
+    echo "🔐 Re-signing app bundle..."
+    codesign --force --deep --sign - TrussAnalysisGUI.app
+    echo "✅ Code signature fixed"
+fi
+
 # Move DMG to parent directory
-if [ -f "2D_Truss_Analysis-2.0.0-Darwin.dmg" ]; then
-    cp "2D_Truss_Analysis-2.0.0-Darwin.dmg" ../
-    echo "✅ DMG created successfully: 2D_Truss_Analysis-2.0.0-Darwin.dmg"
-    echo "📊 DMG size: $(du -h ../2D_Truss_Analysis-2.0.0-Darwin.dmg | cut -f1)"
+if [ -f "2D_Truss_Analysis-2.1.0-Darwin.dmg" ]; then
+    cp "2D_Truss_Analysis-2.1.0-Darwin.dmg" ../
+    echo "✅ DMG created successfully: 2D_Truss_Analysis-2.1.0-Darwin.dmg"
+    echo "📊 DMG size: $(du -h ../2D_Truss_Analysis-2.1.0-Darwin.dmg | cut -f1)"
 else
     echo "❌ DMG creation failed"
     exit 1
@@ -63,5 +71,5 @@ cd ..
 
 echo ""
 echo "🎉 Build and packaging completed successfully!"
-echo "📦 Distributable DMG: 2D_Truss_Analysis-2.0.0-Darwin.dmg"
+echo "📦 Distributable DMG: 2D_Truss_Analysis-2.1.0-Darwin.dmg"
 echo "🚀 The application is ready for distribution."
