@@ -27,7 +27,28 @@ jobs:
           cmake \
           build-essential \
           libeigen3-dev \
-          pkg-config
+          pkg-config \
+          qt6-base-dev \
+          qt6-tools-dev \
+          qt6-tools-dev-tools \
+          qt6-charts-dev \
+          libgl1-mesa-dev \
+          libxkbcommon-dev \
+          libfontconfig1-dev \
+          libfreetype6-dev \
+          libx11-dev \
+          libxext-dev \
+          libxfixes-dev \
+          libxi-dev \
+          libxrender-dev \
+          libxcb1-dev \
+          libx11-xcb-dev \
+          libxcb-glx0-dev
+    
+    - name: Clean build directory
+      run: |
+        rm -rf build
+        mkdir -p build
     
     - name: Configure CMake
       run: |
@@ -76,6 +97,7 @@ jobs:
     
     - name: Configure for clang-tidy
       run: |
+        rm -rf build
         mkdir -p build
         cd build
         cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
@@ -113,6 +135,7 @@ jobs:
     
     - name: Build Release
       run: |
+        rm -rf build
         mkdir -p build
         cd build
         cmake .. -DCMAKE_BUILD_TYPE=Release

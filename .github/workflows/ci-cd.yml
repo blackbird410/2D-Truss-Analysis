@@ -75,6 +75,7 @@ jobs:
           qt6-base-dev \
           qt6-tools-dev \
           qt6-tools-dev-tools \
+          qt6-charts-dev \
           libeigen3-dev \
           ninja-build \
           desktop-file-utils \
@@ -114,6 +115,11 @@ jobs:
         vcpkgDirectory: ${{ github.workspace }}/vcpkg
         vcpkgGitCommitId: 2024.04.26
         vcpkgJsonGlob: vcpkg.json
+
+    - name: Clean build directory
+      run: |
+        rm -rf build
+        mkdir -p build
 
     - name: Configure CMake (Linux/macOS)
       if: runner.os != 'Windows'
@@ -230,6 +236,7 @@ jobs:
 
     - name: Run static analysis
       run: |
+        rm -rf build
         cmake -B build -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
         find src -name "*.cpp" -exec clang-tidy {} -p build \; || echo "Static analysis completed"
 
@@ -302,6 +309,7 @@ jobs:
 
     - name: Build with benchmarks
       run: |
+        rm -rf build
         cmake -B build -DCMAKE_BUILD_TYPE=Release -DBUILD_BENCHMARKS=ON
         cmake --build build --parallel
 
