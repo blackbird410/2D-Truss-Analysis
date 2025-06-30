@@ -9,6 +9,7 @@
 #include <QtWidgets/QMessageBox>
 #include <QtGui/QPixmap>
 #include <QtCore/QStandardPaths>
+#include <QtGui/QResizeEvent>
 #include <cmath>
 
 namespace truss::gui {
@@ -725,6 +726,31 @@ void DrawingCanvas::updateViewport() {
     update();
 }
 
+void DrawingCanvas::resizeEvent(QResizeEvent* event) {
+    QWidget::resizeEvent(event);
+    
+    // Update viewport after resize
+    updateViewport();
+    
+    // Optionally adjust view when window is resized significantly
+    QSize oldSize = event->oldSize();
+    QSize newSize = event->size();
+    
+    // If this is not the initial resize and the size change is significant
+    if (oldSize.isValid() && oldSize != newSize) {
+        double widthRatio = static_cast<double>(newSize.width()) / oldSize.width();
+        double heightRatio = static_cast<double>(newSize.height()) / oldSize.height();
+        
+        // If the window was significantly resized, consider adjusting the view
+        // This prevents the drawing from appearing too small or too large after resize
+        if (std::abs(widthRatio - 1.0) > 0.2 || std::abs(heightRatio - 1.0) > 0.2) {
+            // Optionally adjust scale to maintain reasonable view
+            // For now, we'll just update the viewport and let the user manually adjust
+            update();
+        }
+    }
+}
+
 void DrawingCanvas::updateCursorPosition(const QPoint& pos) {
     m_currentMouseWorld = screenToWorld(pos);
     emit coordinatesChanged(m_currentMouseWorld.x, m_currentMouseWorld.y);
@@ -1007,8 +1033,9 @@ void PropertyPanel::updateFromSelection() {
 }
 
 void PropertyPanel::setupUI() {
-    setMaximumWidth(300);
-    setMinimumWidth(250);
+    // Make panel more responsive to different screen sizes
+    setMinimumWidth(320);
+    setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     
     auto* layout = new QVBoxLayout(this);
     
@@ -1018,6 +1045,8 @@ void PropertyPanel::setupUI() {
     
     materialLayout->addWidget(new QLabel("Material:"), 0, 0);
     m_materialCombo = new QComboBox();
+    m_materialCombo->setAccessibleName("Material Selection");
+    m_materialCombo->setAccessibleDescription("Select material type for structural members");
     materialLayout->addWidget(m_materialCombo, 0, 1);
     
     materialLayout->addWidget(new QLabel("Young's Modulus (GPa):"), 1, 0);
@@ -1025,6 +1054,8 @@ void PropertyPanel::setupUI() {
     m_youngModulusSpin->setRange(1, 1000);
     m_youngModulusSpin->setSuffix(" GPa");
     m_youngModulusSpin->setValue(200);
+    m_youngModulusSpin->setAccessibleName("Young's Modulus");
+    m_youngModulusSpin->setAccessibleDescription("Material elastic modulus in gigapascals");
     materialLayout->addWidget(m_youngModulusSpin, 1, 1);
     
     materialLayout->addWidget(new QLabel("Density (kg/m³):"), 2, 0);
@@ -1032,6 +1063,8 @@ void PropertyPanel::setupUI() {
     m_densitySpin->setRange(100, 20000);
     m_densitySpin->setSuffix(" kg/m³");
     m_densitySpin->setValue(7850);
+    m_densitySpin->setAccessibleName("Material Density");
+    m_densitySpin->setAccessibleDescription("Material density in kilograms per cubic meter");
     materialLayout->addWidget(m_densitySpin, 2, 1);
     
     materialLayout->addWidget(new QLabel("Yield Strength (MPa):"), 3, 0);
@@ -1039,6 +1072,8 @@ void PropertyPanel::setupUI() {
     m_yieldStrengthSpin->setRange(10, 2000);
     m_yieldStrengthSpin->setSuffix(" MPa");
     m_yieldStrengthSpin->setValue(250);
+    m_yieldStrengthSpin->setAccessibleName("Yield Strength");
+    m_yieldStrengthSpin->setAccessibleDescription("Material yield strength in megapascals");
     materialLayout->addWidget(m_yieldStrengthSpin, 3, 1);
     
     layout->addWidget(m_materialGroup);
@@ -1049,6 +1084,8 @@ void PropertyPanel::setupUI() {
     
     sectionLayout->addWidget(new QLabel("Section:"), 0, 0);
     m_sectionCombo = new QComboBox();
+    m_sectionCombo->setAccessibleName("Section Selection");
+    m_sectionCombo->setAccessibleDescription("Select cross-sectional area for structural members");
     sectionLayout->addWidget(m_sectionCombo, 0, 1);
     
     sectionLayout->addWidget(new QLabel("Area (cm²):"), 1, 0);
@@ -1056,7 +1093,9 @@ void PropertyPanel::setupUI() {
     m_areaSpin->setRange(0.1, 1000);
     m_areaSpin->setSuffix(" cm²");
     m_areaSpin->setValue(20);
-    materialLayout->addWidget(m_areaSpin, 1, 1);
+    m_areaSpin->setAccessibleName("Cross-sectional Area");
+    m_areaSpin->setAccessibleDescription("Cross-sectional area in square centimeters");
+    sectionLayout->addWidget(m_areaSpin, 1, 1);
     
     layout->addWidget(m_sectionGroup);
     
@@ -1069,6 +1108,8 @@ void PropertyPanel::setupUI() {
     m_nodeXSpin->setRange(-1000, 1000);
     m_nodeXSpin->setSuffix(" m");
     m_nodeXSpin->setDecimals(3);
+    m_nodeXSpin->setAccessibleName("Node X Position");
+    m_nodeXSpin->setAccessibleDescription("Horizontal position of selected node in meters");
     nodeLayout->addWidget(m_nodeXSpin, 0, 1);
     
     nodeLayout->addWidget(new QLabel("Y Position (m):"), 1, 0);
@@ -1076,11 +1117,15 @@ void PropertyPanel::setupUI() {
     m_nodeYSpin->setRange(-1000, 1000);
     m_nodeYSpin->setSuffix(" m");
     m_nodeYSpin->setDecimals(3);
+    m_nodeYSpin->setAccessibleName("Node Y Position");
+    m_nodeYSpin->setAccessibleDescription("Vertical position of selected node in meters");
     nodeLayout->addWidget(m_nodeYSpin, 1, 1);
     
     nodeLayout->addWidget(new QLabel("Support Type:"), 2, 0);
     m_supportCombo = new QComboBox();
     m_supportCombo->addItems({"Free", "Pinned", "Roller X", "Roller Y"});
+    m_supportCombo->setAccessibleName("Support Type");
+    m_supportCombo->setAccessibleDescription("Support boundary condition for selected node");
     nodeLayout->addWidget(m_supportCombo, 2, 1);
     
     m_nodeGroup->setEnabled(false);
@@ -1095,6 +1140,8 @@ void PropertyPanel::setupUI() {
     m_forceXSpin->setRange(-10000, 10000);
     m_forceXSpin->setSuffix(" kN");
     m_forceXSpin->setDecimals(2);
+    m_forceXSpin->setAccessibleName("Horizontal Force");
+    m_forceXSpin->setAccessibleDescription("Applied horizontal force in kilonewtons");
     loadLayout->addWidget(m_forceXSpin, 0, 1);
     
     loadLayout->addWidget(new QLabel("Force Y (kN):"), 1, 0);
@@ -1102,6 +1149,8 @@ void PropertyPanel::setupUI() {
     m_forceYSpin->setRange(-10000, 10000);
     m_forceYSpin->setSuffix(" kN");
     m_forceYSpin->setDecimals(2);
+    m_forceYSpin->setAccessibleName("Vertical Force");
+    m_forceYSpin->setAccessibleDescription("Applied vertical force in kilonewtons");
     loadLayout->addWidget(m_forceYSpin, 1, 1);
     
     m_loadGroup->setEnabled(false);
@@ -1305,8 +1354,11 @@ void InteractiveDrawingWidget::setupUI() {
     m_propertyPanel->setDrawingCanvas(m_canvas);
     m_mainSplitter->addWidget(m_propertyPanel);
     
-    // Set splitter sizes
-    m_mainSplitter->setSizes({800, 300});
+    // Set splitter sizes responsively based on parent size
+    // Use proportional sizing instead of fixed values
+    m_mainSplitter->setStretchFactor(0, 3);  // Canvas gets 75% of space
+    m_mainSplitter->setStretchFactor(1, 1);  // Properties gets 25% of space
+    m_mainSplitter->setSizes({1200, 400});   // Initial hint sizes for better defaults
     m_mainSplitter->setCollapsible(1, false);
     
     // Status bar
