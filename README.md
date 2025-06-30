@@ -225,6 +225,8 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 
 ## 🆔 Version History
 
+- **v2.2.0** (2025-06-30): Cross-platform production release with CI/CD
+- **v2.1.3** (2025-06-30): Code signing integration and macOS fixes
 - **v2.1.1** (2025-06-30): Production release with all critical fixes
 - **v2.1.0** (2025-06-30): Interactive drawing widget implementation
 - **v2.0.0** (2025-06-29): Major GUI redesign and Qt6 migration

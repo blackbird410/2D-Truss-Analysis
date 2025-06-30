@@ -1,0 +1,14 @@
+[Desktop Entry]
+Version=1.0
+Type=Application
+Name=2D Truss Analysis
+GenericName=Structural Analysis Software
+Comment=Professional 2D truss structural analysis software
+Icon=com.civilengsoft.TrussAnalysis
+Exec=TrussAnalysisGUI %F
+Terminal=false
+Categories=Engineering;Education;Science;
+StartupNotify=true
+MimeType=application/x-truss-project;
+Keywords=truss;structural;analysis;engineering;civil;mechanics;
+StartupWMClass=TrussAnalysisGUI

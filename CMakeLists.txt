@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(TrussAnalysis VERSION 2.1.3 LANGUAGES CXX)
+project(TrussAnalysis VERSION 2.2.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -175,6 +175,45 @@ elseif(UNIX AND NOT APPLE)
     endif()
     
     message(STATUS "Linux optimizations enabled")
+elseif(WIN32)
+    # Windows-specific settings
+    message(STATUS "Configuring for Windows build")
+    
+    # Set Windows-specific properties
+    set_target_properties(TrussAnalysisGUI PROPERTIES
+        WIN32_EXECUTABLE TRUE
+        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+    )
+    
+    # Enable modern Windows features
+    target_compile_definitions(TrussAnalysisGUI PRIVATE
+        WIN32_LEAN_AND_MEAN
+        NOMINMAX
+        _WIN32_WINNT=0x0A00  # Windows 10
+    )
+    
+    target_compile_definitions(TrussAnalysisCLI PRIVATE
+        WIN32_LEAN_AND_MEAN
+        NOMINMAX
+        _WIN32_WINNT=0x0A00  # Windows 10
+    )
+    
+    # Set up proper DLL copying for Qt
+    if(Qt6_FOUND)
+        # Find Qt6 installation path
+        get_target_property(QT6_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
+        get_filename_component(QT6_WINDEPLOYQT_EXECUTABLE ${QT6_QMAKE_EXECUTABLE} PATH)
+        set(QT6_WINDEPLOYQT_EXECUTABLE "${QT6_WINDEPLOYQT_EXECUTABLE}/windeployqt.exe")
+        
+        if(EXISTS ${QT6_WINDEPLOYQT_EXECUTABLE})
+            # Deploy Qt libraries after build
+            add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
+                COMMAND ${QT6_WINDEPLOYQT_EXECUTABLE} --debug --compiler-runtime $<TARGET_FILE:TrussAnalysisGUI>
+                COMMENT "Deploying Qt libraries for TrussAnalysisGUI")
+        endif()
+    endif()
+    
+    message(STATUS "Windows optimizations enabled")
 endif()
 
 # CPack configuration for DMG creation
