@@ -36,7 +36,7 @@ Write-Host ""
 $BuildDir = "build_windows"
 $VcpkgDir = "$env:USERPROFILE\vcpkg"
 
-Write-ColorOutput $Blue "🔧 Build Configuration:"
+Write-ColorOutput $Blue " Build Configuration:"
 Write-ColorOutput $Blue "   • Build Type: $BuildType"
 Write-ColorOutput $Blue "   • Generator: $Generator"
 Write-ColorOutput $Blue "   • Build Directory: $BuildDir"
@@ -50,7 +50,7 @@ function Test-Command($Command) {
 }
 
 # Check dependencies
-Write-ColorOutput $Blue "🔍 Checking dependencies..."
+Write-ColorOutput $Blue " Checking dependencies..."
 
 $MissingDeps = @()
 
@@ -79,12 +79,12 @@ if ($MissingDeps.Count -gt 0) {
         Write-ColorOutput $Red "   • $dep"
     }
     Write-Host ""
-    Write-ColorOutput $Yellow "📦 To install dependencies:"
+    Write-ColorOutput $Yellow " To install dependencies:"
     Write-ColorOutput $Yellow "   1. Install Visual Studio 2022 with C++ workload"
     Write-ColorOutput $Yellow "   2. Install CMake from https://cmake.org/download/"
     Write-ColorOutput $Yellow "   3. Install Git from https://git-scm.com/download/win"
     Write-Host ""
-    Write-ColorOutput $Yellow "📦 Or use package managers:"
+    Write-ColorOutput $Yellow " Or use package managers:"
     Write-ColorOutput $Yellow "   # Using Chocolatey"
     Write-ColorOutput $Yellow "   choco install cmake git visualstudio2022buildtools --package-parameters '--add Microsoft.VisualStudio.Workload.VCTools'"
     Write-Host ""
@@ -94,12 +94,12 @@ if ($MissingDeps.Count -gt 0) {
     exit 1
 }
 
-Write-ColorOutput $Green "✅ All dependencies found"
+Write-ColorOutput $Green " All dependencies found"
 Write-Host ""
 
 # Setup vcpkg if requested
 if ($UseVcpkg) {
-    Write-ColorOutput $Blue "📦 Setting up vcpkg..."
+    Write-ColorOutput $Blue " Setting up vcpkg..."
     
     if (-not (Test-Path $VcpkgDir)) {
         Write-ColorOutput $Blue "   Cloning vcpkg..."
@@ -133,7 +133,7 @@ if ($UseVcpkg) {
         }
     }
     
-    Write-ColorOutput $Green "✅ vcpkg setup complete"
+    Write-ColorOutput $Green " vcpkg setup complete"
     Write-Host ""
 }
 
@@ -175,14 +175,14 @@ if ($LASTEXITCODE -ne 0) {
 }
 
 # Verify build
-Write-ColorOutput $Blue "🔍 Verifying build..."
+Write-ColorOutput $Blue " Verifying build..."
 
 $GuiExe = ".\$BuildType\TrussAnalysisGUI.exe"
 $CliExe = ".\$BuildType\TrussAnalysisCLI.exe"
 
 if (Test-Path $GuiExe) {
     $GuiSize = (Get-Item $GuiExe).Length / 1MB
-    Write-ColorOutput $Green "✅ GUI executable built successfully"
+    Write-ColorOutput $Green " GUI executable built successfully"
     Write-ColorOutput $Green "   Size: $($GuiSize.ToString('F1')) MB"
 } else {
     Write-ColorOutput $Red "❌ GUI executable not found"
@@ -190,7 +190,7 @@ if (Test-Path $GuiExe) {
 
 if (Test-Path $CliExe) {
     $CliSize = (Get-Item $CliExe).Length / 1MB
-    Write-ColorOutput $Green "✅ CLI executable built successfully"
+    Write-ColorOutput $Green " CLI executable built successfully"
     Write-ColorOutput $Green "   Size: $($CliSize.ToString('F1')) MB"
 } else {
     Write-ColorOutput $Red "❌ CLI executable not found"
@@ -204,9 +204,9 @@ if (-not $SkipTests) {
         Write-ColorOutput $Blue "   Testing CLI..."
         $TestProcess = Start-Process -FilePath $CliExe -ArgumentList "--help" -NoNewWindow -PassThru -Wait
         if ($TestProcess.ExitCode -eq 0 -or $TestProcess.ExitCode -eq $null) {
-            Write-ColorOutput $Green "   ✅ CLI test passed"
+            Write-ColorOutput $Green "    CLI test passed"
         } else {
-            Write-ColorOutput $Yellow "   ⚠️  CLI test completed with exit code $($TestProcess.ExitCode)"
+            Write-ColorOutput $Yellow "     CLI test completed with exit code $($TestProcess.ExitCode)"
         }
     }
     
@@ -214,32 +214,32 @@ if (-not $SkipTests) {
         Write-ColorOutput $Blue "   Testing GUI (basic load)..."
         $TestProcess = Start-Process -FilePath $GuiExe -ArgumentList "--version" -NoNewWindow -PassThru -Wait -TimeoutSec 10
         if ($TestProcess.HasExited) {
-            Write-ColorOutput $Green "   ✅ GUI test passed"
+            Write-ColorOutput $Green "    GUI test passed"
         } else {
             $TestProcess.Kill()
-            Write-ColorOutput $Green "   ✅ GUI launched successfully (killed after timeout)"
+            Write-ColorOutput $Green "    GUI launched successfully (killed after timeout)"
         }
     }
 }
 
 # Create install package
-Write-ColorOutput $Blue "📦 Creating install package..."
+Write-ColorOutput $Blue " Creating install package..."
 & cmake --build . --target package --config $BuildType
 if ($LASTEXITCODE -eq 0) {
-    Write-ColorOutput $Green "✅ Package created successfully"
+    Write-ColorOutput $Green " Package created successfully"
 } else {
-    Write-ColorOutput $Yellow "⚠️  Package creation failed (CPack may not be configured)"
+    Write-ColorOutput $Yellow "  Package creation failed (CPack may not be configured)"
 }
 
 Write-Host ""
-Write-ColorOutput $Green "🎉 Windows build completed successfully!"
+Write-ColorOutput $Green " Windows build completed successfully!"
 Write-ColorOutput $Green "📍 Build location: $(Get-Location)"
 Write-Host ""
-Write-ColorOutput $Blue "🚀 To run the applications:"
+Write-ColorOutput $Blue " To run the applications:"
 Write-ColorOutput $Blue "   • GUI: .\$BuildType\TrussAnalysisGUI.exe"
 Write-ColorOutput $Blue "   • CLI: .\$BuildType\TrussAnalysisCLI.exe --help"
 Write-Host ""
-Write-ColorOutput $Blue "🔧 To create installer:"
+Write-ColorOutput $Blue " To create installer:"
 Write-ColorOutput $Blue "   cmake --build . --target package --config $BuildType"
 Write-Host ""
 

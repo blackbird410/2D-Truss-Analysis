@@ -20,7 +20,7 @@ echo
 
 # Check if we're on a supported system
 if [[ "$OSTYPE" != "linux-gnu"* ]]; then
-    echo -e "${YELLOW}⚠️  Warning: This script is designed for Linux systems${NC}"
+    echo -e "${YELLOW}  Warning: This script is designed for Linux systems${NC}"
     echo -e "${YELLOW}   Current OS: $OSTYPE${NC}"
     echo -e "${BLUE}ℹ️  For cross-compilation, use Docker or a Linux VM${NC}"
     echo
@@ -31,7 +31,7 @@ BUILD_TYPE=${1:-Release}
 BUILD_DIR="build_linux"
 JOBS=$(nproc 2>/dev/null || echo "4")
 
-echo -e "${BLUE}🔧 Build Configuration:${NC}"
+echo -e "${BLUE} Build Configuration:${NC}"
 echo -e "${BLUE}   • Build Type: $BUILD_TYPE${NC}"
 echo -e "${BLUE}   • Build Directory: $BUILD_DIR${NC}"
 echo -e "${BLUE}   • Parallel Jobs: $JOBS${NC}"
@@ -43,7 +43,7 @@ command_exists() {
 }
 
 # Check dependencies
-echo -e "${BLUE}🔍 Checking dependencies...${NC}"
+echo -e "${BLUE} Checking dependencies...${NC}"
 
 MISSING_DEPS=()
 
@@ -75,44 +75,44 @@ if [ ${#MISSING_DEPS[@]} -ne 0 ]; then
         echo -e "${RED}   • $dep${NC}"
     done
     echo
-    echo -e "${YELLOW}📦 To install dependencies on Ubuntu/Debian:${NC}"
+    echo -e "${YELLOW} To install dependencies on Ubuntu/Debian:${NC}"
     echo -e "${YELLOW}   sudo apt update${NC}"
     echo -e "${YELLOW}   sudo apt install cmake build-essential pkg-config qt6-base-dev qt6-charts-dev libeigen3-dev${NC}"
     echo
-    echo -e "${YELLOW}📦 To install dependencies on Fedora/RHEL:${NC}"
+    echo -e "${YELLOW} To install dependencies on Fedora/RHEL:${NC}"
     echo -e "${YELLOW}   sudo dnf install cmake gcc-c++ pkg-config qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel${NC}"
     echo
-    echo -e "${YELLOW}📦 To install dependencies on Arch Linux:${NC}"
+    echo -e "${YELLOW} To install dependencies on Arch Linux:${NC}"
     echo -e "${YELLOW}   sudo pacman -S cmake gcc pkg-config qt6-base qt6-charts eigen${NC}"
     echo
     exit 1
 fi
 
-echo -e "${GREEN}✅ All dependencies found${NC}"
+echo -e "${GREEN} All dependencies found${NC}"
 echo
 
 # Create build directory
-echo -e "${BLUE}📁 Creating build directory...${NC}"
+echo -e "${BLUE} Creating build directory...${NC}"
 rm -rf "$BUILD_DIR"
 mkdir -p "$BUILD_DIR"
 cd "$BUILD_DIR"
 
 # Configure with CMake
-echo -e "${BLUE}⚙️  Configuring with CMake...${NC}"
+echo -e "${BLUE}  Configuring with CMake...${NC}"
 cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
       -DCMAKE_INSTALL_PREFIX=/usr/local \
       -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
       ..
 
 # Build
-echo -e "${BLUE}🔨 Building application...${NC}"
+echo -e "${BLUE} Building application...${NC}"
 make -j"$JOBS"
 
 # Verify build
-echo -e "${BLUE}🔍 Verifying build...${NC}"
+echo -e "${BLUE} Verifying build...${NC}"
 
 if [ -f "TrussAnalysisGUI" ]; then
-    echo -e "${GREEN}✅ GUI executable built successfully${NC}"
+    echo -e "${GREEN} GUI executable built successfully${NC}"
     GUI_SIZE=$(du -sh TrussAnalysisGUI | cut -f1)
     echo -e "${GREEN}   Size: $GUI_SIZE${NC}"
 else
@@ -120,7 +120,7 @@ else
 fi
 
 if [ -f "TrussAnalysisCLI" ]; then
-    echo -e "${GREEN}✅ CLI executable built successfully${NC}"
+    echo -e "${GREEN} CLI executable built successfully${NC}"
     CLI_SIZE=$(du -sh TrussAnalysisCLI | cut -f1)
     echo -e "${GREEN}   Size: $CLI_SIZE${NC}"
 else
@@ -128,31 +128,31 @@ else
 fi
 
 # Test executables
-echo -e "${BLUE}🧪 Testing executables...${NC}"
+echo -e "${BLUE} Testing executables...${NC}"
 
 if [ -f "TrussAnalysisCLI" ]; then
     echo -e "${BLUE}   Testing CLI...${NC}"
-    timeout 5 ./TrussAnalysisCLI --help > /dev/null 2>&1 || echo -e "${GREEN}   ✅ CLI test passed${NC}"
+    timeout 5 ./TrussAnalysisCLI --help > /dev/null 2>&1 || echo -e "${GREEN}    CLI test passed${NC}"
 fi
 
 if [ -f "TrussAnalysisGUI" ]; then
     echo -e "${BLUE}   Testing GUI (basic load)...${NC}"
-    timeout 5 ./TrussAnalysisGUI --version > /dev/null 2>&1 || echo -e "${GREEN}   ✅ GUI test passed${NC}"
+    timeout 5 ./TrussAnalysisGUI --version > /dev/null 2>&1 || echo -e "${GREEN}    GUI test passed${NC}"
 fi
 
 # Create install package
-echo -e "${BLUE}📦 Creating install package...${NC}"
-make package 2>/dev/null || echo -e "${YELLOW}   ⚠️  Package creation not available (install CPack)${NC}"
+echo -e "${BLUE} Creating install package...${NC}"
+make package 2>/dev/null || echo -e "${YELLOW}     Package creation not available (install CPack)${NC}"
 
 echo
-echo -e "${GREEN}🎉 Linux build completed successfully!${NC}"
+echo -e "${GREEN} Linux build completed successfully!${NC}"
 echo -e "${GREEN}📍 Build location: $(pwd)${NC}"
 echo
-echo -e "${BLUE}🚀 To run the applications:${NC}"
+echo -e "${BLUE} To run the applications:${NC}"
 echo -e "${BLUE}   • GUI: ./$BUILD_DIR/TrussAnalysisGUI${NC}"
 echo -e "${BLUE}   • CLI: ./$BUILD_DIR/TrussAnalysisCLI --help${NC}"
 echo
-echo -e "${BLUE}🔧 To install system-wide:${NC}"
+echo -e "${BLUE} To install system-wide:${NC}"
 echo -e "${BLUE}   sudo make install${NC}"
 echo
 

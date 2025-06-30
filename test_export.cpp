@@ -68,14 +68,14 @@ int main() {
             std::cout << "Exporting to " << fileName << "... ";
             
             if (exporter.exportResults(truss, results, fileName, format, options)) {
-                std::cout << "✅ SUCCESS\n";
+                std::cout << " SUCCESS\n";
                 
                 // Check if file exists and has content
                 if (std::filesystem::exists(fileName)) {
                     auto fileSize = std::filesystem::file_size(fileName);
                     std::cout << "   File size: " << fileSize << " bytes\n";
                     if (fileSize == 0) {
-                        std::cout << "   ⚠️ WARNING: File is empty\n";
+                        std::cout << "    WARNING: File is empty\n";
                     }
                 } else {
                     std::cout << "   ❌ ERROR: File was not created\n";
@@ -90,7 +90,7 @@ int main() {
 
         std::cout << "\n=== Export Test Summary ===\n";
         if (allSuccessful) {
-            std::cout << "✅ All export formats tested successfully!\n";
+            std::cout << " All export formats tested successfully!\n";
             std::cout << "Generated files:\n";
             for (const auto& [fileName, format] : testFormats) {
                 if (std::filesystem::exists(fileName)) {
@@ -119,7 +119,7 @@ int main() {
             auto detectedFormat = ResultsExporter::detectFormat(fileName);
             std::cout << fileName << " -> ";
             if (detectedFormat == expectedFormat) {
-                std::cout << "✅ Correct\n";
+                std::cout << " Correct\n";
             } else {
                 std::cout << "❌ Wrong (expected " << static_cast<int>(expectedFormat) 
                           << ", got " << static_cast<int>(detectedFormat) << ")\n";
@@ -135,7 +135,7 @@ int main() {
 
         std::cout << "\n=== Final Result ===\n";
         if (allSuccessful) {
-            std::cout << "🎉 ALL TESTS PASSED! Results export feature is working correctly.\n";
+            std::cout << " ALL TESTS PASSED! Results export feature is working correctly.\n";
             return 0;
         } else {
             std::cout << "❌ SOME TESTS FAILED! Check the output above for details.\n";

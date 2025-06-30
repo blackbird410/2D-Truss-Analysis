@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo "🔍 Verifying code signing status..."
+echo " Verifying code signing status..."
 echo "=================================="
 
 BUILD_DIR="build"
@@ -14,13 +14,13 @@ fi
 # Check GUI app signing
 GUI_APP="$BUILD_DIR/TrussAnalysisGUI.app"
 if [ -d "$GUI_APP" ]; then
-    echo "📱 TrussAnalysisGUI.app:"
+    echo " TrussAnalysisGUI.app:"
     codesign -dv --verbose=4 "$GUI_APP" 2>&1 | head -10
     echo ""
     
-    echo "🔐 Signature verification:"
+    echo " Signature verification:"
     if codesign --verify --deep --strict --verbose=2 "$GUI_APP" 2>&1; then
-        echo "✅ GUI app signature is valid"
+        echo " GUI app signature is valid"
     else
         echo "❌ GUI app signature verification failed"
     fi
@@ -32,13 +32,13 @@ fi
 # Check CLI executable signing
 CLI_EXE="$BUILD_DIR/TrussAnalysisCLI"
 if [ -f "$CLI_EXE" ]; then
-    echo "💻 TrussAnalysisCLI:"
+    echo " TrussAnalysisCLI:"
     codesign -dv --verbose=4 "$CLI_EXE" 2>&1 | head -10
     echo ""
     
-    echo "🔐 Signature verification:"
+    echo " Signature verification:"
     if codesign --verify --deep --strict --verbose=2 "$CLI_EXE" 2>&1; then
-        echo "✅ CLI executable signature is valid"
+        echo " CLI executable signature is valid"
     else
         echo "❌ CLI executable signature verification failed"
     fi
@@ -48,10 +48,10 @@ else
 fi
 
 # Check Gatekeeper status
-echo "🛡️  Gatekeeper Assessment:"
+echo "  Gatekeeper Assessment:"
 if [ -d "$GUI_APP" ]; then
     spctl --assess --type exec --verbose "$GUI_APP" 2>&1 || echo "ℹ️  Note: Ad-hoc signed apps will be rejected by Gatekeeper but can run locally"
 fi
 
 echo ""
-echo "✅ Code signing verification complete"
+echo " Code signing verification complete"

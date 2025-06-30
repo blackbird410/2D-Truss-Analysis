@@ -11,7 +11,7 @@ The application was crashing with a **Code Signature Invalid** error when launch
 
 ## Solutions Provided
 
-### 1. 🔧 Ad-hoc Signing (Local Development)
+### 1.  Ad-hoc Signing (Local Development)
 
 **Best for**: Development, testing, and local distribution
 
@@ -44,7 +44,7 @@ The application was crashing with a **Code Signature Invalid** error when launch
 ./sign_app.sh
 ```
 
-### 3. 🏗️ Automated Build with Signing
+### 3.  Automated Build with Signing
 
 **Script**: `./build_and_package.sh`
 
@@ -61,9 +61,9 @@ The application was crashing with a **Code Signature Invalid** error when launch
 
 ## Current Status
 
-✅ **FIXED**: The application now runs successfully with ad-hoc signing
-✅ **TESTED**: GUI launches and computational core works correctly
-✅ **PACKAGED**: DMG includes properly signed application
+ **FIXED**: The application now runs successfully with ad-hoc signing
+ **TESTED**: GUI launches and computational core works correctly
+ **PACKAGED**: DMG includes properly signed application
 
 ## Distribution Options
 

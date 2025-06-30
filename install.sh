@@ -84,7 +84,7 @@ done
 BUILD_DIR="build"
 JOBS=$(nproc 2>/dev/null || echo "4")
 
-echo -e "${BLUE}🔧 Configuration:${NC}"
+echo -e "${BLUE} Configuration:${NC}"
 echo -e "${BLUE}   • Build Type: $BUILD_TYPE${NC}"
 echo -e "${BLUE}   • Build Directory: $BUILD_DIR${NC}"
 echo -e "${BLUE}   • Install Prefix: $INSTALL_PREFIX${NC}"
@@ -94,7 +94,7 @@ echo
 
 # Check if we're on a supported system
 if [[ "$OSTYPE" != "linux-gnu"* ]]; then
-    echo -e "${YELLOW}⚠️  Warning: This script is designed for Linux systems${NC}"
+    echo -e "${YELLOW}  Warning: This script is designed for Linux systems${NC}"
     echo -e "${YELLOW}   Current OS: $OSTYPE${NC}"
     echo -e "${BLUE}ℹ️  For cross-compilation, use Docker or a Linux VM${NC}"
     echo
@@ -106,7 +106,7 @@ command_exists() {
 }
 
 # Check dependencies
-echo -e "${BLUE}🔍 Checking dependencies...${NC}"
+echo -e "${BLUE} Checking dependencies...${NC}"
 
 MISSING_DEPS=()
 
@@ -138,20 +138,20 @@ if [ ${#MISSING_DEPS[@]} -ne 0 ]; then
         echo -e "${RED}   • $dep${NC}"
     done
     echo
-    echo -e "${YELLOW}📦 To install dependencies on Ubuntu/Debian:${NC}"
+    echo -e "${YELLOW} To install dependencies on Ubuntu/Debian:${NC}"
     echo -e "${YELLOW}   sudo apt update${NC}"
     echo -e "${YELLOW}   sudo apt install cmake build-essential pkg-config qt6-base-dev qt6-charts-dev libeigen3-dev${NC}"
     echo
-    echo -e "${YELLOW}📦 To install dependencies on Fedora/RHEL:${NC}"
+    echo -e "${YELLOW} To install dependencies on Fedora/RHEL:${NC}"
     echo -e "${YELLOW}   sudo dnf install cmake gcc-c++ pkg-config qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel${NC}"
     echo
-    echo -e "${YELLOW}📦 To install dependencies on Arch Linux:${NC}"
+    echo -e "${YELLOW} To install dependencies on Arch Linux:${NC}"
     echo -e "${YELLOW}   sudo pacman -S cmake gcc pkg-config qt6-base qt6-charts eigen${NC}"
     echo
     exit 1
 fi
 
-echo -e "${GREEN}✅ All dependencies found${NC}"
+echo -e "${GREEN} All dependencies found${NC}"
 echo
 
 # Check if we need to build or if we can skip
@@ -159,15 +159,15 @@ NEED_BUILD=true
 
 if [ "$FORCE_BUILD" = false ] && [ -d "$BUILD_DIR" ]; then
     if [ -f "$BUILD_DIR/TrussAnalysisGUI" ] && [ -f "$BUILD_DIR/TrussAnalysisCLI" ]; then
-        echo -e "${CYAN}🔍 Found existing build, checking if rebuild is needed...${NC}"
+        echo -e "${CYAN} Found existing build, checking if rebuild is needed...${NC}"
         
         # Check if source files are newer than executables
         NEWEST_SOURCE=$(find . -name "*.cpp" -o -name "*.hpp" -o -name "*.h" -o -name "CMakeLists.txt" | xargs ls -t | head -n1)
         
         if [ "$NEWEST_SOURCE" -nt "$BUILD_DIR/TrussAnalysisGUI" ]; then
-            echo -e "${YELLOW}⚠️  Source files newer than build, rebuilding...${NC}"
+            echo -e "${YELLOW}  Source files newer than build, rebuilding...${NC}"
         else
-            echo -e "${GREEN}✅ Existing build is up to date${NC}"
+            echo -e "${GREEN} Existing build is up to date${NC}"
             NEED_BUILD=false
         fi
     fi
@@ -175,11 +175,11 @@ fi
 
 # Build phase
 if [ "$NEED_BUILD" = true ]; then
-    echo -e "${BLUE}🏗️  Starting build process...${NC}"
+    echo -e "${BLUE}  Starting build process...${NC}"
     echo
     
     # Create build directory
-    echo -e "${BLUE}📁 Preparing build directory...${NC}"
+    echo -e "${BLUE} Preparing build directory...${NC}"
     if [ "$FORCE_BUILD" = true ]; then
         rm -rf "$BUILD_DIR"
     fi
@@ -187,21 +187,21 @@ if [ "$NEED_BUILD" = true ]; then
     cd "$BUILD_DIR"
     
     # Configure with CMake
-    echo -e "${BLUE}⚙️  Configuring with CMake...${NC}"
+    echo -e "${BLUE}  Configuring with CMake...${NC}"
     cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
           -DCMAKE_INSTALL_PREFIX="$INSTALL_PREFIX" \
           -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
           ..
     
     # Build
-    echo -e "${BLUE}🔨 Building application...${NC}"
+    echo -e "${BLUE} Building application...${NC}"
     make -j"$JOBS"
     
     # Verify build
-    echo -e "${BLUE}🔍 Verifying build...${NC}"
+    echo -e "${BLUE} Verifying build...${NC}"
     
     if [ -f "TrussAnalysisGUI" ]; then
-        echo -e "${GREEN}✅ GUI executable built successfully${NC}"
+        echo -e "${GREEN} GUI executable built successfully${NC}"
         GUI_SIZE=$(du -sh TrussAnalysisGUI | cut -f1)
         echo -e "${GREEN}   Size: $GUI_SIZE${NC}"
     else
@@ -210,7 +210,7 @@ if [ "$NEED_BUILD" = true ]; then
     fi
     
     if [ -f "TrussAnalysisCLI" ]; then
-        echo -e "${GREEN}✅ CLI executable built successfully${NC}"
+        echo -e "${GREEN} CLI executable built successfully${NC}"
         CLI_SIZE=$(du -sh TrussAnalysisCLI | cut -f1)
         echo -e "${GREEN}   Size: $CLI_SIZE${NC}"
     else
@@ -220,21 +220,21 @@ if [ "$NEED_BUILD" = true ]; then
     
     # Test executables
     if [ "$SKIP_TESTS" = false ]; then
-        echo -e "${BLUE}🧪 Testing executables...${NC}"
+        echo -e "${BLUE} Testing executables...${NC}"
         
         if [ -f "TrussAnalysisCLI" ]; then
             echo -e "${BLUE}   Testing CLI...${NC}"
-            timeout 5 ./TrussAnalysisCLI --help > /dev/null 2>&1 || echo -e "${GREEN}   ✅ CLI test passed${NC}"
+            timeout 5 ./TrussAnalysisCLI --help > /dev/null 2>&1 || echo -e "${GREEN}    CLI test passed${NC}"
         fi
         
         if [ -f "TrussAnalysisGUI" ]; then
             echo -e "${BLUE}   Testing GUI (basic load)...${NC}"
-            timeout 5 ./TrussAnalysisGUI --version > /dev/null 2>&1 || echo -e "${GREEN}   ✅ GUI test passed${NC}"
+            timeout 5 ./TrussAnalysisGUI --version > /dev/null 2>&1 || echo -e "${GREEN}    GUI test passed${NC}"
         fi
     fi
     
     cd ..
-    echo -e "${GREEN}🎉 Build completed successfully!${NC}"
+    echo -e "${GREEN} Build completed successfully!${NC}"
     echo
 else
     echo -e "${CYAN}⏭️  Skipping build (using existing executables)${NC}"
@@ -242,7 +242,7 @@ else
 fi
 
 # Installation phase
-echo -e "${BLUE}🚀 Starting installation process...${NC}"
+echo -e "${BLUE} Starting installation process...${NC}"
 echo
 
 # Configuration for installation
@@ -253,7 +253,7 @@ ICON_DIR="$HOME/.local/share/icons"
 NEED_SUDO=false
 if [[ "$INSTALL_PREFIX" == "/usr"* ]] && [[ "$INSTALL_PREFIX" != "$HOME"* ]]; then
     NEED_SUDO=true
-    echo -e "${YELLOW}⚠️  System-wide installation requires sudo privileges${NC}"
+    echo -e "${YELLOW}  System-wide installation requires sudo privileges${NC}"
 fi
 
 # Function to run command with or without sudo
@@ -269,7 +269,7 @@ run_cmd() {
 cd "$BUILD_DIR"
 
 # Install executables
-echo -e "${BLUE}📋 Installing executables...${NC}"
+echo -e "${BLUE} Installing executables...${NC}"
 
 BIN_DIR="$INSTALL_PREFIX/bin"
 run_cmd mkdir -p "$BIN_DIR"
@@ -280,7 +280,7 @@ run_cmd cp TrussAnalysisCLI "$BIN_DIR/"
 run_cmd chmod +x "$BIN_DIR/TrussAnalysisGUI"
 run_cmd chmod +x "$BIN_DIR/TrussAnalysisCLI"
 
-echo -e "${GREEN}✅ Executables installed to $BIN_DIR${NC}"
+echo -e "${GREEN} Executables installed to $BIN_DIR${NC}"
 
 # Create desktop file for GUI application
 echo -e "${BLUE}🖥️  Creating desktop entry...${NC}"
@@ -304,10 +304,10 @@ EOF
 
 chmod +x "$DESKTOP_FILE_DIR/trussanalysis.desktop"
 
-echo -e "${GREEN}✅ Desktop entry created${NC}"
+echo -e "${GREEN} Desktop entry created${NC}"
 
 # Create application icon
-echo -e "${BLUE}🎨 Creating application icon...${NC}"
+echo -e "${BLUE} Creating application icon...${NC}"
 
 mkdir -p "$ICON_DIR"
 
@@ -332,17 +332,17 @@ cat > "$ICON_DIR/trussanalysis.svg" << 'EOF'
 </svg>
 EOF
 
-echo -e "${GREEN}✅ Application icon created${NC}"
+echo -e "${GREEN} Application icon created${NC}"
 
 # Update desktop database
 if command_exists update-desktop-database; then
-    echo -e "${BLUE}🔄 Updating desktop database...${NC}"
+    echo -e "${BLUE} Updating desktop database...${NC}"
     update-desktop-database "$DESKTOP_FILE_DIR" 2>/dev/null || true
-    echo -e "${GREEN}✅ Desktop database updated${NC}"
+    echo -e "${GREEN} Desktop database updated${NC}"
 fi
 
 # Create man pages
-echo -e "${BLUE}📖 Installing man pages...${NC}"
+echo -e "${BLUE} Installing man pages...${NC}"
 
 MAN_DIR="$INSTALL_PREFIX/share/man/man1"
 run_cmd mkdir -p "$MAN_DIR"
@@ -410,10 +410,10 @@ EOF
 run_cmd cp /tmp/trussanalysiscli.1 "$MAN_DIR/"
 rm /tmp/trussanalysiscli.1
 
-echo -e "${GREEN}✅ Man pages installed${NC}"
+echo -e "${GREEN} Man pages installed${NC}"
 
 # Test installation
-echo -e "${BLUE}🧪 Testing installation...${NC}"
+echo -e "${BLUE} Testing installation...${NC}"
 
 # Add bin directory to PATH for testing if it's not already there
 if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
@@ -421,28 +421,28 @@ if [[ ":$PATH:" != *":$BIN_DIR:"* ]]; then
 fi
 
 if command_exists TrussAnalysisCLI; then
-    echo -e "${GREEN}✅ TrussAnalysisCLI available in PATH${NC}"
+    echo -e "${GREEN} TrussAnalysisCLI available in PATH${NC}"
 else
-    echo -e "${YELLOW}⚠️  TrussAnalysisCLI not in PATH - may need to restart shell or add $BIN_DIR to PATH${NC}"
+    echo -e "${YELLOW}  TrussAnalysisCLI not in PATH - may need to restart shell or add $BIN_DIR to PATH${NC}"
 fi
 
 if command_exists TrussAnalysisGUI; then
-    echo -e "${GREEN}✅ TrussAnalysisGUI available in PATH${NC}"
+    echo -e "${GREEN} TrussAnalysisGUI available in PATH${NC}"
 else
-    echo -e "${YELLOW}⚠️  TrussAnalysisGUI not in PATH - may need to restart shell or add $BIN_DIR to PATH${NC}"
+    echo -e "${YELLOW}  TrussAnalysisGUI not in PATH - may need to restart shell or add $BIN_DIR to PATH${NC}"
 fi
 
 cd ..
 
 echo
-echo -e "${GREEN}🎉 Installation completed successfully!${NC}"
+echo -e "${GREEN} Installation completed successfully!${NC}"
 echo
-echo -e "${BLUE}🚀 How to use:${NC}"
+echo -e "${BLUE} How to use:${NC}"
 echo -e "${BLUE}   • GUI Application: TrussAnalysisGUI${NC}"
 echo -e "${BLUE}   • Command Line: TrussAnalysisCLI --help${NC}"
 echo -e "${BLUE}   • Desktop: Search for '2D Truss Analysis' in applications${NC}"
 echo
-echo -e "${BLUE}📖 Documentation:${NC}"
+echo -e "${BLUE} Documentation:${NC}"
 echo -e "${BLUE}   • man TrussAnalysisGUI${NC}"
 echo -e "${BLUE}   • man TrussAnalysisCLI${NC}"
 echo
@@ -454,7 +454,7 @@ echo -e "${BLUE}   • Man Pages: $MAN_DIR${NC}"
 echo
 
 if [[ "$INSTALL_PREFIX" != "/usr"* ]] || [[ "$INSTALL_PREFIX" == "$HOME"* ]]; then
-    echo -e "${YELLOW}💡 Note: Since you installed to a custom location, you may need to add${NC}"
+    echo -e "${YELLOW} Note: Since you installed to a custom location, you may need to add${NC}"
     echo -e "${YELLOW}   '$BIN_DIR' to your PATH environment variable.${NC}"
     echo -e "${YELLOW}   Add this line to your ~/.bashrc or ~/.zshrc:${NC}"
     echo -e "${YELLOW}   export PATH=\"$BIN_DIR:\$PATH\"${NC}"

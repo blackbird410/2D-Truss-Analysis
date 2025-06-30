@@ -24,7 +24,7 @@ INSTALL_PREFIX="${1:-/usr/local}"
 DESKTOP_FILE_DIR="$HOME/.local/share/applications"
 ICON_DIR="$HOME/.local/share/icons"
 
-echo -e "${BLUE}🔧 Installation Configuration:${NC}"
+echo -e "${BLUE} Installation Configuration:${NC}"
 echo -e "${BLUE}   • Build Directory: $BUILD_DIR${NC}"
 echo -e "${BLUE}   • Install Prefix: $INSTALL_PREFIX${NC}"
 echo -e "${BLUE}   • Desktop Files: $DESKTOP_FILE_DIR${NC}"
@@ -34,13 +34,13 @@ echo
 NEED_SUDO=false
 if [[ "$INSTALL_PREFIX" == "/usr"* ]]; then
     NEED_SUDO=true
-    echo -e "${YELLOW}⚠️  System-wide installation requires sudo privileges${NC}"
+    echo -e "${YELLOW}  System-wide installation requires sudo privileges${NC}"
 fi
 
 # Check if build exists
 if [ ! -d "$BUILD_DIR" ]; then
     echo -e "${RED}❌ Build directory not found: $BUILD_DIR${NC}"
-    echo -e "${YELLOW}💡 Please run ./build_linux.sh first${NC}"
+    echo -e "${YELLOW} Please run ./build_linux.sh first${NC}"
     exit 1
 fi
 
@@ -49,11 +49,11 @@ cd "$BUILD_DIR"
 # Check if executables exist
 if [ ! -f "TrussAnalysisGUI" ] || [ ! -f "TrussAnalysisCLI" ]; then
     echo -e "${RED}❌ Built executables not found${NC}"
-    echo -e "${YELLOW}💡 Please run ./build_linux.sh first${NC}"
+    echo -e "${YELLOW} Please run ./build_linux.sh first${NC}"
     exit 1
 fi
 
-echo -e "${GREEN}✅ Found built executables${NC}"
+echo -e "${GREEN} Found built executables${NC}"
 
 # Function to run command with or without sudo
 run_cmd() {
@@ -65,7 +65,7 @@ run_cmd() {
 }
 
 # Install executables
-echo -e "${BLUE}📋 Installing executables...${NC}"
+echo -e "${BLUE} Installing executables...${NC}"
 
 BIN_DIR="$INSTALL_PREFIX/bin"
 run_cmd mkdir -p "$BIN_DIR"
@@ -76,7 +76,7 @@ run_cmd cp TrussAnalysisCLI "$BIN_DIR/"
 run_cmd chmod +x "$BIN_DIR/TrussAnalysisGUI"
 run_cmd chmod +x "$BIN_DIR/TrussAnalysisCLI"
 
-echo -e "${GREEN}✅ Executables installed to $BIN_DIR${NC}"
+echo -e "${GREEN} Executables installed to $BIN_DIR${NC}"
 
 # Create desktop file for GUI application
 echo -e "${BLUE}🖥️  Creating desktop entry...${NC}"
@@ -100,10 +100,10 @@ EOF
 
 chmod +x "$DESKTOP_FILE_DIR/trussanalysis.desktop"
 
-echo -e "${GREEN}✅ Desktop entry created${NC}"
+echo -e "${GREEN} Desktop entry created${NC}"
 
 # Create simple icon (text-based for now)
-echo -e "${BLUE}🎨 Creating application icon...${NC}"
+echo -e "${BLUE} Creating application icon...${NC}"
 
 mkdir -p "$ICON_DIR"
 
@@ -128,17 +128,17 @@ cat > "$ICON_DIR/trussanalysis.svg" << 'EOF'
 </svg>
 EOF
 
-echo -e "${GREEN}✅ Application icon created${NC}"
+echo -e "${GREEN} Application icon created${NC}"
 
 # Update desktop database
 if command -v update-desktop-database >/dev/null 2>&1; then
-    echo -e "${BLUE}🔄 Updating desktop database...${NC}"
+    echo -e "${BLUE} Updating desktop database...${NC}"
     update-desktop-database "$DESKTOP_FILE_DIR" 2>/dev/null || true
-    echo -e "${GREEN}✅ Desktop database updated${NC}"
+    echo -e "${GREEN} Desktop database updated${NC}"
 fi
 
 # Create man pages
-echo -e "${BLUE}📖 Installing man pages...${NC}"
+echo -e "${BLUE} Installing man pages...${NC}"
 
 MAN_DIR="$INSTALL_PREFIX/share/man/man1"
 run_cmd mkdir -p "$MAN_DIR"
@@ -206,34 +206,34 @@ EOF
 run_cmd cp /tmp/trussanalysiscli.1 "$MAN_DIR/"
 rm /tmp/trussanalysiscli.1
 
-echo -e "${GREEN}✅ Man pages installed${NC}"
+echo -e "${GREEN} Man pages installed${NC}"
 
 # Test installation
-echo -e "${BLUE}🧪 Testing installation...${NC}"
+echo -e "${BLUE} Testing installation...${NC}"
 
 if command -v TrussAnalysisCLI >/dev/null 2>&1; then
-    echo -e "${GREEN}✅ TrussAnalysisCLI available in PATH${NC}"
+    echo -e "${GREEN} TrussAnalysisCLI available in PATH${NC}"
 else
-    echo -e "${YELLOW}⚠️  TrussAnalysisCLI not in PATH - may need to restart shell${NC}"
+    echo -e "${YELLOW}  TrussAnalysisCLI not in PATH - may need to restart shell${NC}"
 fi
 
 if command -v TrussAnalysisGUI >/dev/null 2>&1; then
-    echo -e "${GREEN}✅ TrussAnalysisGUI available in PATH${NC}"
+    echo -e "${GREEN} TrussAnalysisGUI available in PATH${NC}"
 else
-    echo -e "${YELLOW}⚠️  TrussAnalysisGUI not in PATH - may need to restart shell${NC}"
+    echo -e "${YELLOW}  TrussAnalysisGUI not in PATH - may need to restart shell${NC}"
 fi
 
 cd ..
 
 echo
-echo -e "${GREEN}🎉 Linux installation completed successfully!${NC}"
+echo -e "${GREEN} Linux installation completed successfully!${NC}"
 echo
-echo -e "${BLUE}🚀 How to use:${NC}"
+echo -e "${BLUE} How to use:${NC}"
 echo -e "${BLUE}   • GUI Application: TrussAnalysisGUI${NC}"
 echo -e "${BLUE}   • Command Line: TrussAnalysisCLI --help${NC}"
 echo -e "${BLUE}   • Desktop: Search for '2D Truss Analysis' in applications${NC}"
 echo
-echo -e "${BLUE}📖 Documentation:${NC}"
+echo -e "${BLUE} Documentation:${NC}"
 echo -e "${BLUE}   • man TrussAnalysisGUI${NC}"
 echo -e "${BLUE}   • man TrussAnalysisCLI${NC}"
 echo

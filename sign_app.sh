@@ -7,7 +7,7 @@ APP_PATH="build_release/TrussAnalysisGUI.app"
 SIGNING_IDENTITY="Developer ID Application: Your Name (TEAM_ID)"
 ENTITLEMENTS_FILE="entitlements.plist"
 
-echo "🔐 Code Signing TrussAnalysisGUI..."
+echo " Code Signing TrussAnalysisGUI..."
 
 # Check if app exists
 if [ ! -d "$APP_PATH" ]; then
@@ -35,28 +35,28 @@ cat > "$ENTITLEMENTS_FILE" << EOF
 EOF
 
 # Sign all frameworks first
-echo "📝 Signing Qt frameworks..."
+echo " Signing Qt frameworks..."
 find "$APP_PATH/Contents/Frameworks" -name "*.framework" -exec codesign --force --verify --verbose --sign "$SIGNING_IDENTITY" {} \;
 
 # Sign all dylibs
-echo "📝 Signing dynamic libraries..."
+echo " Signing dynamic libraries..."
 find "$APP_PATH/Contents/Frameworks" -name "*.dylib" -exec codesign --force --verify --verbose --sign "$SIGNING_IDENTITY" {} \;
 
 # Sign the main executable
-echo "📝 Signing main executable..."
+echo " Signing main executable..."
 codesign --force --verify --verbose --sign "$SIGNING_IDENTITY" --entitlements "$ENTITLEMENTS_FILE" "$APP_PATH/Contents/MacOS/TrussAnalysisGUI"
 
 # Sign the app bundle
-echo "📝 Signing app bundle..."
+echo " Signing app bundle..."
 codesign --force --verify --verbose --sign "$SIGNING_IDENTITY" --entitlements "$ENTITLEMENTS_FILE" "$APP_PATH"
 
 # Verify the signature
-echo "🔍 Verifying signature..."
+echo " Verifying signature..."
 codesign --verify --deep --strict --verbose=2 "$APP_PATH"
 
 if [ $? -eq 0 ]; then
-    echo "✅ Code signing completed successfully!"
-    echo "🚀 App is now ready for distribution"
+    echo " Code signing completed successfully!"
+    echo " App is now ready for distribution"
 else
     echo "❌ Code signing failed!"
     exit 1
