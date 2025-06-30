@@ -25,6 +25,21 @@ make -j$(sysctl -n hw.ncpu)
 echo "📦 Bundling Qt dependencies..."
 if command -v macdeployqt &> /dev/null; then
     macdeployqt TrussAnalysisGUI.app
+    
+    # macdeployqt sometimes misses QtDBus - add it manually if missing
+    if [ ! -d "TrussAnalysisGUI.app/Contents/Frameworks/QtDBus.framework" ]; then
+        echo "⚠️  QtDBus framework missing, adding manually..."
+        QT_PATH=$(brew --prefix qt)/lib
+        if [ -d "$QT_PATH/QtDBus.framework" ]; then
+            cp -R "$QT_PATH/QtDBus.framework" TrussAnalysisGUI.app/Contents/Frameworks/
+            install_name_tool -id "@rpath/QtDBus.framework/Versions/A/QtDBus" \
+                TrussAnalysisGUI.app/Contents/Frameworks/QtDBus.framework/Versions/A/QtDBus
+            echo "✅ QtDBus framework added"
+        else
+            echo "⚠️  QtDBus framework not found in Qt installation"
+        fi
+    fi
+    
     echo "✅ Qt dependencies bundled successfully"
     
     # Apply ad-hoc signing after Qt deployment
