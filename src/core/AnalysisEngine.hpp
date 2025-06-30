@@ -32,8 +32,8 @@ struct AnalysisOptions {
  * @brief Complete analysis results for the truss system
  */
 struct AnalysisResults {
-    VectorXd displacements;                    ///< Global displacement vector
-    VectorXd reactions;                        ///< Support reaction forces
+    std::vector<Real> displacements;           ///< Global displacement vector
+    std::vector<Real> reactions;               ///< Support reaction forces
     std::vector<Real> memberForces;            ///< Member axial forces
     std::vector<Real> memberStresses;          ///< Member axial stresses
     std::vector<Real> utilizationRatios;       ///< Member utilization ratios
@@ -52,7 +52,90 @@ struct AnalysisResults {
     Real maxDisplacement{0.0};               ///< Maximum displacement magnitude
     Real maxStress{0.0};                     ///< Maximum stress in any member
     
+    // Constructor
     AnalysisResults() = default;
+    
+    // Copy constructor
+    AnalysisResults(const AnalysisResults& other)
+        : displacements(other.displacements)
+        , reactions(other.reactions)
+        , memberForces(other.memberForces)
+        , memberStresses(other.memberStresses)
+        , utilizationRatios(other.utilizationRatios)
+        , converged(other.converged)
+        , iterations(other.iterations)
+        , residualNorm(other.residualNorm)
+        , conditionNumber(other.conditionNumber)
+        , totalDofs(other.totalDofs)
+        , freeDofs(other.freeDofs)
+        , constrainedDofs(other.constrainedDofs)
+        , totalStrain(other.totalStrain)
+        , maxDisplacement(other.maxDisplacement)
+        , maxStress(other.maxStress) {}
+    
+    // Move constructor
+    AnalysisResults(AnalysisResults&& other) noexcept
+        : displacements(std::move(other.displacements))
+        , reactions(std::move(other.reactions))
+        , memberForces(std::move(other.memberForces))
+        , memberStresses(std::move(other.memberStresses))
+        , utilizationRatios(std::move(other.utilizationRatios))
+        , converged(other.converged)
+        , iterations(other.iterations)
+        , residualNorm(other.residualNorm)
+        , conditionNumber(other.conditionNumber)
+        , totalDofs(other.totalDofs)
+        , freeDofs(other.freeDofs)
+        , constrainedDofs(other.constrainedDofs)
+        , totalStrain(other.totalStrain)
+        , maxDisplacement(other.maxDisplacement)
+        , maxStress(other.maxStress) {}
+    
+    // Assignment operators
+    AnalysisResults& operator=(const AnalysisResults& other) {
+        if (this != &other) {
+            displacements = other.displacements;
+            reactions = other.reactions;
+            memberForces = other.memberForces;
+            memberStresses = other.memberStresses;
+            utilizationRatios = other.utilizationRatios;
+            converged = other.converged;
+            iterations = other.iterations;
+            residualNorm = other.residualNorm;
+            conditionNumber = other.conditionNumber;
+            totalDofs = other.totalDofs;
+            freeDofs = other.freeDofs;
+            constrainedDofs = other.constrainedDofs;
+            totalStrain = other.totalStrain;
+            maxDisplacement = other.maxDisplacement;
+            maxStress = other.maxStress;
+        }
+        return *this;
+    }
+    
+    AnalysisResults& operator=(AnalysisResults&& other) noexcept {
+        if (this != &other) {
+            displacements = std::move(other.displacements);
+            reactions = std::move(other.reactions);
+            memberForces = std::move(other.memberForces);
+            memberStresses = std::move(other.memberStresses);
+            utilizationRatios = std::move(other.utilizationRatios);
+            converged = other.converged;
+            iterations = other.iterations;
+            residualNorm = other.residualNorm;
+            conditionNumber = other.conditionNumber;
+            totalDofs = other.totalDofs;
+            freeDofs = other.freeDofs;
+            constrainedDofs = other.constrainedDofs;
+            totalStrain = other.totalStrain;
+            maxDisplacement = other.maxDisplacement;
+            maxStress = other.maxStress;
+        }
+        return *this;
+    }
+    
+    // Destructor
+    ~AnalysisResults() = default;
 };
 
 /**

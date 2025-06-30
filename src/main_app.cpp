@@ -114,8 +114,8 @@ void runExampleAnalysis(bool verbose = false) {
         for (size_t i = 0; i < nodes.size(); ++i) {
             Index dofX = nodes[i]->getDofX();
             Index dofY = nodes[i]->getDofY();
-            Real dispX = results.displacements(dofX) * 1000; // mm
-            Real dispY = results.displacements(dofY) * 1000; // mm
+            Real dispX = results.displacements[dofX] * 1000; // mm
+            Real dispY = results.displacements[dofY] * 1000; // mm
             
             std::cout << "  Node " << (i+1) 
                      << ": (" << dispX << ", " << dispY << ") mm\n";
