@@ -136,3 +136,61 @@ coverage.xml
 *.cover
 .hypothesis/
 .pytest_cache/
+
+# Additional macOS specific
+.Trashes
+ehthumbs.db
+
+# Qt Creator project files
+*.pro.user*
+*.qws
+*.autosave
+
+# JetBrains IDEs
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Visual Studio Code
+.vscode/
+*.code-workspace
+.history/
+
+# Vim
+*.swp
+*.swo
+*~
+.netrwhist
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# Build tools
+.ninja_deps
+.ninja_log
+build.ninja
+
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+
+# Package managers
+conan.lock
+conaninfo.txt
+conanbuildinfo.*
+
+# Memory and performance analysis
+*.memcheck
+*.valgrind
+*.dSYM/
