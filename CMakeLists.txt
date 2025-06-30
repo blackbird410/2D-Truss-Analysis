@@ -85,6 +85,7 @@ add_executable(TrussAnalysisGUI
     src/gui/DataTableWidget.cpp
     src/gui/ResultsWidget.cpp
     src/gui/PlotWidget.cpp
+    src/gui/InteractiveDrawingWidget.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
