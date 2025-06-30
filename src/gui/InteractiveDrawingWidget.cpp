@@ -7,6 +7,7 @@
 #include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
+#include <QtWidgets/QScrollArea>
 #include <QtGui/QPixmap>
 #include <QtCore/QStandardPaths>
 #include <QtGui/QResizeEvent>
@@ -400,11 +401,11 @@ void DrawingCanvas::drawSupports(QPainter& painter) {
         
         switch (node->getSupportType()) {
             case truss::core::SupportType::Pinned: {
-                // Draw triangle below the node
+                // Draw triangle below the node (pointing upward)
                 QVector<QPoint> triangle;
-                triangle << nodePos + QPoint(-8, NODE_RADIUS + 2)
-                        << nodePos + QPoint(8, NODE_RADIUS + 2)
-                        << nodePos + QPoint(0, NODE_RADIUS + 12);
+                triangle << nodePos + QPoint(-8, NODE_RADIUS + 12)
+                        << nodePos + QPoint(8, NODE_RADIUS + 12)
+                        << nodePos + QPoint(0, NODE_RADIUS + 2);
                 painter.drawPolygon(triangle);
                 // Draw hatching for fixed support
                 painter.setPen(QPen(m_supportPen.color(), 1));
@@ -1034,10 +1035,27 @@ void PropertyPanel::updateFromSelection() {
 
 void PropertyPanel::setupUI() {
     // Make panel more responsive to different screen sizes
-    setMinimumWidth(380);  // Increased from 320 to accommodate input fields
+    setMinimumWidth(400);  // Increased for better input field visibility
     setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Expanding);
     
-    auto* layout = new QVBoxLayout(this);
+    // Create main layout for the widget
+    auto* mainLayout = new QVBoxLayout(this);
+    mainLayout->setContentsMargins(0, 0, 0, 0);
+    mainLayout->setSpacing(0);
+    
+    // Create scroll area
+    auto* scrollArea = new QScrollArea(this);
+    scrollArea->setWidgetResizable(true);
+    scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+    scrollArea->setFrameStyle(QFrame::NoFrame);
+    
+    // Create content widget for scroll area
+    auto* contentWidget = new QWidget();
+    contentWidget->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::MinimumExpanding);
+    
+    // Create layout for content
+    auto* layout = new QVBoxLayout(contentWidget);
     layout->setContentsMargins(8, 8, 8, 8);
     layout->setSpacing(8);
     
@@ -1205,6 +1223,12 @@ void PropertyPanel::setupUI() {
     setInputWidgetProperties(m_supportCombo);
     setInputWidgetProperties(m_forceXSpin);
     setInputWidgetProperties(m_forceYSpin);
+    
+    // Set content widget as the scroll area's widget
+    scrollArea->setWidget(contentWidget);
+    
+    // Add scroll area to main layout
+    mainLayout->addWidget(scrollArea);
     
     // Connect signals
     connect(m_materialCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
