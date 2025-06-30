@@ -34,6 +34,7 @@
 
 #include "Truss.hpp"
 #include "AnalysisEngine.hpp"
+#include "InteractiveDrawingWidget.hpp"
 
 namespace truss::gui {
 
@@ -45,7 +46,7 @@ class ResultsWidget;
 class PlotWidget;
 
 /**
- * @brief Main application window
+ * @brief Main application window with interactive drawing interface
  */
 class MainWindow : public QMainWindow {
     Q_OBJECT
@@ -55,21 +56,23 @@ public:
     ~MainWindow() override = default;
     
     // Public accessors for widgets
-    truss::core::Truss* getTruss() const { return m_truss.get(); }
+    truss::core::Truss* getTruss() const;
     truss::core::AnalysisEngine* getAnalysisEngine() const { return m_analysisEngine.get(); }
     bool hasResults() const { return m_hasResults; }
     const truss::core::AnalysisResults& getLastResults() const { return m_analysisEngine->getLastResults(); }
 
 private slots:
-    void addNode();
-    void addMember();
-    void addLoad();
-    void showData();
     void analyze();
-    void showResults();
     void clearAll();
     void exitApplication();
-    void updatePlot();
+    void newProject();
+    void openProject();
+    void saveProject();
+    void saveProjectAs();
+    void exportResults();
+    void showAbout();
+    void onTrussModified();
+    void updateStatusMessage(const QString& message);
 
 private:
     void setupUI();
@@ -78,37 +81,35 @@ private:
     void setupStatusBar();
     void connectSignals();
     
-    void updateDataTable();
     void updateResultsDisplay();
     void showErrorMessage(const QString& message);
     void showInfoMessage(const QString& message);
+    void enableAnalysis(bool enable);
 
     // UI Components
     QWidget* m_centralWidget;
     QSplitter* m_mainSplitter;
-    QTabWidget* m_inputTabWidget;
     
-    // Input widgets
-    NodeInputWidget* m_nodeInputWidget;
-    MemberInputWidget* m_memberInputWidget;
-    LoadInputWidget* m_loadInputWidget;
-    DataTableWidget* m_dataTableWidget;
+    // Interactive drawing widget
+    InteractiveDrawingWidget* m_drawingWidget;
+    
+    // Results display
+    QTabWidget* m_resultsTabWidget;
     ResultsWidget* m_resultsWidget;
-    PlotWidget* m_plotWidget;
+    QTextEdit* m_logTextEdit;
     
     // Control buttons
     QPushButton* m_analyzeButton;
     QPushButton* m_clearButton;
-    QPushButton* m_exitButton;
     
     // Status display
     QLabel* m_statusLabel;
-    QTextEdit* m_logTextEdit;
+    QLabel* m_coordinateLabel;
     
     // Data model
-    std::unique_ptr<truss::core::Truss> m_truss;
     std::unique_ptr<truss::core::AnalysisEngine> m_analysisEngine;
     bool m_hasResults;
+    QString m_currentFileName;
 };
 
 /**
