@@ -38,6 +38,9 @@ struct AnalysisResults {
     std::vector<Real> memberStresses;          ///< Member axial stresses
     std::vector<Real> utilizationRatios;       ///< Member utilization ratios
     
+    // Stiffness matrix for display and analysis
+    std::vector<std::vector<Real>> stiffnessMatrix;  ///< Global stiffness matrix
+    
     // Analysis metadata
     bool converged{false};                     ///< Analysis convergence status
     int iterations{0};                         ///< Number of iterations performed
@@ -62,6 +65,7 @@ struct AnalysisResults {
         , memberForces(other.memberForces)
         , memberStresses(other.memberStresses)
         , utilizationRatios(other.utilizationRatios)
+        , stiffnessMatrix(other.stiffnessMatrix)
         , converged(other.converged)
         , iterations(other.iterations)
         , residualNorm(other.residualNorm)
@@ -80,6 +84,7 @@ struct AnalysisResults {
         , memberForces(std::move(other.memberForces))
         , memberStresses(std::move(other.memberStresses))
         , utilizationRatios(std::move(other.utilizationRatios))
+        , stiffnessMatrix(std::move(other.stiffnessMatrix))
         , converged(other.converged)
         , iterations(other.iterations)
         , residualNorm(other.residualNorm)
@@ -99,6 +104,7 @@ struct AnalysisResults {
             memberForces = other.memberForces;
             memberStresses = other.memberStresses;
             utilizationRatios = other.utilizationRatios;
+            stiffnessMatrix = other.stiffnessMatrix;
             converged = other.converged;
             iterations = other.iterations;
             residualNorm = other.residualNorm;
@@ -120,6 +126,7 @@ struct AnalysisResults {
             memberForces = std::move(other.memberForces);
             memberStresses = std::move(other.memberStresses);
             utilizationRatios = std::move(other.utilizationRatios);
+            stiffnessMatrix = std::move(other.stiffnessMatrix);
             converged = other.converged;
             iterations = other.iterations;
             residualNorm = other.residualNorm;

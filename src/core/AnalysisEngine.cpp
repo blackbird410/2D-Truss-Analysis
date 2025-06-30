@@ -62,6 +62,15 @@ AnalysisResults AnalysisEngine::analyze(Truss& truss) {
     }
     results.memberForces = memberForces;
     
+    // Store stiffness matrix
+    results.stiffnessMatrix.resize(K.rows());
+    for (int i = 0; i < K.rows(); ++i) {
+        results.stiffnessMatrix[i].resize(K.cols());
+        for (int j = 0; j < K.cols(); ++j) {
+            results.stiffnessMatrix[i][j] = K(i, j);
+        }
+    }
+    
     // Compute member stresses and utilization ratios
     const auto& members = truss.getMembers();
     results.memberStresses.resize(members.size());
