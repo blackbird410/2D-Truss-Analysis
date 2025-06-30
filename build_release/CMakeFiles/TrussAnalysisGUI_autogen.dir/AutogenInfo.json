@@ -474,9 +474,27 @@
 	"HEADERS" : 
 	[
 		[
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DeformedTrussWidget.hpp",
+			"MU",
+			"MXUWEOXILK/moc_DeformedTrussWidget.cpp",
+			null
+		],
+		[
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/InteractiveDrawingWidget.hpp",
+			"MU",
+			"MXUWEOXILK/moc_InteractiveDrawingWidget.cpp",
+			null
+		],
+		[
 			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/MainWindow.hpp",
 			"MU",
 			"MXUWEOXILK/moc_MainWindow.cpp",
+			null
+		],
+		[
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/ProjectFileManager.hpp",
+			"MU",
+			"MXUWEOXILK/moc_ProjectFileManager.cpp",
 			null
 		]
 	],
@@ -552,6 +570,16 @@
 			null
 		],
 		[
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DeformedTrussWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/InteractiveDrawingWidget.cpp",
+			"MU",
+			null
+		],
+		[
 			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/LoadInputWidget.cpp",
 			"MU",
 			null
@@ -573,6 +601,11 @@
 		],
 		[
 			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/PlotWidget.cpp",
+			"MU",
+			null
+		],
+		[
+			"/Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/ProjectFileManager.cpp",
 			"MU",
 			null
 		],

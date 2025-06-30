@@ -121,6 +121,11 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 - See [INSTALL_MACOS.md](INSTALL_MACOS.md) for comprehensive guide
 - See [QUICK_INSTALL.md](QUICK_INSTALL.md) for quick reference
 
+**Code Signing Note:** The application is automatically signed with ad-hoc signatures during build. When first launching, you may need to:
+1. Right-click on the app → "Open"
+2. Click "Open" in the security dialog
+3. This only needs to be done once
+
 ### Building from Source
 
 ```bash

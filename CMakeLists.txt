@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(TrussAnalysis VERSION 2.1.1 LANGUAGES CXX)
+project(TrussAnalysis VERSION 2.1.3 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -121,6 +121,28 @@ if(APPLE)
         MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
         MACOSX_BUNDLE_COPYRIGHT "© 2024 Civil Engineering Software Solutions"
     )
+    
+    # Code signing for macOS
+    find_program(CODESIGN_EXECUTABLE codesign)
+    if(CODESIGN_EXECUTABLE)
+        # Use ad-hoc signing (-) which doesn't require a certificate but allows local execution
+        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
+            COMMAND ${CODESIGN_EXECUTABLE} --force --deep --sign - "$<TARGET_BUNDLE_DIR:TrussAnalysisGUI>"
+            COMMENT "Code signing TrussAnalysisGUI with ad-hoc signature"
+            VERBATIM
+        )
+        
+        # Also sign the CLI executable
+        add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
+            COMMAND ${CODESIGN_EXECUTABLE} --force --sign - "$<TARGET_FILE:TrussAnalysisCLI>"
+            COMMENT "Code signing TrussAnalysisCLI with ad-hoc signature"
+            VERBATIM
+        )
+        
+        message(STATUS "Code signing enabled with ad-hoc signatures")
+    else()
+        message(WARNING "codesign not found - applications will not be signed")
+    endif()
 endif()
 
 # CPack configuration for DMG creation

@@ -198,6 +198,48 @@ CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/PlotWidget.cpp -o CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.s
 
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o: CMakeFiles/TrussAnalysisGUI.dir/flags.make
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o: /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/InteractiveDrawingWidget.cpp
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o: CMakeFiles/TrussAnalysisGUI.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Building CXX object CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o -MF CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o.d -o CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o -c /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/InteractiveDrawingWidget.cpp
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/InteractiveDrawingWidget.cpp > CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.i
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/InteractiveDrawingWidget.cpp -o CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.s
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o: CMakeFiles/TrussAnalysisGUI.dir/flags.make
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o: /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/ProjectFileManager.cpp
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o: CMakeFiles/TrussAnalysisGUI.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_11) "Building CXX object CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o -MF CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o.d -o CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o -c /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/ProjectFileManager.cpp
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/ProjectFileManager.cpp > CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.i
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/ProjectFileManager.cpp -o CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.s
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o: CMakeFiles/TrussAnalysisGUI.dir/flags.make
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o: /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DeformedTrussWidget.cpp
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o: CMakeFiles/TrussAnalysisGUI.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --progress-dir=/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_12) "Building CXX object CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o -MF CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o.d -o CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o -c /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DeformedTrussWidget.cpp
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Preprocessing CXX source to CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DeformedTrussWidget.cpp > CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.i
+
+CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green "Compiling CXX source to assembly CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/neil/dev/repos/2D-Truss-Analysis-cpp/src/gui/DeformedTrussWidget.cpp -o CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.s
+
 # Object files for target TrussAnalysisGUI
 TrussAnalysisGUI_OBJECTS = \
 "CMakeFiles/TrussAnalysisGUI.dir/TrussAnalysisGUI_autogen/mocs_compilation.cpp.o" \
@@ -208,7 +250,10 @@ TrussAnalysisGUI_OBJECTS = \
 "CMakeFiles/TrussAnalysisGUI.dir/src/gui/LoadInputWidget.cpp.o" \
 "CMakeFiles/TrussAnalysisGUI.dir/src/gui/DataTableWidget.cpp.o" \
 "CMakeFiles/TrussAnalysisGUI.dir/src/gui/ResultsWidget.cpp.o" \
-"CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.o"
+"CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.o" \
+"CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o" \
+"CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o" \
+"CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o"
 
 # External object files for target TrussAnalysisGUI
 TrussAnalysisGUI_EXTERNAL_OBJECTS =
@@ -222,13 +267,16 @@ TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGU
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/src/gui/DataTableWidget.cpp.o
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/src/gui/ResultsWidget.cpp.o
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/src/gui/PlotWidget.cpp.o
+TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/src/gui/InteractiveDrawingWidget.cpp.o
+TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/src/gui/ProjectFileManager.cpp.o
+TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/src/gui/DeformedTrussWidget.cpp.o
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/build.make
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: libTrussCore.a
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: /opt/homebrew/lib/QtWidgets.framework/Versions/A/QtWidgets
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: /opt/homebrew/lib/QtGui.framework/Versions/A/QtGui
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: /opt/homebrew/lib/QtCore.framework/Versions/A/QtCore
 TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI: CMakeFiles/TrussAnalysisGUI.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_10) "Linking CXX executable TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI"
+	@$(CMAKE_COMMAND) -E cmake_echo_color "--switch=$(COLOR)" --green --bold --progress-dir=/Users/neil/dev/repos/2D-Truss-Analysis-cpp/build_release/CMakeFiles --progress-num=$(CMAKE_PROGRESS_13) "Linking CXX executable TrussAnalysisGUI.app/Contents/MacOS/TrussAnalysisGUI"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/TrussAnalysisGUI.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.
