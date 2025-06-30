@@ -26,6 +26,13 @@ echo "📦 Bundling Qt dependencies..."
 if command -v macdeployqt &> /dev/null; then
     macdeployqt TrussAnalysisGUI.app
     echo "✅ Qt dependencies bundled successfully"
+    
+    # Apply ad-hoc signing after Qt deployment
+    echo "🔐 Applying ad-hoc code signing..."
+    cd ..
+    ./sign_adhoc.sh
+    cd build_release
+    echo "✅ Ad-hoc signing completed"
 else
     echo "⚠️  macdeployqt not found - the app may not work on other systems"
 fi
