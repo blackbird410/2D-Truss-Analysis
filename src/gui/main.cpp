@@ -12,6 +12,14 @@
 #include "MainWindow.hpp"
 
 int main(int argc, char *argv[]) {
+    // Note: High-DPI support is enabled by default in Qt6
+    
+    // Enable better font rendering on Linux
+#if defined(Q_OS_LINUX)
+    QApplication::setAttribute(Qt::AA_DontUseNativeDialogs, false);
+    QApplication::setAttribute(Qt::AA_DontCreateNativeWidgetSiblings, false);
+#endif
+    
     // Create the Qt application
     QApplication app(argc, argv);
     

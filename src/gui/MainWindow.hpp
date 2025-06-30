@@ -54,8 +54,12 @@ class MainWindow : public QMainWindow {
 
 public:
     explicit MainWindow(QWidget *parent = nullptr);
-    ~MainWindow() override = default;
+    ~MainWindow() override;
     
+protected:
+    void closeEvent(QCloseEvent* event) override;
+    
+public:
     // Public accessors for widgets
     truss::core::Truss* getTruss() const;
     truss::core::AnalysisEngine* getAnalysisEngine() const { return m_analysisEngine.get(); }
@@ -80,6 +84,7 @@ private:
     void setupMenuBar();
     void setupToolBar();
     void setupStatusBar();
+    void setupWindowProperties();
     void connectSignals();
     
     void updateResultsDisplay();

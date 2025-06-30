@@ -9,6 +9,11 @@
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QSettings>
+#include <QtWidgets/QApplication>
+#include <QtGui/QScreen>
+#include <QtCore/QDir>
+#include <QtCore/QStandardPaths>
+#include <QtGui/QCloseEvent>
 
 namespace truss::gui {
 
@@ -33,7 +38,9 @@ MainWindow::MainWindow(QWidget* parent)
     
     // Set window properties
     setWindowTitle("2D Truss Analysis - Interactive Design");
-    resize(1400, 900);
+    
+    // Configure window for Linux display compatibility
+    setupWindowProperties();
     
     // Enable analysis when there's something to analyze
     enableAnalysis(false);
@@ -141,6 +148,98 @@ void MainWindow::setupStatusBar() {
     
     m_statusLabel->setText("Ready - Use toolbar to start designing your truss structure");
     m_coordinateLabel->setText("Coordinates: (0.000, 0.000)");
+}
+
+void MainWindow::setupWindowProperties() {
+    // Get primary screen information
+    QScreen* primaryScreen = QApplication::primaryScreen();
+    if (!primaryScreen) {
+        // Fallback for older Qt versions or unusual setups
+        setMinimumSize(800, 600);
+        resize(1200, 800);
+        return;
+    }
+    
+    QRect screenGeometry = primaryScreen->availableGeometry();
+    QSize screenSize = screenGeometry.size();
+    
+    // Calculate window size based on screen resolution
+    int windowWidth, windowHeight;
+    
+    // For high-resolution displays (>= 2K), use larger window
+    if (screenSize.width() >= 2560 || screenSize.height() >= 1440) {
+        windowWidth = static_cast<int>(screenSize.width() * 0.85);
+        windowHeight = static_cast<int>(screenSize.height() * 0.85);
+    }
+    // For standard HD displays
+    else if (screenSize.width() >= 1920 || screenSize.height() >= 1080) {
+        windowWidth = static_cast<int>(screenSize.width() * 0.80);
+        windowHeight = static_cast<int>(screenSize.height() * 0.80);
+    }
+    // For smaller displays
+    else {
+        windowWidth = static_cast<int>(screenSize.width() * 0.90);
+        windowHeight = static_cast<int>(screenSize.height() * 0.85);
+    }
+    
+    // Set minimum size constraints
+    setMinimumSize(800, 600);
+    
+    // Set initial window size
+    resize(windowWidth, windowHeight);
+    
+    // Center the window on screen
+    int x = (screenSize.width() - windowWidth) / 2 + screenGeometry.x();
+    int y = (screenSize.height() - windowHeight) / 2 + screenGeometry.y();
+    move(x, y);
+    
+    // Enable proper window resizing and state management
+    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    
+    // Load saved window geometry if available
+    QSettings settings;
+    if (settings.contains("MainWindow/geometry")) {
+        restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
+    }
+    
+    if (settings.contains("MainWindow/windowState")) {
+        restoreState(settings.value("MainWindow/windowState").toByteArray());
+    }
+    
+    // Add fullscreen support with F11 key
+    auto* fullscreenAction = new QAction("Toggle Fullscreen", this);
+    fullscreenAction->setShortcut(QKeySequence("F11"));
+    connect(fullscreenAction, &QAction::triggered, this, [this]() {
+        if (isFullScreen()) {
+            showNormal();
+        } else {
+            showFullScreen();
+        }
+    });
+    addAction(fullscreenAction);
+    
+    // Handle high-DPI scaling
+    // Note: High-DPI support is enabled by default in Qt6
+    
+    // Set window icon if available
+    // setWindowIcon(QIcon(":/icons/app-icon.png"));
+}
+
+MainWindow::~MainWindow() {
+    // Save window geometry and state
+    QSettings settings;
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    settings.setValue("MainWindow/windowState", saveState());
+}
+
+void MainWindow::closeEvent(QCloseEvent* event) {
+    // Save window geometry and state before closing
+    QSettings settings;
+    settings.setValue("MainWindow/geometry", saveGeometry());
+    settings.setValue("MainWindow/windowState", saveState());
+    
+    // Accept the close event
+    event->accept();
 }
 
 void MainWindow::connectSignals() {
