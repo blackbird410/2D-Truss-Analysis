@@ -4,9 +4,9 @@
 **Status:** Stable Production Release  
 **Package:** 2D_Truss_Analysis-2.1.1-STABLE.dmg (22MB)
 
-## 🎯 Major Improvements and Critical Fixes
+##  Major Improvements and Critical Fixes
 
-### 🔧 Critical Bug Fixes
+###  Critical Bug Fixes
 
 #### Support Type Selection System - FIXED
 - **Issue**: Major bug where support type selections in the property panel didn't map correctly to actual structural constraints
@@ -29,7 +29,7 @@
 - **Solution**: Fixed API consistency for reaction data access
 - **Result**: Magenta reaction arrows properly display when "Reactions" checkbox is enabled
 
-### 🎨 User Experience Improvements
+###  User Experience Improvements
 
 #### Node Size Optimization
 - Reduced node radius from 6px to 4px for better visual clarity
@@ -48,7 +48,7 @@
 - Consistent green color scheme for all support types
 - Proper offset calculations to prevent overlap
 
-## 🚀 Technical Improvements
+##  Technical Improvements
 
 ### Build System
 - Clean rebuild workflow with all fixes integrated
@@ -62,7 +62,7 @@
 - Enhanced error handling and validation
 - Better separation of concerns in drawing logic
 
-## 📋 What's Fixed
+##  What's Fixed
 
 ### Before This Release
 - ❌ Support type selection didn't work correctly
@@ -73,23 +73,23 @@
 - ❌ User interface had visibility and usability issues
 
 ### After This Release
-- ✅ Support type selection works correctly via property panel
-- ✅ Support icons clearly visible with proper symbols and styling
-- ✅ Load arrows point in correct directions matching force vectors
-- ✅ Reaction forces display properly in deformed structure view
-- ✅ Structural analysis runs successfully without stability errors
-- ✅ Professional UI with improved visibility and usability
+-  Support type selection works correctly via property panel
+-  Support icons clearly visible with proper symbols and styling
+-  Load arrows point in correct directions matching force vectors
+-  Reaction forces display properly in deformed structure view
+-  Structural analysis runs successfully without stability errors
+-  Professional UI with improved visibility and usability
 
-## 🔍 Testing Status
+##  Testing Status
 
-- ✅ Build system: All builds complete successfully
-- ✅ Application launch: Launches without errors
-- ✅ Support selection: Property panel correctly applies support types
-- ✅ Visual feedback: Support icons properly display in diagram
-- ✅ Analysis engine: Structural analysis completes successfully
-- ✅ Results display: All visualization features working correctly
+-  Build system: All builds complete successfully
+-  Application launch: Launches without errors
+-  Support selection: Property panel correctly applies support types
+-  Visual feedback: Support icons properly display in diagram
+-  Analysis engine: Structural analysis completes successfully
+-  Results display: All visualization features working correctly
 
-## 💻 Installation
+##  Installation
 
 ### macOS
 1. Download `2D_Truss_Analysis-2.1.1-STABLE.dmg`
@@ -102,11 +102,11 @@
 - 100 MB available disk space
 - OpenGL support for visualization
 
-## 🎯 Known Issues
+##  Known Issues
 - None for core functionality
 - Minor cosmetic improvements in progress for future releases
 
-## 🔮 Next Steps
+##  Next Steps
 This release provides a stable, fully functional structural analysis tool. Future updates will focus on:
 - Additional analysis features
 - Performance optimizations
@@ -115,6 +115,6 @@ This release provides a stable, fully functional structural analysis tool. Futur
 
 ---
 
-**Application Status:** ✅ READY FOR PRODUCTION USE
+**Application Status:**  READY FOR PRODUCTION USE
 
 This release resolves all critical issues and provides a reliable tool for 2D truss structural analysis.

@@ -3,7 +3,7 @@
 # 2D Truss Analysis - Linux Deployment Script
 # This script packages the application for distribution
 
-echo "🚀 Deploying 2D Truss Analysis for Linux..."
+echo " Deploying 2D Truss Analysis for Linux..."
 echo
 
 # Set up directories
@@ -12,7 +12,7 @@ APP_NAME="TrussAnalysis"
 VERSION="2.2.1"
 
 # Clean and create deployment directory
-echo "📁 Setting up deployment directory..."
+echo " Setting up deployment directory..."
 rm -rf "$DEPLOY_DIR"
 mkdir -p "$DEPLOY_DIR/bin"
 mkdir -p "$DEPLOY_DIR/lib"
@@ -20,7 +20,7 @@ mkdir -p "$DEPLOY_DIR/examples"
 mkdir -p "$DEPLOY_DIR/docs"
 
 # Copy executables
-echo "📦 Copying application binaries..."
+echo " Copying application binaries..."
 cp build_release/TrussAnalysisGUI "$DEPLOY_DIR/bin/"
 cp build_release/TrussAnalysisCLI "$DEPLOY_DIR/bin/"
 
@@ -28,14 +28,14 @@ cp build_release/TrussAnalysisCLI "$DEPLOY_DIR/bin/"
 chmod +x "$DEPLOY_DIR/bin/"*
 
 # Copy Qt libraries if needed (for portable deployment)
-echo "📚 Checking Qt dependencies..."
+echo " Checking Qt dependencies..."
 ldd build_release/TrussAnalysisGUI | grep -q "libQt"
 if [ $? -eq 0 ]; then
     echo "   Qt libraries detected - consider using linuxdeployqt for portable deployment"
 fi
 
 # Create application launcher script
-echo "📝 Creating launcher script..."
+echo " Creating launcher script..."
 cat > "$DEPLOY_DIR/truss-analysis-gui.sh" << 'EOF'
 #!/bin/bash
 # 2D Truss Analysis GUI Launcher
@@ -53,7 +53,7 @@ EOF
 chmod +x "$DEPLOY_DIR/truss-analysis-gui.sh"
 
 # Create README for deployment
-echo "📖 Creating deployment documentation..."
+echo " Creating deployment documentation..."
 cat > "$DEPLOY_DIR/README.md" << EOF
 # 2D Truss Analysis v${VERSION} - Linux Release
 
@@ -63,25 +63,25 @@ cat > "$DEPLOY_DIR/README.md" << EOF
 
 This release addresses all major Linux display compatibility issues:
 
-#### ✅ **Fixed Window Sizing Problems**
+####  **Fixed Window Sizing Problems**
 - **Adaptive window sizing**: Automatically adjusts to your screen resolution
 - **High-DPI support**: Proper scaling on 4K and high-resolution displays  
 - **Minimum size constraints**: Ensures the application remains usable at all sizes
 - **Smart initial positioning**: Centers window on screen with optimal size
 
-#### ✅ **Fixed Resizing and Fullscreen Issues**
+####  **Fixed Resizing and Fullscreen Issues**
 - **Proper window resizing**: All widgets now scale correctly when window is resized
 - **Fullscreen support**: Press F11 to toggle fullscreen mode
 - **Responsive layouts**: Drawing canvas and property panels adapt to window changes
 - **Window state persistence**: Remembers your window size and position between sessions
 
-#### ✅ **Enhanced Linux Compatibility**
+####  **Enhanced Linux Compatibility**
 - **Qt6 compatibility**: Updated for modern Qt framework
 - **Wayland/X11 support**: Works on both display servers
 - **Font rendering**: Improved text clarity on Linux systems
 - **Native dialogs**: Uses system file dialogs when appropriate
 
-#### ✅ **Improved User Experience**
+####  **Improved User Experience**
 - **Better viewport management**: Drawing area updates correctly during resize
 - **Smooth scaling**: Zoom and pan operations work seamlessly
 - **Preserved functionality**: All analysis features work exactly as before
@@ -107,12 +107,12 @@ This release addresses all major Linux display compatibility issues:
 
 ## Key Features
 
-- 🎯 **Interactive Design**: Click and drag to create truss structures
-- 🔧 **Advanced Analysis**: Professional finite element analysis engine
-- 📊 **Rich Visualization**: Deformed shapes, force diagrams, stress analysis
-- 💾 **Project Management**: Save, load, and export your designs
-- 📈 **Results Export**: CSV, JSON, XML, LaTeX, HTML formats
-- 🎨 **Modern Interface**: Responsive, intuitive user interface
+-  **Interactive Design**: Click and drag to create truss structures
+-  **Advanced Analysis**: Professional finite element analysis engine
+-  **Rich Visualization**: Deformed shapes, force diagrams, stress analysis
+-  **Project Management**: Save, load, and export your designs
+-  **Results Export**: CSV, JSON, XML, LaTeX, HTML formats
+-  **Modern Interface**: Responsive, intuitive user interface
 
 ## Quick Start
 
@@ -144,7 +144,7 @@ For issues or questions, please check the documentation or contact support.
 EOF
 
 # Create a simple example project file
-echo "📋 Creating example project..."
+echo " Creating example project..."
 cat > "$DEPLOY_DIR/examples/simple_truss.truss" << 'EOF'
 {
   "metadata": {
@@ -181,15 +181,15 @@ Keywords=structural;analysis;engineering;truss;finite;element;
 EOF
 
 # Test the application quickly
-echo "🧪 Testing deployed application..."
+echo " Testing deployed application..."
 if [ -x "$DEPLOY_DIR/bin/TrussAnalysisGUI" ]; then
-    echo "   ✅ GUI executable is ready"
+    echo "    GUI executable is ready"
 else
     echo "   ❌ GUI executable not found or not executable"
 fi
 
 if [ -x "$DEPLOY_DIR/bin/TrussAnalysisCLI" ]; then
-    echo "   ✅ CLI executable is ready"
+    echo "    CLI executable is ready"
 else
     echo "   ❌ CLI executable not found or not executable"
 fi
@@ -199,10 +199,10 @@ PACKAGE_SIZE=$(du -sh "$DEPLOY_DIR" | cut -f1)
 echo "   📏 Package size: $PACKAGE_SIZE"
 
 echo
-echo "🎉 Deployment complete!"
+echo " Deployment complete!"
 echo "📂 Package location: $DEPLOY_DIR"
-echo "🚀 Run the GUI: ./$DEPLOY_DIR/truss-analysis-gui.sh"
-echo "⚡ Run the CLI: ./$DEPLOY_DIR/bin/TrussAnalysisCLI"
+echo " Run the GUI: ./$DEPLOY_DIR/truss-analysis-gui.sh"
+echo " Run the CLI: ./$DEPLOY_DIR/bin/TrussAnalysisCLI"
 echo
 echo "✨ Linux display issues have been resolved:"
 echo "   • Proper window sizing and positioning"
@@ -211,5 +211,5 @@ echo "   • High-DPI compatibility"
 echo "   • Responsive resizing"
 echo "   • Window state persistence"
 echo
-echo "Ready for distribution! 🚀"
+echo "Ready for distribution! "
 EOF

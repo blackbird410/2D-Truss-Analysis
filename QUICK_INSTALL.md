@@ -1,4 +1,4 @@
-# 🚀 Quick Install Guide - 2D Truss Analysis
+# Quick Install Guide - 2D Truss Analysis
 
 ## Linux Installation (Recommended)
 
@@ -29,7 +29,7 @@ cd 2D-Truss-Analysis-cpp
 2. **Drag** `TrussAnalysisGUI.app` to the `Applications` folder shortcut
 3. **Right-click** the app in Applications → **"Open"**
 4. Click **"Open"** in the security dialog
-5. **Done!** 🎉
+5. **Done!**
 
 ### Option 2: Automated Script Installation
 ```bash
