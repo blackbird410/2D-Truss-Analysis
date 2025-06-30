@@ -13,7 +13,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Script configuration
-DMG_FILE="2D_Truss_Analysis-2.1.1-Darwin.dmg"
+DMG_FILE="2D_Truss_Analysis-2.1.3-Darwin.dmg"
 APP_NAME="TrussAnalysisGUI.app"
 INSTALL_DIR="/Applications"
 
