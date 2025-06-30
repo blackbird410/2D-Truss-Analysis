@@ -34,18 +34,60 @@ DeformedTrussWidget::DeformedTrussWidget(QWidget* parent)
 }
 
 void DeformedTrussWidget::setupControls() {
-    // Create control panel layout
-    auto* controlLayout = new QVBoxLayout();
+    // Create compact floating control panel
+    auto* controlPanel = new QWidget(this);
+    controlPanel->setFixedSize(250, 200);
+    controlPanel->setStyleSheet(
+        "QWidget { "
+        "  background-color: rgba(240, 240, 240, 220); "
+        "  border: 2px solid rgba(100, 100, 100, 180); "
+        "  border-radius: 8px; "
+        "  padding: 5px; "
+        "} "
+        "QGroupBox { "
+        "  font-weight: bold; "
+        "  border: 1px solid gray; "
+        "  border-radius: 4px; "
+        "  margin-top: 8px; "
+        "  padding-top: 4px; "
+        "  background-color: rgba(255, 255, 255, 150); "
+        "} "
+        "QGroupBox::title { "
+        "  subcontrol-origin: margin; "
+        "  left: 8px; "
+        "  padding: 0 4px 0 4px; "
+        "} "
+        "QCheckBox { "
+        "  font-size: 11px; "
+        "  padding: 2px; "
+        "} "
+        "QSlider { "
+        "  height: 15px; "
+        "} "
+        "QComboBox { "
+        "  font-size: 10px; "
+        "  padding: 1px; "
+        "} "
+    );
     
-    // Deformation scale control
-    auto* scaleGroup = new QGroupBox("Deformation Scale", this);
+    auto* controlLayout = new QVBoxLayout(controlPanel);
+    controlLayout->setContentsMargins(8, 8, 8, 8);
+    controlLayout->setSpacing(4);
+    
+    // Compact deformation scale control
+    auto* scaleGroup = new QGroupBox("Scale", controlPanel);
     auto* scaleLayout = new QVBoxLayout(scaleGroup);
+    scaleLayout->setContentsMargins(4, 8, 4, 4);
+    scaleLayout->setSpacing(2);
     
-    m_scaleSlider = new QSlider(Qt::Horizontal, this);
+    m_scaleSlider = new QSlider(Qt::Horizontal, scaleGroup);
     m_scaleSlider->setRange(static_cast<int>(MIN_SCALE * 10), static_cast<int>(MAX_SCALE * 10));
     m_scaleSlider->setValue(static_cast<int>(DEFAULT_DEFORMATION_SCALE * 10));
+    m_scaleSlider->setFixedHeight(20);
     
-    m_scaleLabel = new QLabel(QString("Scale: %1x").arg(DEFAULT_DEFORMATION_SCALE, 0, 'f', 1), this);
+    m_scaleLabel = new QLabel(QString("%1x").arg(DEFAULT_DEFORMATION_SCALE, 0, 'f', 1), scaleGroup);
+    m_scaleLabel->setAlignment(Qt::AlignCenter);
+    m_scaleLabel->setStyleSheet("font-size: 10px; padding: 1px;");
     
     scaleLayout->addWidget(m_scaleLabel);
     scaleLayout->addWidget(m_scaleSlider);
@@ -53,36 +95,39 @@ void DeformedTrussWidget::setupControls() {
     connect(m_scaleSlider, &QSlider::valueChanged, this, [this](int value) {
         double scale = static_cast<double>(value) / 10.0;
         setDeformationScale(scale);
-        m_scaleLabel->setText(QString("Scale: %1x").arg(scale, 0, 'f', 1));
+        m_scaleLabel->setText(QString("%1x").arg(scale, 0, 'f', 1));
     });
     
-    // Display options
-    auto* displayGroup = new QGroupBox("Display Options", this);
+    // Compact display options
+    auto* displayGroup = new QGroupBox("Display", controlPanel);
     auto* displayLayout = new QVBoxLayout(displayGroup);
+    displayLayout->setContentsMargins(4, 8, 4, 4);
+    displayLayout->setSpacing(1);
     
-    m_originalCheckBox = new QCheckBox("Show Original Structure", this);
+    m_originalCheckBox = new QCheckBox("Original", displayGroup);
     m_originalCheckBox->setChecked(m_showOriginal);
     connect(m_originalCheckBox, &QCheckBox::toggled, this, &DeformedTrussWidget::showOriginal);
     
-    m_deformedCheckBox = new QCheckBox("Show Deformed Structure", this);
+    m_deformedCheckBox = new QCheckBox("Deformed", displayGroup);
     m_deformedCheckBox->setChecked(m_showDeformed);
     connect(m_deformedCheckBox, &QCheckBox::toggled, this, &DeformedTrussWidget::showDeformed);
     
-    m_forcesCheckBox = new QCheckBox("Show Member Forces", this);
+    m_forcesCheckBox = new QCheckBox("Forces", displayGroup);
     m_forcesCheckBox->setChecked(m_showMemberForces);
     connect(m_forcesCheckBox, &QCheckBox::toggled, this, &DeformedTrussWidget::showMemberForces);
     
-    m_displacementsCheckBox = new QCheckBox("Show Displacements", this);
+    m_displacementsCheckBox = new QCheckBox("Displacements", displayGroup);
     m_displacementsCheckBox->setChecked(m_showDisplacements);
     connect(m_displacementsCheckBox, &QCheckBox::toggled, this, &DeformedTrussWidget::showDisplacements);
     
-    m_reactionsCheckBox = new QCheckBox("Show Reactions", this);
+    m_reactionsCheckBox = new QCheckBox("Reactions", displayGroup);
     m_reactionsCheckBox->setChecked(m_showReactions);
     connect(m_reactionsCheckBox, &QCheckBox::toggled, this, &DeformedTrussWidget::showReactions);
     
-    // Force visualization mode
-    m_forceVisualizationCombo = new QComboBox(this);
-    m_forceVisualizationCombo->addItems({"Color Coding", "Line Thickness", "Color + Thickness"});
+    // Force visualization mode (compact)
+    m_forceVisualizationCombo = new QComboBox(displayGroup);
+    m_forceVisualizationCombo->addItems({"Color", "Thickness", "Both"});
+    m_forceVisualizationCombo->setFixedHeight(20);
     connect(m_forceVisualizationCombo, QOverload<int>::of(&QComboBox::currentIndexChanged),
             this, &DeformedTrussWidget::setForceVisualizationMode);
     
@@ -91,18 +136,17 @@ void DeformedTrussWidget::setupControls() {
     displayLayout->addWidget(m_forcesCheckBox);
     displayLayout->addWidget(m_displacementsCheckBox);
     displayLayout->addWidget(m_reactionsCheckBox);
-    displayLayout->addWidget(new QLabel("Force Visualization:"));
     displayLayout->addWidget(m_forceVisualizationCombo);
     
     controlLayout->addWidget(scaleGroup);
     controlLayout->addWidget(displayGroup);
-    controlLayout->addStretch();
     
-    // Position controls on the right side
-    auto* mainLayout = new QHBoxLayout(this);
-    mainLayout->addStretch();
-    mainLayout->addLayout(controlLayout);
-    mainLayout->setContentsMargins(5, 5, 5, 5);
+    // Store control panel reference
+    m_controlPanel = controlPanel;
+    
+    // Position control panel in top-right corner
+    m_controlPanel->move(10, 10);
+    m_controlPanel->raise(); // Ensure it's on top
 }
 
 void DeformedTrussWidget::setTruss(truss::core::Truss* truss) {
@@ -588,6 +632,13 @@ void DeformedTrussWidget::wheelEvent(QWheelEvent* event) {
 
 void DeformedTrussWidget::resizeEvent(QResizeEvent* event) {
     Q_UNUSED(event)
+    
+    // Reposition control panel to top-left corner
+    if (m_controlPanel) {
+        m_controlPanel->move(10, 10);
+        m_controlPanel->raise();
+    }
+    
     resetView();
 }
 
