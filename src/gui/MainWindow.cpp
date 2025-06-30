@@ -4,6 +4,7 @@
  */
 
 #include "MainWindow.hpp"
+#include "ProjectFileManager.hpp"
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QSettings>
@@ -264,8 +265,28 @@ void MainWindow::openProject() {
         "Truss Project Files (*.truss);;All Files (*)");
     
     if (!fileName.isEmpty()) {
-        // TODO: Implement project loading
-        m_statusLabel->setText("Project loading not yet implemented");
+        auto loadedTruss = ProjectFileManager::loadProject(fileName);
+        
+        if (loadedTruss) {
+            // Clear current project
+            clearAll();
+            
+            // Load the truss into the drawing widget
+            m_drawingWidget->setTruss(std::move(loadedTruss));
+            
+            // Update UI
+            m_currentFileName = fileName;
+            QFileInfo fileInfo(fileName);
+            setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
+            
+            onTrussModified();
+            m_statusLabel->setText(QString("Project loaded: %1").arg(fileInfo.fileName()));
+            
+            showInfoMessage("Project loaded successfully!");
+        } else {
+            showErrorMessage(QString("Failed to load project:\n%1").arg(ProjectFileManager::getLastError()));
+            m_statusLabel->setText("Failed to load project");
+        }
     }
 }
 
@@ -273,21 +294,51 @@ void MainWindow::saveProject() {
     if (m_currentFileName.isEmpty()) {
         saveProjectAs();
     } else {
-        // TODO: Implement project saving
-        m_statusLabel->setText("Project saving not yet implemented");
+        auto* truss = getTruss();
+        if (!truss) {
+            showErrorMessage("No project to save.");
+            return;
+        }
+        
+        if (ProjectFileManager::saveProject(*truss, m_currentFileName)) {
+            QFileInfo fileInfo(m_currentFileName);
+            m_statusLabel->setText(QString("Project saved: %1").arg(fileInfo.fileName()));
+            showInfoMessage("Project saved successfully!");
+        } else {
+            showErrorMessage(QString("Failed to save project:\n%1").arg(ProjectFileManager::getLastError()));
+            m_statusLabel->setText("Failed to save project");
+        }
     }
 }
 
 void MainWindow::saveProjectAs() {
+    auto* truss = getTruss();
+    if (!truss) {
+        showErrorMessage("No project to save.");
+        return;
+    }
+    
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         "Truss Project Files (*.truss);;All Files (*)");
     
     if (!fileName.isEmpty()) {
-        m_currentFileName = fileName;
-        // TODO: Implement project saving
-        m_statusLabel->setText("Project saving not yet implemented");
+        // Ensure .truss extension
+        if (!fileName.endsWith(".truss", Qt::CaseInsensitive)) {
+            fileName += ".truss";
+        }
+        
+        if (ProjectFileManager::saveProject(*truss, fileName)) {
+            m_currentFileName = fileName;
+            QFileInfo fileInfo(fileName);
+            setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
+            m_statusLabel->setText(QString("Project saved: %1").arg(fileInfo.fileName()));
+            showInfoMessage("Project saved successfully!");
+        } else {
+            showErrorMessage(QString("Failed to save project:\n%1").arg(ProjectFileManager::getLastError()));
+            m_statusLabel->setText("Failed to save project");
+        }
     }
 }
 
