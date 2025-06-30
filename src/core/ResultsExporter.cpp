@@ -158,7 +158,7 @@ bool ResultsExporter::exportToJSON(const Truss& truss, const AnalysisResults& re
     if (options.includeDisplacements && results.displacements.size() > 0) {
         file << "  \"displacements\": {\n";
         file << "    \"values\": [";
-        for (int i = 0; i < results.displacements.size(); ++i) {
+        for (size_t i = 0; i < results.displacements.size(); ++i) {
             file << formatNumber(results.displacements[i], options);
             if (i < results.displacements.size() - 1) file << ", ";
         }
@@ -269,7 +269,7 @@ bool ResultsExporter::exportToText(const Truss& truss, const AnalysisResults& re
     return true;
 }
 
-bool ResultsExporter::exportToXML(const Truss& truss, const AnalysisResults& results,
+bool ResultsExporter::exportToXML(const Truss& truss, const AnalysisResults& /*results*/,
                                  const std::string& fileName, const ExportOptions& options) {
     std::ofstream file(fileName);
     if (!file.is_open()) {
@@ -542,7 +542,7 @@ std::string ResultsExporter::escapeString(const std::string& str, ExportFormat f
 
 // Section writers implementation (simplified for space)
 void ResultsExporter::writeGeometrySection(std::ostream& os, const Truss& truss, 
-                                          ExportFormat format, const ExportOptions& options) {
+                                          ExportFormat /*format*/, const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "Node ID" << delim << "X" << delim << "Y" << delim << "Support Type" << std::endl;
@@ -563,32 +563,32 @@ void ResultsExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     }
 }
 
-void ResultsExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
-                                            ExportFormat format, const ExportOptions& options) {
+void ResultsExporter::writePropertiesSection(std::ostream& os, const Truss& /*truss*/,
+                                            ExportFormat /*format*/, const ExportOptions& /*options*/) {
     // Implementation for material properties
     os << "# Material properties section not yet implemented" << std::endl;
 }
 
-void ResultsExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
-                                       ExportFormat format, const ExportOptions& options) {
+void ResultsExporter::writeLoadsSection(std::ostream& os, const Truss& /*truss*/,
+                                       ExportFormat /*format*/, const ExportOptions& /*options*/) {
     // Implementation for applied loads
     os << "# Applied loads section not yet implemented" << std::endl;
 }
 
-void ResultsExporter::writeDisplacementsSection(std::ostream& os, const Truss& truss, 
+void ResultsExporter::writeDisplacementsSection(std::ostream& os, const Truss& /*truss*/, 
                                                const AnalysisResults& results,
-                                               ExportFormat format, const ExportOptions& options) {
+                                               ExportFormat /*format*/, const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "DOF" << delim << "Displacement" << std::endl;
-    for (int i = 0; i < results.displacements.size(); ++i) {
+    for (size_t i = 0; i < results.displacements.size(); ++i) {
         os << i << delim << formatNumber(results.displacements[i], options) << std::endl;
     }
 }
 
 void ResultsExporter::writeMemberForcesSection(std::ostream& os, const Truss& truss,
                                               const AnalysisResults& results,
-                                              ExportFormat format, const ExportOptions& options) {
+                                              ExportFormat /*format*/, const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "Member ID" << delim << "Axial Force" << delim << "Type" << std::endl;
@@ -601,19 +601,19 @@ void ResultsExporter::writeMemberForcesSection(std::ostream& os, const Truss& tr
     }
 }
 
-void ResultsExporter::writeReactionsSection(std::ostream& os, const Truss& truss,
+void ResultsExporter::writeReactionsSection(std::ostream& os, const Truss& /*truss*/,
                                            const AnalysisResults& results,
-                                           ExportFormat format, const ExportOptions& options) {
+                                           ExportFormat /*format*/, const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "DOF" << delim << "Reaction Force" << std::endl;
-    for (int i = 0; i < results.reactions.size(); ++i) {
+    for (size_t i = 0; i < results.reactions.size(); ++i) {
         os << i << delim << formatNumber(results.reactions[i], options) << std::endl;
     }
 }
 
 void ResultsExporter::writeMetadataSection(std::ostream& os, const AnalysisResults& results,
-                                          ExportFormat format, const ExportOptions& options) {
+                                          ExportFormat /*format*/, const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "Property" << delim << "Value" << std::endl;
