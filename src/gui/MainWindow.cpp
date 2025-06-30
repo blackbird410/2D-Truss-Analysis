@@ -5,6 +5,7 @@
 
 #include "MainWindow.hpp"
 #include "ProjectFileManager.hpp"
+#include "ResultsExporter.hpp"
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QSettings>
@@ -353,11 +354,30 @@ void MainWindow::exportResults() {
     QString fileName = QFileDialog::getSaveFileName(this,
         "Export Analysis Results", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "CSV Files (*.csv);;Text Files (*.txt);;All Files (*)");
+        "CSV Files (*.csv);;TSV Files (*.tsv);;JSON Files (*.json);;XML Files (*.xml);;Text Files (*.txt);;LaTeX Files (*.tex);;HTML Files (*.html);;All Files (*)");
     
     if (!fileName.isEmpty()) {
-        // TODO: Implement results export
-        m_statusLabel->setText("Results export not yet implemented");
+        truss::core::ResultsExporter exporter;
+        truss::core::AnalysisResults results = m_analysisEngine->getLastResults();
+        truss::core::ExportOptions options;
+        options.includeGeometry = true;
+        options.includeDisplacements = true;
+        options.includeMemberForces = true;
+        options.includeReactions = true;
+        options.includeMetadata = true;
+        options.precision = 6;
+
+        // Determine format from file extension
+        truss::core::ExportFormat format = truss::core::ResultsExporter::detectFormat(fileName.toStdString());
+        
+        if (exporter.exportResults(*getTruss(), results, fileName.toStdString(), format, options)) {
+            QFileInfo fileInfo(fileName);
+            m_statusLabel->setText(QString("Results exported: %1").arg(fileInfo.fileName()));
+            showInfoMessage(QString("Results exported successfully to %1!").arg(fileInfo.fileName()));
+        } else {
+            showErrorMessage(QString("Failed to export results: %1").arg(QString::fromStdString(exporter.getLastError())));
+            m_statusLabel->setText("Failed to export results");
+        }
     }
 }
 

@@ -1,0 +1,63 @@
+{
+  "project": {
+    "name": "Export Test Truss",
+    "exportTime": "2025-06-30 18:23:15",
+    "version": "2.2.0"
+  },
+  "geometry": {
+    "nodes": [
+      {
+        "id": 1,
+        "x": 0.000000,
+        "y": 0.000000,
+        "supportType": "3"
+      },
+      {
+        "id": 2,
+        "x": 4.000000,
+        "y": 0.000000,
+        "supportType": "5"
+      },
+      {
+        "id": 3,
+        "x": 2.000000,
+        "y": 3.000000,
+        "supportType": "0"
+      }
+    ],
+    "members": [
+      {
+        "id": 1,
+        "startNode": 1,
+        "endNode": 2,
+        "length": 4.000000
+      },
+      {
+        "id": 2,
+        "startNode": 1,
+        "endNode": 3,
+        "length": 3.605551
+      },
+      {
+        "id": 3,
+        "startNode": 2,
+        "endNode": 3,
+        "length": 3.605551
+      }
+    ]
+  },
+  "displacements": {
+    "values": [0.000000, 0.000000, 0.000000, 28633115306666.671875, -21474836480000.003906, 14316557653333.333984],
+    "maxDisplacement": 28633115306666.671875
+  },
+  "memberForces": {
+    "values": [0.000000, -13161.877963, -8506.098452]
+  },
+  "analysis": {
+    "converged": true,
+    "iterations": 0,
+    "totalDofs": 6,
+    "freeDofs": 3,
+    "maxStress": 131618779.629931
+  }
+}
