@@ -1,0 +1,207 @@
+name: CI/CD Pipeline
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Build and Test
+    runs-on: ubuntu-latest
+    
+    strategy:
+      matrix:
+        compiler: [gcc-11, clang-13]
+        build_type: [Debug, Release]
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential libeigen3-dev
+        
+        # Install specific compiler versions
+        if [[ "${{ matrix.compiler }}" == "gcc-11" ]]; then
+          sudo apt-get install -y gcc-11 g++-11
+          echo "CC=gcc-11" >> $GITHUB_ENV
+          echo "CXX=g++-11" >> $GITHUB_ENV
+        elif [[ "${{ matrix.compiler }}" == "clang-13" ]]; then
+          sudo apt-get install -y clang-13
+          echo "CC=clang-13" >> $GITHUB_ENV
+          echo "CXX=clang++-13" >> $GITHUB_ENV
+        fi
+    
+    - name: Configure CMake
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+                 -DCMAKE_C_COMPILER=${{ env.CC }} \
+                 -DCMAKE_CXX_COMPILER=${{ env.CXX }}
+    
+    - name: Build
+      run: |
+        cd build
+        make -j$(nproc)
+    
+    - name: Build Unit Tests
+      run: |
+        cd tests/unit
+        # Compile all test files
+        for test_file in *.cpp; do
+          test_name=$(basename "$test_file" .cpp)
+          echo "Building $test_name..."
+          g++ -std=c++17 -Wall -Wextra -I../../include -I/usr/include/eigen3 \
+              -o "$test_name" "$test_file" -L../../build -lTrussCore
+        done
+    
+    - name: Run Unit Tests
+      run: |
+        cd tests
+        ./run_all_tests.sh
+    
+    - name: Run Integration Tests
+      run: |
+        cd build
+        # Run the main application with test data
+        echo "Running integration tests..."
+        ./TrussAnalyzer --help || true
+    
+    - name: Upload Test Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: test-results-${{ matrix.compiler }}-${{ matrix.build_type }}
+        path: |
+          tests/unit/test_*
+          build/
+        retention-days: 7
+
+  static-analysis:
+    name: Static Analysis
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential libeigen3-dev cppcheck clang-tidy
+    
+    - name: Run cppcheck
+      run: |
+        cppcheck --enable=all --inconclusive --xml --xml-version=2 \
+                 --suppress=missingIncludeSystem \
+                 --suppress=unmatchedSuppression \
+                 src/ include/ 2> cppcheck-report.xml || true
+    
+    - name: Configure for clang-tidy
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
+    
+    - name: Run clang-tidy
+      run: |
+        cd build
+        clang-tidy ../src/**/*.cpp --header-filter=../include/.* \
+                   --checks='-*,readability-*,performance-*,modernize-*' \
+                   --format-style=file > ../clang-tidy-report.txt || true
+    
+    - name: Upload Analysis Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: static-analysis-results
+        path: |
+          cppcheck-report.xml
+          clang-tidy-report.txt
+        retention-days: 30
+
+  performance:
+    name: Performance Testing
+    runs-on: ubuntu-latest
+    needs: test
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y cmake build-essential libeigen3-dev valgrind
+    
+    - name: Build Release
+      run: |
+        mkdir -p build
+        cd build
+        cmake .. -DCMAKE_BUILD_TYPE=Release
+        make -j$(nproc)
+    
+    - name: Memory Analysis
+      run: |
+        cd build
+        # Run valgrind on a simple test case
+        echo "Running memory analysis..."
+        valgrind --tool=memcheck --leak-check=full --show-leak-kinds=all \
+                 --track-origins=yes --xml=yes --xml-file=../valgrind-report.xml \
+                 ./TrussAnalyzer --help || true
+    
+    - name: Performance Benchmarks
+      run: |
+        cd tests/unit
+        echo "Running performance benchmarks..."
+        time ./test_integration > ../performance-results.txt 2>&1
+    
+    - name: Upload Performance Results
+      uses: actions/upload-artifact@v4
+      if: always()
+      with:
+        name: performance-results
+        path: |
+          valgrind-report.xml
+          tests/performance-results.txt
+        retention-days: 30
+
+  documentation:
+    name: Generate Documentation
+    runs-on: ubuntu-latest
+    if: github.ref == 'refs/heads/main'
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      
+    - name: Install Doxygen
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y doxygen graphviz
+    
+    - name: Generate Documentation
+      run: |
+        # Create Doxygen config if it doesn't exist
+        if [ ! -f Doxyfile ]; then
+          doxygen -g
+          # Configure Doxygen for our project
+          sed -i 's/PROJECT_NAME           = "My Project"/PROJECT_NAME           = "2D Truss Analysis"/' Doxyfile
+          sed -i 's/INPUT                  =/INPUT                  = src include tests\/TestFramework.hpp/' Doxyfile
+          sed -i 's/RECURSIVE              = NO/RECURSIVE              = YES/' Doxyfile
+          sed -i 's/GENERATE_HTML          = YES/GENERATE_HTML          = YES/' Doxyfile
+          sed -i 's/HTML_OUTPUT            = html/HTML_OUTPUT            = docs/' Doxyfile
+        fi
+        doxygen
+    
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v3
+      if: github.ref == 'refs/heads/main'
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./docs

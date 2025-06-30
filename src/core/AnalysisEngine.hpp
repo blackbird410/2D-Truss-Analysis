@@ -238,6 +238,16 @@ public:
      * @brief Get last analysis results
      */
     const AnalysisResults& getLastResults() const noexcept { return m_lastResults; }
+    
+    // Debug interface for unit testing
+    #ifdef DEBUG_TESTING
+    std::vector<Index> getFreeDofIndicesPublic(const Truss& truss) { return getFreeDofIndices(truss); }
+    std::vector<Index> getConstrainedDofIndicesPublic(const Truss& truss) { return getConstrainedDofIndices(truss); }
+    MatrixXd extractFreeStiffnessMatrixPublic(const MatrixXd& K, const std::vector<Index>& freeDofs) { return extractFreeStiffnessMatrix(K, freeDofs); }
+    VectorXd extractFreeLoadVectorPublic(const VectorXd& F, const std::vector<Index>& freeDofs) { return extractFreeLoadVector(F, freeDofs); }
+    VectorXd expandSolutionVectorPublic(const VectorXd& freeSolution, const std::vector<Index>& freeDofs, size_t totalDofs) { return expandSolutionVector(freeSolution, freeDofs, totalDofs); }
+    VectorXd solveWithLDLTPublic(const MatrixXd& K, const VectorXd& F) { return solveWithLDLT(K, F); }
+    #endif
 
 private:
     AnalysisOptions m_options;              ///< Analysis configuration

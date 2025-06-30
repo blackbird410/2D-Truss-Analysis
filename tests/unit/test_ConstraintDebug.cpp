@@ -5,26 +5,6 @@
 
 using namespace truss::core;
 
-// Helper function to access private methods via reflection 
-class DebugAnalysisEngine : public AnalysisEngine {
-public:
-    std::vector<Index> getFreeDofIndicesPublic(const Truss& truss) {
-        return getFreeDofIndices(truss);
-    }
-    
-    std::vector<Index> getConstrainedDofIndicesPublic(const Truss& truss) {
-        return getConstrainedDofIndices(truss);
-    }
-    
-    MatrixXd extractFreeStiffnessMatrixPublic(const MatrixXd& K, const std::vector<Index>& freeDofs) {
-        return extractFreeStiffnessMatrix(K, freeDofs);
-    }
-    
-    VectorXd extractFreeLoadVectorPublic(const VectorXd& F, const std::vector<Index>& freeDofs) {
-        return extractFreeLoadVector(F, freeDofs);
-    }
-};
-
 int main() {
     std::cout << std::scientific << std::setprecision(3);
     
@@ -43,7 +23,7 @@ int main() {
     truss.assignDofNumbers();
     
     // Debug constraint handling
-    DebugAnalysisEngine engine;
+    AnalysisEngine engine;
     
     std::cout << "Node constraints:" << std::endl;
     std::cout << "Node 1 (Pinned): X=" << node1->getDofX() << ", Y=" << node1->getDofY() << std::endl;
