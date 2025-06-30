@@ -2,7 +2,7 @@
 
 Thank you for your interest in contributing to the 2D Truss Analysis project! This document provides guidelines and best practices for contributing to the codebase.
 
-## 🎯 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -41,7 +41,7 @@ Thank you for your interest in contributing to the 2D Truss Analysis project! Th
    ./TrussAnalysisCLI --example
    ```
 
-## 🌿 Git Workflow
+## Git Workflow
 
 ### Branch Naming Convention
 
@@ -80,7 +80,7 @@ We use a structured branch naming convention:
    # Create Pull Request on GitHub
    ```
 
-## 📝 Commit Message Convention
+## Commit Message Convention
 
 We follow [Conventional Commits](https://www.conventionalcommits.org/) specification:
 
@@ -116,7 +116,7 @@ test: add unit tests for matrix operations
 build: update CMake configuration for Qt6
 ```
 
-## 🏗️ Code Standards
+## Code Standards
 
 ### C++ Guidelines
 
@@ -199,7 +199,7 @@ build: update CMake configuration for Qt6
    )
    ```
 
-## 🧪 Testing Guidelines
+## Testing Guidelines
 
 ### Unit Tests
 ```cpp
@@ -232,7 +232,7 @@ TEST_F(TrussAnalysisTest, CalculatesCorrectDisplacements) {
 diff output.txt expected_output.txt
 ```
 
-## 📋 Pull Request Guidelines
+## Pull Request Guidelines
 
 ### Before Submitting
 - [ ] Code follows project standards
@@ -267,7 +267,7 @@ Add screenshots to help explain your changes.
 - [ ] I have made corresponding changes to the documentation
 ```
 
-## 🐛 Reporting Issues
+## Reporting Issues
 
 ### Bug Reports
 Use the bug report template:
@@ -295,7 +295,7 @@ A clear and concise description of what you expected to happen.
 Add any other context about the problem here.
 ```
 
-## 🏷️ Release Process
+## Release Process
 
 ### Version Numbering
 We follow [Semantic Versioning](https://semver.org/):
@@ -311,13 +311,13 @@ We follow [Semantic Versioning](https://semver.org/):
 5. Create annotated tag: `git tag -a v2.2.0 -m "Release v2.2.0"`
 6. Push tag: `git push origin v2.2.0`
 
-## 📞 Getting Help
+## Getting Help
 
 - **GitHub Discussions**: For general questions and ideas
 - **GitHub Issues**: For bug reports and feature requests
 - **Code Review**: All PRs receive thorough review
 
-## 🙏 Recognition
+## Recognition
 
 Contributors will be recognized in:
 - README.md contributors section

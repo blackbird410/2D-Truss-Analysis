@@ -74,27 +74,27 @@ The Stiffness Method necessitates breaking down the structure into discrete fini
 
 Once the stiffness matrix is defined, we can ascertain the unknown displacements of the nodes under any given load applied to the structure. With knowledge of these displacements, we can subsequently compute both the external and internal forces within the structure by leveraging the force-displacement relations for each individual member.
 
-## 🎯 Key Features
+## Key Features
 
-🎨 **Interactive Drawing Canvas**
+**Interactive Drawing Canvas**
 - Mouse-based node and member placement
 - Real-time visual feedback during design
 - Snap-to-grid functionality for precision
 - Zoom and pan capabilities
 
-🔧 **Advanced Analysis Engine**
+**Advanced Analysis Engine**
 - Direct stiffness method implementation
 - Support for various load types and boundary conditions
 - Automated calculation of displacements, forces, and reactions
 - Material and section property management
 
-📊 **Professional Results Display**
+**Professional Results Display**
 - Comprehensive results tables
 - Visual deformation plots
 - Force diagrams and stress visualization
 - Export capabilities for reports
 
-🚀 **Modern Technology Stack**
+**Modern Technology Stack**
 - **Language**: C++20 with modern standards
 - **GUI Framework**: Qt6 (Core, Widgets, GUI)
 - **Linear Algebra**: Eigen3 library
@@ -108,7 +108,7 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 - C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
 - Eigen3 library for matrix operations
 
-## 🚀 Quick Start
+## Quick Start
 
 ### One-Step Installation (Linux) - **Recommended**
 
@@ -204,13 +204,13 @@ Run the CLI version:
 ./TrussAnalysisCLI --help       # Show usage information
 ```
 
-## 📚 Documentation
+## Documentation
 
 - **[Installation Guide](INSTALL_MACOS.md)**: Complete macOS installation instructions
 - **[Quick Install](QUICK_INSTALL.md)**: Fast installation reference
 - **[Code Signing Solutions](CODE_SIGNING_SOLUTIONS.md)**: Troubleshooting guide
 
-## 🤝 Contributing
+## Contributing
 
 Contributions are welcome! Please follow our [Conventional Commits](https://www.conventionalcommits.org/) standard:
 
@@ -222,14 +222,14 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 - `test:` Adding tests
 - `build:` Build system changes
 
-## 📊 Performance
+## Performance
 
 - **Startup Time**: < 2 seconds
 - **Analysis Speed**: 1000+ elements in < 1 second
 - **Memory Usage**: ~50MB typical, ~100MB with large models
 - **Platform**: Optimized for Apple Silicon and Intel processors
 
-## 🆔 Version History
+## Version History
 
 - **v2.2.0** (2025-06-30): Cross-platform production release with CI/CD
 - **v2.1.3** (2025-06-30): Code signing integration and macOS fixes
@@ -243,4 +243,4 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 
 ---
 
-**Made with ❤️ for the civil engineering community**
+**Made with dedication for the civil engineering community**

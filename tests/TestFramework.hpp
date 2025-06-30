@@ -128,7 +128,7 @@ public:
             currentSuite->totalTime += executionTime;
             
             if (verbose) {
-                std::cout << "  ✅ " << std::setw(45) << std::left << testName 
+                std::cout << "  PASS " << std::setw(43) << std::left << testName 
                          << " (" << std::fixed << std::setprecision(2) << executionTime << " ms)\n";
             }
             
@@ -141,7 +141,7 @@ public:
             currentSuite->totalTime += executionTime;
             
             if (verbose) {
-                std::cout << "  ❌ " << std::setw(45) << std::left << testName 
+                std::cout << "  FAIL " << std::setw(43) << std::left << testName 
                          << " (" << std::fixed << std::setprecision(2) << executionTime << " ms)\n";
                 std::cout << "     Reason: " << e.what() << "\n";
             }
@@ -156,7 +156,7 @@ public:
             currentSuite->totalTime += executionTime;
             
             if (verbose) {
-                std::cout << "  ❌ " << std::setw(45) << std::left << testName 
+                std::cout << "  FAIL " << std::setw(43) << std::left << testName 
                          << " (" << std::fixed << std::setprecision(2) << executionTime << " ms)\n";
                 std::cout << "     Unexpected exception: " << e.what() << "\n";
             }
@@ -174,7 +174,7 @@ public:
         currentSuite->tests.emplace_back(testName, TestStatus::Skipped, reason, 0.0);
         
         if (verbose) {
-            std::cout << "  ⏭️  " << std::setw(45) << std::left << testName << " (skipped)\n";
+            std::cout << "  SKIP " << std::setw(43) << std::left << testName << " (skipped)\n";
             if (!reason.empty()) {
                 std::cout << "     Reason: " << reason << "\n";
             }
@@ -206,9 +206,9 @@ public:
             totalSkipped += skipped;
             totalTime += suite.totalTime;
             
-            std::string status = (failed == 0) ? "✅ PASS" : "❌ FAIL";
+            std::string status = (failed == 0) ? "PASS" : "FAIL";
             
-            std::cout << "📦 " << std::setw(35) << std::left << suite.suiteName 
+            std::cout << "Suite: " << std::setw(35) << std::left << suite.suiteName 
                      << " │ " << status << " │ "
                      << passed << "/" << (passed + failed) << " passed";
             
@@ -221,31 +221,31 @@ public:
             if (failed > 0) {
                 for (const auto& test : suite.tests) {
                     if (test.status == TestStatus::Failed) {
-                        std::cout << "   └─ ❌ " << test.name << ": " << test.message << "\n";
+                        std::cout << "   Failed: " << test.name << ": " << test.message << "\n";
                     }
                 }
             }
         }
         
         std::cout << "\n" << std::string(79, '-') << "\n";
-        std::cout << "📊 TOTAL RESULTS:\n";
+        std::cout << "TOTAL RESULTS:\n";
         std::cout << "   Tests Run: " << totalTests << "\n";
-        std::cout << "   ✅ Passed: " << totalPassed << "\n";
+        std::cout << "   Passed: " << totalPassed << "\n";
         if (totalFailed > 0) {
-            std::cout << "   ❌ Failed: " << totalFailed << "\n";
+            std::cout << "   Failed: " << totalFailed << "\n";
         }
         if (totalSkipped > 0) {
-            std::cout << "   ⏭️  Skipped: " << totalSkipped << "\n";
+            std::cout << "   Skipped: " << totalSkipped << "\n";
         }
-        std::cout << "   ⏱️  Total Time: " << std::fixed << std::setprecision(2) << totalTime << " ms\n";
+        std::cout << "   Total Time: " << std::fixed << std::setprecision(2) << totalTime << " ms\n";
         
         double successRate = totalTests > 0 ? (static_cast<double>(totalPassed) / totalTests * 100.0) : 0.0;
-        std::cout << "   📈 Success Rate: " << std::fixed << std::setprecision(1) << successRate << "%\n";
+        std::cout << "   Success Rate: " << std::fixed << std::setprecision(1) << successRate << "%\n";
         
         if (totalFailed == 0) {
-            std::cout << "\n🎉 ALL TESTS PASSED! 🎉\n";
+            std::cout << "\nALL TESTS PASSED!\n";
         } else {
-            std::cout << "\n⚠️  SOME TESTS FAILED - See details above\n";
+            std::cout << "\nSOME TESTS FAILED - See details above\n";
         }
     }
     

@@ -43,9 +43,9 @@ AVAILABLE_TESTS=()
 for test in "${TESTS[@]}"; do
     if [[ -x "$test" ]]; then
         AVAILABLE_TESTS+=("$test")
-        echo -e "  ✅ Found: $test"
+        echo -e "  Found: $test"
     else
-        echo -e "  ⚠️  Missing: $test"
+        echo -e "  Missing: $test"
     fi
 done
 
@@ -56,10 +56,10 @@ for test in "${AVAILABLE_TESTS[@]}"; do
     echo -e "${YELLOW}Running $test...${NC}"
     
     if ./"$test"; then
-        echo -e "${GREEN}✅ $test PASSED${NC}\n"
+        echo -e "${GREEN}$test PASSED${NC}\n"
         ((PASSED_TESTS++))
     else
-        echo -e "${RED}❌ $test FAILED${NC}\n"
+        echo -e "${RED}$test FAILED${NC}\n"
         ((FAILED_TESTS++))
     fi
     
@@ -75,9 +75,9 @@ echo -e "${GREEN}Passed: $PASSED_TESTS${NC}"
 
 if [[ $FAILED_TESTS -gt 0 ]]; then
     echo -e "${RED}Failed: $FAILED_TESTS${NC}"
-    echo -e "\n${RED}⚠️  Some tests failed. Check the output above for details.${NC}"
+    echo -e "\n${RED}Some tests failed. Check the output above for details.${NC}"
     exit 1
 else
-    echo -e "\n${GREEN}🎉 All tests passed successfully! 🎉${NC}"
+    echo -e "\n${GREEN}All tests passed successfully!${NC}"
     exit 0
 fi
