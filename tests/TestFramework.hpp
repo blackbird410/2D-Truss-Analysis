@@ -227,7 +227,7 @@ public:
             }
         }
         
-        std::cout << "\n" << std::string(79, '─') << "\n";
+        std::cout << "\n" << std::string(79, '-') << "\n";
         std::cout << "📊 TOTAL RESULTS:\n";
         std::cout << "   Tests Run: " << totalTests << "\n";
         std::cout << "   ✅ Passed: " << totalPassed << "\n";
