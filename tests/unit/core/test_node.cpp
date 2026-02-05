@@ -107,5 +107,93 @@ TEST(NodeTest, DistanceCalculation) {
     EXPECT_NEAR(distance, reverseDistance, 1e-10);
 }
 
-// GTest provides main() automatically via GTest::gtest_main
-// No manual main() needed
+TEST(NodeTest, ConstraintChecking) {
+    // Test isConstrained() for all support types
+    Node freeNode(1, Point2D(0.0, 0.0), SupportType::Free);
+    Node pinnedNode(2, Point2D(1.0, 0.0), SupportType::Pinned);
+    Node pinnedXNode(3, Point2D(2.0, 0.0), SupportType::PinnedX);
+    Node pinnedYNode(4, Point2D(3.0, 0.0), SupportType::PinnedY);
+    Node rollerXNode(5, Point2D(4.0, 0.0), SupportType::RollerX);
+    Node rollerYNode(6, Point2D(5.0, 0.0), SupportType::RollerY);
+    
+    EXPECT_FALSE(freeNode.isConstrained());
+    EXPECT_TRUE(pinnedNode.isConstrained());
+    EXPECT_TRUE(pinnedXNode.isConstrained());
+    EXPECT_TRUE(pinnedYNode.isConstrained());
+    EXPECT_TRUE(rollerXNode.isConstrained());
+    EXPECT_TRUE(rollerYNode.isConstrained());
+}
+
+TEST(NodeTest, DegreesOfFreedom) {
+    // Test getDegreesOfFreedom() for all support types
+    Node freeNode(1, Point2D(0.0, 0.0), SupportType::Free);
+    Node pinnedNode(2, Point2D(1.0, 0.0), SupportType::Pinned);
+    Node pinnedXNode(3, Point2D(2.0, 0.0), SupportType::PinnedX);
+    Node pinnedYNode(4, Point2D(3.0, 0.0), SupportType::PinnedY);
+    Node rollerXNode(5, Point2D(4.0, 0.0), SupportType::RollerX);
+    Node rollerYNode(6, Point2D(5.0, 0.0), SupportType::RollerY);
+    
+    EXPECT_EQ(freeNode.getDegreesOfFreedom(), 2);
+    EXPECT_EQ(pinnedNode.getDegreesOfFreedom(), 0);
+    EXPECT_EQ(pinnedXNode.getDegreesOfFreedom(), 1);
+    EXPECT_EQ(pinnedYNode.getDegreesOfFreedom(), 1);
+    EXPECT_EQ(rollerXNode.getDegreesOfFreedom(), 1);
+    EXPECT_EQ(rollerYNode.getDegreesOfFreedom(), 1);
+}
+
+TEST(NodeTest, GlobalDOFRetrieval) {
+    // Test getGlobalDOFs() for free node (both DOFs active)
+    Node freeNode(1, Point2D(0.0, 0.0), SupportType::Free);
+    freeNode.setDofX(10);
+    freeNode.setDofY(11);
+    
+    std::vector<Index> freeDofs = freeNode.getGlobalDOFs();
+    ASSERT_EQ(freeDofs.size(), 2);
+    EXPECT_EQ(freeDofs[0], 10);
+    EXPECT_EQ(freeDofs[1], 11);
+    
+    // Test pinned node (no DOFs)
+    Node pinnedNode(2, Point2D(1.0, 0.0), SupportType::Pinned);
+    pinnedNode.setDofX(20);
+    pinnedNode.setDofY(21);
+    
+    std::vector<Index> pinnedDofs = pinnedNode.getGlobalDOFs();
+    EXPECT_EQ(pinnedDofs.size(), 0);
+    
+    // Test PinnedX node (only Y DOF active)
+    Node pinnedXNode(3, Point2D(2.0, 0.0), SupportType::PinnedX);
+    pinnedXNode.setDofX(30);
+    pinnedXNode.setDofY(31);
+    
+    std::vector<Index> pinnedXDofs = pinnedXNode.getGlobalDOFs();
+    ASSERT_EQ(pinnedXDofs.size(), 1);
+    EXPECT_EQ(pinnedXDofs[0], 31);  // Only Y DOF
+    
+    // Test PinnedY node (only X DOF active)
+    Node pinnedYNode(4, Point2D(3.0, 0.0), SupportType::PinnedY);
+    pinnedYNode.setDofX(40);
+    pinnedYNode.setDofY(41);
+    
+    std::vector<Index> pinnedYDofs = pinnedYNode.getGlobalDOFs();
+    ASSERT_EQ(pinnedYDofs.size(), 1);
+    EXPECT_EQ(pinnedYDofs[0], 40);  // Only X DOF
+    
+    // Test RollerX node (only X DOF active, Y constrained)
+    Node rollerXNode(5, Point2D(4.0, 0.0), SupportType::RollerX);
+    rollerXNode.setDofX(50);
+    rollerXNode.setDofY(51);
+    
+    std::vector<Index> rollerXDofs = rollerXNode.getGlobalDOFs();
+    ASSERT_EQ(rollerXDofs.size(), 1);
+    EXPECT_EQ(rollerXDofs[0], 50);  // Only X DOF
+    
+    // Test RollerY node (only Y DOF active, X constrained)
+    Node rollerYNode(6, Point2D(5.0, 0.0), SupportType::RollerY);
+    rollerYNode.setDofX(60);
+    rollerYNode.setDofY(61);
+    
+    std::vector<Index> rollerYDofs = rollerYNode.getGlobalDOFs();
+    ASSERT_EQ(rollerYDofs.size(), 1);
+    EXPECT_EQ(rollerYDofs[0], 61);  // Only Y DOF
+}
+
