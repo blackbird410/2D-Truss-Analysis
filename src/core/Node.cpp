@@ -49,6 +49,31 @@ bool Node::isRoller() const noexcept {
            m_supportType == SupportType::RollerY;
 }
 
+bool Node::isConstrained() const noexcept {
+    return m_supportType != SupportType::Free;
+}
+
+int Node::getDegreesOfFreedom() const noexcept {
+    return getDofCount();
+}
+
+std::vector<Index> Node::getGlobalDOFs() const {
+    std::vector<Index> dofs;
+    dofs.reserve(2);
+    
+    // Add X DOF if not constrained in X
+    if (!isConstrainedX()) {
+        dofs.push_back(m_dofX);
+    }
+    
+    // Add Y DOF if not constrained in Y
+    if (!isConstrainedY()) {
+        dofs.push_back(m_dofY);
+    }
+    
+    return dofs;
+}
+
 Real Node::distanceTo(const Node& other) const {
     return m_position.distance(other.m_position);
 }
