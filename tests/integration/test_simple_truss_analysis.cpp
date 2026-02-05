@@ -1,11 +1,26 @@
-#include "../TestFramework.hpp"
+/**
+ * @file test_simple_truss_analysis.cpp
+ * @brief Google Test integration tests for complete truss analysis workflows
+ * @author Refactoring Agent (migrated from test_Integration.cpp)
+ * @version 3.0.0-dev
+ * 
+ * Migration Notes:
+ * - Converted from custom TestFramework.hpp to Google Test
+ * - Preserved all original test intent and coverage
+ * - Maintained numerical tolerances
+ * - Removed manual test registration (GTest auto-discovers tests)
+ */
+
+#include <gtest/gtest.h>
 #include "../../src/core/Truss.hpp"
 #include "../../src/core/AnalysisEngine.hpp"
 
 using namespace truss::core;
-using namespace truss::testing;
 
-void test_simple_truss_analysis() {
+// Test Suite: SimpleTrussAnalysisTest
+// Integration tests for complete truss analysis workflows
+
+TEST(SimpleTrussAnalysisTest, TriangularTrussAnalysis) {
     // Create a simple triangular truss
     Truss truss("Simple Triangle");
     
@@ -23,24 +38,24 @@ void test_simple_truss_analysis() {
     truss.applyForce(node3->getId(), Force2D(0.0, -10000.0));
     
     // Verify truss is valid
-    ASSERT_TRUE(truss.isValid());
-    ASSERT_TRUE(truss.isStaticallyDeterminate());
+    EXPECT_TRUE(truss.isValid());
+    EXPECT_TRUE(truss.isStaticallyDeterminate());
     
     // Perform analysis
     AnalysisEngine engine;
     AnalysisResults results = engine.analyze(truss);
     
     // Check analysis convergence
-    ASSERT_TRUE(results.converged);
+    EXPECT_TRUE(results.converged);
     
     // Check that displacements are reasonable (non-zero for loaded node)
-    ASSERT_GT(results.maxDisplacement, 0.0);
+    EXPECT_GT(results.maxDisplacement, 0.0);
     
     // Check that stresses are reasonable
-    ASSERT_GT(results.maxStress, 0.0);
+    EXPECT_GT(results.maxStress, 0.0);
 }
 
-void test_cantilever_truss() {
+TEST(SimpleTrussAnalysisTest, BridgeTrussAnalysis) {
     // Create a statically determinate truss (bridge-like structure)
     Truss truss("Bridge Truss");
     
@@ -64,24 +79,24 @@ void test_cantilever_truss() {
     truss.applyForce(node3->getId(), Force2D(0.0, -5000.0));
     
     // Verify structure
-    ASSERT_TRUE(truss.isValid());
-    ASSERT_EQ(truss.getNodeCount(), 5);
-    ASSERT_EQ(truss.getMemberCount(), 7);
+    EXPECT_TRUE(truss.isValid());
+    EXPECT_EQ(truss.getNodeCount(), 5);
+    EXPECT_EQ(truss.getMemberCount(), 7);
     
     // Perform analysis
     AnalysisEngine engine;
     AnalysisResults results = engine.analyze(truss);
     
     // Check analysis convergence
-    ASSERT_TRUE(results.converged);
+    EXPECT_TRUE(results.converged);
     
     // Verify results are reasonable (using relaxed tolerance for current implementation)
-    ASSERT_GT(results.maxDisplacement, 0.0);
+    EXPECT_GT(results.maxDisplacement, 0.0);
     // Note: Current implementation has numerical precision issues, so we use a larger tolerance
-    ASSERT_LT(results.maxDisplacement, 1e15); // Should be finite
+    EXPECT_LT(results.maxDisplacement, 1e15); // Should be finite
 }
 
-void test_truss_with_material_properties() {
+TEST(SimpleTrussAnalysisTest, CustomMaterialProperties) {
     Truss truss("Material Test");
     
     // Add nodes
@@ -106,47 +121,35 @@ void test_truss_with_material_properties() {
     AnalysisResults results = engine.analyze(truss);
     
     // Check results
-    ASSERT_TRUE(results.converged);
-    ASSERT_GT(results.maxDisplacement, 0.0);
+    EXPECT_TRUE(results.converged);
+    EXPECT_GT(results.maxDisplacement, 0.0);
     
     // Check that members have the correct properties
     auto members = truss.getMembers();
     for (const auto& member : members) {
-        ASSERT_EQ(member->getMaterial().name, "Steel");
-        ASSERT_EQ(member->getMaterial().youngModulus, 200e9);
-        ASSERT_EQ(member->getSection().area, 2e-4);
+        EXPECT_EQ(member->getMaterial().name, "Steel");
+        EXPECT_EQ(member->getMaterial().youngModulus, 200e9);
+        EXPECT_EQ(member->getSection().area, 2e-4);
     }
 }
 
-void test_error_handling() {
+TEST(SimpleTrussAnalysisTest, ErrorHandlingInvalidStructures) {
     Truss truss("Error Test");
     
     // Test analysis of empty truss (should throw exception)
     AnalysisEngine engine;
     
     // This should throw an exception for invalid structure
-    ASSERT_THROWS(engine.analyze(truss), std::runtime_error);
+    EXPECT_THROW(engine.analyze(truss), std::runtime_error);
     
     // Add a single node (still invalid)
     truss.addNode(0.0, 0.0);
-    ASSERT_THROWS(engine.analyze(truss), std::runtime_error);
+    EXPECT_THROW(engine.analyze(truss), std::runtime_error);
     
     // Add a second node but no members (still invalid)
     truss.addNode(1.0, 0.0);
-    ASSERT_THROWS(engine.analyze(truss), std::runtime_error);
+    EXPECT_THROW(engine.analyze(truss), std::runtime_error);
 }
 
-int main() {
-    TestFramework framework;
-    
-    framework.beginSuite("Integration Tests");
-    
-    framework.runTest("Simple triangular truss analysis", test_simple_truss_analysis);
-    framework.runTest("Cantilever truss analysis", test_cantilever_truss);
-    framework.runTest("Truss with custom material properties", test_truss_with_material_properties);
-    framework.runTest("Error handling for invalid structures", test_error_handling);
-    
-    framework.generateReport();
-    
-    return framework.allTestsPassed() ? 0 : 1;
-}
+// GTest provides main() automatically via GTest::gtest_main
+// No manual main() needed

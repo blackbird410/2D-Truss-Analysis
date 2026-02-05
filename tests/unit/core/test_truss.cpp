@@ -1,18 +1,33 @@
-#include "../TestFramework.hpp"
+/**
+ * @file test_truss.cpp
+ * @brief Google Test unit tests for Truss class
+ * @author Refactoring Agent (migrated from custom framework)
+ * @version 3.0.0-dev
+ * 
+ * Migration Notes:
+ * - Converted from custom TestFramework.hpp to Google Test
+ * - Preserved all original test intent and coverage
+ * - Maintained numerical tolerances (1e-10 for floating-point comparisons)
+ * - Removed manual test registration (GTest auto-discovers tests)
+ */
+
+#include <gtest/gtest.h>
 #include "../../src/core/Truss.hpp"
 
 using namespace truss::core;
-using namespace truss::testing;
 
-void test_truss_creation() {
+// Test Suite: TrussTest
+// Tests for Truss class creation, node/member management, and validation
+
+TEST(TrussTest, CreationAndBasicProperties) {
     Truss truss("Test Truss");
     
-    ASSERT_EQ(truss.getName(), "Test Truss");
-    ASSERT_EQ(truss.getNodeCount(), 0);
-    ASSERT_EQ(truss.getMemberCount(), 0);
+    EXPECT_EQ(truss.getName(), "Test Truss");
+    EXPECT_EQ(truss.getNodeCount(), 0);
+    EXPECT_EQ(truss.getMemberCount(), 0);
 }
 
-void test_node_management() {
+TEST(TrussTest, NodeManagement) {
     Truss truss;
     
     // Add nodes
@@ -20,26 +35,26 @@ void test_node_management() {
     auto node2 = truss.addNode(Point2D(4.0, 0.0), SupportType::RollerX);
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);
     
-    ASSERT_EQ(truss.getNodeCount(), 3);
-    ASSERT_EQ(node1->getId(), 1);
-    ASSERT_EQ(node2->getId(), 2);
-    ASSERT_EQ(node3->getId(), 3);
+    EXPECT_EQ(truss.getNodeCount(), 3);
+    EXPECT_EQ(node1->getId(), 1);
+    EXPECT_EQ(node2->getId(), 2);
+    EXPECT_EQ(node3->getId(), 3);
     
     // Test node retrieval
     auto retrievedNode = truss.getNode(2);
-    ASSERT_EQ(retrievedNode, node2);
+    EXPECT_EQ(retrievedNode, node2);
     
     // Test node removal
     bool removed = truss.removeNode(2);
-    ASSERT_TRUE(removed);
-    ASSERT_EQ(truss.getNodeCount(), 2);
+    EXPECT_TRUE(removed);
+    EXPECT_EQ(truss.getNodeCount(), 2);
     
     // Test removal of non-existent node
     removed = truss.removeNode(999);
-    ASSERT_FALSE(removed);
+    EXPECT_FALSE(removed);
 }
 
-void test_member_management() {
+TEST(TrussTest, MemberManagement) {
     Truss truss;
     
     // Add nodes first
@@ -52,22 +67,22 @@ void test_member_management() {
     auto member2 = truss.addMember(1, 3); // Using node IDs
     auto member3 = truss.addMember(node2, node3);
     
-    ASSERT_EQ(truss.getMemberCount(), 3);
-    ASSERT_EQ(member1->getId(), 1);
-    ASSERT_EQ(member2->getId(), 2);
-    ASSERT_EQ(member3->getId(), 3);
+    EXPECT_EQ(truss.getMemberCount(), 3);
+    EXPECT_EQ(member1->getId(), 1);
+    EXPECT_EQ(member2->getId(), 2);
+    EXPECT_EQ(member3->getId(), 3);
     
     // Test member retrieval
     auto retrievedMember = truss.getMember(2);
-    ASSERT_EQ(retrievedMember, member2);
+    EXPECT_EQ(retrievedMember, member2);
     
     // Test member removal
     bool removed = truss.removeMember(2);
-    ASSERT_TRUE(removed);
-    ASSERT_EQ(truss.getMemberCount(), 2);
+    EXPECT_TRUE(removed);
+    EXPECT_EQ(truss.getMemberCount(), 2);
 }
 
-void test_force_application() {
+TEST(TrussTest, ForceApplication) {
     Truss truss;
     
     auto node1 = truss.addNode(0.0, 0.0);
@@ -77,24 +92,24 @@ void test_force_application() {
     truss.applyForce(1, Force2D(100.0, -200.0));
     truss.applyForce(2, 50.0, -100.0);
     
-    ASSERT_TRUE(truss.hasAppliedForces());
+    EXPECT_TRUE(truss.hasAppliedForces());
     
     // Check forces were applied
-    ASSERT_NEAR(node1->getAppliedForce().fx, 100.0, 1e-10);
-    ASSERT_NEAR(node1->getAppliedForce().fy, -200.0, 1e-10);
-    ASSERT_NEAR(node2->getAppliedForce().fx, 50.0, 1e-10);
-    ASSERT_NEAR(node2->getAppliedForce().fy, -100.0, 1e-10);
+    EXPECT_NEAR(node1->getAppliedForce().fx, 100.0, 1e-10);
+    EXPECT_NEAR(node1->getAppliedForce().fy, -200.0, 1e-10);
+    EXPECT_NEAR(node2->getAppliedForce().fx, 50.0, 1e-10);
+    EXPECT_NEAR(node2->getAppliedForce().fy, -100.0, 1e-10);
     
     // Clear forces
     truss.clearForces();
-    ASSERT_FALSE(truss.hasAppliedForces());
+    EXPECT_FALSE(truss.hasAppliedForces());
 }
 
-void test_truss_validation() {
+TEST(TrussTest, ValidationAndDeterminacy) {
     Truss truss;
     
     // Empty truss should be invalid
-    ASSERT_FALSE(truss.isValid());
+    EXPECT_FALSE(truss.isValid());
     
     // Add nodes and members to create a valid triangular truss
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
@@ -105,11 +120,11 @@ void test_truss_validation() {
     truss.addMember(node1, node3);
     truss.addMember(node2, node3);
     
-    ASSERT_TRUE(truss.isValid());
-    ASSERT_TRUE(truss.isStaticallyDeterminate());
+    EXPECT_TRUE(truss.isValid());
+    EXPECT_TRUE(truss.isStaticallyDeterminate());
 }
 
-void test_truss_statistics() {
+TEST(TrussTest, StatisticsGeneration) {
     Truss truss("Statistics Test");
     
     // Create a simple truss
@@ -125,25 +140,11 @@ void test_truss_statistics() {
     
     auto stats = truss.getStatistics();
     
-    ASSERT_EQ(stats.totalNodes, 3);
-    ASSERT_EQ(stats.totalMembers, 3);
-    ASSERT_EQ(stats.appliedForces, 1);
-    ASSERT_GT(stats.totalLength, 0.0);
+    EXPECT_EQ(stats.totalNodes, 3);
+    EXPECT_EQ(stats.totalMembers, 3);
+    EXPECT_EQ(stats.appliedForces, 1);
+    EXPECT_GT(stats.totalLength, 0.0);
 }
 
-int main() {
-    TestFramework framework;
-    
-    framework.beginSuite("Truss Class Tests");
-    
-    framework.runTest("Truss creation and basic properties", test_truss_creation);
-    framework.runTest("Node management (add/remove/retrieve)", test_node_management);
-    framework.runTest("Member management (add/remove/retrieve)", test_member_management);
-    framework.runTest("Force application and management", test_force_application);
-    framework.runTest("Truss validation and determinacy", test_truss_validation);
-    framework.runTest("Truss statistics generation", test_truss_statistics);
-    
-    framework.generateReport();
-    
-    return framework.allTestsPassed() ? 0 : 1;
-}
+// GTest provides main() automatically via GTest::gtest_main
+// No manual main() needed
