@@ -26,6 +26,12 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 include(CTest)
 enable_testing()
 
+# Find Google Test (for unit testing)
+if(BUILD_TESTING)
+    find_package(GTest REQUIRED)
+    message(STATUS "Google Test found: ${GTest_VERSION}")
+endif()
+
 # Enable Qt6 automatic MOC, UIC, and RCC
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -81,7 +87,35 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
 if(BUILD_TESTING)
     message(STATUS "Building unit tests")
     
-    # Create a function to add unit tests
+    # GTest integration validation test
+    add_executable(test_gtest_integration tests/test_gtest_integration.cpp)
+    target_link_libraries(test_gtest_integration PRIVATE GTest::gtest GTest::gtest_main)
+    add_test(NAME GTestIntegration COMMAND test_gtest_integration)
+    set_tests_properties(GTestIntegration PROPERTIES
+        TIMEOUT 10
+        LABELS "gtest;integration"
+    )
+    
+    # ============================================================================
+    # NEW GTEST-BASED TEST TARGETS (Phase 1 migration targets)
+    # ============================================================================
+    
+    # Note: These targets are defined but empty until tests are migrated
+    # in Phase 1 Step 1.4. This establishes the target structure.
+    
+    # Unit test target (will contain all unit tests after migration)
+    # Target naming: unit_tests (aggregate executable for all unit tests)
+    # add_executable(unit_tests)  # Uncommented when first test migrated
+    
+    # Integration test target (will contain all integration tests after migration)
+    # Target naming: integration_tests (aggregate executable for all integration tests)
+    # add_executable(integration_tests)  # Uncommented when first test migrated
+    
+    # ============================================================================
+    # LEGACY CUSTOM FRAMEWORK TESTS (to be removed in Phase 1 Step 1.6)
+    # ============================================================================
+    
+    # Create a function to add unit tests (legacy, will be replaced)
     function(add_unit_test TEST_NAME TEST_SOURCE)
         add_executable(${TEST_NAME} ${TEST_SOURCE})
         target_link_libraries(${TEST_NAME} PRIVATE TrussCore)
