@@ -163,7 +163,7 @@ Our comprehensive CI/CD pipeline (`/.github/workflows/ci.yml`) includes:
 #### Test Matrix
 - **Compilers**: GCC-11, Clang-13
 - **Build Types**: Debug, Release
-- **Platforms**: Ubuntu Latest (with support for Windows/macOS)
+- **Platforms**: Ubuntu Latest (Linux-only)
 
 #### Pipeline Stages
 
@@ -367,10 +367,10 @@ ms_print massif.out.* | head -30
 
 ### CI/CD Enhancements
 
-1. **Multi-Platform Support**
-   - Windows (MSVC, MinGW)
-   - macOS (Clang, XCode)
-   - Additional Linux distributions
+1. **Extended Linux Support**
+   - Additional Linux distributions (Fedora, Arch, Debian)
+   - ARM64 architecture support
+   - Container-based builds
 
 2. **Advanced Analysis**
    - Code coverage reporting

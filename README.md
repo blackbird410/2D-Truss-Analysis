@@ -2,9 +2,11 @@
 
 [![Release](https://img.shields.io/github/v/release/blackbird410/2D-Truss-Analysis-cpp)](https://github.com/blackbird410/2D-Truss-Analysis-cpp/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
+[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
+
+> **⚠️ REFACTORING IN PROGRESS**: This project is currently undergoing a comprehensive refactoring to v3.0.0 to achieve professional software engineering standards suitable for portfolio and production deployment. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details.
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface and robust computational engine.
 
@@ -99,18 +101,19 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 - **GUI Framework**: Qt6 (Core, Widgets, GUI)
 - **Linear Algebra**: Eigen3 library
 - **Build System**: CMake 3.20+
-- **Platform**: Cross-platform (macOS, Linux)
+- **Platform**: Linux (Ubuntu 22.04+, Fedora, Arch)
 
 ## Requirements
 
 - CMake 3.16 or higher
 - Qt6 (Qt6Core, Qt6Widgets, Qt6Charts)
-- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
+- C++20 compatible compiler (GCC 10+, Clang 10+)
 - Eigen3 library for matrix operations
+- Linux operating system
 
 ## Quick Start
 
-### One-Step Installation (Linux) - **Recommended**
+### One-Step Installation (Linux)
 
 ```bash
 # Clone and install in one command
@@ -127,27 +130,12 @@ cd 2D-Truss-Analysis-cpp
 ./install.sh --help    # See all options
 ```
 
-### Installation (macOS)
-
-**Recommended Method:**
-```bash
-./install_macos.sh
-```
-
-**Alternative Methods:**
-- See [INSTALL_MACOS.md](INSTALL_MACOS.md) for comprehensive guide
-- See [QUICK_INSTALL.md](QUICK_INSTALL.md) for quick reference
-
-**Code Signing Note:** The application is automatically signed with ad-hoc signatures during build. When first launching, you may need to:
-1. Right-click on the app → "Open"
-2. Click "Open" in the security dialog
-3. This only needs to be done once
-
 ### Building from Source
 
 ```bash
-# Install dependencies using Homebrew
-brew install cmake qt@6 eigen
+# Install dependencies (Ubuntu/Debian)
+sudo apt-get update
+sudo apt-get install cmake qt6-base-dev libeigen3-dev build-essential
 
 # Clone the repository
 git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
@@ -161,30 +149,37 @@ cmake -DCMAKE_BUILD_TYPE=Release ..
 make -j$(sysctl -n hw.ncpu)
 ```
 
-### Linux (Ubuntu/Debian)
-```bash
-# Install dependencies
-sudo apt update
-sudo apt install cmake qt6-base-dev qt6-charts-dev libeigen3-dev build-essential
+# Build the project
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
 
-# Clone and build (same as macOS)
-git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
-cd 2D-Truss-Analysis-cpp
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc)
+# Run tests
+cd build && ctest
+
+# Install (optional)
+sudo cmake --install build
 ```
 
-### Windows
-```cmd
-# Install Qt6 and CMake from their official websites
-# Or use vcpkg for dependencies
+### Alternative: Fedora/RHEL
 
-git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
-cd 2D-Truss-Analysis-cpp
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release
+```bash
+# Install dependencies
+sudo dnf install cmake qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel gcc-c++
+
+# Build as above
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+```
+
+### Alternative: Arch Linux
+
+```bash
+# Install dependencies
+sudo pacman -S cmake qt6-base qt6-charts eigen gcc
+
+# Build as above
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
 ```
 
 ## Usage
@@ -206,9 +201,9 @@ Run the CLI version:
 
 ## Documentation
 
-- **[Installation Guide](INSTALL_MACOS.md)**: Complete macOS installation instructions
-- **[Quick Install](QUICK_INSTALL.md)**: Fast installation reference
-- **[Code Signing Solutions](CODE_SIGNING_SOLUTIONS.md)**: Troubleshooting guide
+- **[Installation Guide](INSTALL_LINUX.md)**: Complete Linux installation instructions
+- **[Refactoring Progress](REFACTORING_PROGRESS.md)**: Track v3.0.0 refactoring status
+- **[Refactoring Documentation](docs/refactoring/)**: Detailed refactoring plans and architecture
 
 ## Contributing
 
@@ -227,13 +222,14 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 - **Startup Time**: < 2 seconds
 - **Analysis Speed**: 1000+ elements in < 1 second
 - **Memory Usage**: ~50MB typical, ~100MB with large models
-- **Platform**: Optimized for Apple Silicon and Intel processors
+- **Platform**: Optimized for Linux (x86_64 and ARM64)
 
 ## Version History
 
+- **v3.0.0** (In Progress): Professional refactor - Linux-only, SOLID architecture, Google Test
 - **v2.2.0** (2025-06-30): Cross-platform production release with CI/CD
-- **v2.1.3** (2025-06-30): Code signing integration and macOS fixes
-- **v2.1.1** (2025-06-30): Production release with all critical fixes
+- **v2.1.3** (2025-06-30): Code signing integration
+- **v2.1.1** (2025-06-30): Production release with critical fixes
 - **v2.1.0** (2025-06-30): Interactive drawing widget implementation
 - **v2.0.0** (2025-06-29): Major GUI redesign and Qt6 migration
 

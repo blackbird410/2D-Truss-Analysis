@@ -173,61 +173,24 @@ set_target_properties(TrussAnalysisGUI PROPERTIES
 
 # Install rules for packaging
 install(TARGETS TrussAnalysisCLI TrussAnalysisGUI
-    BUNDLE DESTINATION .
     RUNTIME DESTINATION bin
 )
 
-# Platform-specific settings
-if(APPLE)
-    # macOS Bundle settings
-    set_target_properties(TrussAnalysisGUI PROPERTIES
-        MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist.in
-        MACOSX_BUNDLE_BUNDLE_NAME "2D Truss Analysis"
-        MACOSX_BUNDLE_DISPLAY_NAME "2D Truss Analysis"
-        MACOSX_BUNDLE_IDENTIFIER "com.civilengsoft.trussanalysis"
-        MACOSX_BUNDLE_VERSION "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_COPYRIGHT "© 2024 Civil Engineering Software Solutions"
-    )
-    
-    # Code signing for macOS
-    find_program(CODESIGN_EXECUTABLE codesign)
-    if(CODESIGN_EXECUTABLE)
-        # Use ad-hoc signing (-) which doesn't require a certificate but allows local execution
-        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-            COMMAND ${CODESIGN_EXECUTABLE} --force --deep --sign - "$<TARGET_BUNDLE_DIR:TrussAnalysisGUI>"
-            COMMENT "Code signing TrussAnalysisGUI with ad-hoc signature"
-            VERBATIM
-        )
-        
-        # Also sign the CLI executable
-        add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
-            COMMAND ${CODESIGN_EXECUTABLE} --force --sign - "$<TARGET_FILE:TrussAnalysisCLI>"
-            COMMENT "Code signing TrussAnalysisCLI with ad-hoc signature"
-            VERBATIM
-        )
-        
-        message(STATUS "Code signing enabled with ad-hoc signatures")
-    else()
-        message(WARNING "codesign not found - applications will not be signed")
-    endif()
-elseif(UNIX AND NOT APPLE)
-    # Linux-specific settings
-    message(STATUS "Configuring for Linux build")
-    
-    # Set RPATH for better library linking
-    set_target_properties(TrussAnalysisGUI PROPERTIES
-        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
-        BUILD_WITH_INSTALL_RPATH OFF
-        INSTALL_RPATH_USE_LINK_PATH ON
-    )
-    
-    set_target_properties(TrussAnalysisCLI PROPERTIES
-        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
-        BUILD_WITH_INSTALL_RPATH OFF
-        INSTALL_RPATH_USE_LINK_PATH ON
-    )
+# Linux-specific settings
+message(STATUS "Configuring for Linux build")
+
+# Set RPATH for better library linking
+set_target_properties(TrussAnalysisGUI PROPERTIES
+    INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
+    BUILD_WITH_INSTALL_RPATH OFF
+    INSTALL_RPATH_USE_LINK_PATH ON
+)
+
+set_target_properties(TrussAnalysisCLI PROPERTIES
+    INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
+    BUILD_WITH_INSTALL_RPATH OFF
+    INSTALL_RPATH_USE_LINK_PATH ON
+)
     
     # Strip debug symbols in release builds for smaller binaries
     if(CMAKE_BUILD_TYPE STREQUAL "Release")
@@ -284,21 +247,19 @@ elseif(WIN32)
     message(STATUS "Windows optimizations enabled")
 endif()
 
-# CPack configuration for DMG creation
-if(APPLE)
-    set(CPACK_GENERATOR "DragNDrop")
-    set(CPACK_DMG_FORMAT "UDBZ")
-    set(CPACK_DMG_VOLUME_NAME "2D Truss Analysis")
-    set(CPACK_PACKAGE_NAME "2D_Truss_Analysis")
-    set(CPACK_PACKAGE_VENDOR "Civil Engineering Software Solutions")
-    set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Professional 2D truss structural analysis software")
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
-    set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
-    
-    # DMG background and appearance (optional)
-    # set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/assets/dmg_background.png")
-    # set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_SOURCE_DIR}/assets/dmg_setup.scpt")
-    
-    include(CPack)
-endif()
+# CPack configuration for Linux packaging
+set(CPACK_GENERATOR "TGZ;DEB")
+set(CPACK_PACKAGE_NAME "2d-truss-analysis")
+set(CPACK_PACKAGE_VENDOR "Civil Engineering Software Solutions")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Professional 2D truss structural analysis software")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+
+# Debian package specific settings
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <your.email@example.com>")
+set(CPACK_DEBIAN_PACKAGE_SECTION "science")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+
+include(CPack)
+
