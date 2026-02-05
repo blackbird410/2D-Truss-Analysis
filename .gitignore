@@ -65,6 +65,13 @@ Thumbs.db
 *.err
 *.bak
 
+# Test artifacts and results
+test_results.*
+test_analysis
+test_export
+tests/unit/test_*
+!tests/unit/test_*.cpp
+
 # Package/Distribution
 *.dmg
 *.pkg
