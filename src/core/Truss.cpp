@@ -104,6 +104,70 @@ MemberPtr Truss::getMember(MemberId memberId) const {
     return nullptr;
 }
 
+std::vector<MemberPtr> Truss::getMembersConnectedTo(NodeId nodeId) const {
+    std::vector<MemberPtr> connectedMembers;
+    for (const auto& member : m_members) {
+        if (member->hasNode(nodeId)) {
+            connectedMembers.push_back(member);
+        }
+    }
+    return connectedMembers;
+}
+
+std::vector<MemberPtr> Truss::getMembersConnectedTo(const NodePtr& node) const {
+    if (!node) {
+        return std::vector<MemberPtr>();
+    }
+    return getMembersConnectedTo(node->getId());
+}
+
+std::vector<MemberPtr> Truss::getMembersAtNode(NodeId nodeId) const {
+    return getMembersConnectedTo(nodeId);
+}
+
+std::vector<NodePtr> Truss::getConstrainedNodes() const {
+    std::vector<NodePtr> result;
+    for (const auto& node : m_nodes) {
+        if (node->isConstrained()) {
+            result.push_back(node);
+        }
+    }
+    return result;
+}
+
+std::vector<NodePtr> Truss::getLoadedNodes() const {
+    std::vector<NodePtr> result;
+    for (const auto& node : m_nodes) {
+        if (node->hasAppliedForce()) {
+            result.push_back(node);
+        }
+    }
+    return result;
+}
+
+std::vector<NodePtr> Truss::getFreeNodes() const {
+    std::vector<NodePtr> result;
+    for (const auto& node : m_nodes) {
+        if (!node->isConstrained()) {
+            result.push_back(node);
+        }
+    }
+    return result;
+}
+
+std::vector<NodePtr> Truss::getNodesInRegion(const Point2D& bottomLeft, const Point2D& topRight) const {
+    std::vector<NodePtr> result;
+    for (const auto& node : m_nodes) {
+        Real x = node->getX();
+        Real y = node->getY();
+        if (x >= bottomLeft.x && x <= topRight.x && 
+            y >= bottomLeft.y && y <= topRight.y) {
+            result.push_back(node);
+        }
+    }
+    return result;
+}
+
 size_t Truss::getTotalDofs() const {
     return m_nodes.size() * 2; // 2 DOFs per node (X and Y)
 }

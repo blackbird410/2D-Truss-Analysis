@@ -82,6 +82,12 @@ public:
     std::vector<NodePtr> getNodesInRegion(const Point2D& bottomLeft, const Point2D& topRight) const;
     std::vector<MemberPtr> getMembersConnectedTo(NodeId nodeId) const;
     std::vector<MemberPtr> getMembersConnectedTo(const NodePtr& node) const;
+    std::vector<MemberPtr> getMembersAtNode(NodeId nodeId) const;  ///< Alias for getMembersConnectedTo
+    
+    // Node queries by state
+    std::vector<NodePtr> getConstrainedNodes() const;              ///< Get all nodes with constraints
+    std::vector<NodePtr> getLoadedNodes() const;                   ///< Get all nodes with applied forces
+    std::vector<NodePtr> getFreeNodes() const;                     ///< Get all unconstrained nodes
     
     // Boundary conditions
     void applyForce(NodeId nodeId, const Force2D& force);
