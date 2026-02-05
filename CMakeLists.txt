@@ -97,19 +97,62 @@ if(BUILD_TESTING)
     )
     
     # ============================================================================
-    # NEW GTEST-BASED TEST TARGETS (Phase 1 migration targets)
+    # NEW GTEST-BASED TEST TARGETS (Phase 1 migrated tests)
     # ============================================================================
     
-    # Note: These targets are defined but empty until tests are migrated
-    # in Phase 1 Step 1.4. This establishes the target structure.
+    # Unit tests (core functionality tests)
+    add_executable(unit_tests
+        tests/unit/core/test_node.cpp
+        tests/unit/core/test_member.cpp
+        tests/unit/core/test_truss.cpp
+        tests/unit/core/test_analysis_engine.cpp
+    )
     
-    # Unit test target (will contain all unit tests after migration)
-    # Target naming: unit_tests (aggregate executable for all unit tests)
-    # add_executable(unit_tests)  # Uncommented when first test migrated
+    target_link_libraries(unit_tests PRIVATE
+        TrussCore
+        GTest::gtest
+        GTest::gtest_main
+    )
     
-    # Integration test target (will contain all integration tests after migration)
-    # Target naming: integration_tests (aggregate executable for all integration tests)
-    # add_executable(integration_tests)  # Uncommented when first test migrated
+    target_include_directories(unit_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/core
+    )
+    
+    add_test(NAME UnitTests COMMAND unit_tests)
+    set_tests_properties(UnitTests PROPERTIES
+        TIMEOUT 30
+        LABELS "unit;gtest"
+    )
+    
+    # Integration tests (multi-component workflow tests)
+    add_executable(integration_tests
+        tests/integration/test_simple_truss_analysis.cpp
+        tests/integration/test_simple_integration.cpp
+        tests/integration/test_working_integration.cpp
+        tests/integration/test_minimal_analysis.cpp
+    )
+    
+    target_link_libraries(integration_tests PRIVATE
+        TrussCore
+        GTest::gtest
+        GTest::gtest_main
+    )
+    
+    target_include_directories(integration_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/core
+    )
+    
+    add_test(NAME IntegrationTests COMMAND integration_tests)
+    set_tests_properties(IntegrationTests PROPERTIES
+        TIMEOUT 60
+        LABELS "integration;gtest"
+    )
+    
+    # Convenience target to build all new GTest-based tests
+    add_custom_target(all_gtest_tests
+        DEPENDS unit_tests integration_tests test_gtest_integration
+        COMMENT "Building all GTest-based tests"
+    )
     
     # ============================================================================
     # LEGACY CUSTOM FRAMEWORK TESTS (to be removed in Phase 1 Step 1.6)
