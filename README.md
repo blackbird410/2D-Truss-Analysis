@@ -21,6 +21,7 @@ I firmly believe that this tool will prove invaluable to second and third-year C
 This repository serves as a centralized hub housing all the project's implementation files.
 
 ## What is a truss ?
+
 ![A bridge using a truss as base structure to supports loads.](/images/RRTrussBridgeSideView.jpg)
 
 To understand the functionality of this program, it's essential to grasp the concept of a truss. A truss is essentially an assembly of structural members, typically beams, interconnected at nodes, forming a stable framework. In simpler terms, trusses consist of bars arranged within a two-dimensional Cartesian system. They are a prevalent structural element found in applications such as steel buildings and bridges, including examples like railway bridges and transmission towers.
@@ -28,75 +29,85 @@ To understand the functionality of this program, it's essential to grasp the con
 Trusses can exist in two primary forms: as 2D trusses, entirely confined to a single plane, or as 3D trusses, which extend into three-dimensional space. Specifically, when all the truss members and applied loads are situated within a single plane, we refer to it as a plane truss.
 
 ## What are the components of the truss?
-A truss fundamental components are: 
+
+A truss fundamental components are:
+
 - The **nodes or joints**, where the loads and support reactions are applied.
-- The **members or beams**, which are connected only at their ends by frictionless hinges in plane trusses 
-and by frictionless ball-and-socket joints in space trusses. In a truss, they are subjected only to axial 
-forces (compression or tension).
+- The **members or beams**, which are connected only at their ends by frictionless hinges in plane trusses
+  and by frictionless ball-and-socket joints in space trusses. In a truss, they are subjected only to axial
+  forces (compression or tension).
 
 ## Computational requirements:
-* Prior to undertaking any computations, it's imperative to evaluate the internal stability of a truss. This evaluation ensures that the truss, when detached from its supports, maintains its shape and remains a structurally rigid entity. In this context, 'internal' pertains to the count and configuration of the members intrinsic to the truss itself.
+
+- Prior to undertaking any computations, it's imperative to evaluate the internal stability of a truss. This evaluation ensures that the truss, when detached from its supports, maintains its shape and remains a structurally rigid entity. In this context, 'internal' pertains to the count and configuration of the members intrinsic to the truss itself.
 
 It's worth noting that instability resulting from inadequate external support or incorrect placement of external supports is termed 'external instability.
 
 > [!NOTE]
 > The internal stability of a determinate plane truss is assessed by this equation :
-> **m + r = 2j** 
+> **m + r = 2j**
 
-Where :   
+Where :
+
 - **m** : number of members or beams
 - **r** : number of support reactions
 - **j** : number of nodes or joints
 
 > [!NOTE]
-> **m + r > 2j** is also stable, but is considered ***statically indeterminate***, case which will not be treated by 
-our program.
+> **m + r > 2j** is also stable, but is considered **_statically indeterminate_**, case which will not be treated by
+> our program.
 
-* We consider a truss to be *statically determinate if the forces in all its members, as well as all the external 
-reactions, can be determined by using the equations of equilibrium*.
+- We consider a truss to be _statically determinate if the forces in all its members, as well as all the external
+  reactions, can be determined by using the equations of equilibrium_.
 
 ## Equations of Condition for Plane Truss
-The types of connections used to connect rigid portions of internally unstable structures 
-provide equations of condition that, along with the three equilibrium equations, can be 
-used to determine the reactions needed to constrain such structures fully. Such equations 
+
+The types of connections used to connect rigid portions of internally unstable structures
+provide equations of condition that, along with the three equilibrium equations, can be
+used to determine the reactions needed to constrain such structures fully. Such equations
 are :
+
 - Because an internal hinge cannot transmit moment, it provides an equation of condition :
-    + $\sum{M} = 0$, which is the sum of the moments in all nodes.
-- Since these parallel (horizontal) bars cannot transmit force in the direction perpendicular 
-to them, this type of connection provides an equation of condition:
-    + $\sum{F} = 0$, which is the sum of forces in each nodes.
+  - $\sum{M} = 0$, which is the sum of the moments in all nodes.
+- Since these parallel (horizontal) bars cannot transmit force in the direction perpendicular
+  to them, this type of connection provides an equation of condition: + $\sum{F} = 0$, which is the sum of forces in each nodes.
 
 ## Method of Computation
-In this program, we use the **Stiffness Method**, more precisely the **displacement method** to 
-analyze the truss. 
+
+In this program, we use the **Stiffness Method**, more precisely the **displacement method** to
+analyze the truss.
 
 In this program, we employ the Stiffness Method, specifically the displacement method, to conduct truss analysis.
 
-The Stiffness Method necessitates breaking down the structure into discrete finite elements and designating their endpoints as nodes. In the context of truss analysis, these finite elements correspond to individual truss members, while the nodes signify the joints or connections. We determine the force-displacement characteristics of each element and subsequently interrelate them through the force equilibrium equations established at the nodes. These interconnected relationships are then consolidated into what is referred to as the structure's **stiffness matrix**, denoted as ***K**.
+The Stiffness Method necessitates breaking down the structure into discrete finite elements and designating their endpoints as nodes. In the context of truss analysis, these finite elements correspond to individual truss members, while the nodes signify the joints or connections. We determine the force-displacement characteristics of each element and subsequently interrelate them through the force equilibrium equations established at the nodes. These interconnected relationships are then consolidated into what is referred to as the structure's **stiffness matrix**, denoted as **\*K**.
 
 Once the stiffness matrix is defined, we can ascertain the unknown displacements of the nodes under any given load applied to the structure. With knowledge of these displacements, we can subsequently compute both the external and internal forces within the structure by leveraging the force-displacement relations for each individual member.
 
 ## Key Features
 
 **Interactive Drawing Canvas**
+
 - Mouse-based node and member placement
 - Real-time visual feedback during design
 - Snap-to-grid functionality for precision
 - Zoom and pan capabilities
 
 **Advanced Analysis Engine**
+
 - Direct stiffness method implementation
 - Support for various load types and boundary conditions
 - Automated calculation of displacements, forces, and reactions
 - Material and section property management
 
 **Professional Results Display**
+
 - Comprehensive results tables
 - Visual deformation plots
 - Force diagrams and stress visualization
 - Export capabilities for reports
 
 **Modern Technology Stack**
+
 - **Language**: C++20 with modern standards
 - **GUI Framework**: Qt6 (Core, Widgets, GUI)
 - **Linear Algebra**: Eigen3 library
@@ -123,6 +134,7 @@ cd 2D-Truss-Analysis-cpp
 ```
 
 **Installation Options:**
+
 ```bash
 ./install.sh           # System-wide installation (requires sudo)
 ./install.sh --user    # User installation (~/.local)
@@ -150,15 +162,19 @@ make -j$(sysctl -n hw.ncpu)
 ```
 
 # Build the project
+
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
 
 # Run tests
+
 cd build && ctest
 
 # Install (optional)
+
 sudo cmake --install build
-```
+
+````
 
 ### Alternative: Fedora/RHEL
 
@@ -169,7 +185,7 @@ sudo dnf install cmake qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel gcc-c++
 # Build as above
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
-```
+````
 
 ### Alternative: Arch Linux
 
@@ -185,7 +201,9 @@ cmake --build build -j$(nproc)
 ## Usage
 
 ### GUI Application
+
 Run the GUI version:
+
 ```bash
 ./TrussAnalysisGUI  # On Unix systems
 # or
@@ -193,7 +211,9 @@ TrussAnalysisGUI.exe  # On Windows
 ```
 
 ### Command Line Interface
+
 Run the CLI version:
+
 ```bash
 ./TrussAnalysisCLI --example    # Run example analysis
 ./TrussAnalysisCLI --help       # Show usage information
