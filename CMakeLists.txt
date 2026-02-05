@@ -191,61 +191,21 @@ set_target_properties(TrussAnalysisCLI PROPERTIES
     BUILD_WITH_INSTALL_RPATH OFF
     INSTALL_RPATH_USE_LINK_PATH ON
 )
-    
-    # Strip debug symbols in release builds for smaller binaries
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
-            COMMENT "Stripping debug symbols from TrussAnalysisGUI"
-        )
-        
-        add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
-            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisCLI>"
-            COMMENT "Stripping debug symbols from TrussAnalysisCLI"
-        )
-    endif()
-    
-    message(STATUS "Linux optimizations enabled")
-elseif(WIN32)
-    # Windows-specific settings
-    message(STATUS "Configuring for Windows build")
-    
-    # Set Windows-specific properties
-    set_target_properties(TrussAnalysisGUI PROPERTIES
-        WIN32_EXECUTABLE TRUE
-        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
+
+# Strip debug symbols in release builds for smaller binaries
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
+        COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
+        COMMENT "Stripping debug symbols from TrussAnalysisGUI"
     )
     
-    # Enable modern Windows features
-    target_compile_definitions(TrussAnalysisGUI PRIVATE
-        WIN32_LEAN_AND_MEAN
-        NOMINMAX
-        _WIN32_WINNT=0x0A00  # Windows 10
+    add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
+        COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisCLI>"
+        COMMENT "Stripping debug symbols from TrussAnalysisCLI"
     )
-    
-    target_compile_definitions(TrussAnalysisCLI PRIVATE
-        WIN32_LEAN_AND_MEAN
-        NOMINMAX
-        _WIN32_WINNT=0x0A00  # Windows 10
-    )
-    
-    # Set up proper DLL copying for Qt
-    if(Qt6_FOUND)
-        # Find Qt6 installation path
-        get_target_property(QT6_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
-        get_filename_component(QT6_WINDEPLOYQT_EXECUTABLE ${QT6_QMAKE_EXECUTABLE} PATH)
-        set(QT6_WINDEPLOYQT_EXECUTABLE "${QT6_WINDEPLOYQT_EXECUTABLE}/windeployqt.exe")
-        
-        if(EXISTS ${QT6_WINDEPLOYQT_EXECUTABLE})
-            # Deploy Qt libraries after build
-            add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-                COMMAND ${QT6_WINDEPLOYQT_EXECUTABLE} --debug --compiler-runtime $<TARGET_FILE:TrussAnalysisGUI>
-                COMMENT "Deploying Qt libraries for TrussAnalysisGUI")
-        endif()
-    endif()
-    
-    message(STATUS "Windows optimizations enabled")
 endif()
+
+message(STATUS "Linux optimizations enabled")
 
 # CPack configuration for Linux packaging
 set(CPACK_GENERATOR "TGZ;DEB")
@@ -262,4 +222,5 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 
 include(CPack)
+
 
