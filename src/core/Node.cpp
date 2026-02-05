@@ -26,7 +26,8 @@ Node::Node(NodeId id, const Point2D& position, SupportType support)
 
 bool Node::isConstrainedX() const noexcept {
     return m_supportType == SupportType::PinnedX || 
-           m_supportType == SupportType::Pinned;
+           m_supportType == SupportType::Pinned ||
+           m_supportType == SupportType::RollerY;
 }
 
 bool Node::isConstrainedY() const noexcept {
