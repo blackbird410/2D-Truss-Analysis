@@ -6,9 +6,9 @@
  */
 
 #include "core/analysis/AnalysisOrchestrator.hpp"
-#include "core/analysis/LinearSolvers.hpp"
-#include "Truss.hpp"
-#include "Logger.hpp"
+#include "core/analysis/DirectSolver.hpp"
+#include "core/model/Truss.hpp"
+#include "core/Logger.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -81,9 +81,9 @@ void runExampleAnalysis(bool verbose = false) {
         
         // Perform analysis with AnalysisOrchestrator
         truss::core::analysis::AnalysisOrchestrator orchestrator(
-            std::make_unique<truss::core::analysis::DirectSolver>()
+            std::make_unique<truss::core::analysis::DirectSolver>(),
+            options
         );
-        orchestrator.setOptions(options);
         
         std::cout << "Performing structural analysis...\n";
         auto results = orchestrator.analyze(truss);

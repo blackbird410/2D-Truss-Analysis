@@ -13,8 +13,8 @@
 
 #include <gtest/gtest.h>
 #include <memory>
-#include "../../src/core/Member.hpp"
-#include "../../src/core/Node.hpp"
+#include "../../src/core/model/Member.hpp"
+#include "../../src/core/model/Node.hpp"
 
 using namespace truss::core;
 

@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "Types.hpp"
-#include "Truss.hpp"
+#include "model/Types.hpp"
+#include "model/Truss.hpp"
 #include "analysis/AnalysisOrchestrator.hpp"
 #include <string>
 #include <fstream>

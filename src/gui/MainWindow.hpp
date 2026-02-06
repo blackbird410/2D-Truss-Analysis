@@ -32,8 +32,8 @@
 #include <QtCore/QTimer>
 #include <memory>
 
-#include "Truss.hpp"
-#include "AnalysisEngine.hpp"
+#include "../core/model/Truss.hpp"
+#include "../core/analysis/AnalysisOrchestrator.hpp"
 #include "InteractiveDrawingWidget.hpp"
 #include "DeformedTrussWidget.hpp"
 

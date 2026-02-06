@@ -18,7 +18,7 @@
 #include <QGroupBox>
 #include <QComboBox>
 #include <memory>
-#include "../core/Truss.hpp"
+#include "../core/model/Truss.hpp"
 #include "../core/analysis/AnalysisOrchestrator.hpp"
 
 namespace truss::gui {
@@ -49,7 +49,7 @@ public:
      * @brief Set the analysis results
      * @param results The analysis results containing displacements and forces
      */
-    void setAnalysisResults(const truss::core::AnalysisResults& results);
+    void setAnalysisResults(const truss::core::analysis::AnalysisResults& results);
 
     /**
      * @brief Clear the display
@@ -207,7 +207,7 @@ private:
 
     // Data members
     truss::core::Truss* m_truss;
-    truss::core::AnalysisResults m_results;
+    truss::core::analysis::AnalysisResults m_results;
     bool m_hasResults;
 
     // View transformation

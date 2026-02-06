@@ -12,8 +12,8 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../src/core/Node.hpp"
-#include "../../src/core/Types.hpp"
+#include "../../src/core/model/Node.hpp"
+#include "../../src/core/model/Types.hpp"
 
 using namespace truss::core;
 

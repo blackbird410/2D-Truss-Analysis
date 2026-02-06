@@ -14,7 +14,7 @@
 
 #include <gtest/gtest.h>
 #include "../../src/core/analysis/StiffnessAssembler.hpp"
-#include "../../src/core/Truss.hpp"
+#include "../../src/core/model/Truss.hpp"
 #include <cmath>
 
 using namespace truss::core;

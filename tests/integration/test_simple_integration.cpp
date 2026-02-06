@@ -11,7 +11,7 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../src/core/Truss.hpp"
+#include "../../src/core/model/Truss.hpp"
 
 using namespace truss::core;
 

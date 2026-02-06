@@ -34,8 +34,8 @@
 #include <memory>
 #include <vector>
 
-#include "Truss.hpp"
-#include "AnalysisEngine.hpp"
+#include "../core/model/Truss.hpp"
+#include "../core/analysis/AnalysisOrchestrator.hpp"
 
 namespace truss::gui {
 

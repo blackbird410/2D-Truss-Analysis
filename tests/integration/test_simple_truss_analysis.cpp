@@ -12,9 +12,9 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../src/core/Truss.hpp"
+#include "../../src/core/model/Truss.hpp"
 #include "../../src/core/analysis/AnalysisOrchestrator.hpp"
-#include "../../src/core/analysis/LinearSolvers.hpp"
+#include "../../src/core/analysis/DirectSolver.hpp"
 
 using namespace truss::core;
 

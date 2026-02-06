@@ -9,9 +9,9 @@
 #include <gtest/gtest.h>
 #include "../../src/core/analysis/AnalysisOrchestrator.hpp"
 #include "../../src/core/analysis/SolverFactory.hpp"
-#include "../../src/core/Truss.hpp"
-#include "../../src/core/Node.hpp"
-#include "../../src/core/Member.hpp"
+#include "../../src/core/model/Truss.hpp"
+#include "../../src/core/model/Node.hpp"
+#include "../../src/core/model/Member.hpp"
 #include <cmath>
 
 using namespace truss::core;
