@@ -54,10 +54,14 @@ add_library(TrussCore STATIC
     src/core/ResultsExporter.hpp
     src/core/Application.cpp
     src/core/Application.hpp
+    # Phase 2 - Analysis decomposition
+    src/core/analysis/StiffnessAssembler.cpp
+    src/core/analysis/StiffnessAssembler.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
     src/core
+    src/core/analysis
 )
 
 target_link_libraries(TrussCore PUBLIC
@@ -106,6 +110,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_member.cpp
         tests/unit/core/test_truss.cpp
         tests/unit/core/test_analysis_engine.cpp
+        tests/unit/core/test_stiffness_assembler.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
