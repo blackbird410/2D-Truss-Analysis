@@ -5,12 +5,14 @@ add_library(TrussCore STATIC
     Application.hpp
     Logger.cpp
     Logger.hpp
-    Types.hpp
-    Node.cpp
-    Node.hpp
-    Member.cpp
-    Member.hpp
-    Truss.hpp
+    # Domain model in model/ subdirectory
+    model/Types.hpp
+    model/Node.cpp
+    model/Node.hpp
+    model/Member.cpp
+    model/Member.hpp
+    model/Truss.cpp
+    model/Truss.hpp
     # Phase 2 - Analysis decomposition components in analysis/ subdirectory
     analysis/StiffnessAssembler.cpp
     analysis/StiffnessAssembler.hpp

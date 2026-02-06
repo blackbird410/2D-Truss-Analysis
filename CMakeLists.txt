@@ -41,17 +41,18 @@ set(CMAKE_AUTOUIC ON)
 add_library(TrussCore STATIC
     src/core/Logger.cpp
     src/core/Logger.hpp
-    src/core/Types.hpp
-    src/core/Node.cpp
-    src/core/Node.hpp
-    src/core/Member.cpp
-    src/core/Member.hpp
-    src/core/Truss.cpp
-    src/core/Truss.hpp
     src/core/ResultsExporter.cpp
     src/core/ResultsExporter.hpp
     src/core/Application.cpp
     src/core/Application.hpp
+    # Domain model in model/ subdirectory
+    src/core/model/Types.hpp
+    src/core/model/Node.cpp
+    src/core/model/Node.hpp
+    src/core/model/Member.cpp
+    src/core/model/Member.hpp
+    src/core/model/Truss.cpp
+    src/core/model/Truss.hpp
     # Phase 2 - Analysis decomposition
     src/core/analysis/StiffnessAssembler.cpp
     src/core/analysis/StiffnessAssembler.hpp
