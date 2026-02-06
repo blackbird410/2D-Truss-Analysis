@@ -59,6 +59,13 @@ add_library(TrussCore STATIC
     src/core/analysis/StiffnessAssembler.hpp
     src/core/analysis/BoundaryConditionHandler.cpp
     src/core/analysis/BoundaryConditionHandler.hpp
+    src/core/analysis/ILinearSolver.hpp
+    src/core/analysis/DirectSolver.cpp
+    src/core/analysis/DirectSolver.hpp
+    src/core/analysis/IterativeSolver.cpp
+    src/core/analysis/IterativeSolver.hpp
+    src/core/analysis/SolverFactory.cpp
+    src/core/analysis/SolverFactory.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -114,6 +121,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_analysis_engine.cpp
         tests/unit/core/test_stiffness_assembler.cpp
         tests/unit/core/test_boundary_condition_handler.cpp
+        tests/unit/core/test_linear_solvers.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
