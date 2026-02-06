@@ -19,7 +19,7 @@
 #include <QComboBox>
 #include <memory>
 #include "../core/Truss.hpp"
-#include "../core/AnalysisEngine.hpp"
+#include "../core/analysis/AnalysisOrchestrator.hpp"
 
 namespace truss::gui {
 

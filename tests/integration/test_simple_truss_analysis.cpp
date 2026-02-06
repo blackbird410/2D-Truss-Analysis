@@ -13,7 +13,8 @@
 
 #include <gtest/gtest.h>
 #include "../../src/core/Truss.hpp"
-#include "../../src/core/AnalysisEngine.hpp"
+#include "../../src/core/analysis/AnalysisOrchestrator.hpp"
+#include "../../src/core/analysis/LinearSolvers.hpp"
 
 using namespace truss::core;
 
@@ -42,8 +43,8 @@ TEST(SimpleTrussAnalysisTest, TriangularTrussAnalysis) {
     EXPECT_TRUE(truss.isStaticallyDeterminate());
     
     // Perform analysis
-    AnalysisEngine engine;
-    AnalysisResults results = engine.analyze(truss);
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
     
     // Check analysis convergence
     EXPECT_TRUE(results.converged);
@@ -84,8 +85,8 @@ TEST(SimpleTrussAnalysisTest, BridgeTrussAnalysis) {
     EXPECT_EQ(truss.getMemberCount(), 7);
     
     // Perform analysis
-    AnalysisEngine engine;
-    AnalysisResults results = engine.analyze(truss);
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
     
     // Check analysis convergence
     EXPECT_TRUE(results.converged);
@@ -117,8 +118,8 @@ TEST(SimpleTrussAnalysisTest, CustomMaterialProperties) {
     truss.applyForce(node3->getId(), Force2D(0.0, -15000.0));
     
     // Perform analysis
-    AnalysisEngine engine;
-    AnalysisResults results = engine.analyze(truss);
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
     
     // Check results
     EXPECT_TRUE(results.converged);
@@ -137,18 +138,18 @@ TEST(SimpleTrussAnalysisTest, ErrorHandlingInvalidStructures) {
     Truss truss("Error Test");
     
     // Test analysis of empty truss (should throw exception)
-    AnalysisEngine engine;
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
     
     // This should throw an exception for invalid structure
-    EXPECT_THROW(engine.analyze(truss), std::runtime_error);
+    EXPECT_THROW(orchestrator.analyze(truss), std::runtime_error);
     
     // Add a single node (still invalid)
     truss.addNode(0.0, 0.0);
-    EXPECT_THROW(engine.analyze(truss), std::runtime_error);
+    EXPECT_THROW(orchestrator.analyze(truss), std::runtime_error);
     
     // Add a second node but no members (still invalid)
     truss.addNode(1.0, 0.0);
-    EXPECT_THROW(engine.analyze(truss), std::runtime_error);
+    EXPECT_THROW(orchestrator.analyze(truss), std::runtime_error);
 }
 
 // GTest provides main() automatically via GTest::gtest_main

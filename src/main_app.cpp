@@ -5,7 +5,8 @@
  * @version 2.0.0
  */
 
-#include "AnalysisEngine.hpp"
+#include "core/analysis/AnalysisOrchestrator.hpp"
+#include "core/analysis/LinearSolvers.hpp"
 #include "Truss.hpp"
 #include "Logger.hpp"
 #include <iostream>
@@ -73,16 +74,19 @@ void runExampleAnalysis(bool verbose = false) {
         std::cout << "  Constrained DOFs: " << stats.constrainedDofs << "\n\n";
         
         // Set up analysis options
-        AnalysisOptions options;
+        truss::core::analysis::AnalysisOptions options;
         options.verbose = verbose;
         options.useDirectSolver = true;
         options.computeReactions = true;
         
-        // Perform analysis
-        AnalysisEngine engine(options);
+        // Perform analysis with AnalysisOrchestrator
+        truss::core::analysis::AnalysisOrchestrator orchestrator(
+            std::make_unique<truss::core::analysis::DirectSolver>()
+        );
+        orchestrator.setOptions(options);
         
         std::cout << "Performing structural analysis...\n";
-        auto results = engine.analyze(truss);
+        auto results = orchestrator.analyze(truss);
         
         // Display results
         std::cout << "\nAnalysis Results:\n";
