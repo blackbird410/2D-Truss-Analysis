@@ -57,6 +57,8 @@ add_library(TrussCore STATIC
     # Phase 2 - Analysis decomposition
     src/core/analysis/StiffnessAssembler.cpp
     src/core/analysis/StiffnessAssembler.hpp
+    src/core/analysis/BoundaryConditionHandler.cpp
+    src/core/analysis/BoundaryConditionHandler.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -111,6 +113,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_truss.cpp
         tests/unit/core/test_analysis_engine.cpp
         tests/unit/core/test_stiffness_assembler.cpp
+        tests/unit/core/test_boundary_condition_handler.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
