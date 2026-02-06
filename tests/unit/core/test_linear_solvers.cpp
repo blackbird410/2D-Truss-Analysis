@@ -8,7 +8,6 @@
 #include "../../src/core/analysis/DirectSolver.hpp"
 #include "../../src/core/analysis/IterativeSolver.hpp"
 #include "../../src/core/analysis/SolverFactory.hpp"
-#include "../../src/core/AnalysisEngine.hpp"
 #include <cmath>
 
 using namespace truss::core;

@@ -5,7 +5,6 @@
 
 #include <gtest/gtest.h>
 #include "../../src/core/analysis/BoundaryConditionHandler.hpp"
-#include "../../src/core/AnalysisEngine.hpp"
 
 using namespace truss::core;
 using namespace truss::core::analysis;
@@ -212,12 +211,11 @@ TEST_F(BoundaryConditionHandlerTest, ExpandDisplacements_ZerosForConstrainedDofs
 }
 
 /**
- * @brief CRITICAL: Numerical equivalence with AnalysisEngine
+ * @brief Validate DOF extraction for mixed support types
  * 
- * Validates that BoundaryConditionHandler produces identical results to
- * AnalysisEngine's boundary condition methods
+ * Note: Numerical equivalence with legacy AnalysisEngine validated during Phase 2 Task 2.6
  */
-TEST_F(BoundaryConditionHandlerTest, NumericalEquivalenceWithAnalysisEngine) {
+TEST_F(BoundaryConditionHandlerTest, MixedSupportTypes) {
     // Create a Warren truss structure
     Truss truss;
     

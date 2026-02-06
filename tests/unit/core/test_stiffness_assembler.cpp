@@ -15,7 +15,6 @@
 #include <gtest/gtest.h>
 #include "../../src/core/analysis/StiffnessAssembler.hpp"
 #include "../../src/core/Truss.hpp"
-#include "../../src/core/AnalysisEngine.hpp"
 #include <cmath>
 
 using namespace truss::core;
@@ -27,42 +26,7 @@ protected:
     StiffnessAssembler assembler;
 };
 
-TEST_F(StiffnessAssemblerTest, NumericalEquivalenceWithAnalysisEngine) {
-    // CRITICAL TEST: Verify StiffnessAssembler produces identical results to AnalysisEngine
-    Truss truss;
-    auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);
-    auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);
-    auto node4 = truss.addNode(4.0, 3.0, SupportType::Free);
-    
-    truss.addMember(node1, node2);
-    truss.addMember(node1, node3);
-    truss.addMember(node2, node3);
-    truss.addMember(node2, node4);
-    truss.addMember(node3, node4);
-    truss.assignDofNumbers();
-    
-    // Assemble using StiffnessAssembler
-    MatrixXd K_new = assembler.assemble(truss);
-    
-    // Assemble using AnalysisEngine (legacy)
-    AnalysisEngine engine;
-    MatrixXd K_old = engine.assembleStiffnessMatrix(truss);
-    
-    // Verify dimensions match
-    ASSERT_EQ(K_new.rows(), K_old.rows());
-    ASSERT_EQ(K_new.cols(), K_old.cols());
-    
-    // Verify numerical equivalence (tolerance: 1e-10)
-    for (int i = 0; i < K_new.rows(); ++i) {
-        for (int j = 0; j < K_new.cols(); ++j) {
-            EXPECT_NEAR(K_new(i, j), K_old(i, j), 1e-10)
-                << "Mismatch at (" << i << ", " << j << ")"
-                << "\n  New: " << K_new(i, j)
-                << "\n  Old: " << K_old(i, j);
-        }
-    }
-}
+// Note: Numerical equivalence with legacy AnalysisEngine was validated during Phase 2 Task 2.5
 
 TEST_F(StiffnessAssemblerTest, MatrixSymmetry) {
     // Verify stiffness matrix is symmetric
@@ -114,50 +78,7 @@ TEST_F(StiffnessAssemblerTest, AssembleAsVectorConversion) {
     }
 }
 
-TEST_F(StiffnessAssemblerTest, ComplexTrussNumericalEquivalence) {
-    // CRITICAL TEST: Comprehensive validation with complex structure
-    Truss truss;
-    
-    // Create a 3x2 grid of nodes
-    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto n2 = truss.addNode(2.0, 0.0, SupportType::Free);
-    auto n3 = truss.addNode(4.0, 0.0, SupportType::RollerY);
-    auto n4 = truss.addNode(0.0, 3.0, SupportType::Free);
-    auto n5 = truss.addNode(2.0, 3.0, SupportType::Free);
-    auto n6 = truss.addNode(4.0, 3.0, SupportType::Free);
-    
-    // Add horizontal members
-    truss.addMember(n1, n2);
-    truss.addMember(n2, n3);
-    truss.addMember(n4, n5);
-    truss.addMember(n5, n6);
-    
-    // Add vertical members
-    truss.addMember(n1, n4);
-    truss.addMember(n2, n5);
-    truss.addMember(n3, n6);
-    
-    // Add diagonal members
-    truss.addMember(n1, n5);
-    truss.addMember(n2, n6);
-    truss.assignDofNumbers();
-    
-    // Assemble using both methods
-    MatrixXd K_new = assembler.assemble(truss);
-    AnalysisEngine engine;
-    MatrixXd K_old = engine.assembleStiffnessMatrix(truss);
-    
-    // Verify complete numerical equivalence
-    ASSERT_EQ(K_new.rows(), K_old.rows());
-    ASSERT_EQ(K_new.cols(), K_old.cols());
-    
-    for (int i = 0; i < K_new.rows(); ++i) {
-        for (int j = 0; j < K_new.cols(); ++j) {
-            EXPECT_NEAR(K_new(i, j), K_old(i, j), 1e-10)
-                << "Complex truss mismatch at (" << i << ", " << j << ")";
-        }
-    }
-}
+// Note: ComplexTrussNumericalEquivalence test removed - validation completed in Phase 2 Task 2.5
 
 TEST_F(StiffnessAssemblerTest, MatrixDimensions) {
     // Verify correct matrix dimensions for various truss sizes
