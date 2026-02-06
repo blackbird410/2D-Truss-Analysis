@@ -48,8 +48,6 @@ add_library(TrussCore STATIC
     src/core/Member.hpp
     src/core/Truss.cpp
     src/core/Truss.hpp
-    src/core/AnalysisEngine.cpp
-    src/core/AnalysisEngine.hpp
     src/core/ResultsExporter.cpp
     src/core/ResultsExporter.hpp
     src/core/Application.cpp
@@ -120,7 +118,6 @@ if(BUILD_TESTING)
         tests/unit/core/test_node.cpp
         tests/unit/core/test_member.cpp
         tests/unit/core/test_truss.cpp
-        tests/unit/core/test_analysis_engine.cpp
         tests/unit/core/test_stiffness_assembler.cpp
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
