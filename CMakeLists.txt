@@ -66,6 +66,8 @@ add_library(TrussCore STATIC
     src/core/analysis/IterativeSolver.hpp
     src/core/analysis/SolverFactory.cpp
     src/core/analysis/SolverFactory.hpp
+    src/core/analysis/AnalysisOrchestrator.cpp
+    src/core/analysis/AnalysisOrchestrator.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -122,6 +124,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_stiffness_assembler.cpp
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
+        tests/unit/core/test_analysis_orchestrator.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
