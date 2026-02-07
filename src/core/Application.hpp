@@ -2,7 +2,7 @@
  * @file Application.hpp
  * @brief Core application management class
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #pragma once
@@ -64,7 +64,7 @@ private:
     ~Application() = default;
     
     bool m_initialized{false};
-    std::string m_version{"2.0.0"};
+    std::string m_version{"3.0.0"};
     std::string m_name{"TrussAnalysis2D"};
 };
 

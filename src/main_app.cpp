@@ -2,7 +2,7 @@
  * @file main_app.cpp
  * @brief Main application for 2D Truss Analysis
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "core/analysis/AnalysisOrchestrator.hpp"
@@ -17,7 +17,7 @@ using namespace truss::core;
 
 void printHeader() {
     std::cout << "=================================================\n";
-    std::cout << "       2D Truss Analysis Software v2.0.0       \n";
+    std::cout << "       2D Truss Analysis Software v3.0.0       \n";
     std::cout << "   Civil Engineering Software Solutions         \n";
     std::cout << "=================================================\n\n";
 }

@@ -1,6 +1,8 @@
 /**
  * @file test_boundary_condition_handler.cpp
  * @brief Unit tests for BoundaryConditionHandler class
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  */
 
 #include <gtest/gtest.h>

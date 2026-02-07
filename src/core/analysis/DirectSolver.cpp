@@ -2,7 +2,7 @@
  * @file DirectSolver.cpp
  * @brief Implementation of DirectSolver class
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "DirectSolver.hpp"

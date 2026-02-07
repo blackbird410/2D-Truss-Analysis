@@ -2,7 +2,7 @@
  * @file Truss.cpp
  * @brief Implementation of the Truss class
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "Truss.hpp"

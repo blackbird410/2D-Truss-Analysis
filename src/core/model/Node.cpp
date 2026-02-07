@@ -2,7 +2,7 @@
  * @file Node.cpp
  * @brief Implementation of the Node class
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "Node.hpp"

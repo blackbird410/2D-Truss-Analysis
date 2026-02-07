@@ -1,8 +1,8 @@
 /**
  * @file test_minimal_analysis.cpp
  * @brief Google Test minimal integration test for basic analysis workflow
- * @author Refactoring Agent (migrated from test_MinimalAnalysis.cpp)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Migration Notes:
  * - Converted from minimal console application to GTest format

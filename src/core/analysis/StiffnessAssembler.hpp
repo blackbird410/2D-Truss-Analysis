@@ -1,8 +1,8 @@
 /**
  * @file StiffnessAssembler.hpp
  * @brief Assembles global stiffness matrices for truss structures
- * @author Refactoring Agent (Phase 2, Task 2.5)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * This class is responsible for assembling the global stiffness matrix
  * from individual member stiffness matrices. It is part of the decomposition

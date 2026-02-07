@@ -2,7 +2,7 @@
  * @file BoundaryConditionHandler.hpp
  * @brief Handles boundary condition application for structural analysis
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #pragma once

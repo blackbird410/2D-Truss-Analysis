@@ -1,8 +1,8 @@
 /**
  * @file test_stiffness_assembler.cpp
  * @brief Google Test unit tests for StiffnessAssembler class
- * @author Refactoring Agent (Phase 2, Task 2.5)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Test Strategy:
  * - Focus on numerical equivalence with AnalysisEngine (CRITICAL)

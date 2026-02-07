@@ -1,8 +1,8 @@
 /**
  * @file test_truss.cpp
  * @brief Google Test unit tests for Truss class
- * @author Refactoring Agent (migrated from custom framework)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test

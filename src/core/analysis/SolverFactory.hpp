@@ -2,7 +2,7 @@
  * @file SolverFactory.hpp
  * @brief Factory for creating linear solver instances
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #pragma once

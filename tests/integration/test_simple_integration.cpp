@@ -1,8 +1,8 @@
 /**
  * @file test_simple_integration.cpp
  * @brief Google Test integration tests for truss creation without analysis
- * @author Refactoring Agent (migrated from test_SimpleIntegration.cpp)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test

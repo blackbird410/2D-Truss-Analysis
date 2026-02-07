@@ -1,8 +1,8 @@
 /**
  * @file StiffnessAssembler.cpp
  * @brief Implementation of StiffnessAssembler class
- * @author Refactoring Agent (Phase 2, Task 2.5)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  */
 
 #include "StiffnessAssembler.hpp"

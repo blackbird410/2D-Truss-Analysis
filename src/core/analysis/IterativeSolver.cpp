@@ -2,7 +2,7 @@
  * @file IterativeSolver.cpp
  * @brief Implementation of IterativeSolver class
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "IterativeSolver.hpp"

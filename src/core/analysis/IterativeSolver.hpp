@@ -2,7 +2,7 @@
  * @file IterativeSolver.hpp
  * @brief Iterative linear solver using Conjugate Gradient method
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #pragma once

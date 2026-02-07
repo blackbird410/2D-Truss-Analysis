@@ -1,8 +1,8 @@
 /**
  * @file test_working_integration.cpp
  * @brief Google Test integration tests with memory-safe analysis execution
- * @author Refactoring Agent (migrated from test_WorkingIntegration.cpp)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test

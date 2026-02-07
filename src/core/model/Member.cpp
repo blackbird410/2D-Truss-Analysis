@@ -1,7 +1,7 @@
 /**
  * @file Member.cpp
  * @brief Implementation of the Member class
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "Member.hpp"

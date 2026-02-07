@@ -1,6 +1,8 @@
 /**
  * @file test_linear_solvers.cpp
  * @brief Unit tests for linear solver implementations
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  */
 
 #include <gtest/gtest.h>

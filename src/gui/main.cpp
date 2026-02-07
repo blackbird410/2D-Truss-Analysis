@@ -25,7 +25,7 @@ int main(int argc, char *argv[]) {
     
     // Set application properties
     app.setApplicationName("2D Truss Analysis");
-    app.setApplicationVersion("2.0.0");
+    app.setApplicationVersion("3.0.0");
     app.setOrganizationName("Civil Engineering Software Solutions");
     app.setOrganizationDomain("truss-analysis.com");
     

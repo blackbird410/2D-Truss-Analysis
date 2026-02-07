@@ -2,7 +2,7 @@
  * @file DirectSolver.hpp
  * @brief Direct linear solver using LDLT factorization
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #pragma once
