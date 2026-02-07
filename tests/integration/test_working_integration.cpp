@@ -1,8 +1,8 @@
 /**
  * @file test_working_integration.cpp
  * @brief Google Test integration tests with memory-safe analysis execution
- * @author Refactoring Agent (migrated from test_WorkingIntegration.cpp)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test
@@ -13,8 +13,9 @@
 
 #include <gtest/gtest.h>
 #include <memory>
-#include "../../src/core/Truss.hpp"
-#include "../../src/core/AnalysisEngine.hpp"
+#include "../../src/core/model/Truss.hpp"
+#include "../../src/core/analysis/AnalysisOrchestrator.hpp"
+#include "../../src/core/analysis/DirectSolver.hpp"
 
 using namespace truss::core;
 
@@ -43,11 +44,11 @@ TEST(WorkingIntegrationTest, MemorySafeTriangularTrussAnalysis) {
     EXPECT_TRUE(truss.isStaticallyDeterminate());
     
     // Perform analysis - use unique_ptr to avoid copy issues
-    AnalysisEngine engine;
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
     
     // Try-catch to avoid memory issues causing test failures
     try {
-        auto results_ptr = std::make_unique<AnalysisResults>(engine.analyze(truss));
+        auto results_ptr = std::make_unique<truss::core::analysis::AnalysisResults>(orchestrator.analyze(truss));
         
         // Check analysis convergence
         EXPECT_TRUE(results_ptr->converged);
@@ -101,10 +102,10 @@ TEST(WorkingIntegrationTest, MemorySafeBridgeTrussAnalysis) {
     EXPECT_EQ(truss.getMemberCount(), 7);
     
     // Perform analysis with memory safety
-    AnalysisEngine engine;
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
     
     try {
-        auto results_ptr = std::make_unique<AnalysisResults>(engine.analyze(truss));
+        auto results_ptr = std::make_unique<truss::core::analysis::AnalysisResults>(orchestrator.analyze(truss));
         
         EXPECT_TRUE(results_ptr->converged);
         EXPECT_GT(results_ptr->maxDisplacement, 0.0);

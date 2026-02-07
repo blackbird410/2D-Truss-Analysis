@@ -2,12 +2,13 @@
  * @file main_app.cpp
  * @brief Main application for 2D Truss Analysis
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
-#include "AnalysisEngine.hpp"
-#include "Truss.hpp"
-#include "Logger.hpp"
+#include "core/analysis/AnalysisOrchestrator.hpp"
+#include "core/analysis/DirectSolver.hpp"
+#include "core/model/Truss.hpp"
+#include "core/Logger.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -16,7 +17,7 @@ using namespace truss::core;
 
 void printHeader() {
     std::cout << "=================================================\n";
-    std::cout << "       2D Truss Analysis Software v2.0.0       \n";
+    std::cout << "       2D Truss Analysis Software v3.0.0       \n";
     std::cout << "   Civil Engineering Software Solutions         \n";
     std::cout << "=================================================\n\n";
 }
@@ -73,16 +74,19 @@ void runExampleAnalysis(bool verbose = false) {
         std::cout << "  Constrained DOFs: " << stats.constrainedDofs << "\n\n";
         
         // Set up analysis options
-        AnalysisOptions options;
+        truss::core::analysis::AnalysisOptions options;
         options.verbose = verbose;
         options.useDirectSolver = true;
         options.computeReactions = true;
         
-        // Perform analysis
-        AnalysisEngine engine(options);
+        // Perform analysis with AnalysisOrchestrator
+        truss::core::analysis::AnalysisOrchestrator orchestrator(
+            std::make_unique<truss::core::analysis::DirectSolver>(),
+            options
+        );
         
         std::cout << "Performing structural analysis...\n";
-        auto results = engine.analyze(truss);
+        auto results = orchestrator.analyze(truss);
         
         // Display results
         std::cout << "\nAnalysis Results:\n";

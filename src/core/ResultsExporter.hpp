@@ -7,14 +7,17 @@
 
 #pragma once
 
-#include "Types.hpp"
-#include "Truss.hpp"
-#include "AnalysisEngine.hpp"
+#include "model/Types.hpp"
+#include "model/Truss.hpp"
+#include "analysis/AnalysisOrchestrator.hpp"
 #include <string>
 #include <fstream>
 #include <memory>
 
 namespace truss::core {
+
+// Use AnalysisResults from the analysis namespace
+using analysis::AnalysisResults;
 
 /**
  * @brief Export format options

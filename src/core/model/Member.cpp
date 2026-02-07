@@ -1,7 +1,7 @@
 /**
  * @file Member.cpp
  * @brief Implementation of the Member class
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "Member.hpp"
@@ -62,6 +62,10 @@ Real Member::getStiffness() const {
     return (m_material.youngModulus * m_section.area) / getLength();
 }
 
+Real Member::getAxialStiffness() const {
+    return m_material.youngModulus * m_section.area;
+}
+
 Real Member::getWeight() const {
     return m_section.area * getLength() * m_material.density;
 }
@@ -77,6 +81,15 @@ bool Member::isConnectedTo(const Node& node) const {
 
 bool Member::isConnectedTo(NodeId nodeId) const {
     return (m_startNode->getId() == nodeId || m_endNode->getId() == nodeId);
+}
+
+bool Member::hasNode(NodeId nodeId) const {
+    return isConnectedTo(nodeId);
+}
+
+bool Member::connectsNodes(NodeId id1, NodeId id2) const {
+    return (m_startNode->getId() == id1 && m_endNode->getId() == id2) ||
+           (m_startNode->getId() == id2 && m_endNode->getId() == id1);
 }
 
 std::shared_ptr<Node> Member::getOtherNode(const Node& node) const {

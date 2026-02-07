@@ -2,7 +2,7 @@
  * @file Node.hpp
  * @brief Node class representing structural joints in the truss
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #pragma once
@@ -10,6 +10,7 @@
 #include "Types.hpp"
 #include <string>
 #include <memory>
+#include <vector>
 
 namespace truss::core {
 
@@ -97,6 +98,11 @@ public:
     bool isFree() const noexcept;
     bool isPinned() const noexcept;
     bool isRoller() const noexcept;
+    bool isConstrained() const noexcept;
+    
+    // Degrees of freedom queries
+    int getDegreesOfFreedom() const noexcept;
+    std::vector<Index> getGlobalDOFs() const;
     
     // Utility methods
     Real distanceTo(const Node& other) const;

@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(TrussAnalysisCore VERSION 2.0.0 LANGUAGES CXX)
+project(TrussAnalysisCore VERSION 3.0.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -32,12 +32,25 @@ add_library(TrussCore STATIC
     src/core/Member.hpp
     src/core/Truss.cpp
     src/core/Truss.hpp
-    src/core/AnalysisEngine.cpp
-    src/core/AnalysisEngine.hpp
+    # Phase 2 - Analysis decomposition
+    src/core/analysis/StiffnessAssembler.cpp
+    src/core/analysis/StiffnessAssembler.hpp
+    src/core/analysis/BoundaryConditionHandler.cpp
+    src/core/analysis/BoundaryConditionHandler.hpp
+    src/core/analysis/ILinearSolver.hpp
+    src/core/analysis/DirectSolver.cpp
+    src/core/analysis/DirectSolver.hpp
+    src/core/analysis/IterativeSolver.cpp
+    src/core/analysis/IterativeSolver.hpp
+    src/core/analysis/SolverFactory.cpp
+    src/core/analysis/SolverFactory.hpp
+    src/core/analysis/AnalysisOrchestrator.cpp
+    src/core/analysis/AnalysisOrchestrator.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
     src/core
+    src/core/analysis
 )
 
 target_link_libraries(TrussCore PUBLIC

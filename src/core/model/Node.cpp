@@ -2,7 +2,7 @@
  * @file Node.cpp
  * @brief Implementation of the Node class
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "Node.hpp"
@@ -26,7 +26,8 @@ Node::Node(NodeId id, const Point2D& position, SupportType support)
 
 bool Node::isConstrainedX() const noexcept {
     return m_supportType == SupportType::PinnedX || 
-           m_supportType == SupportType::Pinned;
+           m_supportType == SupportType::Pinned ||
+           m_supportType == SupportType::RollerY;
 }
 
 bool Node::isConstrainedY() const noexcept {
@@ -46,6 +47,31 @@ bool Node::isPinned() const noexcept {
 bool Node::isRoller() const noexcept {
     return m_supportType == SupportType::RollerX || 
            m_supportType == SupportType::RollerY;
+}
+
+bool Node::isConstrained() const noexcept {
+    return m_supportType != SupportType::Free;
+}
+
+int Node::getDegreesOfFreedom() const noexcept {
+    return getDofCount();
+}
+
+std::vector<Index> Node::getGlobalDOFs() const {
+    std::vector<Index> dofs;
+    dofs.reserve(2);
+    
+    // Add X DOF if not constrained in X
+    if (!isConstrainedX()) {
+        dofs.push_back(m_dofX);
+    }
+    
+    // Add Y DOF if not constrained in Y
+    if (!isConstrainedY()) {
+        dofs.push_back(m_dofY);
+    }
+    
+    return dofs;
 }
 
 Real Node::distanceTo(const Node& other) const {

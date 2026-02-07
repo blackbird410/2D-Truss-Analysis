@@ -1,8 +1,8 @@
 /**
  * @file test_minimal_analysis.cpp
  * @brief Google Test minimal integration test for basic analysis workflow
- * @author Refactoring Agent (migrated from test_MinimalAnalysis.cpp)
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Migration Notes:
  * - Converted from minimal console application to GTest format
@@ -13,8 +13,9 @@
 
 #include <gtest/gtest.h>
 #include <iostream>
-#include "../../src/core/Truss.hpp"
-#include "../../src/core/AnalysisEngine.hpp"
+#include "../../src/core/model/Truss.hpp"
+#include "../../src/core/analysis/AnalysisOrchestrator.hpp"
+#include "../../src/core/analysis/DirectSolver.hpp"
 
 using namespace truss::core;
 
@@ -37,11 +38,11 @@ TEST(MinimalAnalysisTest, BasicTriangularTrussWorkflow) {
     truss.applyForce(node3->getId(), Force2D(0.0, -10000.0));
     
     // Create analysis engine
-    AnalysisEngine engine;
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
     
     // Perform analysis
     try {
-        AnalysisResults results = engine.analyze(truss);
+        truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
         
         // Validate results
         EXPECT_TRUE(results.converged) << "Analysis should converge";

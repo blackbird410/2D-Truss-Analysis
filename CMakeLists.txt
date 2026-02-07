@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(TrussAnalysis VERSION 2.2.0 LANGUAGES CXX)
+project(TrussAnalysis VERSION 3.0.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -41,23 +41,37 @@ set(CMAKE_AUTOUIC ON)
 add_library(TrussCore STATIC
     src/core/Logger.cpp
     src/core/Logger.hpp
-    src/core/Types.hpp
-    src/core/Node.cpp
-    src/core/Node.hpp
-    src/core/Member.cpp
-    src/core/Member.hpp
-    src/core/Truss.cpp
-    src/core/Truss.hpp
-    src/core/AnalysisEngine.cpp
-    src/core/AnalysisEngine.hpp
     src/core/ResultsExporter.cpp
     src/core/ResultsExporter.hpp
     src/core/Application.cpp
     src/core/Application.hpp
+    # Domain model in model/ subdirectory
+    src/core/model/Types.hpp
+    src/core/model/Node.cpp
+    src/core/model/Node.hpp
+    src/core/model/Member.cpp
+    src/core/model/Member.hpp
+    src/core/model/Truss.cpp
+    src/core/model/Truss.hpp
+    # Phase 2 - Analysis decomposition
+    src/core/analysis/StiffnessAssembler.cpp
+    src/core/analysis/StiffnessAssembler.hpp
+    src/core/analysis/BoundaryConditionHandler.cpp
+    src/core/analysis/BoundaryConditionHandler.hpp
+    src/core/analysis/ILinearSolver.hpp
+    src/core/analysis/DirectSolver.cpp
+    src/core/analysis/DirectSolver.hpp
+    src/core/analysis/IterativeSolver.cpp
+    src/core/analysis/IterativeSolver.hpp
+    src/core/analysis/SolverFactory.cpp
+    src/core/analysis/SolverFactory.hpp
+    src/core/analysis/AnalysisOrchestrator.cpp
+    src/core/analysis/AnalysisOrchestrator.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
     src/core
+    src/core/analysis
 )
 
 target_link_libraries(TrussCore PUBLIC
@@ -105,7 +119,10 @@ if(BUILD_TESTING)
         tests/unit/core/test_node.cpp
         tests/unit/core/test_member.cpp
         tests/unit/core/test_truss.cpp
-        tests/unit/core/test_analysis_engine.cpp
+        tests/unit/core/test_stiffness_assembler.cpp
+        tests/unit/core/test_boundary_condition_handler.cpp
+        tests/unit/core/test_linear_solvers.cpp
+        tests/unit/core/test_analysis_orchestrator.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE

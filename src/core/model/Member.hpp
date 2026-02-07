@@ -2,7 +2,7 @@
  * @file Member.hpp
  * @brief Member class representing structural elements in the truss
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #pragma once
@@ -66,6 +66,7 @@ public:
     
     // Structural properties
     Real getStiffness() const;          ///< Axial stiffness (EA/L)
+    Real getAxialStiffness() const;     ///< Axial rigidity (EA)
     Real getWeight() const;             ///< Self-weight of the member
     
     // Analysis results
@@ -91,6 +92,8 @@ public:
     // Node connectivity
     bool isConnectedTo(const Node& node) const;
     bool isConnectedTo(NodeId nodeId) const;
+    bool hasNode(NodeId nodeId) const;                    ///< Check if member has specific node (by ID)
+    bool connectsNodes(NodeId id1, NodeId id2) const;     ///< Check if member connects two specific nodes
     std::shared_ptr<Node> getOtherNode(const Node& node) const;
     std::shared_ptr<Node> getOtherNode(NodeId nodeId) const;
     

@@ -2,7 +2,7 @@
  * @file Logger.cpp
  * @brief Implementation of the logging system
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @version 3.0.0
  */
 
 #include "Logger.hpp"

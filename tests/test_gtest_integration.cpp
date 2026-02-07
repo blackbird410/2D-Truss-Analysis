@@ -1,8 +1,8 @@
 /**
  * @file test_gtest_integration.cpp
  * @brief Minimal test to validate Google Test integration
- * @author Refactoring Agent
- * @version 3.0.0-dev
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
  * 
  * Purpose: Verify that Google Test framework is properly integrated
  * into the build system before migrating production tests.
