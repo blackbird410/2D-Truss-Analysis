@@ -251,14 +251,22 @@
 **Started:** February 7, 2026  
 **Dependencies:** Phase 2 complete ✅
 
-#### Tasks (1/10)
+#### Tasks (3/10)
 
 - [x] **Task 3.1.1:** Create directory structure ✅
   - Created `src/infrastructure/export/`
   - Created `tests/unit/infrastructure/export/`
   - Created `tests/fixtures/export_golden/`
+- [x] **Task 3.1.2:** Define interfaces ✅
+  - Created `export_types.hpp` (ExportFormat, ExportOptions)
+  - Created `exporter.hpp` (IResultsExporter interface)
+  - Created `exporter_factory.hpp` (Factory declarations)
+- [x] **Task 3.1.3:** Generate golden master files ✅
+  - Created `generate_golden_masters.cpp` utility
+  - Generated 6 reference files (CSV, JSON, XML, HTML, LaTeX, TXT)
+  - Total size: 6,653 bytes
+  - MD5 checksums documented in `CHECKSUMS.md`
 - [ ] Refactor ResultsExporter
-  - [ ] Create IResultsExporter interface
   - [ ] Implement CSVExporter
   - [ ] Implement JSONExporter
   - [ ] Implement HTMLExporter
