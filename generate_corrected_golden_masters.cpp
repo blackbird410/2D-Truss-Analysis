@@ -18,9 +18,11 @@
 #include "src/core/analysis/AnalysisOrchestrator.hpp"
 #include "src/core/analysis/SolverFactory.hpp"
 #include "src/core/model/Truss.hpp"
+#include "src/core/Logger.hpp"
 #include "src/infrastructure/export/csv_exporter.hpp"
 #include "src/infrastructure/export/json_exporter.hpp"
 #include "src/infrastructure/export/xml_exporter.hpp"
+#include "src/infrastructure/export/html_exporter.hpp"
 #include <iostream>
 #include <filesystem>
 #include <iomanip>
@@ -54,6 +56,9 @@ Truss createTestTruss() {
 
 int main() {
     try {
+        // Initialize logger
+        truss::core::Logger::initialize();
+        
         std::cout << "=============================================================\n";
         std::cout << "  CORRECTED Golden Master Generator - Data Completeness Fix\n";
         std::cout << "  2D Truss Analysis v3.0.0\n";
@@ -118,6 +123,8 @@ int main() {
                             "JSON (NOW INCLUDES REACTIONS)"});
         exporters.push_back({"golden_master.xml", std::make_unique<XMLExporter>(), 
                             "XML (NOW COMPLETE - 8 SECTIONS)"});
+        exporters.push_back({"golden_master.html", std::make_unique<HTMLExporter>(), 
+                            "HTML (8-SECTION COMPLIANT)"});
         
         bool allSuccessful = true;
         size_t totalBytes = 0;
@@ -177,15 +184,18 @@ int main() {
             std::cout << "  3. Update BREAKING_CHANGES.md documentation\n";
             std::cout << "  4. Commit corrected golden masters to repository\n";
             
+            truss::core::Logger::shutdown();
             return 0;
         } else {
             std::cerr << "✗ Status: SOME FORMATS FAILED\n";
             std::cerr << "  Check error messages above for details\n";
+            truss::core::Logger::shutdown();
             return 1;
         }
         
     } catch (const std::exception& e) {
         std::cerr << "FATAL ERROR: " << e.what() << std::endl;
+        truss::core::Logger::shutdown();
         return 1;
     }
 }
