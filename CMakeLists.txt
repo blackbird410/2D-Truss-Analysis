@@ -85,10 +85,10 @@ add_library(TrussCore STATIC
 )
 
 target_include_directories(TrussCore PUBLIC
-    ${CMAKE_SOURCE_DIR}
-    src/core
-    src/core/analysis
-    src/infrastructure/export
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/analysis
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/export
 )
 
 target_link_libraries(TrussCore PUBLIC
@@ -279,7 +279,7 @@ set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
 
 # Debian package specific settings
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Your Name <your.email@example.com>")
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Civil Engineering Software Solutions <support@civil-engineering-software-solutions.com>")
 set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 
