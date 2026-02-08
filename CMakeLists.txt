@@ -78,6 +78,8 @@ add_library(TrussCore STATIC
     src/infrastructure/export/xml_exporter.hpp
     src/infrastructure/export/html_exporter.cpp
     src/infrastructure/export/html_exporter.hpp
+    src/infrastructure/export/latex_exporter.cpp
+    src/infrastructure/export/latex_exporter.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
