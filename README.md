@@ -142,7 +142,9 @@ cd 2D-Truss-Analysis-cpp
 ./install.sh --help    # See all options
 ```
 
-### Building from Source
+### Building from Source (Linux only)
+
+> Note: This project currently supports Linux only. Windows and macOS builds and binaries (for example, `.exe` launchers such as `TrussAnalysisGUI.exe`) are not supported.
 
 ```bash
 # Install dependencies (Ubuntu/Debian)
@@ -153,28 +155,16 @@ sudo apt-get install cmake qt6-base-dev libeigen3-dev build-essential
 git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
 cd 2D-Truss-Analysis-cpp
 
-# Create build directory
-mkdir build && cd build
-
-# Configure and build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(sysctl -n hw.ncpu)
-```
-
 # Build the project
-
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
 
 # Run tests
-
 cd build && ctest
 
 # Install (optional)
-
 sudo cmake --install build
-
-````
+```
 
 ### Alternative: Fedora/RHEL
 

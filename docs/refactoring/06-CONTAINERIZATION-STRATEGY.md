@@ -75,11 +75,8 @@ RUN cmake -B build -G Ninja \
 # =============================================================================
 FROM base AS runtime
 
-# Install only runtime dependencies
-RUN apt-get update && apt-get install -y \
-    --no-install-recommends \
-    libeigen3-dev \
-    && rm -rf /var/lib/apt/lists/*
+# No additional runtime dependencies required (Eigen is header-only and
+# already compiled into the binary in the builder stage)
 
 # Create non-root user
 RUN useradd -m -u 1000 -s /bin/bash truss
@@ -104,10 +101,10 @@ WORKDIR /data
 
 # Health check (if applicable)
 HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
-    CMD TrussAnalyze --version || exit 1
+    CMD TrussAnalysisCLI --version || exit 1
 
 # Default command
-ENTRYPOINT ["TrussAnalyze"]
+ENTRYPOINT ["TrussAnalysisCLI"]
 CMD ["--help"]
 
 # Metadata
