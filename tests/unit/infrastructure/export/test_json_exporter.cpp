@@ -327,9 +327,9 @@ TEST_F(JSONExporterTest, ReactionsSection) {
 /**
  * @brief Test properties section (CONTRACT COMPLETENESS)
  * 
- * Material properties section is REQUIRED for 8-section export contract,
- * even though domain model does not yet implement this feature.
- * Placeholder ensures forward compatibility and explicit contract definition.
+ * Material properties section is REQUIRED for 8-section export contract.
+ * Domain model provides complete material and section data through
+ * Member::getMaterial() and Member::getSection().
  */
 TEST_F(JSONExporterTest, PropertiesSection) {
     auto truss = createSimpleTriangleTruss();
@@ -341,19 +341,22 @@ TEST_F(JSONExporterTest, PropertiesSection) {
     
     exporter->exportResults(*truss, results, outputPath, options);
     
-    // Properties section must be present (8-section contract requirement)
+    // Properties section must be present with real data
     EXPECT_TRUE(fileContains(outputPath, "\"properties\""))
-        << "JSON export MUST include properties section for contract completeness";
-    EXPECT_TRUE(fileContains(outputPath, "\"comment\""))
-        << "Properties placeholder must contain explanatory comment";
+        << "JSON export MUST include properties section";
+    EXPECT_TRUE(fileContains(outputPath, "\"members\""))
+        << "Properties must include members array";
+    EXPECT_TRUE(fileContains(outputPath, "\"material\""))
+        << "Properties must include material data";
+    EXPECT_TRUE(fileContains(outputPath, "\"youngModulus\""))
+        << "Properties must include Young's modulus";
 }
 
 /**
  * @brief Test loads section (CONTRACT COMPLETENESS)
  * 
- * Applied loads section is REQUIRED for 8-section export contract,
- * even though domain model does not yet implement this feature.
- * Placeholder ensures forward compatibility and explicit contract definition.
+ * Applied loads section is REQUIRED for 8-section export contract.
+ * Domain model provides load data through Node::getAppliedForce().
  */
 TEST_F(JSONExporterTest, LoadsSection) {
     auto truss = createSimpleTriangleTruss();
@@ -365,11 +368,11 @@ TEST_F(JSONExporterTest, LoadsSection) {
     
     exporter->exportResults(*truss, results, outputPath, options);
     
-    // Loads section must be present (8-section contract requirement)
+    // Loads section must be present with real data
     EXPECT_TRUE(fileContains(outputPath, "\"loads\""))
-        << "JSON export MUST include loads section for contract completeness";
-    EXPECT_TRUE(fileContains(outputPath, "\"comment\""))
-        << "Loads placeholder must contain explanatory comment";
+        << "JSON export MUST include loads section";
+    EXPECT_TRUE(fileContains(outputPath, "\"nodalForces\""))
+        << "Loads must include nodal forces array";
 }
 
 /**

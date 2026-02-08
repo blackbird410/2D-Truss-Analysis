@@ -386,15 +386,19 @@ TEST_F(XMLExporterTest, PropertiesSection) {
     ExportOptions options;
     options.includeProperties = true;
     
-    exporter->exportResults(*truss, results, outputPath, options);
+    bool success = exporter->exportResults(*truss, results, outputPath, options);
+    ASSERT_TRUE(success) << "Export should succeed";
+    ASSERT_TRUE(fs::exists(outputPath)) << "Output file should exist: " << outputPath;
     
-    // Properties section must be present (8-section contract requirement)
+    // Properties section must be present with real data
     EXPECT_TRUE(fileContains(outputPath, "<Properties>"))
-        << "XML export MUST include properties section for contract completeness";
+        << "XML export MUST include Properties section";
     EXPECT_TRUE(fileContains(outputPath, "</Properties>"))
         << "Properties section must have closing tag";
-    EXPECT_TRUE(fileContains(outputPath, "<Comment>"))
-        << "Properties placeholder must contain explanatory comment";
+    EXPECT_TRUE(fileContains(outputPath, "<Member id"))
+        << "Properties must include Member elements";
+    EXPECT_TRUE(fileContains(outputPath, "<Material>"))
+        << "Properties must include Material data";
 }
 
 /**
@@ -414,13 +418,13 @@ TEST_F(XMLExporterTest, LoadsSection) {
     
     exporter->exportResults(*truss, results, outputPath, options);
     
-    // Loads section must be present (8-section contract requirement)
+    // Loads section must be present with real data
     EXPECT_TRUE(fileContains(outputPath, "<Loads>"))
-        << "XML export MUST include loads section for contract completeness";
+        << "XML export MUST include Loads section";
     EXPECT_TRUE(fileContains(outputPath, "</Loads>"))
         << "Loads section must have closing tag";
-    EXPECT_TRUE(fileContains(outputPath, "<Comment>"))
-        << "Loads placeholder must contain explanatory comment";
+    EXPECT_TRUE(fileContains(outputPath, "<NodalForces>") || fileContains(outputPath, "<Force>"))
+        << "Loads must include force elements";
 }
 
 /**
