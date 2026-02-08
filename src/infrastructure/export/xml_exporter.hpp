@@ -82,7 +82,14 @@ private:
                             const ExportOptions& options);
     void writeGeometrySection(std::ostream& os, const Truss& truss,
                              const ExportOptions& options);
-    // Note: Legacy XML export only includes Project and Geometry sections
+    void writeDisplacementsSection(std::ostream& os, const AnalysisResults& results,
+                                  const ExportOptions& options);
+    void writeMemberForcesSection(std::ostream& os, const AnalysisResults& results,
+                                 const ExportOptions& options);
+    void writeReactionsSection(std::ostream& os, const AnalysisResults& results,
+                              const ExportOptions& options);
+    void writeMetadataSection(std::ostream& os, const AnalysisResults& results,
+                             const ExportOptions& options);
 };
 
 } // namespace truss::infrastructure::export_
