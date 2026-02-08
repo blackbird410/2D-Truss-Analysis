@@ -175,11 +175,11 @@ void XMLExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
         const auto& section = member->getSection();
         
         os << "      <Member id=\"" << member->getId() << "\">\n";
-        os << "        <Material>" << escapeString(material.name) << "</Material>\\n";
-        os << "        <YoungModulus>" << formatNumber(material.youngModulus, options) << "</YoungModulus>\\n";
-        os << "        <Density>" << formatNumber(material.density, options) << "</Density>\\n";
-        os << "        <Area>" << formatNumber(section.area, options) << "</Area>\\n";
-        os << "        <Section>" << escapeString(section.designation) << "</Section>\\n";
+        os << "        <Material>" << escapeString(material.name) << "</Material>\n";
+        os << "        <YoungModulus>" << formatNumber(material.youngModulus, options) << "</YoungModulus>\n";
+        os << "        <Density>" << formatNumber(material.density, options) << "</Density>\n";
+        os << "        <Area>" << formatNumber(section.area, options) << "</Area>\n";
+        os << "        <Section>" << escapeString(section.designation) << "</Section>\n";
         os << "      </Member>\n";
     }
     
