@@ -302,19 +302,26 @@ TEST_F(JSONExporterTest, MetadataSection) {
 /**
  * @brief Test that reactions section is NOT included (legacy behavior)
  */
-TEST_F(JSONExporterTest, NoReactionsSection) {
+/**
+ * @brief Test reactions section (CORRECTNESS FIX)
+ * Legacy behavior omitted reactions - this was incorrect.
+ * Reactions data is mandatory for semantic equivalence with CSV.
+ */
+TEST_F(JSONExporterTest, ReactionsSection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
     
-    std::string outputPath = testOutputDir + "/no_reactions_test.json";
+    std::string outputPath = testOutputDir + "/reactions_test.json";
     ExportOptions options;
-    options.includeReactions = true;  // Request reactions
+    options.includeReactions = true;
     
     exporter->exportResults(*truss, results, outputPath, options);
     
-    // JSON format should NOT include reactions (legacy behavior)
-    EXPECT_FALSE(fileContains(outputPath, "\"reactions\""))
-        << "JSON export should NOT include reactions section (legacy behavior)";
+    // JSON export MUST include reactions (correctness requirement)
+    EXPECT_TRUE(fileContains(outputPath, "\"reactions\""))
+        << "JSON export MUST include reactions section for data completeness";
+    EXPECT_TRUE(fileContains(outputPath, "\"values\""))
+        << "Reactions section must contain values array";
 }
 
 /**
