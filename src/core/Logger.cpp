@@ -33,7 +33,16 @@ bool Logger::initialize() {
         }
         
         s_initialized = true;
-        log(LogLevel::Info, "Logging system initialized");
+        
+        // Log initialization WITHOUT acquiring mutex (we already have it)
+        std::string timestamp = getCurrentTimestamp();
+        std::string logLine = "[" + timestamp + "] [INFO ] Logging system initialized";
+        std::cout << logLine << std::endl;
+        if (s_logFile.is_open()) {
+            s_logFile << logLine << std::endl;
+            s_logFile.flush();
+        }
+        
         return true;
         
     } catch (const std::exception& e) {
@@ -49,9 +58,13 @@ void Logger::shutdown() {
         return;
     }
     
-    log(LogLevel::Info, "Shutting down logging system");
-    
+    // Log shutdown WITHOUT acquiring mutex (we already have it)
+    std::string timestamp = getCurrentTimestamp();
+    std::string logLine = "[" + timestamp + "] [INFO ] Shutting down logging system";
+    std::cout << logLine << std::endl;
     if (s_logFile.is_open()) {
+        s_logFile << logLine << std::endl;
+        s_logFile.flush();
         s_logFile.close();
     }
     
