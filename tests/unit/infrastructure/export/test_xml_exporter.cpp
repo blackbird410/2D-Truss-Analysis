@@ -372,6 +372,58 @@ TEST_F(XMLExporterTest, ReactionsSection) {
 }
 
 /**
+ * @brief Test properties section (CONTRACT COMPLETENESS)
+ * 
+ * Material properties section is REQUIRED for 8-section export contract,
+ * even though domain model does not yet implement this feature.
+ * Placeholder ensures forward compatibility and explicit contract definition.
+ */
+TEST_F(XMLExporterTest, PropertiesSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/properties_test.xml";
+    ExportOptions options;
+    options.includeProperties = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    // Properties section must be present (8-section contract requirement)
+    EXPECT_TRUE(fileContains(outputPath, "<Properties>"))
+        << "XML export MUST include properties section for contract completeness";
+    EXPECT_TRUE(fileContains(outputPath, "</Properties>"))
+        << "Properties section must have closing tag";
+    EXPECT_TRUE(fileContains(outputPath, "<Comment>"))
+        << "Properties placeholder must contain explanatory comment";
+}
+
+/**
+ * @brief Test loads section (CONTRACT COMPLETENESS)
+ * 
+ * Applied loads section is REQUIRED for 8-section export contract,
+ * even though domain model does not yet implement this feature.
+ * Placeholder ensures forward compatibility and explicit contract definition.
+ */
+TEST_F(XMLExporterTest, LoadsSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/loads_test.xml";
+    ExportOptions options;
+    options.includeLoads = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    // Loads section must be present (8-section contract requirement)
+    EXPECT_TRUE(fileContains(outputPath, "<Loads>"))
+        << "XML export MUST include loads section for contract completeness";
+    EXPECT_TRUE(fileContains(outputPath, "</Loads>"))
+        << "Loads section must have closing tag";
+    EXPECT_TRUE(fileContains(outputPath, "<Comment>"))
+        << "Loads placeholder must contain explanatory comment";
+}
+
+/**
  * @brief Test metadata/analysis section (CORRECTNESS FIX)
  * Legacy XML omitted this - now corrected for data completeness.
  */
