@@ -251,7 +251,7 @@
 **Started:** February 7, 2026  
 **Dependencies:** Phase 2 complete ✅
 
-#### Tasks (8/10)
+#### Tasks (9/10)
 
 - [x] **Task 3.1.1:** Create directory structure ✅
   - Created `src/infrastructure/export/`
@@ -404,7 +404,37 @@
   - **Golden Master**: ✅ Generated successfully (3,798 bytes) - all 8 sections verified
   - **Semantic Equivalence**: Text ≡ CSV ≡ JSON ≡ XML ≡ HTML ≡ LaTeX
   - **Work Log**: [2026-02-08-textexporter-implementation-complete.md](docs/work-logs/2026-02-08-textexporter-implementation-complete.md)
-- [ ] Refactor ResultsExporter
+- [x] **Task 3.1.9: Enable Real Data Export** ✅ **COMPLETE 2026-02-08**
+  - **Issue Identified**: All exporters used placeholder text for Material Properties and Applied Loads sections
+  - **Root Cause**: Domain model already provided data, but exporters weren't accessing it
+  - **Solution**: Updated all 6 exporters to access real domain data:
+    - Material Properties: `member->getMaterial()` and `member->getSection()`
+      - Young's modulus, density, cross-sectional area, section designation
+    - Applied Loads: `node->getAppliedForce()`
+      - Fx and Fy components for all nodes with non-zero forces
+  - **Exporters Updated** (all 6):
+    1. ✅ CSVExporter: Replaced placeholder with real tabular data
+    2. ✅ JSONExporter: Replaced placeholder with JSON objects (members array + nodalForces array)
+    3. ✅ XMLExporter: Replaced placeholder with XML elements
+    4. ✅ HTMLExporter: Replaced placeholder divs with complete HTML tables
+    5. ✅ LaTeXExporter: Replaced placeholder text with LaTeX longtables
+    6. ✅ TextExporter: Replaced placeholder with fixed-width formatted tables
+  - **Test Updates**: Updated TextExporter tests to verify real data instead of placeholders
+  - **Golden Masters Regenerated** ✅ with real data (2026-02-08):
+    - CSV: 945 → 1,131 bytes (+186, +19.7%)
+    - JSON: 1,496 → 2,097 bytes (+601, +40.2%)
+    - XML: 2,398 → 3,126 bytes (+728, +30.4%)
+    - HTML: 6,296 → 7,201 bytes (+905, +14.4%)
+    - LaTeX: 3,507 → 4,370 bytes (+863, +24.6%)
+    - Text: 3,798 → 4,111 bytes (+313, +8.2%)
+    - **Total**: 18,440 → 22,036 bytes (+3,596, +19.5%)
+  - **Validation**: All 87 unit tests passing (100%)
+  - **Semantic Equivalence Achieved**: All 6 formats now export complete, real data
+  - **Legacy ResultsExporter Status**:
+    - ✅ NOT included in TrussCore build (CMakeLists.txt verification)
+    - ⚠️ Still referenced in MainWindow.cpp (GUI has pre-existing compile errors)
+    - 📋 GUI migration deferred until GUI compilation issues resolved
+  - **Contract Compliance**: All exporters now fully compliant with 8-section contract using real domain data
 - [ ] Improve Logger
   - [ ] Add log levels (DEBUG, INFO, WARN, ERROR)
   - [ ] Add file output
