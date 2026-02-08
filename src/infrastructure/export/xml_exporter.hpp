@@ -1,6 +1,6 @@
 /**
- * @file json_exporter.hpp
- * @brief JSON format results exporter implementation
+ * @file xml_exporter.hpp
+ * @brief XML format results exporter implementation
  * @author Civil Engineering Software Solutions
  * @version 3.0.0
  */
@@ -22,26 +22,26 @@ using core::Truss;
 using core::analysis::AnalysisResults;
 
 /**
- * @brief JSON format exporter
+ * @brief XML format exporter
  * 
- * Exports analysis results to JavaScript Object Notation (JSON) format.
- * Provides structured, machine-readable output suitable for web applications
- * and data processing pipelines.
+ * Exports analysis results to Extensible Markup Language (XML) format.
+ * Provides hierarchical, machine-readable output suitable for data exchange
+ * and integration with other engineering software.
  */
-class JSONExporter : public IResultsExporter {
+class XMLExporter : public IResultsExporter {
 public:
     /**
-     * @brief Construct a JSON exporter
+     * @brief Construct an XML exporter
      */
-    JSONExporter() = default;
+    XMLExporter() = default;
     
     /**
      * @brief Virtual destructor
      */
-    ~JSONExporter() override = default;
+    ~XMLExporter() override = default;
     
     /**
-     * @brief Export analysis results to JSON file
+     * @brief Export analysis results to XML file
      * @param truss The analyzed truss structure
      * @param results Analysis results
      * @param filePath Output file path
@@ -63,10 +63,10 @@ public:
     
     /**
      * @brief Get the export format
-     * @return ExportFormat::JSON
+     * @return ExportFormat::XML
      */
     ExportFormat getFormat() const noexcept override {
-        return ExportFormat::JSON;
+        return ExportFormat::XML;
     }
 
 private:
@@ -81,15 +81,15 @@ private:
     void writeProjectSection(std::ostream& os, const Truss& truss,
                             const ExportOptions& options);
     void writeGeometrySection(std::ostream& os, const Truss& truss,
-                             const ExportOptions& options, bool& needsComma);
+                             const ExportOptions& options);
     void writeDisplacementsSection(std::ostream& os, const AnalysisResults& results,
-                                  const ExportOptions& options, bool& needsComma);
+                                  const ExportOptions& options);
     void writeMemberForcesSection(std::ostream& os, const AnalysisResults& results,
-                                 const ExportOptions& options, bool& needsComma);
+                                 const ExportOptions& options);
     void writeReactionsSection(std::ostream& os, const AnalysisResults& results,
-                              const ExportOptions& options, bool& needsComma);
+                              const ExportOptions& options);
     void writeMetadataSection(std::ostream& os, const AnalysisResults& results,
-                             const ExportOptions& options, bool& needsComma);
+                             const ExportOptions& options);
 };
 
 } // namespace truss::infrastructure::export_

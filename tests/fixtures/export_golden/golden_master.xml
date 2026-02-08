@@ -2,7 +2,7 @@
 <TrussAnalysisResults>
   <Project>
     <Name>Golden Master Test Truss</Name>
-    <ExportTime>2026-02-07 18:24:27</ExportTime>
+    <ExportTime>2026-02-08 09:47:39</ExportTime>
     <Version>2.2.0</Version>
   </Project>
   <Geometry>
@@ -41,4 +41,36 @@
       </Member>
     </Members>
   </Geometry>
+  <Displacements>
+    <Values>
+      <Displacement dof="0">0.000000</Displacement>
+      <Displacement dof="1">0.000000</Displacement>
+      <Displacement dof="2">0.000000</Displacement>
+      <Displacement dof="3">28633115306666.671875</Displacement>
+      <Displacement dof="4">-21474836480000.003906</Displacement>
+      <Displacement dof="5">14316557653333.333984</Displacement>
+    </Values>
+    <MaxDisplacement>28633115306666.671875</MaxDisplacement>
+  </Displacements>
+  <MemberForces>
+    <Values>
+      <Force memberId="1" type="Compression">0.000000</Force>
+      <Force memberId="2" type="Compression">-13161.877963</Force>
+      <Force memberId="3" type="Compression">-8506.098452</Force>
+    </Values>
+  </MemberForces>
+  <Reactions>
+    <Values>
+      <Reaction dof="0">3730.565917</Reaction>
+      <Reaction dof="1">14310.515542</Reaction>
+      <Reaction dof="2">-3730.565917</Reaction>
+    </Values>
+  </Reactions>
+  <Analysis>
+    <Converged>true</Converged>
+    <Iterations>0</Iterations>
+    <TotalDofs>6</TotalDofs>
+    <FreeDofs>3</FreeDofs>
+    <MaxStress>131618779.629931</MaxStress>
+  </Analysis>
 </TrussAnalysisResults>
