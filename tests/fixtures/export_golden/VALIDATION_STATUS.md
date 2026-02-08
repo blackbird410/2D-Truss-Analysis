@@ -7,18 +7,65 @@
 
 ## Validation Status by Format
 
-| Format    | Status             | Strategy Exporter | Data Complete | Reactions Included | Notes                              |
-| --------- | ------------------ | ----------------- | ------------- | ------------------ | ---------------------------------- |
-| **CSV**   | ✅ **VALIDATED**   | ✅ CSVExporter    | ✅ Complete   | ✅ Yes             | Authoritative reference            |
-| **JSON**  | ✅ **VALIDATED**   | ✅ JSONExporter   | ✅ Complete   | ✅ Yes             | Corrected 2026-02-08 (+reactions)  |
-| **XML**   | ✅ **VALIDATED**   | ✅ XMLExporter    | ✅ Complete   | ✅ Yes             | Corrected 2026-02-08 (+4 sections) |
-| **HTML**  | ⚠️ **UNVALIDATED** | ❌ Legacy only    | ❌ Incomplete | ❌ No              | Only Project + Geometry nodes      |
-| **LaTeX** | ⚠️ **UNVALIDATED** | ❌ Legacy only    | ❌ Incomplete | ❌ No              | Only Project + Geometry            |
-| **TXT**   | ⚠️ **UNVALIDATED** | ❌ Legacy only    | ❌ Incomplete | ❌ No              | Missing reactions section          |
+| Format    | Status             | Strategy Exporter | Data Complete       | Sections     | Notes                                                 |
+| --------- | ------------------ | ----------------- | ------------------- | ------------ | ----------------------------------------------------- |
+| **CSV**   | ✅ **VALIDATED**   | ✅ CSVExporter    | ✅ Complete (8/8)   | ✅ All       | **AUTHORITATIVE REFERENCE**                           |
+| **JSON**  | ✅ **VALIDATED**   | ✅ JSONExporter   | ✅ Complete (8/8)   | ✅ All (8/8) | Corrected 2026-02-08 (+reactions +properties +loads)  |
+| **XML**   | ✅ **VALIDATED**   | ✅ XMLExporter    | ✅ Complete (8/8)   | ✅ All (8/8) | Corrected 2026-02-08 (+4 sections +properties +loads) |
+| **HTML**  | ⚠️ **UNVALIDATED** | ❌ Legacy only    | ❌ Incomplete (2/8) | 2/8 (25%)    | Only Project + Geometry nodes                         |
+| **LaTeX** | ⚠️ **UNVALIDATED** | ❌ Legacy only    | ❌ Incomplete (2/8) | 2/8 (25%)    | Only Project + Geometry                               |
+| **TXT**   | ⚠️ **UNVALIDATED** | ❌ Legacy only    | ❌ Incomplete (5/8) | 5/8 (63%)    | Missing reactions, properties, loads                  |
 
 ---
 
-## Validated Formats (Safe for Testing)
+## 🔴 CRITICAL DEFECT RESOLVED (2026-02-08 Late)
+
+**Issue**: JSONExporter and XMLExporter violated the 8-section canonical export contract.
+
+**Discovery**: Follow-up audit revealed JSON and XML were missing:
+
+1. Material Properties section (`options.includeProperties`)
+2. Applied Loads section (`options.includeLoads`)
+
+**Impact**:
+
+- JSON and XML only emitted 6/8 sections (75% compliance)
+- Could not represent complete analysis documentation
+- Violated semantic equivalence with CSVExporter
+
+**Resolution** (2026-02-08 Late):
+
+- ✅ Added `writePropertiesSection()` to JSONExporter and XMLExporter
+- ✅ Added `writeLoadsSection()` to JSONExporter and XMLExporter
+- ✅ Implemented placeholder outputs (match CSV behavior)
+- ✅ Regenerated golden masters with 8-section structure
+- ✅ Added PropertiesSection and LoadsSection tests (19 JSON tests, 23 XML tests)
+- ✅ JSON file size: 1,315 → 1,496 bytes (+181 bytes, +13.8%)
+- ✅ XML file size: 2,194 → 2,398 bytes (+204 bytes, +9.3%)
+
+**Status**: ✅ **RESOLVED** - All exporters now 8/8 compliant  
+**Work Log**: [2026-02-08-exporter-contract-defect-8-sections.md](../../../docs/work-logs/2026-02-08-exporter-contract-defect-8-sections.md)
+
+---
+
+## Canonical Export Contract (8 Sections)
+
+**CSVExporter** defines the authoritative export schema. ALL exporters MUST emit these **EIGHT** sections:
+
+1. ✅ **Project metadata** (always included)
+2. ✅ **Geometry** (nodes + members)
+3. ✅ **Material Properties** (Young's modulus, cross-sectional area, etc.)
+4. ✅ **Applied Loads** (nodal forces, member loads)
+5. ✅ **Displacements** (nodal displacement values)
+6. ✅ **Member Forces** (axial forces + tension/compression type)
+7. ✅ **Reactions** (support reactions - MANDATORY)
+8. ✅ **Analysis Metadata** (convergence, iterations, DOFs, stress)
+
+**Note**: Sections 3 and 4 are currently placeholders in the domain model but MUST be present in all exporters for contract completeness and forward compatibility.
+
+---
+
+## Validated Formats (Contract-Compliant)
 
 ### CSV (945 bytes) - ✅ AUTHORITATIVE
 
@@ -39,7 +86,7 @@
 
 ---
 
-### JSON (1,315 bytes) - ✅ CORRECTED & VALIDATED
+### JSON (1,496 bytes) - ✅ VALIDATED & COMPLIANT (8/8 SECTIONS)
 
 **Generator**: `generate_corrected_golden_masters.cpp` → JSONExporter (Strategy pattern)
 
@@ -47,22 +94,32 @@
 
 1. ✅ Project metadata
 2. ✅ Geometry (nodes + members)
-3. ✅ Displacements (values + max)
-4. ✅ Member Forces (values)
-5. ✅ **Reactions** (values) - **ADDED 2026-02-08**
-6. ✅ Analysis metadata (converged, iterations, DOFs, stress)
+3. ✅ **Material Properties** (placeholder) - **ADDED 2026-02-08 Late**
+4. ✅ **Applied Loads** (placeholder) - **ADDED 2026-02-08 Late**
+5. ✅ Displacements (values + max)
+6. ✅ Member Forces (values)
+7. ✅ **Reactions** (values) - **ADDED 2026-02-08 Morning**
+8. ✅ Analysis metadata (converged, iterations, DOFs, stress)
 
-**Breaking Change**: Legacy JSON omitted reactions - corrected for data completeness
+**Compliance**: 8/8 sections (100%) ✅
 
-**Validation Method**:
+**Status**: ✅ **VALIDATED & COMPLIANT** - All mandatory sections present
 
-- Generated with corrected JSONExporter
-- Golden master test passes (17/17 tests)
-- Byte-validated against test output
+**Breaking Change History**:
+
+- 2026-02-08 Morning: Added reactions section (incomplete fix - 6/8 sections)
+- 2026-02-08 Late: Added properties & loads sections (complete fix - 8/8 sections) ✅
+
+**Golden Master**: Regenerated with complete 8-section structure
+
+- Original: 1,237 bytes (missing reactions)
+- After reactions: 1,315 bytes (+78 bytes, +6.3%)
+- After properties/loads: 1,496 bytes (+181 bytes, +13.8%)
+- **Total increase**: +259 bytes (+20.9%)
 
 ---
 
-### XML (2,194 bytes) - ✅ CORRECTED & VALIDATED
+### XML (2,398 bytes) - ✅ VALIDATED & COMPLIANT (8/8 SECTIONS)
 
 **Generator**: `generate_corrected_golden_masters.cpp` → XMLExporter (Strategy pattern)
 
@@ -70,18 +127,28 @@
 
 1. ✅ Project metadata
 2. ✅ Geometry (nodes + members)
-3. ✅ **Displacements** (values + max) - **ADDED 2026-02-08**
-4. ✅ **Member Forces** (values + type) - **ADDED 2026-02-08**
-5. ✅ **Reactions** (values) - **ADDED 2026-02-08**
-6. ✅ **Analysis metadata** (converged, iterations, DOFs, stress) - **ADDED 2026-02-08**
+3. ✅ **Material Properties** (placeholder) - **ADDED 2026-02-08 Late**
+4. ✅ **Applied Loads** (placeholder) - **ADDED 2026-02-08 Late**
+5. ✅ **Displacements** (values + max) - **ADDED 2026-02-08 Morning**
+6. ✅ **Member Forces** (values + type) - **ADDED 2026-02-08 Morning**
+7. ✅ **Reactions** (values) - **ADDED 2026-02-08 Morning**
+8. ✅ **Analysis metadata** (converged, iterations, DOFs, stress) - **ADDED 2026-02-08 Morning**
 
-**Breaking Change**: Legacy XML only had Project + Geometry - corrected to full data set
+**Compliance**: 8/8 sections (100%) ✅
 
-**Validation Method**:
+**Status**: ✅ **VALIDATED & COMPLIANT** - All mandatory sections present
 
-- Generated with corrected XMLExporter
-- Golden master test passes (21/21 tests, includes 4 new section tests)
-- Byte-validated against test output
+**Breaking Change History**:
+
+- 2026-02-08 Morning: Added 4 sections (displacements, forces, reactions, metadata) - incomplete fix (6/8 sections)
+- 2026-02-08 Late: Added properties & loads sections (complete fix - 8/8 sections) ✅
+
+**Golden Master**: Regenerated with complete 8-section structure
+
+- Original: 1,071 bytes (only Project + Geometry)
+- After 4 sections: 2,194 bytes (+1,123 bytes, +104.9%)
+- After properties/loads: 2,398 bytes (+204 bytes, +9.3%)
+- **Total increase**: +1,327 bytes (+123.9%)
 
 ---
 
