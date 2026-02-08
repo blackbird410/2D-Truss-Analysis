@@ -10,6 +10,7 @@
 #include "json_exporter.hpp"
 #include "xml_exporter.hpp"
 #include "html_exporter.hpp"
+#include "latex_exporter.hpp"
 #include <stdexcept>
 #include <algorithm>
 #include <cctype>
@@ -36,8 +37,7 @@ std::unique_ptr<IResultsExporter> ExporterFactory::create(ExportFormat format) {
             throw std::invalid_argument("Text format not yet implemented");
             
         case ExportFormat::LaTeX:
-            // TODO: Implement LaTeXExporter
-            throw std::invalid_argument("LaTeX format not yet implemented");
+            return std::make_unique<LaTeXExporter>();
             
         default:
             throw std::invalid_argument("Unsupported export format");
