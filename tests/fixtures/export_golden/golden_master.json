@@ -1,7 +1,7 @@
 {
   "project": {
     "name": "Golden Master Test Truss",
-    "exportTime": "2026-02-08 16:56:01",
+    "exportTime": "2026-02-08 19:50:03",
     "version": "2.2.0"
   },
   "geometry": {
@@ -47,10 +47,41 @@
     ]
   },
   "properties": {
-    "comment": "Material properties not yet implemented in domain model"
+    "members": [
+      {
+        "memberId": 1,
+        "material": "Steel",
+        "youngModulus": 200000000000.000000,
+        "density": 7850.000000,
+        "area": 0.000100,
+        "section": "Default"
+      },
+      {
+        "memberId": 2,
+        "material": "Steel",
+        "youngModulus": 200000000000.000000,
+        "density": 7850.000000,
+        "area": 0.000100,
+        "section": "Default"
+      },
+      {
+        "memberId": 3,
+        "material": "Steel",
+        "youngModulus": 200000000000.000000,
+        "density": 7850.000000,
+        "area": 0.000100,
+        "section": "Default"
+      }
+    ]
   },
   "loads": {
-    "comment": "Applied loads not yet implemented in domain model"
+    "nodalForces": [
+      {
+        "nodeId": 3,
+        "fx": 0.000000,
+        "fy": -15000.000000
+      }
+    ]
   },
   "displacements": {
     "values": [0.000000, 0.000000, 0.000000, 28633115306666.671875, -21474836480000.003906, 14316557653333.333984],

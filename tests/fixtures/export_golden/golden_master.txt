@@ -2,7 +2,7 @@
 2D TRUSS ANALYSIS RESULTS
 Golden Master Test Truss
 ==============================================================================
-Generated: 2026-02-08 16:56:01
+Generated: 2026-02-08 19:50:03
 Version: 3.0.0
 ==============================================================================
 
@@ -10,7 +10,7 @@ Version: 3.0.0
 PROJECT METADATA
 ==============================================================================
   Project Name:    Golden Master Test Truss
-  Generated:       2026-02-08 16:56:01
+  Generated:       2026-02-08 19:50:03
   Software:        2D Truss Analysis v3.0.0
   Number of Nodes: 3
   Number of Members: 3
@@ -36,21 +36,20 @@ Members:
 ==============================================================================
 MATERIAL AND SECTION PROPERTIES
 ==============================================================================
-  [Not yet implemented in domain model]
-  This section will contain:
-    - Young's modulus
-    - Cross-sectional area
-    - Material type
+
+  Member ID Material    E (Pa)         Density        Area (m²)     Section        
+  ----------------------------------------------------------------------------------
+  1         Steel       200000000000.0000007850.000000    0.000100       Default        
+  2         Steel       200000000000.0000007850.000000    0.000100       Default        
+  3         Steel       200000000000.0000007850.000000    0.000100       Default        
 
 ==============================================================================
 APPLIED LOADS
 ==============================================================================
-  [Not yet implemented in domain model]
-  This section will contain:
-    - Node ID
-    - Force X component
-    - Force Y component
-    - Load case
+
+  Node ID   Fx (N)              Fy (N)              
+  --------------------------------------------------
+  3         0.000000            -15000.000000       
 
 ==============================================================================
 NODAL DISPLACEMENTS

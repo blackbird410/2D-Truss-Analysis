@@ -1,5 +1,5 @@
 # 2D Truss Analysis Results Export
-# Generated: 2026-02-08 16:56:01
+# Generated: 2026-02-08 19:50:03
 # Project: Golden Master Test Truss
 #
 
@@ -15,10 +15,14 @@ Member ID,Start Node,End Node,Length
 3,2,3,3.605551
 
 # MATERIAL AND SECTION PROPERTIES
-# Material properties section not yet implemented
+Member ID,Material,E (Pa),Density (kg/m³),Area (m²),Section
+1,Steel,200000000000.000000,7850.000000,0.000100,Default
+2,Steel,200000000000.000000,7850.000000,0.000100,Default
+3,Steel,200000000000.000000,7850.000000,0.000100,Default
 
 # APPLIED LOADS
-# Applied loads section not yet implemented
+Node ID,Fx (N),Fy (N)
+3,0.000000,-15000.000000
 
 # NODAL DISPLACEMENTS
 DOF,Displacement

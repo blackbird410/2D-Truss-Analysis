@@ -2,7 +2,7 @@
 <TrussAnalysisResults>
   <Project>
     <Name>Golden Master Test Truss</Name>
-    <ExportTime>2026-02-08 16:56:01</ExportTime>
+    <ExportTime>2026-02-08 19:50:03</ExportTime>
     <Version>2.2.0</Version>
   </Project>
   <Geometry>
@@ -42,10 +42,22 @@
     </Members>
   </Geometry>
   <Properties>
-    <Comment>Material properties not yet implemented in domain model</Comment>
+    <Members>
+      <Member id="1">
+        <Material>Steel</Material>\n        <YoungModulus>200000000000.000000</YoungModulus>\n        <Density>7850.000000</Density>\n        <Area>0.000100</Area>\n        <Section>Default</Section>\n      </Member>
+      <Member id="2">
+        <Material>Steel</Material>\n        <YoungModulus>200000000000.000000</YoungModulus>\n        <Density>7850.000000</Density>\n        <Area>0.000100</Area>\n        <Section>Default</Section>\n      </Member>
+      <Member id="3">
+        <Material>Steel</Material>\n        <YoungModulus>200000000000.000000</YoungModulus>\n        <Density>7850.000000</Density>\n        <Area>0.000100</Area>\n        <Section>Default</Section>\n      </Member>
+    </Members>
   </Properties>
   <Loads>
-    <Comment>Applied loads not yet implemented in domain model</Comment>
+    <NodalForces>
+      <Force nodeId="3">
+        <Fx>0.000000</Fx>
+        <Fy>-15000.000000</Fy>
+      </Force>
+    </NodalForces>
   </Loads>
   <Displacements>
     <Values>
