@@ -213,19 +213,71 @@ void LaTeXExporter::writeGeometrySection(std::ostream& os,
 }
 
 void LaTeXExporter::writePropertiesSection(std::ostream& os,
-                                          const Truss& /*truss*/,
-                                          const ExportOptions& /*options*/) {
-    // Placeholder: Material properties not yet implemented in domain model
+                                          const Truss& truss,
+                                          const ExportOptions& options) {
     os << "\\section{Material and Section Properties}\n\n";
-    os << "\\emph{Material properties section not yet implemented in domain model.}\n\n";
+    os << "\\begin{longtable}{cccccc}\n";
+    os << "\\toprule\n";
+    os << "Member ID & Material & E (Pa) & Density (kg/m³) & Area (m²) & Section \\\\\n";
+    os << "\\midrule\n";
+    os << "\\endfirsthead\n\n";
+    os << "\\multicolumn{6}{c}{{\\tablename\\ \\thetable{} -- continued from previous page}} \\\\\n";
+    os << "\\toprule\n";
+    os << "Member ID & Material & E (Pa) & Density (kg/m³) & Area (m²) & Section \\\\\n";
+    os << "\\midrule\n";
+    os << "\\endhead\n\n";
+    os << "\\midrule\n";
+    os << "\\multicolumn{6}{r}{{Continued on next page}} \\\\\n";
+    os << "\\endfoot\n\n";
+    os << "\\bottomrule\n";
+    os << "\\endlastfoot\n\n";
+    
+    for (const auto& member : truss.getMembers()) {
+        const auto& material = member->getMaterial();
+        const auto& section = member->getSection();
+        
+        os << member->getId() << " & "
+           << escapeLatex(material.name) << " & "
+           << formatNumber(material.youngModulus, options) << " & "
+           << formatNumber(material.density, options) << " & "
+           << formatNumber(section.area, options) << " & "
+           << escapeLatex(section.designation) << " \\\\\n";
+    }
+    
+    os << "\\end{longtable}\n\n";
 }
 
 void LaTeXExporter::writeLoadsSection(std::ostream& os,
-                                     const Truss& /*truss*/,
-                                     const ExportOptions& /*options*/) {
-    // Placeholder: Applied loads not yet implemented in domain model
+                                     const Truss& truss,
+                                     const ExportOptions& options) {
     os << "\\section{Applied Loads}\n\n";
-    os << "\\emph{Applied loads section not yet implemented in domain model.}\n\n";
+    os << "\\begin{longtable}{ccc}\n";
+    os << "\\toprule\n";
+    os << "Node ID & Fx (N) & Fy (N) \\\\\n";
+    os << "\\midrule\n";
+    os << "\\endfirsthead\n\n";
+    os << "\\multicolumn{3}{c}{{\\tablename\\ \\thetable{} -- continued from previous page}} \\\\\n";
+    os << "\\toprule\n";
+    os << "Node ID & Fx (N) & Fy (N) \\\\\n";
+    os << "\\midrule\n";
+    os << "\\endhead\n\n";
+    os << "\\midrule\n";
+    os << "\\multicolumn{3}{r}{{Continued on next page}} \\\\\n";
+    os << "\\endfoot\n\n";
+    os << "\\bottomrule\n";
+    os << "\\endlastfoot\n\n";
+    
+    for (const auto& node : truss.getNodes()) {
+        const auto& force = node->getAppliedForce();
+        // Only export nodes with non-zero forces
+        if (force.fx != 0.0 || force.fy != 0.0) {
+            os << node->getId() << " & "
+               << formatNumber(force.fx, options) << " & "
+               << formatNumber(force.fy, options) << " \\\\\n";
+        }
+    }
+    
+    os << "\\end{longtable}\n\n";
 }
 
 void LaTeXExporter::writeDisplacementsSection(std::ostream& os,

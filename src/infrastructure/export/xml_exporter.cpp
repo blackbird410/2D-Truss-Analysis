@@ -165,17 +165,45 @@ void XMLExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     os << "  </Geometry>\n";
 }
 
-void XMLExporter::writePropertiesSection(std::ostream& os, const Truss& /*truss*/,
-                                        const ExportOptions& /*options*/) {
+void XMLExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
+                                        const ExportOptions& options) {
     os << "  <Properties>\n";
-    os << "    <Comment>Material properties not yet implemented in domain model</Comment>\n";
+    os << "    <Members>\n";
+    
+    for (const auto& member : truss.getMembers()) {
+        const auto& material = member->getMaterial();
+        const auto& section = member->getSection();
+        
+        os << "      <Member id=\"" << member->getId() << "\">\n";
+        os << "        <Material>" << escapeString(material.name) << "</Material>\\n";
+        os << "        <YoungModulus>" << formatNumber(material.youngModulus, options) << "</YoungModulus>\\n";
+        os << "        <Density>" << formatNumber(material.density, options) << "</Density>\\n";
+        os << "        <Area>" << formatNumber(section.area, options) << "</Area>\\n";
+        os << "        <Section>" << escapeString(section.designation) << "</Section>\\n";
+        os << "      </Member>\n";
+    }
+    
+    os << "    </Members>\n";
     os << "  </Properties>\n";
 }
 
-void XMLExporter::writeLoadsSection(std::ostream& os, const Truss& /*truss*/,
-                                   const ExportOptions& /*options*/) {
+void XMLExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
+                                   const ExportOptions& options) {
     os << "  <Loads>\n";
-    os << "    <Comment>Applied loads not yet implemented in domain model</Comment>\n";
+    os << "    <NodalForces>\n";
+    
+    for (const auto& node : truss.getNodes()) {
+        const auto& force = node->getAppliedForce();
+        // Only export nodes with non-zero forces
+        if (force.fx != 0.0 || force.fy != 0.0) {
+            os << "      <Force nodeId=\"" << node->getId() << "\">\n";
+            os << "        <Fx>" << formatNumber(force.fx, options) << "</Fx>\n";
+            os << "        <Fy>" << formatNumber(force.fy, options) << "</Fy>\n";
+            os << "      </Force>\n";
+        }
+    }
+    
+    os << "    </NodalForces>\n";
     os << "  </Loads>\n";
 }
 

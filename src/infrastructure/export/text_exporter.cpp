@@ -179,26 +179,56 @@ void TextExporter::writeGeometrySection(std::ostream& os,
 }
 
 void TextExporter::writePropertiesSection(std::ostream& os,
-                                         const Truss& /*truss*/,
-                                         const ExportOptions& /*options*/) {
+                                         const Truss& truss,
+                                         const ExportOptions& options) {
     writeSectionHeader(os, "MATERIAL AND SECTION PROPERTIES");
-    os << "  [Not yet implemented in domain model]\n";
-    os << "  This section will contain:\n";
-    os << "    - Young's modulus\n";
-    os << "    - Cross-sectional area\n";
-    os << "    - Material type\n";
+    
+    os << "\n  " << std::left << std::setw(10) << "Member ID"
+       << std::setw(12) << "Material"
+       << std::setw(15) << "E (Pa)"
+       << std::setw(15) << "Density"
+       << std::setw(15) << "Area (m²)"
+       << std::setw(15) << "Section" << "\n";
+    os << "  " << std::string(82, '-') << "\n";
+    
+    for (const auto& member : truss.getMembers()) {
+        const auto& material = member->getMaterial();
+        const auto& section = member->getSection();
+        
+        os << "  " << std::left << std::setw(10) << member->getId()
+           << std::setw(12) << material.name
+           << std::setw(15) << formatNumber(material.youngModulus, options)
+           << std::setw(15) << formatNumber(material.density, options)
+           << std::setw(15) << formatNumber(section.area, options)
+           << std::setw(15) << section.designation << "\n";
+    }
 }
 
 void TextExporter::writeLoadsSection(std::ostream& os,
-                                    const Truss& /*truss*/,
-                                    const ExportOptions& /*options*/) {
+                                    const Truss& truss,
+                                    const ExportOptions& options) {
     writeSectionHeader(os, "APPLIED LOADS");
-    os << "  [Not yet implemented in domain model]\n";
-    os << "  This section will contain:\n";
-    os << "    - Node ID\n";
-    os << "    - Force X component\n";
-    os << "    - Force Y component\n";
-    os << "    - Load case\n";
+    
+    os << "\n  " << std::left << std::setw(10) << "Node ID"
+       << std::setw(20) << "Fx (N)"
+       << std::setw(20) << "Fy (N)" << "\n";
+    os << "  " << std::string(50, '-') << "\n";
+    
+    bool hasLoads = false;
+    for (const auto& node : truss.getNodes()) {
+        const auto& force = node->getAppliedForce();
+        // Only export nodes with non-zero forces
+        if (force.fx != 0.0 || force.fy != 0.0) {
+            os << "  " << std::left << std::setw(10) << node->getId()
+               << std::setw(20) << formatNumber(force.fx, options)
+               << std::setw(20) << formatNumber(force.fy, options) << "\n";
+            hasLoads = true;
+        }
+    }
+    
+    if (!hasLoads) {
+        os << "  (No applied loads)\n";
+    }
 }
 
 void TextExporter::writeDisplacementsSection(std::ostream& os,

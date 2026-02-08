@@ -174,27 +174,67 @@ void JSONExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     needsComma = true;
 }
 
-void JSONExporter::writePropertiesSection(std::ostream& os, const Truss& /*truss*/,
-                                         const ExportOptions& /*options*/, bool& needsComma) {
+void JSONExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
+                                         const ExportOptions& options, bool& needsComma) {
     if (needsComma) {
         os << ",\n";
     }
     
     os << "  \"properties\": {\n";
-    os << "    \"comment\": \"Material properties not yet implemented in domain model\"\n";
+    os << "    \"members\": [\n";
+    
+    const auto& members = truss.getMembers();
+    for (size_t i = 0; i < members.size(); ++i) {
+        const auto& member = members[i];
+        const auto& material = member->getMaterial();
+        const auto& section = member->getSection();
+        
+        os << "      {\n";
+        os << "        \"memberId\": " << member->getId() << ",\n";
+        os << "        \"material\": \"" << escapeString(material.name) << "\",\n";
+        os << "        \"youngModulus\": " << formatNumber(material.youngModulus, options) << ",\n";
+        os << "        \"density\": " << formatNumber(material.density, options) << ",\n";
+        os << "        \"area\": " << formatNumber(section.area, options) << ",\n";
+        os << "        \"section\": \"" << escapeString(section.designation) << "\"\n";
+        os << "      }" << (i < members.size() - 1 ? "," : "") << "\n";
+    }
+    
+    os << "    ]\n";
     os << "  }";
     
     needsComma = true;
 }
 
-void JSONExporter::writeLoadsSection(std::ostream& os, const Truss& /*truss*/,
-                                    const ExportOptions& /*options*/, bool& needsComma) {
+void JSONExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
+                                    const ExportOptions& options, bool& needsComma) {
     if (needsComma) {
         os << ",\n";
     }
     
     os << "  \"loads\": {\n";
-    os << "    \"comment\": \"Applied loads not yet implemented in domain model\"\n";
+    os << "    \"nodalForces\": [\n";
+    
+    // Collect nodes with non-zero forces
+    std::vector<std::shared_ptr<const core::Node>> loadedNodes;
+    for (const auto& node : truss.getNodes()) {
+        const auto& force = node->getAppliedForce();
+        if (force.fx != 0.0 || force.fy != 0.0) {
+            loadedNodes.push_back(node);
+        }
+    }
+    
+    for (size_t i = 0; i < loadedNodes.size(); ++i) {
+        const auto& node = loadedNodes[i];
+        const auto& force = node->getAppliedForce();
+        
+        os << "      {\n";
+        os << "        \"nodeId\": " << node->getId() << ",\n";
+        os << "        \"fx\": " << formatNumber(force.fx, options) << ",\n";
+        os << "        \"fy\": " << formatNumber(force.fy, options) << "\n";
+        os << "      }" << (i < loadedNodes.size() - 1 ? "," : "") << "\n";
+    }
+    
+    os << "    ]\n";
     os << "  }";
     
     needsComma = true;

@@ -128,17 +128,41 @@ void CSVExporter::writeGeometrySection(std::ostream& os,
 }
 
 void CSVExporter::writePropertiesSection(std::ostream& os,
-                                        const Truss& /*truss*/,
-                                        const ExportOptions& /*options*/) {
-    // Material properties not yet implemented in domain model
-    os << "# Material properties section not yet implemented" << std::endl;
+                                        const Truss& truss,
+                                        const ExportOptions& options) {
+    const std::string& delim = options.delimiter;
+    
+    os << "Member ID" << delim << "Material" << delim << "E (Pa)" << delim 
+       << "Density (kg/m³)" << delim << "Area (m²)" << delim << "Section" << std::endl;
+    
+    for (const auto& member : truss.getMembers()) {
+        const auto& material = member->getMaterial();
+        const auto& section = member->getSection();
+        os << member->getId() << delim
+           << material.name << delim
+           << formatNumber(material.youngModulus, options) << delim
+           << formatNumber(material.density, options) << delim
+           << formatNumber(section.area, options) << delim
+           << section.designation << std::endl;
+    }
 }
 
 void CSVExporter::writeLoadsSection(std::ostream& os,
-                                   const Truss& /*truss*/,
-                                   const ExportOptions& /*options*/) {
-    // Applied loads not yet implemented in domain model
-    os << "# Applied loads section not yet implemented" << std::endl;
+                                   const Truss& truss,
+                                   const ExportOptions& options) {
+    const std::string& delim = options.delimiter;
+    
+    os << "Node ID" << delim << "Fx (N)" << delim << "Fy (N)" << std::endl;
+    
+    for (const auto& node : truss.getNodes()) {
+        const auto& force = node->getAppliedForce();
+        // Only export nodes with non-zero forces
+        if (force.fx != 0.0 || force.fy != 0.0) {
+            os << node->getId() << delim
+               << formatNumber(force.fx, options) << delim
+               << formatNumber(force.fy, options) << std::endl;
+        }
+    }
 }
 
 void CSVExporter::writeDisplacementsSection(std::ostream& os,

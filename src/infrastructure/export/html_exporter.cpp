@@ -301,21 +301,68 @@ void HTMLExporter::writeGeometrySection(std::ostream& os,
 }
 
 void HTMLExporter::writePropertiesSection(std::ostream& os,
-                                         const Truss& /*truss*/,
-                                         const ExportOptions& /*options*/) {
+                                         const Truss& truss,
+                                         const ExportOptions& options) {
     os << "<h2>Material and Section Properties</h2>\n";
-    os << "<div class=\"placeholder\">\n";
-    os << "  <p><strong>Note:</strong> Material properties not yet implemented in domain model</p>\n";
-    os << "</div>\n";
+    os << "<table>\n";
+    os << "  <thead>\n";
+    os << "    <tr>\n";
+    os << "      <th>Member ID</th>\n";
+    os << "      <th>Material</th>\n";
+    os << "      <th>Young's Modulus (Pa)</th>\n";
+    os << "      <th>Density (kg/m³)</th>\n";
+    os << "      <th>Area (m²)</th>\n";
+    os << "      <th>Section</th>\n";
+    os << "    </tr>\n";
+    os << "  </thead>\n";
+    os << "  <tbody>\n";
+    
+    for (const auto& member : truss.getMembers()) {
+        const auto& material = member->getMaterial();
+        const auto& section = member->getSection();
+        
+        os << "    <tr>\n";
+        os << "      <td>" << member->getId() << "</td>\n";
+        os << "      <td>" << escapeHtml(material.name) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(material.youngModulus, options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(material.density, options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(section.area, options) << "</td>\n";
+        os << "      <td>" << escapeHtml(section.designation) << "</td>\n";
+        os << "    </tr>\n";
+    }
+    
+    os << "  </tbody>\n";
+    os << "</table>\n";
 }
 
 void HTMLExporter::writeLoadsSection(std::ostream& os,
-                                    const Truss& /*truss*/,
-                                    const ExportOptions& /*options*/) {
+                                    const Truss& truss,
+                                    const ExportOptions& options) {
     os << "<h2>Applied Loads</h2>\n";
-    os << "<div class=\"placeholder\">\n";
-    os << "  <p><strong>Note:</strong> Applied loads not yet implemented in domain model</p>\n";
-    os << "</div>\n";
+    os << "<table>\n";
+    os << "  <thead>\n";
+    os << "    <tr>\n";
+    os << "      <th>Node ID</th>\n";
+    os << "      <th>Fx (N)</th>\n";
+    os << "      <th>Fy (N)</th>\n";
+    os << "    </tr>\n";
+    os << "  </thead>\n";
+    os << "  <tbody>\n";
+    
+    for (const auto& node : truss.getNodes()) {
+        const auto& force = node->getAppliedForce();
+        // Only export nodes with non-zero forces
+        if (force.fx != 0.0 || force.fy != 0.0) {
+            os << "    <tr>\n";
+            os << "      <td>" << node->getId() << "</td>\n";
+            os << "      <td class=\"number\">" << formatNumber(force.fx, options) << "</td>\n";
+            os << "      <td class=\"number\">" << formatNumber(force.fy, options) << "</td>\n";
+            os << "    </tr>\n";
+        }
+    }
+    
+    os << "  </tbody>\n";
+    os << "</table>\n";
 }
 
 void HTMLExporter::writeDisplacementsSection(std::ostream& os,
