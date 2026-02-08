@@ -82,6 +82,10 @@ private:
                             const ExportOptions& options);
     void writeGeometrySection(std::ostream& os, const Truss& truss,
                              const ExportOptions& options);
+    void writePropertiesSection(std::ostream& os, const Truss& truss,
+                               const ExportOptions& options);
+    void writeLoadsSection(std::ostream& os, const Truss& truss,
+                          const ExportOptions& options);
     void writeDisplacementsSection(std::ostream& os, const AnalysisResults& results,
                                   const ExportOptions& options);
     void writeMemberForcesSection(std::ostream& os, const AnalysisResults& results,

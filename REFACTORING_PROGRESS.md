@@ -272,26 +272,38 @@
   - Migrated logic from legacy ResultsExporter
   - Created 12 comprehensive unit tests (all passing)
   - **Validation:** Golden master comparison PASSED ✓
-- [x] **Implement JSONExporter** ✅ ⚠️ **CORRECTED (2026-02-08)**
-  - Created `json_exporter.hpp` and `json_exporter.cpp` (331 lines → 356 lines)
+- [x] **Implement JSONExporter** ✅ **COMPLIANT (8/8 sections - CORRECTED 2026-02-08)**
+  - Created `json_exporter.hpp` and `json_exporter.cpp` (331 lines → 356 lines → 382 lines)
   - Implemented JSON structure generation with proper formatting
   - JSON-specific string escaping (quotes, backslashes, control chars)
   - Comma management between sections
-  - **BREAKING CHANGE**: Added reactions section (+25 lines)
+  - **BREAKING CHANGE (2026-02-08 Morning)**: Added reactions section (+25 lines)
     - Original: Missing reactions (legacy behavior was incorrect)
     - Corrected: Now includes reactions for semantic equivalence with CSV
-  - **Validation:** Golden master comparison PASSED ✓ (1,237 bytes → 1,315 bytes, +6.3%)
-  - **Testing:** 17 comprehensive unit tests (100% passing, 1 test corrected: NoReactionsSection → ReactionsSection)
-- [x] **Implement XMLExporter** ✅ ⚠️ **CORRECTED (2026-02-08)**
-  - Created `xml_exporter.hpp` and `xml_exporter.cpp` (229 lines → 299 lines)
+  - **BREAKING CHANGE (2026-02-08 Late)**: Added properties & loads sections (+26 lines)
+    - ❌ Defect identified: JSON omitted 2 mandatory sections (properties, loads)
+    - ✅ Fixed: Added `writePropertiesSection()` and `writeLoadsSection()` methods
+    - ✅ Placeholder implementations match CSVExporter contract
+    - **Status**: NOW COMPLIANT (8/8 sections = 100% compliance)
+  - **Validation:** Golden master regenerated ✓ (1,237 → 1,315 → 1,496 bytes, +20.9% total)
+  - **Testing:** 19 comprehensive unit tests (17 original + 2 new: PropertiesSection, LoadsSection)
+  - **Work Log**: [2026-02-08-exporter-contract-defect-8-sections.md](docs/work-logs/2026-02-08-exporter-contract-defect-8-sections.md)
+- [x] **Implement XMLExporter** ✅ **COMPLIANT (8/8 sections - CORRECTED 2026-02-08)**
+  - Created `xml_exporter.hpp` and `xml_exporter.cpp` (229 lines → 299 lines → 326 lines)
   - Implemented hierarchical XML structure with proper formatting
   - XML entity escaping (`<`, `>`, `&`, `"`, `'`)
-  - **BREAKING CHANGE**: Added 4 missing sections (+70 lines)
+  - **BREAKING CHANGE (2026-02-08 Morning)**: Added 4 missing sections (+70 lines)
     - Original: Only Project + Geometry (legacy was incomplete stub)
     - Corrected: Now includes Displacements, Member Forces, Reactions, Analysis Metadata
     - Reactions section is MANDATORY for structural equilibrium verification
-  - **Validation:** Golden master comparison PASSED ✓ (1,071 bytes → 2,194 bytes, +104.9%)
-  - **Testing:** 21 comprehensive unit tests (100% passing, +4 new correctness tests)
+  - **BREAKING CHANGE (2026-02-08 Late)**: Added properties & loads sections (+27 lines)
+    - ❌ Defect identified: XML omitted 2 mandatory sections (properties, loads)
+    - ✅ Fixed: Added `writePropertiesSection()` and `writeLoadsSection()` methods
+    - ✅ Placeholder implementations match CSVExporter contract
+    - **Status**: NOW COMPLIANT (8/8 sections = 100% compliance)
+  - **Validation:** Golden master regenerated ✓ (1,071 → 2,194 → 2,398 bytes, +123.9% total)
+  - **Testing:** 23 comprehensive unit tests (21 original + 2 new: PropertiesSection, LoadsSection)
+  - **Work Log**: [2026-02-08-exporter-contract-defect-8-sections.md](docs/work-logs/2026-02-08-exporter-contract-defect-8-sections.md)
 - [ ] Refactor ResultsExporter
   - [ ] Implement HTMLExporter
   - [ ] Implement LaTeXExporter

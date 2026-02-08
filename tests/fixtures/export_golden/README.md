@@ -1,12 +1,25 @@
 # Golden Master Export Files
 
-**Generated:** 2026-02-07  
+**Last Updated:** 2026-02-08  
 **Purpose:** Phase 3 validation reference files  
-**Generator:** `generate_golden_masters.cpp`
+**Validated Formats:** CSV, JSON, XML (3/6)  
+**Generator:** `generate_corrected_golden_masters.cpp`
+
+## ⚠️ CRITICAL NOTICE
+
+**Only 3 of 6 formats are currently validated and safe for use:**
+
+- ✅ CSV (945 bytes) - Authoritative reference
+- ✅ JSON (1,315 bytes) - Corrected & validated 2026-02-08
+- ✅ XML (2,194 bytes) - Corrected & validated 2026-02-08
+
+**3 formats are UNVALIDATED** (HTML, LaTeX, TXT) and have been **ISOLATED** to `unvalidated_legacy/` directory.
+
+**DO NOT** use unvalidated formats for testing. See [VALIDATION_STATUS.md](VALIDATION_STATUS.md) for details.
 
 ## Overview
 
-These files serve as "golden masters" for validating the new Strategy pattern exporter implementations in Phase 3. They contain reference outputs from the legacy `ResultsExporter` class that will be used for byte-level comparison with new exporter outputs.
+These files serve as "golden masters" for validating new Strategy pattern exporter implementations in Phase 3. Validated golden masters contain **COMPLETE analysis data** including reactions (mandatory for structural equilibrium verification).
 
 ## Test Truss Structure
 
@@ -45,16 +58,25 @@ These files serve as "golden masters" for validating the new Strategy pattern ex
 
 ## File Inventory
 
-| File                 | Format | Size        | Description                |
-| -------------------- | ------ | ----------- | -------------------------- |
-| `golden_master.csv`  | CSV    | 945 bytes   | Comma-separated values     |
-| `golden_master.json` | JSON   | 1,237 bytes | JavaScript Object Notation |
-| `golden_master.xml`  | XML    | 1,071 bytes | Extensible Markup Language |
-| `golden_master.html` | HTML   | 1,087 bytes | HyperText Markup Language  |
-| `golden_master.tex`  | LaTeX  | 764 bytes   | LaTeX typesetting format   |
-| `golden_master.txt`  | TXT    | 1,549 bytes | Plain text format          |
+### ✅ Validated Golden Masters (Safe for Testing)
 
-**Total:** 6 files, 6,653 bytes
+| File                 | Format | Size        | Status           | Notes                              |
+| -------------------- | ------ | ----------- | ---------------- | ---------------------------------- |
+| `golden_master.csv`  | CSV    | 945 bytes   | ✅ **VALIDATED** | Authoritative reference (complete) |
+| `golden_master.json` | JSON   | 1,315 bytes | ✅ **VALIDATED** | Corrected 2026-02-08 (+reactions)  |
+| `golden_master.xml`  | XML    | 2,194 bytes | ✅ **VALIDATED** | Corrected 2026-02-08 (+4 sections) |
+
+**Total Validated:** 3 files, 4,454 bytes
+
+### ⚠️ Unvalidated Legacy Files (Isolated)
+
+| File                 | Format | Size        | Status            | Location              |
+| -------------------- | ------ | ----------- | ----------------- | --------------------- |
+| `golden_master.html` | HTML   | 1,087 bytes | ❌ **INCOMPLETE** | `unvalidated_legacy/` |
+| `golden_master.tex`  | LaTeX  | 764 bytes   | ❌ **INCOMPLETE** | `unvalidated_legacy/` |
+| `golden_master.txt`  | TXT    | 1,549 bytes | ❌ **INCOMPLETE** | `unvalidated_legacy/` |
+
+**Issue:** Missing reactions data (MANDATORY section). See [unvalidated_legacy/README.md](unvalidated_legacy/README.md).
 
 ## Export Options Used
 

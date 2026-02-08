@@ -325,6 +325,54 @@ TEST_F(JSONExporterTest, ReactionsSection) {
 }
 
 /**
+ * @brief Test properties section (CONTRACT COMPLETENESS)
+ * 
+ * Material properties section is REQUIRED for 8-section export contract,
+ * even though domain model does not yet implement this feature.
+ * Placeholder ensures forward compatibility and explicit contract definition.
+ */
+TEST_F(JSONExporterTest, PropertiesSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/properties_test.json";
+    ExportOptions options;
+    options.includeProperties = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    // Properties section must be present (8-section contract requirement)
+    EXPECT_TRUE(fileContains(outputPath, "\"properties\""))
+        << "JSON export MUST include properties section for contract completeness";
+    EXPECT_TRUE(fileContains(outputPath, "\"comment\""))
+        << "Properties placeholder must contain explanatory comment";
+}
+
+/**
+ * @brief Test loads section (CONTRACT COMPLETENESS)
+ * 
+ * Applied loads section is REQUIRED for 8-section export contract,
+ * even though domain model does not yet implement this feature.
+ * Placeholder ensures forward compatibility and explicit contract definition.
+ */
+TEST_F(JSONExporterTest, LoadsSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/loads_test.json";
+    ExportOptions options;
+    options.includeLoads = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    // Loads section must be present (8-section contract requirement)
+    EXPECT_TRUE(fileContains(outputPath, "\"loads\""))
+        << "JSON export MUST include loads section for contract completeness";
+    EXPECT_TRUE(fileContains(outputPath, "\"comment\""))
+        << "Loads placeholder must contain explanatory comment";
+}
+
+/**
  * @brief Test precision option
  */
 TEST_F(JSONExporterTest, PrecisionOption) {

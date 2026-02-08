@@ -41,6 +41,14 @@ bool JSONExporter::exportResults(const Truss& truss,
             writeGeometrySection(file, truss, options, needsComma);
         }
         
+        if (options.includeProperties) {
+            writePropertiesSection(file, truss, options, needsComma);
+        }
+        
+        if (options.includeLoads) {
+            writeLoadsSection(file, truss, options, needsComma);
+        }
+        
         if (options.includeDisplacements && results.displacements.size() > 0) {
             writeDisplacementsSection(file, results, options, needsComma);
         }
@@ -161,6 +169,32 @@ void JSONExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     }
     
     os << "    ]\n";
+    os << "  }";
+    
+    needsComma = true;
+}
+
+void JSONExporter::writePropertiesSection(std::ostream& os, const Truss& /*truss*/,
+                                         const ExportOptions& /*options*/, bool& needsComma) {
+    if (needsComma) {
+        os << ",\n";
+    }
+    
+    os << "  \"properties\": {\n";
+    os << "    \"comment\": \"Material properties not yet implemented in domain model\"\n";
+    os << "  }";
+    
+    needsComma = true;
+}
+
+void JSONExporter::writeLoadsSection(std::ostream& os, const Truss& /*truss*/,
+                                    const ExportOptions& /*options*/, bool& needsComma) {
+    if (needsComma) {
+        os << ",\n";
+    }
+    
+    os << "  \"loads\": {\n";
+    os << "    \"comment\": \"Applied loads not yet implemented in domain model\"\n";
     os << "  }";
     
     needsComma = true;
