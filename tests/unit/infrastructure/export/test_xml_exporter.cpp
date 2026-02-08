@@ -648,11 +648,9 @@ TEST_F(XMLExporterTest, GoldenMasterEquivalence) {
         std::regex timestampRegex(R"(\s*<ExportTime>[^<]+</ExportTime>)");
         
         bool filesMatch = true;
-        int lineNum = 0;
         
         while (std::getline(goldenFile, goldenLine) && 
                std::getline(generatedFile, generatedLine)) {
-            lineNum++;
             
             // Skip timestamp comparison
             if (std::regex_search(goldenLine, timestampRegex) && 
