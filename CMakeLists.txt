@@ -41,8 +41,6 @@ set(CMAKE_AUTOUIC ON)
 add_library(TrussCore STATIC
     src/core/Logger.cpp
     src/core/Logger.hpp
-    src/core/ResultsExporter.cpp
-    src/core/ResultsExporter.hpp
     src/core/Application.cpp
     src/core/Application.hpp
     # Domain model in model/ subdirectory
@@ -67,11 +65,26 @@ add_library(TrussCore STATIC
     src/core/analysis/SolverFactory.hpp
     src/core/analysis/AnalysisOrchestrator.cpp
     src/core/analysis/AnalysisOrchestrator.hpp
+    # Phase 3 - Infrastructure layer (export subsystem)
+    src/infrastructure/export/export_types.hpp
+    src/infrastructure/export/exporter.hpp
+    src/infrastructure/export/exporter_factory.cpp
+    src/infrastructure/export/exporter_factory.hpp
+    src/infrastructure/export/csv_exporter.cpp
+    src/infrastructure/export/csv_exporter.hpp
+    src/infrastructure/export/json_exporter.cpp
+    src/infrastructure/export/json_exporter.hpp
+    src/infrastructure/export/xml_exporter.cpp
+    src/infrastructure/export/xml_exporter.hpp
+    src/infrastructure/export/html_exporter.cpp
+    src/infrastructure/export/html_exporter.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
+    ${CMAKE_SOURCE_DIR}
     src/core
     src/core/analysis
+    src/infrastructure/export
 )
 
 target_link_libraries(TrussCore PUBLIC

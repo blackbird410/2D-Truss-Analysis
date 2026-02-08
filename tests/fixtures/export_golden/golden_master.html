@@ -1,32 +1,308 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>2D Truss Analysis Results</title>
-<style>
-body { font-family: Arial, sans-serif; margin: 20px; }
-table { border-collapse: collapse; width: 100%; margin: 10px 0; }
-th, td { border: 1px solid #ddd; padding: 8px; text-align: left; }
-th { background-color: #f2f2f2; }
-.summary { background-color: #e7f3ff; padding: 15px; border-radius: 5px; }
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Truss Analysis Results - Golden Master Test Truss</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      line-height: 1.6;
+      color: #333;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      background-color: #f5f5f5;
+    }
+    .container {
+      background-color: white;
+      padding: 30px;
+      border-radius: 8px;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    h1 {
+      color: #2c3e50;
+      border-bottom: 3px solid #3498db;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+    h2 {
+      color: #34495e;
+      margin-top: 30px;
+      margin-bottom: 15px;
+      border-left: 4px solid #3498db;
+      padding-left: 15px;
+    }
+    .metadata {
+      background-color: #ecf0f1;
+      padding: 15px;
+      border-radius: 5px;
+      margin-bottom: 20px;
+    }
+    .metadata p {
+      margin: 5px 0;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 20px 0;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    th {
+      background-color: #3498db;
+      color: white;
+      padding: 12px;
+      text-align: left;
+      font-weight: 600;
+    }
+    td {
+      padding: 10px 12px;
+      border-bottom: 1px solid #ddd;
+    }
+    tr:nth-child(even) {
+      background-color: #f9f9f9;
+    }
+    tr:hover {
+      background-color: #f5f5f5;
+    }
+    .placeholder {
+      background-color: #fff3cd;
+      border-left: 4px solid #ffc107;
+      padding: 15px;
+      margin: 15px 0;
+      border-radius: 4px;
+    }
+    .placeholder p {
+      margin: 0;
+      color: #856404;
+    }
+    .footer {
+      margin-top: 40px;
+      padding-top: 20px;
+      border-top: 1px solid #ddd;
+      text-align: center;
+      color: #7f8c8d;
+      font-size: 0.9em;
+    }
+    .number {
+      font-family: 'Courier New', monospace;
+      text-align: right;
+    }
+    .tension {
+      color: #e74c3c;
+      font-weight: 600;
+    }
+    .compression {
+      color: #3498db;
+      font-weight: 600;
+    }
+  </style>
 </head>
 <body>
-<h1>2D Truss Analysis Results</h1>
-<div class="summary">
-<h2>Project Summary</h2>
-<p><strong>Project Name:</strong> Golden Master Test Truss</p>
-<p><strong>Export Time:</strong> 2026-02-08 09:44:16</p>
-<p><strong>Total Nodes:</strong> 3</p>
-<p><strong>Total Members:</strong> 3</p>
-<p><strong>Analysis Status:</strong> Converged</p>
+<div class="container">
+<h1>Truss Analysis Results</h1>
+<h2>Project Metadata</h2>
+<div class="metadata">
+  <p><strong>Project Name:</strong> Golden Master Test Truss</p>
+  <p><strong>Export Date:</strong> 2026-02-08 15:03:18</p>
+  <p><strong>Version:</strong> 2.2.0</p>
 </div>
 <h2>Geometry</h2>
 <h3>Nodes</h3>
 <table>
-<tr><th>Node ID</th><th>X Coordinate</th><th>Y Coordinate</th><th>Support Type</th></tr>
-<tr><td>1</td><td>0.000000</td><td>0.000000</td><td>3</td></tr>
-<tr><td>2</td><td>4.000000</td><td>0.000000</td><td>5</td></tr>
-<tr><td>3</td><td>2.000000</td><td>3.000000</td><td>0</td></tr>
+  <thead>
+    <tr>
+      <th>Node ID</th>
+      <th>X Coordinate</th>
+      <th>Y Coordinate</th>
+      <th>Support Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td class="number">0.000000</td>
+      <td class="number">0.000000</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td class="number">4.000000</td>
+      <td class="number">0.000000</td>
+      <td>5</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td class="number">2.000000</td>
+      <td class="number">3.000000</td>
+      <td>0</td>
+    </tr>
+  </tbody>
 </table>
+<h3>Members</h3>
+<table>
+  <thead>
+    <tr>
+      <th>Member ID</th>
+      <th>Start Node</th>
+      <th>End Node</th>
+      <th>Length</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td>1</td>
+      <td>2</td>
+      <td class="number">4.000000</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td>1</td>
+      <td>3</td>
+      <td class="number">3.605551</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td>2</td>
+      <td>3</td>
+      <td class="number">3.605551</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Material and Section Properties</h2>
+<div class="placeholder">
+  <p><strong>Note:</strong> Material properties not yet implemented in domain model</p>
+</div>
+<h2>Applied Loads</h2>
+<div class="placeholder">
+  <p><strong>Note:</strong> Applied loads not yet implemented in domain model</p>
+</div>
+<h2>Nodal Displacements</h2>
+<table>
+  <thead>
+    <tr>
+      <th>DOF</th>
+      <th>Displacement</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td class="number">0.000000</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td class="number">0.000000</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td class="number">0.000000</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td class="number">28633115306666.671875</td>
+    </tr>
+    <tr>
+      <td>4</td>
+      <td class="number">-21474836480000.003906</td>
+    </tr>
+    <tr>
+      <td>5</td>
+      <td class="number">14316557653333.333984</td>
+    </tr>
+  </tbody>
+</table>
+<p><strong>Maximum Displacement:</strong> <span class="number">28633115306666.671875</span></p>
+<h2>Member Forces</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Member ID</th>
+      <th>Axial Force</th>
+      <th>Type</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>1</td>
+      <td class="number">0.000000</td>
+      <td class="compression">Compression</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td class="number">-13161.877963</td>
+      <td class="compression">Compression</td>
+    </tr>
+    <tr>
+      <td>3</td>
+      <td class="number">-8506.098452</td>
+      <td class="compression">Compression</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Support Reactions</h2>
+<table>
+  <thead>
+    <tr>
+      <th>DOF</th>
+      <th>Reaction Force</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>0</td>
+      <td class="number">3730.565917</td>
+    </tr>
+    <tr>
+      <td>1</td>
+      <td class="number">14310.515542</td>
+    </tr>
+    <tr>
+      <td>2</td>
+      <td class="number">-3730.565917</td>
+    </tr>
+  </tbody>
+</table>
+<h2>Analysis Metadata</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Property</th>
+      <th>Value</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td>Converged</td>
+      <td>Yes</td>
+    </tr>
+    <tr>
+      <td>Iterations</td>
+      <td>0</td>
+    </tr>
+    <tr>
+      <td>Total DOFs</td>
+      <td>6</td>
+    </tr>
+    <tr>
+      <td>Free DOFs</td>
+      <td>3</td>
+    </tr>
+    <tr>
+      <td>Max Displacement</td>
+      <td class="number">28633115306666.671875</td>
+    </tr>
+    <tr>
+      <td>Max Stress</td>
+      <td class="number">131618779.629931</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+<div class="footer">
+  <p>Generated by 2D Truss Analysis v3.0.0</p>
+  <p>Export Time: 2026-02-08 15:03:18</p>
+</div>
 </body>
 </html>
