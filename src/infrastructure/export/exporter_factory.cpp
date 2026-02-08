@@ -11,6 +11,7 @@
 #include "xml_exporter.hpp"
 #include "html_exporter.hpp"
 #include "latex_exporter.hpp"
+#include "text_exporter.hpp"
 #include <stdexcept>
 #include <algorithm>
 #include <cctype>
@@ -33,8 +34,7 @@ std::unique_ptr<IResultsExporter> ExporterFactory::create(ExportFormat format) {
             return std::make_unique<HTMLExporter>();
             
         case ExportFormat::TXT:
-            // TODO: Implement TextExporter
-            throw std::invalid_argument("Text format not yet implemented");
+            return std::make_unique<TextExporter>();
             
         case ExportFormat::LaTeX:
             return std::make_unique<LaTeXExporter>();

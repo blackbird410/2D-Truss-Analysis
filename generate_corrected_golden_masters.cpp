@@ -24,6 +24,7 @@
 #include "src/infrastructure/export/xml_exporter.hpp"
 #include "src/infrastructure/export/html_exporter.hpp"
 #include "src/infrastructure/export/latex_exporter.hpp"
+#include "src/infrastructure/export/text_exporter.hpp"
 #include <iostream>
 #include <filesystem>
 #include <iomanip>
@@ -128,6 +129,8 @@ int main() {
                             "HTML (8-SECTION COMPLIANT)"});
         exporters.push_back({"golden_master.tex", std::make_unique<LaTeXExporter>(), 
                             "LaTeX (8-SECTION COMPLIANT)"});
+        exporters.push_back({"golden_master.txt", std::make_unique<TextExporter>(), 
+                            "Text (8-SECTION COMPLIANT)"});
         
         bool allSuccessful = true;
         size_t totalBytes = 0;
@@ -155,6 +158,7 @@ int main() {
                 }
             } else {
                 std::cout << "✗ FAILED\n";
+                std::cout << "  Error: " << config.exporter->getLastError() << "\n";
                 allSuccessful = false;
             }
         }

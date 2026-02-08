@@ -80,6 +80,8 @@ add_library(TrussCore STATIC
     src/infrastructure/export/html_exporter.hpp
     src/infrastructure/export/latex_exporter.cpp
     src/infrastructure/export/latex_exporter.hpp
+    src/infrastructure/export/text_exporter.cpp
+    src/infrastructure/export/text_exporter.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -138,6 +140,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
         tests/unit/core/test_analysis_orchestrator.cpp
+        tests/unit/infrastructure/export/test_text_exporter.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
