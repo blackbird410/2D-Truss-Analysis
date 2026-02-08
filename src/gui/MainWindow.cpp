@@ -5,7 +5,7 @@
 
 #include "MainWindow.hpp"
 #include "ProjectFileManager.hpp"
-#include "ResultsExporter.hpp"
+#include "src/infrastructure/export/exporter_factory.hpp"
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QSettings>
@@ -456,25 +456,35 @@ void MainWindow::exportResults() {
         "CSV Files (*.csv);;TSV Files (*.tsv);;JSON Files (*.json);;XML Files (*.xml);;Text Files (*.txt);;LaTeX Files (*.tex);;HTML Files (*.html);;All Files (*)");
     
     if (!fileName.isEmpty()) {
-        truss::core::ResultsExporter exporter;
+        // Detect format from file extension using factory
+        auto format = truss::infrastructure::export_::ExporterFactory::detectFormat(fileName.toStdString());
+        
+        // Create appropriate exporter via factory
+        auto exporter = truss::infrastructure::export_::ExporterFactory::create(format);
+        
+        // Get analysis results
         truss::core::AnalysisResults results = m_analysisEngine->getLastResults();
-        truss::core::ExportOptions options;
+        
+        // Configure export options
+        truss::infrastructure::export_::ExportOptions options;
         options.includeGeometry = true;
+        options.includeProperties = true;
+        options.includeLoads = true;
         options.includeDisplacements = true;
         options.includeMemberForces = true;
         options.includeReactions = true;
+        options.includeStresses = true;
+        options.includeUtilization = true;
         options.includeMetadata = true;
         options.precision = 6;
 
-        // Determine format from file extension
-        truss::core::ExportFormat format = truss::core::ResultsExporter::detectFormat(fileName.toStdString());
-        
-        if (exporter.exportResults(*getTruss(), results, fileName.toStdString(), format, options)) {
+        // Export results
+        if (exporter->exportResults(*getTruss(), results, fileName.toStdString(), options)) {
             QFileInfo fileInfo(fileName);
             m_statusLabel->setText(QString("Results exported: %1").arg(fileInfo.fileName()));
             showInfoMessage(QString("Results exported successfully to %1!").arg(fileInfo.fileName()));
         } else {
-            showErrorMessage(QString("Failed to export results: %1").arg(QString::fromStdString(exporter.getLastError())));
+            showErrorMessage(QString("Failed to export results: %1").arg(QString::fromStdString(exporter->getLastError())));
             m_statusLabel->setText("Failed to export results");
         }
     }
