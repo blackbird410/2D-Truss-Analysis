@@ -40,6 +40,16 @@ bool XMLExporter::exportResults(const Truss& truss,
             writeGeometrySection(file, truss, options);
         }
         
+        // Properties section (conditional)
+        if (options.includeProperties) {
+            writePropertiesSection(file, truss, options);
+        }
+        
+        // Loads section (conditional)
+        if (options.includeLoads) {
+            writeLoadsSection(file, truss, options);
+        }
+        
         // Displacements section (conditional)
         if (options.includeDisplacements && results.displacements.size() > 0) {
             writeDisplacementsSection(file, results, options);
@@ -153,6 +163,20 @@ void XMLExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     os << "    </Members>\n";
     
     os << "  </Geometry>\n";
+}
+
+void XMLExporter::writePropertiesSection(std::ostream& os, const Truss& /*truss*/,
+                                        const ExportOptions& /*options*/) {
+    os << "  <Properties>\n";
+    os << "    <Comment>Material properties not yet implemented in domain model</Comment>\n";
+    os << "  </Properties>\n";
+}
+
+void XMLExporter::writeLoadsSection(std::ostream& os, const Truss& /*truss*/,
+                                   const ExportOptions& /*options*/) {
+    os << "  <Loads>\n";
+    os << "    <Comment>Applied loads not yet implemented in domain model</Comment>\n";
+    os << "  </Loads>\n";
 }
 
 void XMLExporter::writeDisplacementsSection(std::ostream& os,
