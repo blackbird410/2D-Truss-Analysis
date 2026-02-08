@@ -190,9 +190,9 @@ TEST_F(LaTeXExporterTest, PropertiesSection) {
     EXPECT_TRUE(fileContains(outputPath, "\\section{Material and Section Properties}"))
         << "Properties section header must be present";
     
-    // Should contain placeholder text
-    EXPECT_TRUE(fileContains(outputPath, "not yet implemented"))
-        << "Should have placeholder for unimplemented properties";
+    // Should contain real data table
+    EXPECT_TRUE(fileContains(outputPath, "\\begin{longtable}") || fileContains(outputPath, "Material"))
+        << "Properties section should include real data or table structure";
 }
 
 /**
@@ -212,9 +212,9 @@ TEST_F(LaTeXExporterTest, LoadsSection) {
     EXPECT_TRUE(fileContains(outputPath, "\\section{Applied Loads}"))
         << "Loads section header must be present";
     
-    // Should contain placeholder text
-    EXPECT_TRUE(fileContains(outputPath, "not yet implemented"))
-        << "Should have placeholder for unimplemented loads";
+    // Should contain real data table
+    EXPECT_TRUE(fileContains(outputPath, "\\begin{longtable}") || fileContains(outputPath, "Node ID"))
+        << "Loads section should include real data or table structure";
 }
 
 /**

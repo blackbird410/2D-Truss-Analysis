@@ -146,6 +146,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_latex_exporter.cpp
         tests/unit/infrastructure/export/test_text_exporter.cpp
         tests/unit/infrastructure/export/test_xml_exporter.cpp
+        tests/unit/infrastructure/export/test_exporter_factory.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
@@ -160,6 +161,7 @@ if(BUILD_TESTING)
     
     add_test(NAME UnitTests COMMAND unit_tests)
     set_tests_properties(UnitTests PROPERTIES
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         TIMEOUT 30
         LABELS "unit;gtest"
     )

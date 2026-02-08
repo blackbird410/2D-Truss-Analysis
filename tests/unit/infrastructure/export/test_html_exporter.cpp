@@ -230,9 +230,9 @@ TEST_F(HTMLExporterTest, GeometrySection) {
 /**
  * @brief Test properties section (CONTRACT COMPLETENESS)
  * 
- * Material properties section is REQUIRED for 8-section export contract,
- * even though domain model does not yet implement this feature.
- * Placeholder ensures forward compatibility and explicit contract definition.
+ * Material properties section is REQUIRED for 8-section export contract.
+ * Domain model provides complete material and section data through
+ * Member::getMaterial() and Member::getSection().
  */
 TEST_F(HTMLExporterTest, PropertiesSection) {
     auto truss = createSimpleTriangleTruss();
@@ -244,21 +244,22 @@ TEST_F(HTMLExporterTest, PropertiesSection) {
     
     exporter->exportResults(*truss, results, outputPath, options);
     
-    // Properties section must be present (8-section contract requirement)
+    // Properties section must be present with real data
     EXPECT_TRUE(fileContains(outputPath, "<h2>Material and Section Properties</h2>"))
-        << "HTML export MUST include properties section for contract completeness";
-    EXPECT_TRUE(fileContains(outputPath, "placeholder"))
-        << "Properties placeholder must be present";
-    EXPECT_TRUE(fileContains(outputPath, "Material properties not yet implemented"))
-        << "Placeholder must contain explanatory message";
+        << "HTML export MUST include properties section";
+    EXPECT_TRUE(fileContains(outputPath, "<table"))
+        << "Properties must include table structure";
+    EXPECT_TRUE(fileContains(outputPath, "Material"))
+        << "Properties must include material column";
+    EXPECT_TRUE(fileContains(outputPath, "Young's Modulus"))
+        << "Properties must include Young's modulus column";
 }
 
 /**
  * @brief Test loads section (CONTRACT COMPLETENESS)
  * 
- * Applied loads section is REQUIRED for 8-section export contract,
- * even though domain model does not yet implement this feature.
- * Placeholder ensures forward compatibility and explicit contract definition.
+ * Applied loads section is REQUIRED for 8-section export contract.
+ * Domain model provides load data through Node::getAppliedForce().
  */
 TEST_F(HTMLExporterTest, LoadsSection) {
     auto truss = createSimpleTriangleTruss();
@@ -270,13 +271,13 @@ TEST_F(HTMLExporterTest, LoadsSection) {
     
     exporter->exportResults(*truss, results, outputPath, options);
     
-    // Loads section must be present (8-section contract requirement)
+    // Loads section must be present with real data
     EXPECT_TRUE(fileContains(outputPath, "<h2>Applied Loads</h2>"))
-        << "HTML export MUST include loads section for contract completeness";
-    EXPECT_TRUE(fileContains(outputPath, "placeholder"))
-        << "Loads placeholder must be present";
-    EXPECT_TRUE(fileContains(outputPath, "Applied loads not yet implemented"))
-        << "Placeholder must contain explanatory message";
+        << "HTML export MUST include loads section";
+    EXPECT_TRUE(fileContains(outputPath, "<table"))
+        << "Loads must include table structure";
+    EXPECT_TRUE(fileContains(outputPath, "Fx (N)") || fileContains(outputPath, "Node ID"))
+        << "Loads must include force column headers";
 }
 
 /**
