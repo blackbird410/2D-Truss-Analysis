@@ -150,7 +150,7 @@ TEST_F(TextExporterTest, AllEightSectionsPresent) {
 }
 
 /**
- * @brief Verify properties section exists (even as placeholder)
+ * @brief Verify properties section contains real material data
  */
 TEST_F(TextExporterTest, PropertiesSection) {
     auto truss = createSimpleTriangleTruss();
@@ -160,11 +160,14 @@ TEST_F(TextExporterTest, PropertiesSection) {
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
     
     EXPECT_TRUE(fileContains(outputPath, "MATERIAL AND SECTION PROPERTIES"));
-    EXPECT_TRUE(fileContains(outputPath, "Not yet implemented"));
+    EXPECT_TRUE(fileContains(outputPath, "Member ID"));
+    EXPECT_TRUE(fileContains(outputPath, "Material"));
+    EXPECT_TRUE(fileContains(outputPath, "E (Pa)"));
+    EXPECT_TRUE(fileContains(outputPath, "Area (m"));
 }
 
 /**
- * @brief Verify loads section exists (even as placeholder)
+ * @brief Verify loads section contains real applied force data
  */
 TEST_F(TextExporterTest, LoadsSection) {
     auto truss = createSimpleTriangleTruss();
@@ -174,7 +177,9 @@ TEST_F(TextExporterTest, LoadsSection) {
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
     
     EXPECT_TRUE(fileContains(outputPath, "APPLIED LOADS"));
-    EXPECT_TRUE(fileContains(outputPath, "Not yet implemented"));
+    EXPECT_TRUE(fileContains(outputPath, "Node ID"));
+    EXPECT_TRUE(fileContains(outputPath, "Fx (N)"));
+    EXPECT_TRUE(fileContains(outputPath, "Fy (N)"));
 }
 
 /**
