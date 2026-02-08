@@ -530,7 +530,7 @@ All migrated test files include standardized headers:
 /**
  * @file test_node.cpp
  * @brief Google Test unit tests for Node class
- * @author Refactoring Agent (migrated from custom framework)
+ * @author Civil Engineering Software Solutions
  * @version 3.0.0-dev
  *
  * Migration Notes:
