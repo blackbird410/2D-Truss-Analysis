@@ -2,7 +2,7 @@
 <TrussAnalysisResults>
   <Project>
     <Name>Golden Master Test Truss</Name>
-    <ExportTime>2026-02-08 19:50:03</ExportTime>
+    <ExportTime>2026-02-09 01:16:57</ExportTime>
     <Version>2.2.0</Version>
   </Project>
   <Geometry>
@@ -44,11 +44,26 @@
   <Properties>
     <Members>
       <Member id="1">
-        <Material>Steel</Material>\n        <YoungModulus>200000000000.000000</YoungModulus>\n        <Density>7850.000000</Density>\n        <Area>0.000100</Area>\n        <Section>Default</Section>\n      </Member>
+        <Material>Steel</Material>
+        <YoungModulus>200000000000.000000</YoungModulus>
+        <Density>7850.000000</Density>
+        <Area>0.000100</Area>
+        <Section>Default</Section>
+      </Member>
       <Member id="2">
-        <Material>Steel</Material>\n        <YoungModulus>200000000000.000000</YoungModulus>\n        <Density>7850.000000</Density>\n        <Area>0.000100</Area>\n        <Section>Default</Section>\n      </Member>
+        <Material>Steel</Material>
+        <YoungModulus>200000000000.000000</YoungModulus>
+        <Density>7850.000000</Density>
+        <Area>0.000100</Area>
+        <Section>Default</Section>
+      </Member>
       <Member id="3">
-        <Material>Steel</Material>\n        <YoungModulus>200000000000.000000</YoungModulus>\n        <Density>7850.000000</Density>\n        <Area>0.000100</Area>\n        <Section>Default</Section>\n      </Member>
+        <Material>Steel</Material>
+        <YoungModulus>200000000000.000000</YoungModulus>
+        <Density>7850.000000</Density>
+        <Area>0.000100</Area>
+        <Section>Default</Section>
+      </Member>
     </Members>
   </Properties>
   <Loads>
