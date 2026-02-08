@@ -2,9 +2,11 @@
 
 [![Release](https://img.shields.io/github/v/release/blackbird410/2D-Truss-Analysis-cpp)](https://github.com/blackbird410/2D-Truss-Analysis-cpp/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![Platform](https://img.shields.io/badge/platform-macOS-lightgrey.svg)](https://www.apple.com/macos/)
+[![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
+
+> **✅ REFACTORING STATUS**: Phase 2 (Core Domain Refactoring) complete! The project has undergone comprehensive architectural improvements including domain model refactoring, monolithic engine decomposition, and directory restructuring. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 3 in progress).
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface and robust computational engine.
 
@@ -19,6 +21,7 @@ I firmly believe that this tool will prove invaluable to second and third-year C
 This repository serves as a centralized hub housing all the project's implementation files.
 
 ## What is a truss ?
+
 ![A bridge using a truss as base structure to supports loads.](/images/RRTrussBridgeSideView.jpg)
 
 To understand the functionality of this program, it's essential to grasp the concept of a truss. A truss is essentially an assembly of structural members, typically beams, interconnected at nodes, forming a stable framework. In simpler terms, trusses consist of bars arranged within a two-dimensional Cartesian system. They are a prevalent structural element found in applications such as steel buildings and bridges, including examples like railway bridges and transmission towers.
@@ -26,91 +29,102 @@ To understand the functionality of this program, it's essential to grasp the con
 Trusses can exist in two primary forms: as 2D trusses, entirely confined to a single plane, or as 3D trusses, which extend into three-dimensional space. Specifically, when all the truss members and applied loads are situated within a single plane, we refer to it as a plane truss.
 
 ## What are the components of the truss?
-A truss fundamental components are: 
+
+A truss fundamental components are:
+
 - The **nodes or joints**, where the loads and support reactions are applied.
-- The **members or beams**, which are connected only at their ends by frictionless hinges in plane trusses 
-and by frictionless ball-and-socket joints in space trusses. In a truss, they are subjected only to axial 
-forces (compression or tension).
+- The **members or beams**, which are connected only at their ends by frictionless hinges in plane trusses
+  and by frictionless ball-and-socket joints in space trusses. In a truss, they are subjected only to axial
+  forces (compression or tension).
 
 ## Computational requirements:
-* Prior to undertaking any computations, it's imperative to evaluate the internal stability of a truss. This evaluation ensures that the truss, when detached from its supports, maintains its shape and remains a structurally rigid entity. In this context, 'internal' pertains to the count and configuration of the members intrinsic to the truss itself.
+
+- Prior to undertaking any computations, it's imperative to evaluate the internal stability of a truss. This evaluation ensures that the truss, when detached from its supports, maintains its shape and remains a structurally rigid entity. In this context, 'internal' pertains to the count and configuration of the members intrinsic to the truss itself.
 
 It's worth noting that instability resulting from inadequate external support or incorrect placement of external supports is termed 'external instability.
 
 > [!NOTE]
 > The internal stability of a determinate plane truss is assessed by this equation :
-> **m + r = 2j** 
+> **m + r = 2j**
 
-Where :   
+Where :
+
 - **m** : number of members or beams
 - **r** : number of support reactions
 - **j** : number of nodes or joints
 
 > [!NOTE]
-> **m + r > 2j** is also stable, but is considered ***statically indeterminate***, case which will not be treated by 
-our program.
+> **m + r > 2j** is also stable, but is considered **_statically indeterminate_**, case which will not be treated by
+> our program.
 
-* We consider a truss to be *statically determinate if the forces in all its members, as well as all the external 
-reactions, can be determined by using the equations of equilibrium*.
+- We consider a truss to be _statically determinate if the forces in all its members, as well as all the external
+  reactions, can be determined by using the equations of equilibrium_.
 
 ## Equations of Condition for Plane Truss
-The types of connections used to connect rigid portions of internally unstable structures 
-provide equations of condition that, along with the three equilibrium equations, can be 
-used to determine the reactions needed to constrain such structures fully. Such equations 
+
+The types of connections used to connect rigid portions of internally unstable structures
+provide equations of condition that, along with the three equilibrium equations, can be
+used to determine the reactions needed to constrain such structures fully. Such equations
 are :
+
 - Because an internal hinge cannot transmit moment, it provides an equation of condition :
-    + $\sum{M} = 0$, which is the sum of the moments in all nodes.
-- Since these parallel (horizontal) bars cannot transmit force in the direction perpendicular 
-to them, this type of connection provides an equation of condition:
-    + $\sum{F} = 0$, which is the sum of forces in each nodes.
+  - $\sum{M} = 0$, which is the sum of the moments in all nodes.
+- Since these parallel (horizontal) bars cannot transmit force in the direction perpendicular
+  to them, this type of connection provides an equation of condition: + $\sum{F} = 0$, which is the sum of forces in each nodes.
 
 ## Method of Computation
-In this program, we use the **Stiffness Method**, more precisely the **displacement method** to 
-analyze the truss. 
+
+In this program, we use the **Stiffness Method**, more precisely the **displacement method** to
+analyze the truss.
 
 In this program, we employ the Stiffness Method, specifically the displacement method, to conduct truss analysis.
 
-The Stiffness Method necessitates breaking down the structure into discrete finite elements and designating their endpoints as nodes. In the context of truss analysis, these finite elements correspond to individual truss members, while the nodes signify the joints or connections. We determine the force-displacement characteristics of each element and subsequently interrelate them through the force equilibrium equations established at the nodes. These interconnected relationships are then consolidated into what is referred to as the structure's **stiffness matrix**, denoted as ***K**.
+The Stiffness Method necessitates breaking down the structure into discrete finite elements and designating their endpoints as nodes. In the context of truss analysis, these finite elements correspond to individual truss members, while the nodes signify the joints or connections. We determine the force-displacement characteristics of each element and subsequently interrelate them through the force equilibrium equations established at the nodes. These interconnected relationships are then consolidated into what is referred to as the structure's **stiffness matrix**, denoted as **\*K**.
 
 Once the stiffness matrix is defined, we can ascertain the unknown displacements of the nodes under any given load applied to the structure. With knowledge of these displacements, we can subsequently compute both the external and internal forces within the structure by leveraging the force-displacement relations for each individual member.
 
 ## Key Features
 
 **Interactive Drawing Canvas**
+
 - Mouse-based node and member placement
 - Real-time visual feedback during design
 - Snap-to-grid functionality for precision
 - Zoom and pan capabilities
 
 **Advanced Analysis Engine**
+
 - Direct stiffness method implementation
 - Support for various load types and boundary conditions
 - Automated calculation of displacements, forces, and reactions
 - Material and section property management
 
 **Professional Results Display**
+
 - Comprehensive results tables
 - Visual deformation plots
 - Force diagrams and stress visualization
 - Export capabilities for reports
 
 **Modern Technology Stack**
+
 - **Language**: C++20 with modern standards
 - **GUI Framework**: Qt6 (Core, Widgets, GUI)
 - **Linear Algebra**: Eigen3 library
 - **Build System**: CMake 3.20+
-- **Platform**: Cross-platform (macOS, Linux)
+- **Platform**: Linux (Ubuntu 22.04+, Fedora, Arch)
 
 ## Requirements
 
 - CMake 3.16 or higher
 - Qt6 (Qt6Core, Qt6Widgets, Qt6Charts)
-- C++17 compatible compiler (GCC 7+, Clang 5+, MSVC 2017+)
+- C++20 compatible compiler (GCC 10+, Clang 10+)
 - Eigen3 library for matrix operations
+- Linux operating system
 
 ## Quick Start
 
-### One-Step Installation (Linux) - **Recommended**
+### One-Step Installation (Linux)
 
 ```bash
 # Clone and install in one command
@@ -120,6 +134,7 @@ cd 2D-Truss-Analysis-cpp
 ```
 
 **Installation Options:**
+
 ```bash
 ./install.sh           # System-wide installation (requires sudo)
 ./install.sh --user    # User installation (~/.local)
@@ -127,70 +142,58 @@ cd 2D-Truss-Analysis-cpp
 ./install.sh --help    # See all options
 ```
 
-### Installation (macOS)
+### Building from Source (Linux only)
 
-**Recommended Method:**
-```bash
-./install_macos.sh
-```
-
-**Alternative Methods:**
-- See [INSTALL_MACOS.md](INSTALL_MACOS.md) for comprehensive guide
-- See [QUICK_INSTALL.md](QUICK_INSTALL.md) for quick reference
-
-**Code Signing Note:** The application is automatically signed with ad-hoc signatures during build. When first launching, you may need to:
-1. Right-click on the app → "Open"
-2. Click "Open" in the security dialog
-3. This only needs to be done once
-
-### Building from Source
+> Note: This project currently supports Linux only. Windows and macOS builds and binaries (for example, `.exe` launchers such as `TrussAnalysisGUI.exe`) are not supported.
 
 ```bash
-# Install dependencies using Homebrew
-brew install cmake qt@6 eigen
+# Install dependencies (Ubuntu/Debian)
+sudo apt-get update
+sudo apt-get install cmake qt6-base-dev libeigen3-dev build-essential
 
 # Clone the repository
 git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
 cd 2D-Truss-Analysis-cpp
 
-# Create build directory
-mkdir build && cd build
+# Build the project
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
 
-# Configure and build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(sysctl -n hw.ncpu)
+# Run tests
+cd build && ctest
+
+# Install (optional)
+sudo cmake --install build
 ```
 
-### Linux (Ubuntu/Debian)
+### Alternative: Fedora/RHEL
+
 ```bash
 # Install dependencies
-sudo apt update
-sudo apt install cmake qt6-base-dev qt6-charts-dev libeigen3-dev build-essential
+sudo dnf install cmake qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel gcc-c++
 
-# Clone and build (same as macOS)
-git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
-cd 2D-Truss-Analysis-cpp
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-make -j$(nproc)
-```
+# Build as above
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
+````
 
-### Windows
-```cmd
-# Install Qt6 and CMake from their official websites
-# Or use vcpkg for dependencies
+### Alternative: Arch Linux
 
-git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
-cd 2D-Truss-Analysis-cpp
-mkdir build && cd build
-cmake -DCMAKE_BUILD_TYPE=Release ..
-cmake --build . --config Release
+```bash
+# Install dependencies
+sudo pacman -S cmake qt6-base qt6-charts eigen gcc
+
+# Build as above
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build -j$(nproc)
 ```
 
 ## Usage
 
 ### GUI Application
+
 Run the GUI version:
+
 ```bash
 ./TrussAnalysisGUI  # On Unix systems
 # or
@@ -198,7 +201,9 @@ TrussAnalysisGUI.exe  # On Windows
 ```
 
 ### Command Line Interface
+
 Run the CLI version:
+
 ```bash
 ./TrussAnalysisCLI --example    # Run example analysis
 ./TrussAnalysisCLI --help       # Show usage information
@@ -206,9 +211,9 @@ Run the CLI version:
 
 ## Documentation
 
-- **[Installation Guide](INSTALL_MACOS.md)**: Complete macOS installation instructions
-- **[Quick Install](QUICK_INSTALL.md)**: Fast installation reference
-- **[Code Signing Solutions](CODE_SIGNING_SOLUTIONS.md)**: Troubleshooting guide
+- **[Installation Guide](INSTALL_LINUX.md)**: Complete Linux installation instructions
+- **[Refactoring Progress](REFACTORING_PROGRESS.md)**: Track v3.0.0 refactoring status
+- **[Refactoring Documentation](docs/refactoring/)**: Detailed refactoring plans and architecture
 
 ## Contributing
 
@@ -227,13 +232,14 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 - **Startup Time**: < 2 seconds
 - **Analysis Speed**: 1000+ elements in < 1 second
 - **Memory Usage**: ~50MB typical, ~100MB with large models
-- **Platform**: Optimized for Apple Silicon and Intel processors
+- **Platform**: Optimized for Linux (x86_64 and ARM64)
 
 ## Version History
 
+- **v3.0.0** (In Progress): Professional refactor - Linux-only, SOLID architecture, Google Test
 - **v2.2.0** (2025-06-30): Cross-platform production release with CI/CD
-- **v2.1.3** (2025-06-30): Code signing integration and macOS fixes
-- **v2.1.1** (2025-06-30): Production release with all critical fixes
+- **v2.1.3** (2025-06-30): Code signing integration
+- **v2.1.1** (2025-06-30): Production release with critical fixes
 - **v2.1.0** (2025-06-30): Interactive drawing widget implementation
 - **v2.0.0** (2025-06-29): Major GUI redesign and Qt6 migration
 

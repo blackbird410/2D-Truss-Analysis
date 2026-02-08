@@ -1,0 +1,180 @@
+/**
+ * @file latex_exporter.hpp
+ * @brief LaTeX format results exporter implementation
+ * @author Civil Engineering Software Solutions
+ * @version 3.0.0
+ */
+
+#pragma once
+
+#include "exporter.hpp"
+#include "export_types.hpp"
+#include <sstream>
+#include <iomanip>
+#include <chrono>
+#include <filesystem>
+
+namespace truss::infrastructure::export_ {
+
+// Import types from core namespace
+using core::Real;
+using core::Truss;
+using core::analysis::AnalysisResults;
+
+/**
+ * @brief LaTeX format exporter
+ * 
+ * Exports analysis results to LaTeX format suitable for inclusion in
+ * technical documents. Produces a complete LaTeX document with tabular
+ * environments for structured data.
+ * 
+ * CRITICAL: This implementation follows the corrected 8-section export contract.
+ * ALL 8 sections MUST be included to maintain semantic equivalence with
+ * CSV, JSON, XML, and HTML exporters. LaTeX is just another presentation layer.
+ * 
+ * 8-Section Contract (MANDATORY):
+ * 1. Project metadata
+ * 2. Geometry (nodes + members)
+ * 3. Material properties (placeholder until domain model implements)
+ * 4. Applied loads (placeholder until domain model implements)
+ * 5. Displacements
+ * 6. Member forces
+ * 7. Reactions (MANDATORY for equilibrium verification)
+ * 8. Analysis metadata
+ * 
+ * LaTeX Output Structure:
+ * - Complete document with \documentclass, \begin{document}, \end{document}
+ * - Tabular environments for data tables
+ * - Section headings with \section{}
+ * - Proper escaping of special LaTeX characters
+ * - Floating-point values formatted according to ExportOptions
+ */
+class LaTeXExporter : public IResultsExporter {
+public:
+    /**
+     * @brief Construct a LaTeX exporter
+     */
+    LaTeXExporter() = default;
+    
+    /**
+     * @brief Virtual destructor
+     */
+    ~LaTeXExporter() override = default;
+    
+    /**
+     * @brief Export analysis results to LaTeX file
+     * @param truss The analyzed truss structure
+     * @param results Analysis results
+     * @param filePath Output file path
+     * @param options Export options (precision, sections to include)
+     * @return true if export successful, false otherwise
+     */
+    bool exportResults(const Truss& truss,
+                      const AnalysisResults& results,
+                      const std::filesystem::path& filePath,
+                      const ExportOptions& options = ExportOptions{}) override;
+    
+    /**
+     * @brief Get the last error message
+     * @return Error message (empty if no error)
+     */
+    std::string getLastError() const override { return m_lastError; }
+    
+    /**
+     * @brief Get the export format
+     * @return ExportFormat::LaTeX
+     */
+    ExportFormat getFormat() const override { return ExportFormat::LaTeX; }
+
+private:
+    std::string m_lastError;
+    
+    /**
+     * @brief Write LaTeX document preamble
+     */
+    void writePreamble(std::ostream& os, const Truss& truss);
+    
+    /**
+     * @brief Write document closing
+     */
+    void writeClosing(std::ostream& os);
+    
+    /**
+     * @brief Write project metadata section
+     */
+    void writeProjectSection(std::ostream& os, 
+                            const Truss& truss, 
+                            const ExportOptions& options);
+    
+    /**
+     * @brief Write geometry section (nodes + members)
+     */
+    void writeGeometrySection(std::ostream& os,
+                             const Truss& truss,
+                             const ExportOptions& options);
+    
+    /**
+     * @brief Write material properties section
+     */
+    void writePropertiesSection(std::ostream& os,
+                               const Truss& truss,
+                               const ExportOptions& options);
+    
+    /**
+     * @brief Write applied loads section
+     */
+    void writeLoadsSection(std::ostream& os,
+                          const Truss& truss,
+                          const ExportOptions& options);
+    
+    /**
+     * @brief Write displacements section
+     */
+    void writeDisplacementsSection(std::ostream& os,
+                                  const AnalysisResults& results,
+                                  const ExportOptions& options);
+    
+    /**
+     * @brief Write member forces section
+     */
+    void writeMemberForcesSection(std::ostream& os,
+                                 const AnalysisResults& results,
+                                 const ExportOptions& options);
+    
+    /**
+     * @brief Write reactions section
+     */
+    void writeReactionsSection(std::ostream& os,
+                              const AnalysisResults& results,
+                              const ExportOptions& options);
+    
+    /**
+     * @brief Write analysis metadata section
+     */
+    void writeMetadataSection(std::ostream& os,
+                             const AnalysisResults& results,
+                             const ExportOptions& options);
+    
+    /**
+     * @brief Format a number according to export options
+     * @param value The value to format
+     * @param options Export options (precision, scientific notation)
+     * @return Formatted string
+     */
+    std::string formatNumber(Real value, const ExportOptions& options) const;
+    
+    /**
+     * @brief Format timestamp for LaTeX
+     * @return Formatted timestamp string
+     */
+    std::string formatTimestamp() const;
+    
+    /**
+     * @brief Escape special LaTeX characters
+     * @param text Input text
+     * @return Escaped text safe for LaTeX
+     */
+    std::string escapeLatex(const std::string& text) const;
+};
+
+} // namespace truss::infrastructure::export_

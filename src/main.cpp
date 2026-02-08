@@ -2,8 +2,8 @@
  * @file main.cpp
  * @brief Main entry point for the 2D Truss Analysis Application
  * @author Civil Engineering Software Solutions
- * @version 2.0.0
- * @date 2025
+ * @version 3.0.0
+ * @date 2026
  * 
  * Professional 2D Truss Analysis Application built with modern C++ and Qt6.
  * Provides comprehensive structural analysis capabilities for civil engineers.
@@ -29,7 +29,7 @@
  */
 void setupApplication() {
     QApplication::setApplicationName("TrussAnalysis2D");
-    QApplication::setApplicationVersion("2.0.0");
+    QApplication::setApplicationVersion("3.0.0");
     QApplication::setApplicationDisplayName("2D Truss Analysis");
     QApplication::setOrganizationName("Civil Engineering Software Solutions");
     QApplication::setOrganizationDomain("truss-analysis.com");

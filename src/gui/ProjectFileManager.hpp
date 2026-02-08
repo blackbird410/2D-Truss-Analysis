@@ -11,7 +11,7 @@
 #include <QJsonDocument>
 #include <QJsonArray>
 #include <memory>
-#include "../core/Truss.hpp"
+#include "../core/model/Truss.hpp"
 
 namespace truss::gui {
 

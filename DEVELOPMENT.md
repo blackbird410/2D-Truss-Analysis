@@ -97,19 +97,19 @@ ASSERT_NO_THROW(expression);
 ```cpp
 int main() {
     TestFramework framework(true); // verbose output
-    
+
     framework.beginSuite("Integration Tests");
-    
+
     framework.runTest("Simple triangular truss", []() {
         // Test implementation
         ASSERT_TRUE(someCondition);
         ASSERT_NEAR(result, expected, 1e-6);
     });
-    
+
     framework.runTest("Error handling", []() {
         ASSERT_THROWS(invalidOperation(), std::exception);
     });
-    
+
     framework.generateReport();
     return framework.allTestsPassed() ? 0 : 1;
 }
@@ -161,9 +161,10 @@ The build system automatically discovers and configures unit tests:
 Our comprehensive CI/CD pipeline (`/.github/workflows/ci.yml`) includes:
 
 #### Test Matrix
+
 - **Compilers**: GCC-11, Clang-13
 - **Build Types**: Debug, Release
-- **Platforms**: Ubuntu Latest (with support for Windows/macOS)
+- **Platforms**: Ubuntu Latest (Linux-only)
 
 #### Pipeline Stages
 
@@ -191,6 +192,7 @@ Our comprehensive CI/CD pipeline (`/.github/workflows/ci.yml`) includes:
 ### Artifact Collection
 
 The CI system automatically collects:
+
 - Test executables and results
 - Static analysis reports (XML/TXT formats)
 - Performance benchmark data
@@ -247,6 +249,7 @@ cmake -B build -DBUILD_TESTING=ON
 ### Contributing Guidelines
 
 1. **Feature Development**
+
    ```bash
    git checkout -b feature/your-feature-name
    # Implement feature
@@ -315,15 +318,17 @@ ms_print massif.out.* | head -30
 ### Common Build Issues
 
 1. **Missing Eigen3**
+
    ```bash
    # Ubuntu/Debian
    sudo apt-get install libeigen3-dev
-   
+
    # Fedora
    sudo dnf install eigen3-devel
    ```
 
 2. **Qt6 Issues**
+
    ```bash
    # Ensure Qt6 is properly installed
    sudo apt-get install qt6-base-dev qt6-tools-dev
@@ -367,10 +372,10 @@ ms_print massif.out.* | head -30
 
 ### CI/CD Enhancements
 
-1. **Multi-Platform Support**
-   - Windows (MSVC, MinGW)
-   - macOS (Clang, XCode)
-   - Additional Linux distributions
+1. **Extended Linux Support**
+   - Additional Linux distributions (Fedora, Arch, Debian)
+   - ARM64 architecture support
+   - Container-based builds
 
 2. **Advanced Analysis**
    - Code coverage reporting

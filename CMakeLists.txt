@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.20)
-project(TrussAnalysis VERSION 2.2.0 LANGUAGES CXX)
+project(TrussAnalysis VERSION 3.0.0 LANGUAGES CXX)
 
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
@@ -26,6 +26,12 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
 include(CTest)
 enable_testing()
 
+# Find Google Test (for unit testing)
+if(BUILD_TESTING)
+    find_package(GTest REQUIRED)
+    message(STATUS "Google Test found: ${GTest_VERSION}")
+endif()
+
 # Enable Qt6 automatic MOC, UIC, and RCC
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
@@ -35,23 +41,54 @@ set(CMAKE_AUTOUIC ON)
 add_library(TrussCore STATIC
     src/core/Logger.cpp
     src/core/Logger.hpp
-    src/core/Types.hpp
-    src/core/Node.cpp
-    src/core/Node.hpp
-    src/core/Member.cpp
-    src/core/Member.hpp
-    src/core/Truss.cpp
-    src/core/Truss.hpp
-    src/core/AnalysisEngine.cpp
-    src/core/AnalysisEngine.hpp
-    src/core/ResultsExporter.cpp
-    src/core/ResultsExporter.hpp
     src/core/Application.cpp
     src/core/Application.hpp
+    # Domain model in model/ subdirectory
+    src/core/model/Types.hpp
+    src/core/model/Node.cpp
+    src/core/model/Node.hpp
+    src/core/model/Member.cpp
+    src/core/model/Member.hpp
+    src/core/model/Truss.cpp
+    src/core/model/Truss.hpp
+    # Phase 2 - Analysis decomposition
+    src/core/analysis/StiffnessAssembler.cpp
+    src/core/analysis/StiffnessAssembler.hpp
+    src/core/analysis/BoundaryConditionHandler.cpp
+    src/core/analysis/BoundaryConditionHandler.hpp
+    src/core/analysis/ILinearSolver.hpp
+    src/core/analysis/DirectSolver.cpp
+    src/core/analysis/DirectSolver.hpp
+    src/core/analysis/IterativeSolver.cpp
+    src/core/analysis/IterativeSolver.hpp
+    src/core/analysis/SolverFactory.cpp
+    src/core/analysis/SolverFactory.hpp
+    src/core/analysis/AnalysisOrchestrator.cpp
+    src/core/analysis/AnalysisOrchestrator.hpp
+    # Phase 3 - Infrastructure layer (export subsystem)
+    src/infrastructure/export/export_types.hpp
+    src/infrastructure/export/exporter.hpp
+    src/infrastructure/export/exporter_factory.cpp
+    src/infrastructure/export/exporter_factory.hpp
+    src/infrastructure/export/csv_exporter.cpp
+    src/infrastructure/export/csv_exporter.hpp
+    src/infrastructure/export/json_exporter.cpp
+    src/infrastructure/export/json_exporter.hpp
+    src/infrastructure/export/xml_exporter.cpp
+    src/infrastructure/export/xml_exporter.hpp
+    src/infrastructure/export/html_exporter.cpp
+    src/infrastructure/export/html_exporter.hpp
+    src/infrastructure/export/latex_exporter.cpp
+    src/infrastructure/export/latex_exporter.hpp
+    src/infrastructure/export/text_exporter.cpp
+    src/infrastructure/export/text_exporter.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
-    src/core
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/core
+    ${CMAKE_SOURCE_DIR}/src/core/analysis
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/export
 )
 
 target_link_libraries(TrussCore PUBLIC
@@ -81,57 +118,82 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
 if(BUILD_TESTING)
     message(STATUS "Building unit tests")
     
-    # Create a function to add unit tests
-    function(add_unit_test TEST_NAME TEST_SOURCE)
-        add_executable(${TEST_NAME} ${TEST_SOURCE})
-        target_link_libraries(${TEST_NAME} PRIVATE TrussCore)
-        target_include_directories(${TEST_NAME} PRIVATE
-            ${CMAKE_SOURCE_DIR}/tests
-            ${CMAKE_SOURCE_DIR}/src/core
-        )
-        target_compile_definitions(${TEST_NAME} PRIVATE DEBUG_TESTING)
-        
-        # Add as a CTest
-        add_test(NAME ${TEST_NAME} COMMAND ${TEST_NAME})
-        
-        # Set test properties
-        set_tests_properties(${TEST_NAME} PROPERTIES
-            TIMEOUT 30
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        )
-    endfunction()
-    
-    # Add unit tests
-    add_unit_test(test_Integration tests/unit/test_Integration.cpp)
-    add_unit_test(test_Member tests/unit/test_Member.cpp)
-    add_unit_test(test_Truss tests/unit/test_Truss.cpp)
-    add_unit_test(test_Node tests/unit/test_Node.cpp)
-    add_unit_test(test_ConstraintDebug tests/unit/test_ConstraintDebug.cpp)
-    add_unit_test(test_DebugAnalysis tests/unit/test_DebugAnalysis.cpp)
-    add_unit_test(test_FreeSystemDebug tests/unit/test_FreeSystemDebug.cpp)
-    add_unit_test(test_ManualConstraints tests/unit/test_ManualConstraints.cpp)
-    add_unit_test(test_MemberDebug tests/unit/test_MemberDebug.cpp)
-    add_unit_test(test_MinimalAnalysis tests/unit/test_MinimalAnalysis.cpp)
-    add_unit_test(test_PointerAnalysis tests/unit/test_PointerAnalysis.cpp)
-    add_unit_test(test_SimpleIntegration tests/unit/test_SimpleIntegration.cpp)
-    add_unit_test(test_WorkingIntegration tests/unit/test_WorkingIntegration.cpp)
-    
-    # Add a custom target to run all tests
-    add_custom_target(run_tests
-        COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure --verbose
-        DEPENDS 
-            test_Integration test_Member test_Truss test_Node
-            test_ConstraintDebug test_DebugAnalysis test_FreeSystemDebug
-            test_ManualConstraints test_MemberDebug test_MinimalAnalysis
-            test_PointerAnalysis test_SimpleIntegration test_WorkingIntegration
-        COMMENT "Running all unit tests"
+    # GTest integration validation test
+    add_executable(test_gtest_integration tests/test_gtest_integration.cpp)
+    target_link_libraries(test_gtest_integration PRIVATE GTest::gtest GTest::gtest_main)
+    add_test(NAME GTestIntegration COMMAND test_gtest_integration)
+    set_tests_properties(GTestIntegration PROPERTIES
+        TIMEOUT 10
+        LABELS "gtest;integration"
     )
     
-    # Add a custom target that uses our shell script
-    add_custom_target(run_shell_tests
-        COMMAND bash ${CMAKE_SOURCE_DIR}/tests/run_all_tests.sh
+    # ============================================================================
+    # NEW GTEST-BASED TEST TARGETS (Phase 1 migrated tests)
+    # ============================================================================
+    
+    # Unit tests (core functionality tests)
+    add_executable(unit_tests
+        tests/unit/core/test_node.cpp
+        tests/unit/core/test_member.cpp
+        tests/unit/core/test_truss.cpp
+        tests/unit/core/test_stiffness_assembler.cpp
+        tests/unit/core/test_boundary_condition_handler.cpp
+        tests/unit/core/test_linear_solvers.cpp
+        tests/unit/core/test_analysis_orchestrator.cpp
+        tests/unit/infrastructure/export/test_csv_exporter.cpp
+        tests/unit/infrastructure/export/test_html_exporter.cpp
+        tests/unit/infrastructure/export/test_json_exporter.cpp
+        tests/unit/infrastructure/export/test_latex_exporter.cpp
+        tests/unit/infrastructure/export/test_text_exporter.cpp
+        tests/unit/infrastructure/export/test_xml_exporter.cpp
+        tests/unit/infrastructure/export/test_exporter_factory.cpp
+    )
+    
+    target_link_libraries(unit_tests PRIVATE
+        TrussCore
+        GTest::gtest
+        GTest::gtest_main
+    )
+    
+    target_include_directories(unit_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/core
+    )
+    
+    add_test(NAME UnitTests COMMAND unit_tests)
+    set_tests_properties(UnitTests PROPERTIES
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        COMMENT "Running unit tests with our custom test runner"
+        TIMEOUT 30
+        LABELS "unit;gtest"
+    )
+    
+    # Integration tests (multi-component workflow tests)
+    add_executable(integration_tests
+        tests/integration/test_simple_truss_analysis.cpp
+        tests/integration/test_simple_integration.cpp
+        tests/integration/test_working_integration.cpp
+        tests/integration/test_minimal_analysis.cpp
+    )
+    
+    target_link_libraries(integration_tests PRIVATE
+        TrussCore
+        GTest::gtest
+        GTest::gtest_main
+    )
+    
+    target_include_directories(integration_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/src/core
+    )
+    
+    add_test(NAME IntegrationTests COMMAND integration_tests)
+    set_tests_properties(IntegrationTests PROPERTIES
+        TIMEOUT 60
+        LABELS "integration;gtest"
+    )
+    
+    # Convenience target to build all new GTest-based tests
+    add_custom_target(all_gtest_tests
+        DEPENDS unit_tests integration_tests test_gtest_integration
+        COMMENT "Building all GTest-based tests"
     )
     
 endif()
@@ -173,132 +235,54 @@ set_target_properties(TrussAnalysisGUI PROPERTIES
 
 # Install rules for packaging
 install(TARGETS TrussAnalysisCLI TrussAnalysisGUI
-    BUNDLE DESTINATION .
     RUNTIME DESTINATION bin
 )
 
-# Platform-specific settings
-if(APPLE)
-    # macOS Bundle settings
-    set_target_properties(TrussAnalysisGUI PROPERTIES
-        MACOSX_BUNDLE TRUE
-        MACOSX_BUNDLE_INFO_PLIST ${CMAKE_SOURCE_DIR}/Info.plist.in
-        MACOSX_BUNDLE_BUNDLE_NAME "2D Truss Analysis"
-        MACOSX_BUNDLE_DISPLAY_NAME "2D Truss Analysis"
-        MACOSX_BUNDLE_IDENTIFIER "com.civilengsoft.trussanalysis"
-        MACOSX_BUNDLE_VERSION "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_SHORT_VERSION_STRING "${PROJECT_VERSION}"
-        MACOSX_BUNDLE_COPYRIGHT "© 2024 Civil Engineering Software Solutions"
+# Linux-specific settings
+message(STATUS "Configuring for Linux build")
+
+# Set RPATH for better library linking
+set_target_properties(TrussAnalysisGUI PROPERTIES
+    INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
+    BUILD_WITH_INSTALL_RPATH OFF
+    INSTALL_RPATH_USE_LINK_PATH ON
+)
+
+set_target_properties(TrussAnalysisCLI PROPERTIES
+    INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
+    BUILD_WITH_INSTALL_RPATH OFF
+    INSTALL_RPATH_USE_LINK_PATH ON
+)
+
+# Strip debug symbols in release builds for smaller binaries
+if(CMAKE_BUILD_TYPE STREQUAL "Release")
+    add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
+        COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
+        COMMENT "Stripping debug symbols from TrussAnalysisGUI"
     )
     
-    # Code signing for macOS
-    find_program(CODESIGN_EXECUTABLE codesign)
-    if(CODESIGN_EXECUTABLE)
-        # Use ad-hoc signing (-) which doesn't require a certificate but allows local execution
-        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-            COMMAND ${CODESIGN_EXECUTABLE} --force --deep --sign - "$<TARGET_BUNDLE_DIR:TrussAnalysisGUI>"
-            COMMENT "Code signing TrussAnalysisGUI with ad-hoc signature"
-            VERBATIM
-        )
-        
-        # Also sign the CLI executable
-        add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
-            COMMAND ${CODESIGN_EXECUTABLE} --force --sign - "$<TARGET_FILE:TrussAnalysisCLI>"
-            COMMENT "Code signing TrussAnalysisCLI with ad-hoc signature"
-            VERBATIM
-        )
-        
-        message(STATUS "Code signing enabled with ad-hoc signatures")
-    else()
-        message(WARNING "codesign not found - applications will not be signed")
-    endif()
-elseif(UNIX AND NOT APPLE)
-    # Linux-specific settings
-    message(STATUS "Configuring for Linux build")
-    
-    # Set RPATH for better library linking
-    set_target_properties(TrussAnalysisGUI PROPERTIES
-        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
-        BUILD_WITH_INSTALL_RPATH OFF
-        INSTALL_RPATH_USE_LINK_PATH ON
+    add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
+        COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisCLI>"
+        COMMENT "Stripping debug symbols from TrussAnalysisCLI"
     )
-    
-    set_target_properties(TrussAnalysisCLI PROPERTIES
-        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
-        BUILD_WITH_INSTALL_RPATH OFF
-        INSTALL_RPATH_USE_LINK_PATH ON
-    )
-    
-    # Strip debug symbols in release builds for smaller binaries
-    if(CMAKE_BUILD_TYPE STREQUAL "Release")
-        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
-            COMMENT "Stripping debug symbols from TrussAnalysisGUI"
-        )
-        
-        add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
-            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisCLI>"
-            COMMENT "Stripping debug symbols from TrussAnalysisCLI"
-        )
-    endif()
-    
-    message(STATUS "Linux optimizations enabled")
-elseif(WIN32)
-    # Windows-specific settings
-    message(STATUS "Configuring for Windows build")
-    
-    # Set Windows-specific properties
-    set_target_properties(TrussAnalysisGUI PROPERTIES
-        WIN32_EXECUTABLE TRUE
-        VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_BINARY_DIR}"
-    )
-    
-    # Enable modern Windows features
-    target_compile_definitions(TrussAnalysisGUI PRIVATE
-        WIN32_LEAN_AND_MEAN
-        NOMINMAX
-        _WIN32_WINNT=0x0A00  # Windows 10
-    )
-    
-    target_compile_definitions(TrussAnalysisCLI PRIVATE
-        WIN32_LEAN_AND_MEAN
-        NOMINMAX
-        _WIN32_WINNT=0x0A00  # Windows 10
-    )
-    
-    # Set up proper DLL copying for Qt
-    if(Qt6_FOUND)
-        # Find Qt6 installation path
-        get_target_property(QT6_QMAKE_EXECUTABLE Qt6::qmake IMPORTED_LOCATION)
-        get_filename_component(QT6_WINDEPLOYQT_EXECUTABLE ${QT6_QMAKE_EXECUTABLE} PATH)
-        set(QT6_WINDEPLOYQT_EXECUTABLE "${QT6_WINDEPLOYQT_EXECUTABLE}/windeployqt.exe")
-        
-        if(EXISTS ${QT6_WINDEPLOYQT_EXECUTABLE})
-            # Deploy Qt libraries after build
-            add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-                COMMAND ${QT6_WINDEPLOYQT_EXECUTABLE} --debug --compiler-runtime $<TARGET_FILE:TrussAnalysisGUI>
-                COMMENT "Deploying Qt libraries for TrussAnalysisGUI")
-        endif()
-    endif()
-    
-    message(STATUS "Windows optimizations enabled")
 endif()
 
-# CPack configuration for DMG creation
-if(APPLE)
-    set(CPACK_GENERATOR "DragNDrop")
-    set(CPACK_DMG_FORMAT "UDBZ")
-    set(CPACK_DMG_VOLUME_NAME "2D Truss Analysis")
-    set(CPACK_PACKAGE_NAME "2D_Truss_Analysis")
-    set(CPACK_PACKAGE_VENDOR "Civil Engineering Software Solutions")
-    set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-    set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Professional 2D truss structural analysis software")
-    set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
-    set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
-    
-    # DMG background and appearance (optional)
-    # set(CPACK_DMG_BACKGROUND_IMAGE "${CMAKE_SOURCE_DIR}/assets/dmg_background.png")
-    # set(CPACK_DMG_DS_STORE_SETUP_SCRIPT "${CMAKE_SOURCE_DIR}/assets/dmg_setup.scpt")
-    
-    include(CPack)
-endif()
+message(STATUS "Linux optimizations enabled")
+
+# CPack configuration for Linux packaging
+set(CPACK_GENERATOR "TGZ;DEB")
+set(CPACK_PACKAGE_NAME "2d-truss-analysis")
+set(CPACK_PACKAGE_VENDOR "Civil Engineering Software Solutions")
+set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Professional 2D truss structural analysis software")
+set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
+set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+
+# Debian package specific settings
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Civil Engineering Software Solutions <support@civil-engineering-software-solutions.com>")
+set(CPACK_DEBIAN_PACKAGE_SECTION "science")
+set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+
+include(CPack)
+
+
