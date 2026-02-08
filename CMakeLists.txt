@@ -160,6 +160,7 @@ if(BUILD_TESTING)
     
     add_test(NAME UnitTests COMMAND unit_tests)
     set_tests_properties(UnitTests PROPERTIES
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         TIMEOUT 30
         LABELS "unit;gtest"
     )
