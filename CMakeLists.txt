@@ -140,7 +140,12 @@ if(BUILD_TESTING)
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
         tests/unit/core/test_analysis_orchestrator.cpp
+        tests/unit/infrastructure/export/test_csv_exporter.cpp
+        tests/unit/infrastructure/export/test_html_exporter.cpp
+        tests/unit/infrastructure/export/test_json_exporter.cpp
+        tests/unit/infrastructure/export/test_latex_exporter.cpp
         tests/unit/infrastructure/export/test_text_exporter.cpp
+        tests/unit/infrastructure/export/test_xml_exporter.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
