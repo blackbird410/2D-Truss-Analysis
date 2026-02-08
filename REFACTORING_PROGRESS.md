@@ -428,7 +428,10 @@
     - LaTeX: 3,507 → 4,370 bytes (+863, +24.6%)
     - Text: 3,798 → 4,111 bytes (+313, +8.2%)
     - **Total**: 18,440 → 22,036 bytes (+3,596, +19.5%)
-  - **Validation**: All 87 unit tests passing (100%)
+  - **Validation**: All 174 unit tests passing (100%)
+    - 87 core domain tests + 87 exporter tests
+    - 173 passing + 1 skipped
+    - **Correction**: Test count updated 2026-02-09 after proper test registration
   - **Semantic Equivalence Achieved**: All 6 formats now export complete, real data
   - **Legacy ResultsExporter Status**:
     - ✅ NOT included in TrussCore build (CMakeLists.txt verification)
