@@ -313,6 +313,85 @@ TEST_F(XMLExporterTest, NoGeometrySection) {
 }
 
 /**
+ * @brief Test displacements section (CORRECTNESS FIX)
+ * Legacy XML omitted this - now corrected for data completeness.
+ */
+TEST_F(XMLExporterTest, DisplacementsSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/displacements_test.xml";
+    ExportOptions options;
+    options.includeDisplacements = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    EXPECT_TRUE(fileContains(outputPath, "<Displacements>"));
+    EXPECT_TRUE(fileContains(outputPath, "</Displacements>"));
+    EXPECT_TRUE(fileContains(outputPath, "<Values>"));
+    EXPECT_TRUE(fileContains(outputPath, "<MaxDisplacement>"));
+}
+
+/**
+ * @brief Test member forces section (CORRECTNESS FIX)
+ * Legacy XML omitted this - now corrected for data completeness.
+ */
+TEST_F(XMLExporterTest, MemberForcesSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/member_forces_test.xml";
+    ExportOptions options;
+    options.includeMemberForces = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    EXPECT_TRUE(fileContains(outputPath, "<MemberForces>"));
+    EXPECT_TRUE(fileContains(outputPath, "</MemberForces>"));
+    EXPECT_TRUE(fileContains(outputPath, "<Force memberId="));
+}
+
+/**
+ * @brief Test reactions section (CORRECTNESS FIX)
+ * Legacy XML omitted reactions - this was incorrect.
+ * Reactions data is mandatory for semantic equivalence with CSV.
+ */
+TEST_F(XMLExporterTest, ReactionsSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/reactions_test.xml";
+    ExportOptions options;
+    options.includeReactions = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    EXPECT_TRUE(fileContains(outputPath, "<Reactions>"));
+    EXPECT_TRUE(fileContains(outputPath, "</Reactions>"));
+    EXPECT_TRUE(fileContains(outputPath, "<Reaction dof="));
+}
+
+/**
+ * @brief Test metadata/analysis section (CORRECTNESS FIX)
+ * Legacy XML omitted this - now corrected for data completeness.
+ */
+TEST_F(XMLExporterTest, MetadataSection) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    
+    std::string outputPath = testOutputDir + "/metadata_test.xml";
+    ExportOptions options;
+    options.includeMetadata = true;
+    
+    exporter->exportResults(*truss, results, outputPath, options);
+    
+    EXPECT_TRUE(fileContains(outputPath, "<Analysis>"));
+    EXPECT_TRUE(fileContains(outputPath, "</Analysis>"));
+    EXPECT_TRUE(fileContains(outputPath, "<Converged>"));
+    EXPECT_TRUE(fileContains(outputPath, "<Iterations>"));
+}
+
+/**
  * @brief Test precision option
  */
 TEST_F(XMLExporterTest, PrecisionOption) {

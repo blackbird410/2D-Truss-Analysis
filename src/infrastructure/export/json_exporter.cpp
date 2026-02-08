@@ -49,8 +49,9 @@ bool JSONExporter::exportResults(const Truss& truss,
             writeMemberForcesSection(file, results, options, needsComma);
         }
         
-        // Note: JSON export does not include reactions section (legacy behavior)
-        // to match golden master format
+        if (options.includeReactions && !results.reactions.empty()) {
+            writeReactionsSection(file, results, options, needsComma);
+        }
         
         if (options.includeMetadata) {
             writeMetadataSection(file, results, options, needsComma);
@@ -204,6 +205,30 @@ void JSONExporter::writeMemberForcesSection(std::ostream& os,
     for (size_t i = 0; i < results.memberForces.size(); ++i) {
         os << formatNumber(results.memberForces[i], options);
         if (i < results.memberForces.size() - 1) {
+            os << ", ";
+        }
+    }
+    
+    os << "]\n";
+    os << "  }";
+    
+    needsComma = true;
+}
+
+void JSONExporter::writeReactionsSection(std::ostream& os,
+                                        const AnalysisResults& results,
+                                        const ExportOptions& options,
+                                        bool& needsComma) {
+    if (needsComma) {
+        os << ",\n";
+    }
+    
+    os << "  \"reactions\": {\n";
+    os << "    \"values\": [";
+    
+    for (size_t i = 0; i < results.reactions.size(); ++i) {
+        os << formatNumber(results.reactions[i], options);
+        if (i < results.reactions.size() - 1) {
             os << ", ";
         }
     }

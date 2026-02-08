@@ -40,8 +40,25 @@ bool XMLExporter::exportResults(const Truss& truss,
             writeGeometrySection(file, truss, options);
         }
         
-        // Note: Legacy XML export only includes Project and Geometry sections
-        // This matches the golden master behavior
+        // Displacements section (conditional)
+        if (options.includeDisplacements && results.displacements.size() > 0) {
+            writeDisplacementsSection(file, results, options);
+        }
+        
+        // Member forces section (conditional)
+        if (options.includeMemberForces && !results.memberForces.empty()) {
+            writeMemberForcesSection(file, results, options);
+        }
+        
+        // Reactions section (conditional)
+        if (options.includeReactions && !results.reactions.empty()) {
+            writeReactionsSection(file, results, options);
+        }
+        
+        // Metadata section (conditional)
+        if (options.includeMetadata) {
+            writeMetadataSection(file, results, options);
+        }
         
         file << "</TrussAnalysisResults>\n";
         
@@ -136,6 +153,70 @@ void XMLExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     os << "    </Members>\n";
     
     os << "  </Geometry>\n";
+}
+
+void XMLExporter::writeDisplacementsSection(std::ostream& os,
+                                           const AnalysisResults& results,
+                                           const ExportOptions& options) {
+    os << "  <Displacements>\n";
+    os << "    <Values>\n";
+    
+    for (size_t i = 0; i < results.displacements.size(); ++i) {
+        os << "      <Displacement dof=\"" << i << "\">";
+        os << formatNumber(results.displacements[i], options);
+        os << "</Displacement>\n";
+    }
+    
+    os << "    </Values>\n";
+    os << "    <MaxDisplacement>" << formatNumber(results.maxDisplacement, options) 
+       << "</MaxDisplacement>\n";
+    os << "  </Displacements>\n";
+}
+
+void XMLExporter::writeMemberForcesSection(std::ostream& os,
+                                          const AnalysisResults& results,
+                                          const ExportOptions& options) {
+    os << "  <MemberForces>\n";
+    os << "    <Values>\n";
+    
+    for (size_t i = 0; i < results.memberForces.size(); ++i) {
+        Real force = results.memberForces[i];
+        std::string type = (force > 0) ? "Tension" : "Compression";
+        os << "      <Force memberId=\"" << (i + 1) << "\" type=\"" << type << "\">";
+        os << formatNumber(force, options);
+        os << "</Force>\n";
+    }
+    
+    os << "    </Values>\n";
+    os << "  </MemberForces>\n";
+}
+
+void XMLExporter::writeReactionsSection(std::ostream& os,
+                                       const AnalysisResults& results,
+                                       const ExportOptions& options) {
+    os << "  <Reactions>\n";
+    os << "    <Values>\n";
+    
+    for (size_t i = 0; i < results.reactions.size(); ++i) {
+        os << "      <Reaction dof=\"" << i << "\">";
+        os << formatNumber(results.reactions[i], options);
+        os << "</Reaction>\n";
+    }
+    
+    os << "    </Values>\n";
+    os << "  </Reactions>\n";
+}
+
+void XMLExporter::writeMetadataSection(std::ostream& os,
+                                      const AnalysisResults& results,
+                                      const ExportOptions& options) {
+    os << "  <Analysis>\n";
+    os << "    <Converged>" << (results.converged ? "true" : "false") << "</Converged>\n";
+    os << "    <Iterations>" << results.iterations << "</Iterations>\n";
+    os << "    <TotalDofs>" << results.totalDofs << "</TotalDofs>\n";
+    os << "    <FreeDofs>" << results.freeDofs << "</FreeDofs>\n";
+    os << "    <MaxStress>" << formatNumber(results.maxStress, options) << "</MaxStress>\n";
+    os << "  </Analysis>\n";
 }
 
 } // namespace truss::infrastructure::export_

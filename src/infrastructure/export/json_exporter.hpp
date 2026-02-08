@@ -86,9 +86,10 @@ private:
                                   const ExportOptions& options, bool& needsComma);
     void writeMemberForcesSection(std::ostream& os, const AnalysisResults& results,
                                  const ExportOptions& options, bool& needsComma);
+    void writeReactionsSection(std::ostream& os, const AnalysisResults& results,
+                              const ExportOptions& options, bool& needsComma);
     void writeMetadataSection(std::ostream& os, const AnalysisResults& results,
                              const ExportOptions& options, bool& needsComma);
-    // Note: JSON export does not include reactions section (legacy behavior)
 };
 
 } // namespace truss::infrastructure::export_

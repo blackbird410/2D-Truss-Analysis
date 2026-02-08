@@ -201,8 +201,9 @@ conanbuildinfo.*
 *.memcheck
 *.valgrind
 *.dSYM/
-generate_golden_masters
+generate*_golden_masters
 test_csv_exporter_standalone
-validate_csv_golden_master
-validate_json_golden_master
-test_json_exporter
+validate_*_golden_master
+test_*_exporter
+test_json
+test_xml

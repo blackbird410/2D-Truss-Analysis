@@ -251,7 +251,7 @@
 **Started:** February 7, 2026  
 **Dependencies:** Phase 2 complete ✅
 
-#### Tasks (4/10)
+#### Tasks (6/10)
 
 - [x] **Task 3.1.1:** Create directory structure ✅
   - Created `src/infrastructure/export/`
@@ -272,17 +272,30 @@
   - Migrated logic from legacy ResultsExporter
   - Created 12 comprehensive unit tests (all passing)
   - **Validation:** Golden master comparison PASSED ✓
-- [x] **Implement JSONExporter** ✅
-  - Created `json_exporter.hpp` and `json_exporter.cpp` (331 lines)
+- [x] **Implement JSONExporter** ✅ ⚠️ **CORRECTED (2026-02-08)**
+  - Created `json_exporter.hpp` and `json_exporter.cpp` (331 lines → 356 lines)
   - Implemented JSON structure generation with proper formatting
   - JSON-specific string escaping (quotes, backslashes, control chars)
   - Comma management between sections
-  - **Validation:** Golden master comparison PASSED ✓ (1,237 bytes)
-  - **Testing:** 17 comprehensive unit tests (100% passing)
+  - **BREAKING CHANGE**: Added reactions section (+25 lines)
+    - Original: Missing reactions (legacy behavior was incorrect)
+    - Corrected: Now includes reactions for semantic equivalence with CSV
+  - **Validation:** Golden master comparison PASSED ✓ (1,237 bytes → 1,315 bytes, +6.3%)
+  - **Testing:** 17 comprehensive unit tests (100% passing, 1 test corrected: NoReactionsSection → ReactionsSection)
+- [x] **Implement XMLExporter** ✅ ⚠️ **CORRECTED (2026-02-08)**
+  - Created `xml_exporter.hpp` and `xml_exporter.cpp` (229 lines → 299 lines)
+  - Implemented hierarchical XML structure with proper formatting
+  - XML entity escaping (`<`, `>`, `&`, `"`, `'`)
+  - **BREAKING CHANGE**: Added 4 missing sections (+70 lines)
+    - Original: Only Project + Geometry (legacy was incomplete stub)
+    - Corrected: Now includes Displacements, Member Forces, Reactions, Analysis Metadata
+    - Reactions section is MANDATORY for structural equilibrium verification
+  - **Validation:** Golden master comparison PASSED ✓ (1,071 bytes → 2,194 bytes, +104.9%)
+  - **Testing:** 21 comprehensive unit tests (100% passing, +4 new correctness tests)
 - [ ] Refactor ResultsExporter
-  - [ ] Implement XMLExporter
   - [ ] Implement HTMLExporter
   - [ ] Implement LaTeXExporter
+  - [ ] Implement TXTExporter
 - [ ] Improve Logger
   - [ ] Add log levels (DEBUG, INFO, WARN, ERROR)
   - [ ] Add file output
@@ -420,14 +433,52 @@
 
 ---
 
+## Breaking Changes
+
+### ⚠️ Correctness Fix: Exporter Data Completeness (2026-02-08)
+
+**Type**: Correctness-Driven Breaking Change  
+**Affected**: JSONExporter, XMLExporter  
+**Status**: ✅ COMPLETE
+
+#### Problem
+
+Legacy `ResultsExporter` had incomplete implementations:
+
+- **JSONExporter**: Omitted reactions section
+- **XMLExporter**: Only exported Project + Geometry (missing 4 sections)
+
+#### Resolution
+
+**Principle**: CSV defines correctness. All formats must achieve semantic equivalence.
+
+**Changes**:
+
+- **JSON**: Added reactions section (+78 bytes, +6.3%)
+- **XML**: Added 4 sections: Displacements, Member Forces, Reactions, Metadata (+1,123 bytes, +104.9%)
+
+#### Impact
+
+- Golden masters regenerated (legacy archived to `legacy_incomplete/`)
+- 1 JSON test updated (NoReactionsSection → ReactionsSection)
+- 4 XML tests added (DisplacementsSection, MemberForcesSection, ReactionsSection, MetadataSection)
+- All tests passing: JSON 17/17 ✅, XML 21/21 ✅
+
+#### Documentation
+
+- Work Log: `docs/work-logs/2026-02-08-correctness-fix-exporter-completeness.md` (480 lines)
+- Migration Guide: Parsers must handle new sections (backward compatible for readers)
+
+---
+
 ## Risk Register
 
-| Risk                               | Severity | Probability | Status    | Mitigation                       |
-| ---------------------------------- | -------- | ----------- | --------- | -------------------------------- |
-| Breaking computational correctness | Critical | Medium      | 🟡 Active | Validation tests, golden masters |
-| Test migration takes longer        | Medium   | High        | 🟡 Active | Prioritize critical tests        |
-| Incomplete macOS removal           | Low      | Low         | 🟢 Low    | Comprehensive grep searches      |
-| Docker image too large             | Low      | Low         | 🟢 Low    | Multi-stage builds               |
+| Risk                               | Severity | Probability | Status       | Mitigation                                                 |
+| ---------------------------------- | -------- | ----------- | ------------ | ---------------------------------------------------------- |
+| Breaking computational correctness | Critical | Medium      | 🟢 Mitigated | Validation tests, golden masters, correctness fix complete |
+| Test migration takes longer        | Medium   | High        | 🟡 Active    | Prioritize critical tests                                  |
+| Incomplete macOS removal           | Low      | Low         | 🟢 Low       | Comprehensive grep searches                                |
+| Docker image too large             | Low      | Low         | 🟢 Low       | Multi-stage builds                                         |
 
 ---
 
