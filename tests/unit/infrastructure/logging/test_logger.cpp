@@ -324,6 +324,7 @@ TEST_F(LoggerFactoryTest, CreateNullLogger) {
     auto logger = LoggerFactory::createNullLogger();
     
     ASSERT_NE(logger, nullptr);
+    // NullLogger contract: Trace level (most permissive) - accepts all messages, discards all
     EXPECT_EQ(logger->getLevel(), LogLevel::Trace);
     
     // These should not throw or do anything

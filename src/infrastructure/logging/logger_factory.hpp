@@ -133,7 +133,7 @@ private:
         void critical(const std::string&) override {}
         
         void setLevel(LogLevel) override {}
-        LogLevel getLevel() const override { return LogLevel::Critical; }
+        LogLevel getLevel() const override { return LogLevel::Trace; }
         bool isLevelEnabled(LogLevel) const override { return false; }
     };
 };
