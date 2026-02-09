@@ -13,6 +13,11 @@ add_library(TrussCore STATIC
     model/Member.hpp
     model/Truss.cpp
     model/Truss.hpp
+    model/Load.cpp
+    model/Load.hpp
+    # Validation services in validation/ subdirectory
+    validation/TrussValidator.cpp
+    validation/TrussValidator.hpp
     # Phase 2 - Analysis decomposition components in analysis/ subdirectory
     analysis/StiffnessAssembler.cpp
     analysis/StiffnessAssembler.hpp

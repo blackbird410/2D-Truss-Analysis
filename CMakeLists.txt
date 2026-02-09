@@ -49,6 +49,11 @@ add_library(TrussCore STATIC
     src/core/model/Member.hpp
     src/core/model/Truss.cpp
     src/core/model/Truss.hpp
+    src/core/model/Load.cpp
+    src/core/model/Load.hpp
+    # Domain validation services
+    src/core/validation/TrussValidator.cpp
+    src/core/validation/TrussValidator.hpp
     # Phase 2 - Analysis decomposition
     src/core/analysis/StiffnessAssembler.cpp
     src/core/analysis/StiffnessAssembler.hpp
@@ -143,6 +148,8 @@ if(BUILD_TESTING)
         tests/unit/core/test_node.cpp
         tests/unit/core/test_member.cpp
         tests/unit/core/test_truss.cpp
+        tests/unit/core/test_load.cpp
+        tests/unit/core/test_truss_validator.cpp
         tests/unit/core/test_stiffness_assembler.cpp
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
