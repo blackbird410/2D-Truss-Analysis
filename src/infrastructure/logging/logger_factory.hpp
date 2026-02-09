@@ -14,6 +14,7 @@
 #include <memory>
 #include <filesystem>
 #include <vector>
+#include <mutex>
 
 namespace truss::infrastructure::logging {
 
@@ -69,14 +70,19 @@ public:
     /**
      * @brief Create a dual logger (console + file)
      * 
-     * Writes to both console and file simultaneously.
+     * Writes to both console and file simultaneously when possible.
      * This is the recommended logger for most applications.
      * 
-     * @param filePath Path to log file
+     * The factory will attempt to create a file logger using the provided
+     * path. If the log file cannot be created or opened, the method
+     * falls back to a console-only logger without throwing an exception.
+     * An error message is logged to the console when fallback occurs.
+     * 
+     * @param filePath Path to log file (default: "TrussAnalysis2D.log")
      * @param minLevel Minimum log level (default: Info)
      * @param useColors Enable console colors (default: true)
-     * @return Shared pointer to composite logger
-     * @throws std::runtime_error if file cannot be created
+     * @return Shared pointer to composite logger (or console-only logger
+     *         if file logging is unavailable)
      */
     static LoggerPtr createDefaultLogger(
         const std::filesystem::path& filePath = "TrussAnalysis2D.log",
@@ -118,10 +124,17 @@ private:
     private:
         std::vector<LoggerPtr> m_loggers;
         LogLevel m_minLevel;
+        mutable std::mutex m_mutex; ///< Thread safety mutex
     };
     
     /**
      * @brief Internal null logger implementation
+     * 
+     * Discards all log messages. The getLevel() method returns Trace level
+     * (most permissive) because NullLogger accepts all messages for processing,
+     * even though it ultimately discards them. The isLevelEnabled() method
+     * always returns false to signal that the NullLogger doesn't actually
+     * produce any output.
      */
     class NullLogger : public ILogger {
     public:
@@ -133,7 +146,9 @@ private:
         void critical(const std::string&) override {}
         
         void setLevel(LogLevel) override {}
+        // Return Trace to indicate most permissive level (accepts all messages)
         LogLevel getLevel() const override { return LogLevel::Trace; }
+        // Always return false since NullLogger discards all messages
         bool isLevelEnabled(LogLevel) const override { return false; }
     };
 };

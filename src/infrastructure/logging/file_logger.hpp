@@ -25,6 +25,10 @@ namespace truss::infrastructure::logging {
  * - Timestamps on messages
  * - Automatic flushing for critical errors
  * 
+ * Note: Lifecycle messages (initialization/shutdown) are written at INFO
+ * level and bypass the configured minimum level filter to ensure proper
+ * logger state tracking in log files.
+ * 
  * Thread Safety: Fully thread-safe via mutex
  */
 class FileLogger : public ILogger {

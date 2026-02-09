@@ -34,7 +34,7 @@ FileLogger::FileLogger(
         throw std::runtime_error("Failed to open log file: " + m_filePath.string());
     }
     
-    // Log initialization message
+    // Log initialization message (lifecycle messages bypass level filtering)
     if (m_file.is_open()) {
         std::string timestamp = getCurrentTimestamp();
         m_file << "[" << timestamp << "] [INFO ] Logger initialized (file: "
@@ -44,7 +44,9 @@ FileLogger::FileLogger(
 }
 
 FileLogger::~FileLogger() {
+    std::lock_guard<std::mutex> lock(m_mutex);
     if (m_file.is_open()) {
+        // Log shutdown message (lifecycle messages bypass level filtering)
         std::string timestamp = getCurrentTimestamp();
         m_file << "[" << timestamp << "] [INFO ] Logger shutting down" << std::endl;
         m_file.flush();
@@ -87,6 +89,7 @@ LogLevel FileLogger::getLevel() const {
 }
 
 bool FileLogger::isLevelEnabled(LogLevel level) const {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return static_cast<int>(level) >= static_cast<int>(m_minLevel);
 }
 
@@ -103,12 +106,13 @@ bool FileLogger::isOpen() const {
 }
 
 void FileLogger::log(LogLevel level, const std::string& message) {
-    // Early exit if level is filtered
-    if (!isLevelEnabled(level)) {
+    std::lock_guard<std::mutex> lock(m_mutex);
+    
+    // Check level filter (duplicates isLevelEnabled logic to avoid deadlock,
+    // since isLevelEnabled() also acquires m_mutex)
+    if (static_cast<int>(level) < static_cast<int>(m_minLevel)) {
         return;
     }
-    
-    std::lock_guard<std::mutex> lock(m_mutex);
     
     if (!m_file.is_open()) {
         return; // Silently fail if file is closed
@@ -133,8 +137,12 @@ std::string FileLogger::getCurrentTimestamp() const {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
     
+    // Use thread-safe time conversion
+    std::tm timeInfo;
+    localtime_r(&time, &timeInfo);
+    
     std::ostringstream oss;
-    oss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
+    oss << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S");
     return oss.str();
 }
 

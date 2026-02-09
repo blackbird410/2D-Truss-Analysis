@@ -99,6 +99,7 @@ void LoggerFactory::CompositeLogger::critical(const std::string& message) {
 }
 
 void LoggerFactory::CompositeLogger::setLevel(LogLevel level) {
+    std::lock_guard<std::mutex> lock(m_mutex);
     m_minLevel = level;
     for (auto& logger : m_loggers) {
         logger->setLevel(level);
@@ -106,10 +107,12 @@ void LoggerFactory::CompositeLogger::setLevel(LogLevel level) {
 }
 
 LogLevel LoggerFactory::CompositeLogger::getLevel() const {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return m_minLevel;
 }
 
 bool LoggerFactory::CompositeLogger::isLevelEnabled(LogLevel level) const {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return static_cast<int>(level) >= static_cast<int>(m_minLevel);
 }
 
