@@ -6,7 +6,6 @@
  */
 
 #include "Application.hpp"
-#include "Logger.hpp"
 #include <stdexcept>
 
 namespace truss::core {
@@ -18,22 +17,20 @@ Application& Application::getInstance() {
 
 bool Application::initialize() {
     if (m_initialized) {
-        Logger::warn("Application already initialized");
+        // Note: Logging removed - Application now dependencies-free
+        // Callers should log initialization events if needed
         return true;
     }
     
     try {
-        Logger::info("Initializing application: " + m_name + " v" + m_version);
-        
         // Initialize application components here
         // For now, just mark as initialized
         m_initialized = true;
         
-        Logger::info("Application initialization completed successfully");
         return true;
         
     } catch (const std::exception& e) {
-        Logger::error("Application initialization failed: " + std::string(e.what()));
+        // Note: Logging removed - caller should check return value
         return false;
     }
 }
@@ -43,12 +40,9 @@ void Application::shutdown() {
         return;
     }
     
-    Logger::info("Shutting down application");
-    
     // Cleanup application components here
     
     m_initialized = false;
-    Logger::info("Application shutdown completed");
 }
 
 } // namespace truss::core

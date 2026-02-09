@@ -6,7 +6,6 @@
  */
 
 #include "html_exporter.hpp"
-#include "src/core/Logger.hpp"
 #include <fstream>
 #include <ctime>
 
@@ -72,12 +71,10 @@ bool HTMLExporter::exportResults(const Truss& truss,
         file << "</body>\n</html>\n";
         
         file.close();
-        core::Logger::info("Results exported to HTML: " + filePath.string());
         return true;
         
     } catch (const std::exception& e) {
         m_lastError = "Export failed: " + std::string(e.what());
-        core::Logger::error("HTML export failed: " + m_lastError);
         return false;
     }
 }
