@@ -99,6 +99,7 @@ coverage/
 .clang-tidy
 .cppcheck
 scan-build/
+_codeql_*/
 
 # Performance profiling
 *.perf
