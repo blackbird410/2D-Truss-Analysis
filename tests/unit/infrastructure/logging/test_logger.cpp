@@ -9,383 +9,354 @@
 #include "../../../../src/infrastructure/logging/console_logger.hpp"
 #include "../../../../src/infrastructure/logging/file_logger.hpp"
 #include "../../../../src/infrastructure/logging/logger_factory.hpp"
-#include "../../../TestFramework.hpp"
+#include <gtest/gtest.h>
 #include <filesystem>
 #include <fstream>
 #include <sstream>
 
-using namespace infrastructure::logging;
+using namespace truss::infrastructure::logging;
 
 /**
  * @brief Test suite for ConsoleLogger
  */
-class ConsoleLoggerTests {
-public:
-    static void testLogLevelFiltering() {
-        TEST_SECTION("ConsoleLogger - Log Level Filtering");
-        
-        ConsoleLogger logger(LogLevel::Warning, false);
-        
-        // Should not log below warning level
-        TEST_ASSERT(logger.isLevelEnabled(LogLevel::Error) == true, "Error should be enabled");
-        TEST_ASSERT(logger.isLevelEnabled(LogLevel::Warning) == true, "Warning should be enabled");
-        TEST_ASSERT(logger.isLevelEnabled(LogLevel::Info) == false, "Info should be disabled");
-        TEST_ASSERT(logger.isLevelEnabled(LogLevel::Debug) == false, "Debug should be disabled");
-        TEST_ASSERT(logger.isLevelEnabled(LogLevel::Trace) == false, "Trace should be disabled");
-        
-        // Change level
-        logger.setLevel(LogLevel::Debug);
-        TEST_ASSERT(logger.getLevel() == LogLevel::Debug, "Level should be Debug");
-        TEST_ASSERT(logger.isLevelEnabled(LogLevel::Info) == true, "Info should now be enabled");
-        TEST_ASSERT(logger.isLevelEnabled(LogLevel::Trace) == false, "Trace should still be disabled");
-        
-        TEST_PASS("ConsoleLogger log level filtering works correctly");
+class ConsoleLoggerTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Clean up any test files from previous runs
+        cleanupTestFiles();
     }
     
-    static void testColorCodes() {
-        TEST_SECTION("ConsoleLogger - Color Codes");
-        
-        // Create logger with colors enabled
-        ConsoleLogger colorLogger(LogLevel::Trace, true);
-        TEST_ASSERT(colorLogger.getLevel() == LogLevel::Trace, "Level should be Trace");
-        
-        // Create logger with colors disabled
-        ConsoleLogger noColorLogger(LogLevel::Trace, false);
-        TEST_ASSERT(noColorLogger.getLevel() == LogLevel::Trace, "Level should be Trace");
-        
-        // Note: We can't easily test actual console output, but we can verify construction
-        TEST_PASS("ConsoleLogger color configuration works correctly");
+    void TearDown() override {
+        // Clean up test files after each test
+        cleanupTestFiles();
     }
     
-    static void testAllLogLevels() {
-        TEST_SECTION("ConsoleLogger - All Log Levels");
-        
-        ConsoleLogger logger(LogLevel::Trace, false);
-        
-        // These should not throw
-        logger.trace("Trace message");
-        logger.debug("Debug message");
-        logger.info("Info message");
-        logger.warn("Warning message");
-        logger.error("Error message");
-        logger.critical("Critical message");
-        
-        TEST_PASS("ConsoleLogger handles all log levels without throwing");
+    void cleanupTestFiles() {
+        const std::vector<std::string> testFiles = {
+            "test_log.txt", "test_append.txt", "test_filter.txt",
+            "test_shutdown.txt", "test_factory_file.txt", "test_default.txt"
+        };
+        for (const auto& file : testFiles) {
+            if (std::filesystem::exists(file)) {
+                std::filesystem::remove(file);
+            }
+        }
     }
 };
+
+TEST_F(ConsoleLoggerTest, LogLevelFiltering) {
+    ConsoleLogger logger(LogLevel::Warning, false);
+    
+    // Should not log below warning level
+    EXPECT_TRUE(logger.isLevelEnabled(LogLevel::Error));
+    EXPECT_TRUE(logger.isLevelEnabled(LogLevel::Warning));
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Info));
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Debug));
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Trace));
+    
+    // Change level
+    logger.setLevel(LogLevel::Debug);
+    EXPECT_EQ(logger.getLevel(), LogLevel::Debug);
+    EXPECT_TRUE(logger.isLevelEnabled(LogLevel::Info));
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Trace));
+}
+
+TEST_F(ConsoleLoggerTest, ColorCodes) {
+    // Create logger with colors enabled
+    ConsoleLogger colorLogger(LogLevel::Trace, true);
+    EXPECT_EQ(colorLogger.getLevel(), LogLevel::Trace);
+    
+    // Create logger with colors disabled
+    ConsoleLogger noColorLogger(LogLevel::Trace, false);
+    EXPECT_EQ(noColorLogger.getLevel(), LogLevel::Trace);
+    
+    // Note: We can't easily test actual console output, but we can verify construction
+}
+
+TEST_F(ConsoleLoggerTest, AllLogLevels) {
+    ConsoleLogger logger(LogLevel::Trace, false);
+    
+    // These should not throw
+    EXPECT_NO_THROW(logger.trace("Trace message"));
+    EXPECT_NO_THROW(logger.debug("Debug message"));
+    EXPECT_NO_THROW(logger.info("Info message"));
+    EXPECT_NO_THROW(logger.warn("Warning message"));
+    EXPECT_NO_THROW(logger.error("Error message"));
+    EXPECT_NO_THROW(logger.critical("Critical message"));
+}
 
 /**
  * @brief Test suite for FileLogger
  */
-class FileLoggerTests {
-public:
-    static void testFileCreation() {
-        TEST_SECTION("FileLogger - File Creation");
-        
-        std::filesystem::path testFile = "test_log.txt";
-        
-        // Clean up any existing test file
-        if (std::filesystem::exists(testFile)) {
-            std::filesystem::remove(testFile);
-        }
-        
-        {
-            FileLogger logger(testFile, LogLevel::Info, false);
-            logger.info("Test message");
-        } // Logger destructor should close file
-        
-        TEST_ASSERT(std::filesystem::exists(testFile), "Log file should be created");
-        
-        // Read file content
-        std::ifstream file(testFile);
-        std::string content((std::istreambuf_iterator<char>(file)),
-                           std::istreambuf_iterator<char>());
-        file.close();
-        
-        TEST_ASSERT(content.find("Test message") != std::string::npos, 
-                   "Log file should contain test message");
-        TEST_ASSERT(content.find("Logger initialized") != std::string::npos,
-                   "Log file should contain initialization message");
-        
-        // Clean up
-        std::filesystem::remove(testFile);
-        
-        TEST_PASS("FileLogger creates and writes to file correctly");
+class FileLoggerTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        cleanupTestFiles();
     }
     
-    static void testAppendMode() {
-        TEST_SECTION("FileLogger - Append Mode");
-        
-        std::filesystem::path testFile = "test_append.txt";
-        
-        // Clean up any existing test file
-        if (std::filesystem::exists(testFile)) {
-            std::filesystem::remove(testFile);
-        }
-        
-        // First logger
-        {
-            FileLogger logger(testFile, LogLevel::Info, true);
-            logger.info("First message");
-        }
-        
-        // Second logger in append mode
-        {
-            FileLogger logger(testFile, LogLevel::Info, true);
-            logger.info("Second message");
-        }
-        
-        // Read file content
-        std::ifstream file(testFile);
-        std::string content((std::istreambuf_iterator<char>(file)),
-                           std::istreambuf_iterator<char>());
-        file.close();
-        
-        TEST_ASSERT(content.find("First message") != std::string::npos,
-                   "Log file should contain first message");
-        TEST_ASSERT(content.find("Second message") != std::string::npos,
-                   "Log file should contain second message");
-        
-        // Clean up
-        std::filesystem::remove(testFile);
-        
-        TEST_PASS("FileLogger append mode works correctly");
+    void TearDown() override {
+        cleanupTestFiles();
     }
     
-    static void testLogLevelFiltering() {
-        TEST_SECTION("FileLogger - Log Level Filtering");
-        
-        std::filesystem::path testFile = "test_filter.txt";
-        
-        // Clean up any existing test file
-        if (std::filesystem::exists(testFile)) {
-            std::filesystem::remove(testFile);
+    void cleanupTestFiles() {
+        const std::vector<std::string> testFiles = {
+            "test_log.txt", "test_append.txt", "test_filter.txt",
+            "test_shutdown.txt", "test_factory_file.txt", "test_default.txt"
+        };
+        for (const auto& file : testFiles) {
+            if (std::filesystem::exists(file)) {
+                std::filesystem::remove(file);
+            }
         }
-        
-        {
-            FileLogger logger(testFile, LogLevel::Warning, false);
-            
-            logger.trace("Trace message");    // Should not be logged
-            logger.debug("Debug message");    // Should not be logged
-            logger.info("Info message");      // Should not be logged
-            logger.warn("Warning message");   // Should be logged
-            logger.error("Error message");    // Should be logged
-        }
-        
-        // Read file content
-        std::ifstream file(testFile);
-        std::string content((std::istreambuf_iterator<char>(file)),
-                           std::istreambuf_iterator<char>());
-        file.close();
-        
-        TEST_ASSERT(content.find("Trace message") == std::string::npos,
-                   "Trace message should not be logged");
-        TEST_ASSERT(content.find("Debug message") == std::string::npos,
-                   "Debug message should not be logged");
-        TEST_ASSERT(content.find("Info message") == std::string::npos,
-                   "Info message should not be logged");
-        TEST_ASSERT(content.find("Warning message") != std::string::npos,
-                   "Warning message should be logged");
-        TEST_ASSERT(content.find("Error message") != std::string::npos,
-                   "Error message should be logged");
-        
-        // Clean up
-        std::filesystem::remove(testFile);
-        
-        TEST_PASS("FileLogger log level filtering works correctly");
-    }
-    
-    static void testShutdownMessage() {
-        TEST_SECTION("FileLogger - Shutdown Message");
-        
-        std::filesystem::path testFile = "test_shutdown.txt";
-        
-        // Clean up any existing test file
-        if (std::filesystem::exists(testFile)) {
-            std::filesystem::remove(testFile);
-        }
-        
-        {
-            FileLogger logger(testFile, LogLevel::Trace, false);
-            logger.info("Test message");
-        } // Destructor should log shutdown message
-        
-        // Read file content
-        std::ifstream file(testFile);
-        std::string content((std::istreambuf_iterator<char>(file)),
-                           std::istreambuf_iterator<char>());
-        file.close();
-        
-        TEST_ASSERT(content.find("Logger shutting down") != std::string::npos,
-                   "Log file should contain shutdown message");
-        
-        // Clean up
-        std::filesystem::remove(testFile);
-        
-        TEST_PASS("FileLogger logs shutdown message correctly");
     }
 };
+
+TEST_F(FileLoggerTest, FileCreation) {
+    std::filesystem::path testFile = "test_log.txt";
+    
+    // Clean up any existing test file
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+    
+    {
+        FileLogger logger(testFile, LogLevel::Info, false);
+        logger.info("Test message");
+    } // Logger destructor should close file
+    
+    ASSERT_TRUE(std::filesystem::exists(testFile));
+    
+    // Read file content
+    std::ifstream file(testFile);
+    std::string content((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+    
+    EXPECT_NE(content.find("Test message"), std::string::npos);
+    EXPECT_NE(content.find("Logger initialized"), std::string::npos);
+    
+    // Clean up
+    std::filesystem::remove(testFile);
+}
+
+TEST_F(FileLoggerTest, AppendMode) {
+    std::filesystem::path testFile = "test_append.txt";
+    
+    // Clean up any existing test file
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+    
+    // First logger
+    {
+        FileLogger logger(testFile, LogLevel::Info, true);
+        logger.info("First message");
+    }
+    
+    // Second logger in append mode
+    {
+        FileLogger logger(testFile, LogLevel::Info, true);
+        logger.info("Second message");
+    }
+    
+    // Read file content
+    std::ifstream file(testFile);
+    std::string content((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+    
+    EXPECT_NE(content.find("First message"), std::string::npos);
+    EXPECT_NE(content.find("Second message"), std::string::npos);
+    
+    // Clean up
+    std::filesystem::remove(testFile);
+}
+
+TEST_F(FileLoggerTest, LogLevelFiltering) {
+    std::filesystem::path testFile = "test_filter.txt";
+    
+    // Clean up any existing test file
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+    
+    {
+        FileLogger logger(testFile, LogLevel::Warning, false);
+        
+        logger.trace("Trace message");    // Should not be logged
+        logger.debug("Debug message");    // Should not be logged
+        logger.info("Info message");      // Should not be logged
+        logger.warn("Warning message");   // Should be logged
+        logger.error("Error message");    // Should be logged
+    }
+    
+    // Read file content
+    std::ifstream file(testFile);
+    std::string content((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+    
+    EXPECT_EQ(content.find("Trace message"), std::string::npos);
+    EXPECT_EQ(content.find("Debug message"), std::string::npos);
+    EXPECT_EQ(content.find("Info message"), std::string::npos);
+    EXPECT_NE(content.find("Warning message"), std::string::npos);
+    EXPECT_NE(content.find("Error message"), std::string::npos);
+    
+    // Clean up
+    std::filesystem::remove(testFile);
+}
+
+TEST_F(FileLoggerTest, ShutdownMessage) {
+    std::filesystem::path testFile = "test_shutdown.txt";
+    
+    // Clean up any existing test file
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+    
+    {
+        FileLogger logger(testFile, LogLevel::Trace, false);
+        logger.info("Test message");
+    } // Destructor should log shutdown message
+    
+    // Read file content
+    std::ifstream file(testFile);
+    std::string content((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+    
+    EXPECT_NE(content.find("Logger shutting down"), std::string::npos);
+    
+    // Clean up
+    std::filesystem::remove(testFile);
+}
 
 /**
  * @brief Test suite for LoggerFactory
  */
-class LoggerFactoryTests {
-public:
-    static void testCreateConsoleLogger() {
-        TEST_SECTION("LoggerFactory - Create Console Logger");
-        
-        auto logger = LoggerFactory::createConsoleLogger(LogLevel::Info, false);
-        
-        TEST_ASSERT(logger != nullptr, "Console logger should not be null");
-        TEST_ASSERT(logger->getLevel() == LogLevel::Info, "Logger level should be Info");
-        TEST_ASSERT(logger->isLevelEnabled(LogLevel::Info) == true, "Info should be enabled");
-        TEST_ASSERT(logger->isLevelEnabled(LogLevel::Debug) == false, "Debug should be disabled");
-        
-        TEST_PASS("LoggerFactory creates console logger correctly");
+class LoggerFactoryTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        cleanupTestFiles();
     }
     
-    static void testCreateFileLogger() {
-        TEST_SECTION("LoggerFactory - Create File Logger");
-        
-        std::filesystem::path testFile = "test_factory_file.txt";
-        
-        // Clean up any existing test file
-        if (std::filesystem::exists(testFile)) {
-            std::filesystem::remove(testFile);
-        }
-        
-        {
-            auto logger = LoggerFactory::createFileLogger(testFile, LogLevel::Debug, false);
-            
-            TEST_ASSERT(logger != nullptr, "File logger should not be null");
-            TEST_ASSERT(logger->getLevel() == LogLevel::Debug, "Logger level should be Debug");
-            
-            logger->info("Factory test message");
-        }
-        
-        TEST_ASSERT(std::filesystem::exists(testFile), "Log file should be created");
-        
-        // Clean up
-        std::filesystem::remove(testFile);
-        
-        TEST_PASS("LoggerFactory creates file logger correctly");
+    void TearDown() override {
+        cleanupTestFiles();
     }
     
-    static void testCreateDefaultLogger() {
-        TEST_SECTION("LoggerFactory - Create Default Logger");
-        
-        std::filesystem::path testFile = "test_default.txt";
-        
-        // Clean up any existing test file
-        if (std::filesystem::exists(testFile)) {
-            std::filesystem::remove(testFile);
+    void cleanupTestFiles() {
+        const std::vector<std::string> testFiles = {
+            "test_log.txt", "test_append.txt", "test_filter.txt",
+            "test_shutdown.txt", "test_factory_file.txt", "test_default.txt"
+        };
+        for (const auto& file : testFiles) {
+            if (std::filesystem::exists(file)) {
+                std::filesystem::remove(file);
+            }
         }
-        
-        {
-            auto logger = LoggerFactory::createDefaultLogger(testFile, LogLevel::Warning, false);
-            
-            TEST_ASSERT(logger != nullptr, "Default logger should not be null");
-            TEST_ASSERT(logger->getLevel() == LogLevel::Warning, "Logger level should be Warning");
-            
-            logger->warn("Default logger test");
-        }
-        
-        TEST_ASSERT(std::filesystem::exists(testFile), "Log file should be created");
-        
-        // Read file content
-        std::ifstream file(testFile);
-        std::string content((std::istreambuf_iterator<char>(file)),
-                           std::istreambuf_iterator<char>());
-        file.close();
-        
-        TEST_ASSERT(content.find("Default logger test") != std::string::npos,
-                   "Log file should contain test message");
-        
-        // Clean up
-        std::filesystem::remove(testFile);
-        
-        TEST_PASS("LoggerFactory creates default (composite) logger correctly");
-    }
-    
-    static void testCreateNullLogger() {
-        TEST_SECTION("LoggerFactory - Create Null Logger");
-        
-        auto logger = LoggerFactory::createNullLogger();
-        
-        TEST_ASSERT(logger != nullptr, "Null logger should not be null");
-        TEST_ASSERT(logger->getLevel() == LogLevel::Trace, "Null logger should accept all levels");
-        
-        // These should not throw or do anything
-        logger->trace("Should be discarded");
-        logger->debug("Should be discarded");
-        logger->info("Should be discarded");
-        logger->warn("Should be discarded");
-        logger->error("Should be discarded");
-        logger->critical("Should be discarded");
-        
-        TEST_PASS("LoggerFactory creates null logger correctly");
-    }
-    
-    static void testDefaultLoggerFallback() {
-        TEST_SECTION("LoggerFactory - Default Logger File Creation Failure");
-        
-        // Try to create logger with invalid path (should fallback to console only)
-        std::filesystem::path invalidPath = "/nonexistent/directory/test.log";
-        
-        auto logger = LoggerFactory::createDefaultLogger(invalidPath, LogLevel::Info, false);
-        
-        TEST_ASSERT(logger != nullptr, "Logger should not be null even with invalid path");
-        
-        // Logger should still work (console fallback)
-        logger->info("This should work via console fallback");
-        
-        TEST_PASS("LoggerFactory handles file creation failure gracefully");
     }
 };
+
+TEST_F(LoggerFactoryTest, CreateConsoleLogger) {
+    auto logger = LoggerFactory::createConsoleLogger(LogLevel::Info, false);
+    
+    ASSERT_NE(logger, nullptr);
+    EXPECT_EQ(logger->getLevel(), LogLevel::Info);
+    EXPECT_TRUE(logger->isLevelEnabled(LogLevel::Info));
+    EXPECT_FALSE(logger->isLevelEnabled(LogLevel::Debug));
+}
+
+TEST_F(LoggerFactoryTest, CreateFileLogger) {
+    std::filesystem::path testFile = "test_factory_file.txt";
+    
+    // Clean up any existing test file
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+    
+    {
+        auto logger = LoggerFactory::createFileLogger(testFile, LogLevel::Debug, false);
+        
+        ASSERT_NE(logger, nullptr);
+        EXPECT_EQ(logger->getLevel(), LogLevel::Debug);
+        
+        logger->info("Factory test message");
+    }
+    
+    ASSERT_TRUE(std::filesystem::exists(testFile));
+    
+    // Clean up
+    std::filesystem::remove(testFile);
+}
+
+TEST_F(LoggerFactoryTest, CreateDefaultLogger) {
+    std::filesystem::path testFile = "test_default.txt";
+    
+    // Clean up any existing test file
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+    
+    {
+        auto logger = LoggerFactory::createDefaultLogger(testFile, LogLevel::Warning, false);
+        
+        ASSERT_NE(logger, nullptr);
+        EXPECT_EQ(logger->getLevel(), LogLevel::Warning);
+        
+        logger->warn("Default logger test");
+    }
+    
+    ASSERT_TRUE(std::filesystem::exists(testFile));
+    
+    // Read file content
+    std::ifstream file(testFile);
+    std::string content((std::istreambuf_iterator<char>(file)),
+                       std::istreambuf_iterator<char>());
+    file.close();
+    
+    EXPECT_NE(content.find("Default logger test"), std::string::npos);
+    
+    // Clean up
+    std::filesystem::remove(testFile);
+}
+
+TEST_F(LoggerFactoryTest, CreateNullLogger) {
+    auto logger = LoggerFactory::createNullLogger();
+    
+    ASSERT_NE(logger, nullptr);
+    EXPECT_EQ(logger->getLevel(), LogLevel::Trace);
+    
+    // These should not throw or do anything
+    EXPECT_NO_THROW(logger->trace("Should be discarded"));
+    EXPECT_NO_THROW(logger->debug("Should be discarded"));
+    EXPECT_NO_THROW(logger->info("Should be discarded"));
+    EXPECT_NO_THROW(logger->warn("Should be discarded"));
+    EXPECT_NO_THROW(logger->error("Should be discarded"));
+    EXPECT_NO_THROW(logger->critical("Should be discarded"));
+}
+
+TEST_F(LoggerFactoryTest, DefaultLoggerFallback) {
+    // Try to create logger with invalid path (should fallback to console only)
+    std::filesystem::path invalidPath = "/nonexistent/directory/test.log";
+    
+    auto logger = LoggerFactory::createDefaultLogger(invalidPath, LogLevel::Info, false);
+    
+    ASSERT_NE(logger, nullptr);
+    
+    // Logger should still work (console fallback)
+    EXPECT_NO_THROW(logger->info("This should work via console fallback"));
+}
 
 /**
  * @brief Test suite for LogLevel enum
  */
-class LogLevelTests {
-public:
-    static void testLogLevelOrdering() {
-        TEST_SECTION("LogLevel - Ordering");
-        
-        TEST_ASSERT(LogLevel::Trace < LogLevel::Debug, "Trace < Debug");
-        TEST_ASSERT(LogLevel::Debug < LogLevel::Info, "Debug < Info");
-        TEST_ASSERT(LogLevel::Info < LogLevel::Warning, "Info < Warning");
-        TEST_ASSERT(LogLevel::Warning < LogLevel::Error, "Warning < Error");
-        TEST_ASSERT(LogLevel::Error < LogLevel::Critical, "Error < Critical");
-        
-        TEST_PASS("LogLevel enum ordering is correct");
-    }
+class LogLevelTest : public ::testing::Test {
 };
 
-int main() {
-    TEST_HEADER("Infrastructure Logging System Tests");
-    
-    // ConsoleLogger tests
-    ConsoleLoggerTests::testLogLevelFiltering();
-    ConsoleLoggerTests::testColorCodes();
-    ConsoleLoggerTests::testAllLogLevels();
-    
-    // FileLogger tests
-    FileLoggerTests::testFileCreation();
-    FileLoggerTests::testAppendMode();
-    FileLoggerTests::testLogLevelFiltering();
-    FileLoggerTests::testShutdownMessage();
-    
-    // LoggerFactory tests
-    LoggerFactoryTests::testCreateConsoleLogger();
-    LoggerFactoryTests::testCreateFileLogger();
-    LoggerFactoryTests::testCreateDefaultLogger();
-    LoggerFactoryTests::testCreateNullLogger();
-    LoggerFactoryTests::testDefaultLoggerFallback();
-    
-    // LogLevel tests
-    LogLevelTests::testLogLevelOrdering();
-    
-    TEST_SUMMARY();
-    
-    return TEST_GET_RETURN_CODE();
+TEST_F(LogLevelTest, LogLevelOrdering) {
+    EXPECT_LT(LogLevel::Trace, LogLevel::Debug);
+    EXPECT_LT(LogLevel::Debug, LogLevel::Info);
+    EXPECT_LT(LogLevel::Info, LogLevel::Warning);
+    EXPECT_LT(LogLevel::Warning, LogLevel::Error);
+    EXPECT_LT(LogLevel::Error, LogLevel::Critical);
 }
