@@ -339,7 +339,13 @@ TEST_F(LoggerFactoryTest, CreateNullLogger) {
 
 TEST_F(LoggerFactoryTest, DefaultLoggerFallback) {
     // Try to create logger with invalid path (should fallback to console only)
+#ifdef _WIN32
+    // Use a Windows-style absolute path on a likely-nonexistent drive
+    std::filesystem::path invalidPath = "Z:\\nonexistent\\directory\\test.log";
+#else
+    // Use a Unix-style absolute path that should not exist
     std::filesystem::path invalidPath = "/nonexistent/directory/test.log";
+#endif
     
     auto logger = LoggerFactory::createDefaultLogger(invalidPath, LogLevel::Info, false);
     

@@ -52,13 +52,17 @@ LogLevel ConsoleLogger::getLevel() const {
 }
 
 bool ConsoleLogger::isLevelEnabled(LogLevel level) const {
+    std::lock_guard<std::mutex> lock(m_mutex);
     return static_cast<int>(level) >= static_cast<int>(m_minLevel);
 }
 
 void ConsoleLogger::log(LogLevel level, const std::string& message) {
-    // Early exit if level is filtered
-    if (!isLevelEnabled(level)) {
-        return;
+    // Check level with mutex protection to avoid double-locking
+    {
+        std::lock_guard<std::mutex> lock(m_mutex);
+        if (static_cast<int>(level) < static_cast<int>(m_minLevel)) {
+            return;
+        }
     }
     
     std::lock_guard<std::mutex> lock(m_mutex);
@@ -85,8 +89,16 @@ std::string ConsoleLogger::getCurrentTimestamp() const {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
     
+    // Use thread-safe time conversion
+    std::tm timeInfo;
+#ifdef _WIN32
+    localtime_s(&timeInfo, &time);
+#else
+    localtime_r(&time, &timeInfo);
+#endif
+    
     std::ostringstream oss;
-    oss << std::put_time(std::localtime(&time), "%Y-%m-%d %H:%M:%S");
+    oss << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S");
     return oss.str();
 }
 
