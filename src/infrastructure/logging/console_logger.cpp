@@ -89,11 +89,7 @@ std::string ConsoleLogger::getCurrentTimestamp() const {
     
     // Use thread-safe time conversion
     std::tm timeInfo;
-#ifdef _WIN32
-    localtime_s(&timeInfo, &time);
-#else
     localtime_r(&time, &timeInfo);
-#endif
     
     std::ostringstream oss;
     oss << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S");
