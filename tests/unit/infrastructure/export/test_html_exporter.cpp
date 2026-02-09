@@ -6,10 +6,10 @@
  */
 
 #include <gtest/gtest.h>
-#include "src/infrastructure/export/html_exporter.hpp"
-#include "src/core/model/Truss.hpp"
-#include "src/core/analysis/AnalysisOrchestrator.hpp"
-#include "src/core/analysis/SolverFactory.hpp"
+#include "infrastructure/export/html_exporter.hpp"
+#include "core/model/Truss.hpp"
+#include "core/analysis/AnalysisOrchestrator.hpp"
+#include "core/analysis/SolverFactory.hpp"
 #include <fstream>
 #include <filesystem>
 #include <regex>

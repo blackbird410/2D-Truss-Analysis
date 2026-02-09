@@ -6,7 +6,6 @@
  */
 
 #include "xml_exporter.hpp"
-#include "src/core/Logger.hpp"
 #include <fstream>
 #include <ctime>
 
@@ -73,12 +72,10 @@ bool XMLExporter::exportResults(const Truss& truss,
         file << "</TrussAnalysisResults>\n";
         
         file.close();
-        core::Logger::info("Results exported to XML: " + filePath.string());
         return true;
         
     } catch (const std::exception& e) {
         m_lastError = "Export failed: " + std::string(e.what());
-        core::Logger::error("XML export failed: " + m_lastError);
         return false;
     }
 }

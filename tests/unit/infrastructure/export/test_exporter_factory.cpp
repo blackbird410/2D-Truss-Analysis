@@ -6,13 +6,13 @@
  */
 
 #include <gtest/gtest.h>
-#include "src/infrastructure/export/exporter_factory.hpp"
-#include "src/infrastructure/export/csv_exporter.hpp"
-#include "src/infrastructure/export/json_exporter.hpp"
-#include "src/infrastructure/export/xml_exporter.hpp"
-#include "src/infrastructure/export/html_exporter.hpp"
-#include "src/infrastructure/export/latex_exporter.hpp"
-#include "src/infrastructure/export/text_exporter.hpp"
+#include "infrastructure/export/exporter_factory.hpp"
+#include "infrastructure/export/csv_exporter.hpp"
+#include "infrastructure/export/json_exporter.hpp"
+#include "infrastructure/export/xml_exporter.hpp"
+#include "infrastructure/export/html_exporter.hpp"
+#include "infrastructure/export/latex_exporter.hpp"
+#include "infrastructure/export/text_exporter.hpp"
 #include <filesystem>
 #include <memory>
 

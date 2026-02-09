@@ -6,7 +6,6 @@
  */
 
 #include "text_exporter.hpp"
-#include "src/core/Logger.hpp"
 #include <fstream>
 #include <ctime>
 
@@ -68,12 +67,10 @@ bool TextExporter::exportResults(const Truss& truss,
         file << "End of Report\n";
         
         file.close();
-        core::Logger::info("Results exported to text: " + filePath.string());
         return true;
         
     } catch (const std::exception& e) {
         m_lastError = "Export failed: " + std::string(e.what());
-        core::Logger::error("Text export failed: " + m_lastError);
         return false;
     }
 }

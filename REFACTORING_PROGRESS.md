@@ -10,8 +10,8 @@
 ## Executive Summary
 
 ✅ **Planning Phase Complete** (7/7 deliverables)  
-✅ **Implementation:** 58% (119/205 hours)  
-📊 **Overall Progress:** 63% (planning 15% + implementation 58%)
+✅ **Implementation:** 60% (122.5/205 hours)  
+📊 **Overall Progress:** 65% (planning 15% + implementation 60%)
 
 **Latest Milestone:** Phase 3 (Infrastructure Layer Refactoring) COMPLETE ✅  
 **Next Phase:** Phase 4 (Interface & Application Layer)
@@ -20,18 +20,18 @@
 
 ## Phase Overview
 
-| Phase        | Status      | Progress | Hours  | Target |
-| ------------ | ----------- | -------- | ------ | ------ |
-| **Planning** | ✅ Complete | 100%     | ~30h   | Feb 4  |
-| **Phase 0**  | ✅ Complete | 100%     | 11/11h | Feb 5  |
-| **Phase 1**  | ✅ Complete | 100%     | 33/33h | Feb 5  |
-| **Phase 2**  | ✅ Complete | 100%     | 45/45h | Feb 6  |
-| **Phase 3**  | ✅ Complete | 100%     | 30/30h | Feb 9  |
-| **Phase 4**  | ⏳ Pending  | 0%       | 0/28h  | TBD    |
-| **Phase 5**  | ⏳ Pending  | 0%       | 0/22h  | TBD    |
-| **Phase 6**  | ⏳ Pending  | 0%       | 0/36h  | TBD    |
+| Phase        | Status         | Progress | Hours   | Target |
+| ------------ | -------------- | -------- | ------- | ------ |
+| **Planning** | ✅ Complete    | 100%     | ~30h    | Feb 4  |
+| **Phase 0**  | ✅ Complete    | 100%     | 11/11h  | Feb 5  |
+| **Phase 1**  | ✅ Complete    | 100%     | 33/33h  | Feb 5  |
+| **Phase 2**  | ✅ Complete    | 100%     | 45/45h  | Feb 6  |
+| **Phase 3**  | ✅ Complete    | 100%     | 30/30h  | Feb 9  |
+| **Phase 4**  | 🔄 In Progress | 12.5%    | 3.5/28h | TBD    |
+| **Phase 5**  | ⏳ Pending     | 0%       | 0/22h   | TBD    |
+| **Phase 6**  | ⏳ Pending     | 0%       | 0/36h   | TBD    |
 
-**Total Implementation:** 119/205 hours (58%)
+**Total Implementation:** 122.5/205 hours (60%)
 
 ---
 
@@ -483,9 +483,68 @@
     - ✅ Full Factory Coverage: All 4 public methods tested
     - ✅ Production Ready: Complete exporter infrastructure validation
   - **Work Log**: [2026-02-09-exporter-factory-test-coverage.md](docs/work-logs/2026-02-09-exporter-factory-test-coverage.md)
-- [ ] Improve Logger
-  - [ ] Add log levels (DEBUG, INFO, WARN, ERROR)
-  - [ ] Add file output
+- [x] **Task 3.1.11: Logging System Refactoring** ✅ **COMPLETE 2026-02-09**
+  - **Issue**: Legacy Logger used static singleton pattern, violated dependency inversion (infrastructure → core)
+  - **Build Blocker**: Infrastructure exporters couldn't include `src/core/Logger.hpp` (incorrect paths)
+  - **Root Causes**:
+    1. Logger in wrong location (`src/core/` instead of `src/infrastructure/logging/`)
+    2. Static singleton anti-pattern with global state
+    3. No interface - direct coupling to concrete class
+  - **Architecture Decision**: Follow IResultsExporter pattern (Strategy + Factory Method)
+  - **New Infrastructure** (7 files, 732 lines):
+    - ✅ ILogger interface (`src/infrastructure/logging/logger.hpp`) - 125 lines
+      - 6 logging methods (trace/debug/info/warn/error/critical)
+      - LogLevel enum (Trace → Critical)
+      - Thread-safety contract
+    - ✅ ConsoleLogger (`console_logger.{hpp,cpp}`) - 216 lines
+      - ANSI color support (trace=white, debug=cyan, info=green, warn=yellow, error=red, critical=bold-red)
+      - Output routing: errors/critical → stderr, others → stdout
+      - Thread-safe via std::mutex
+    - ✅ FileLogger (`file_logger.{hpp,cpp}`) - 251 lines
+      - File output with append mode
+      - Automatic flush on errors/critical
+      - Initialization/shutdown messages logged automatically
+    - ✅ LoggerFactory (`logger_factory.{hpp,cpp}`) - 240 lines
+      - 4 factory methods: createConsoleLogger(), createFileLogger(), createDefaultLogger(), createNullLogger()
+      - Internal CompositeLogger (forwards to multiple loggers)
+      - Internal NullLogger (no-op for testing)
+  - **Migration** (10 files updated):
+    - ✅ Removed Logger includes from 6 exporters (CSV, JSON, XML, HTML, LaTeX, Text)
+    - ✅ Removed all Logger calls from exporters (logging is caller's responsibility)
+    - ✅ Removed Logger from Application.cpp (dependencies-free)
+    - ✅ Removed Logger from AnalysisOrchestrator.cpp (16 calls removed)
+    - ✅ Updated CMakeLists.txt (removed legacy, added 6 new logging files)
+  - **Legacy Code Removed**:
+    - ✅ Deleted `src/core/Logger.hpp` (112 lines)
+    - ✅ Deleted `src/core/Logger.cpp` (157 lines)
+    - **Total removed**: 269 lines
+  - **Unit Tests** (13 tests - **MIGRATED TO GOOGLETEST 2026-02-09**):
+    - ✅ Created `tests/unit/infrastructure/logging/test_logger.cpp`
+    - ✅ **Framework Migration Complete**: All tests use GoogleTest exclusively
+    - ✅ ConsoleLogger: log level filtering, color codes, all log levels (3 tests)
+    - ✅ FileLogger: file creation, append mode, log level filtering, shutdown message (4 tests)
+    - ✅ LoggerFactory: create console/file/default/null loggers, file creation failure fallback (5 tests)
+    - ✅ LogLevel enum: ordering validation (1 test)
+    - ✅ Registered in CMakeLists.txt
+    - ✅ **Test Framework Consistency**: Zero legacy TestFramework.hpp references
+    - ✅ **Migration Pattern**: TEST*F fixtures, EXPECT*_/ASSERT\__ macros, gtest_main
+  - **Build Validation**:
+    - ✅ TrussCore builds successfully (zero Logger dependencies)
+    - ✅ All syntax errors resolved (bracket mismatch in AnalysisOrchestrator.cpp fixed)
+    - ✅ Zero legacy Logger references in production code
+  - **Design Patterns Applied**:
+    - Strategy: ILogger interface
+    - Factory Method: LoggerFactory
+    - Composite: CompositeLogger (internal)
+    - Dependency Injection: Clients receive logger via constructor/parameter (future application layer)
+  - **Benefits**:
+    - ✅ No global state (thread-safe by design)
+    - ✅ Testable (NullLogger for unit tests)
+    - ✅ Flexible (console, file, or both)
+    - ✅ Correct layer separation (infrastructure independent of core)
+    - ✅ SOLID compliance (interface segregation, dependency inversion)
+  - **Duration**: ~3.5 hours (diagnosis → design → implementation → migration → testing → cleanup → documentation)
+  - **Work Log**: [2026-02-09-logging-subsystem-refactoring.md](docs/work-logs/2026-02-09-logging-subsystem-refactoring.md)
 - [ ] Create FileIO utilities
 - [ ] Update tests
 - [ ] Documentation
@@ -505,7 +564,7 @@
 **Started:** February 9, 2026  
 **Dependencies:** Phase 3 complete ✅
 
-#### Tasks (1/8)
+#### Tasks (2/8)
 
 - [ ] Create TrussAnalysisFacade
 - [ ] Refactor CLI

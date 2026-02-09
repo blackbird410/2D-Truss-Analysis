@@ -5,7 +5,7 @@
 
 #include "MainWindow.hpp"
 #include "ProjectFileManager.hpp"
-#include "src/infrastructure/export/exporter_factory.hpp"
+#include "infrastructure/export/exporter_factory.hpp"
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QSettings>

@@ -6,7 +6,6 @@
  */
 
 #include "csv_exporter.hpp"
-#include "src/core/Logger.hpp"
 #include <fstream>
 #include <ctime>
 
@@ -71,12 +70,10 @@ bool CSVExporter::exportResults(const Truss& truss,
         }
         
         file.close();
-        core::Logger::info("Results exported to CSV: " + filePath.string());
         return true;
         
     } catch (const std::exception& e) {
         m_lastError = "Export failed: " + std::string(e.what());
-        core::Logger::error("CSV export failed: " + m_lastError);
         return false;
     }
 }

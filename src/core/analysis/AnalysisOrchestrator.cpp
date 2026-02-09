@@ -6,7 +6,6 @@
  */
 
 #include "AnalysisOrchestrator.hpp"
-#include "../Logger.hpp"
 #include <Eigen/Eigenvalues>
 #include <stdexcept>
 #include <algorithm>
@@ -28,8 +27,6 @@ AnalysisOrchestrator::AnalysisOrchestrator(
 }
 
 AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
-    logAnalysisStart(truss);
-    
     // 1. Validate inputs
     if (!validateInputs(truss)) {
         throw std::runtime_error("Invalid truss structure for analysis");
@@ -69,8 +66,6 @@ AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
     // Update truss with results
     updateTrussResults(truss, results);
     
-    logAnalysisComplete(results);
-    
     return results;
 }
 
@@ -81,7 +76,6 @@ void AnalysisOrchestrator::assignDOFs(Truss& truss) {
 bool AnalysisOrchestrator::validateInputs(const Truss& truss) const {
     // Check minimum requirements
     if (truss.getNodes().empty() || truss.getMembers().empty()) {
-        Logger::error("Truss must have at least one node and one member");
         return false;
     }
     
@@ -90,7 +84,6 @@ bool AnalysisOrchestrator::validateInputs(const Truss& truss) const {
     for (const auto& node : nodes) {
         const Point2D& pos = node->getPosition();
         if (!std::isfinite(pos.x) || !std::isfinite(pos.y)) {
-            Logger::error("Node has invalid coordinates");
             return false;
         }
     }
@@ -99,19 +92,16 @@ bool AnalysisOrchestrator::validateInputs(const Truss& truss) const {
     const auto& members = truss.getMembers();
     for (const auto& member : members) {
         if (member->getLength() <= 0.0) {
-            Logger::error("Member has zero or negative length");
             return false;
         }
         
         const auto& material = member->getMaterial();
         if (material.youngModulus <= 0.0) {
-            Logger::error("Member has invalid Young's modulus");
             return false;
         }
         
         const auto& section = member->getSection();
         if (section.area <= 0.0) {
-            Logger::error("Member has invalid cross-sectional area");
             return false;
         }
     }
@@ -127,17 +117,11 @@ bool AnalysisOrchestrator::checkStructuralValidity(const Truss& truss) const {
     
     // Check static determinacy
     if (!truss.isStaticallyDeterminate()) {
-        if (m_options.verbose) {
-            Logger::warn("Truss is not statically determinate");
-        }
         return false;
     }
     
     // Check kinematic stability
     if (!truss.isKinematicallyStable()) {
-        if (m_options.verbose) {
-            Logger::warn("Truss is not kinematically stable");
-        }
         return false;
     }
     
@@ -453,25 +437,6 @@ void AnalysisOrchestrator::updateTrussResults(
         
         nodes[i]->setResults(nodeResult);
     }
-}
-
-void AnalysisOrchestrator::logAnalysisStart(const Truss& truss) const {
-    if (!m_options.verbose) return;
-    
-    Logger::info("Starting structural analysis...");
-    Logger::info("  Nodes: " + std::to_string(truss.getNodes().size()));
-    Logger::info("  Members: " + std::to_string(truss.getMembers().size()));
-    Logger::info("  Total DOFs: " + std::to_string(truss.getTotalDofs()));
-    Logger::info("  Solver: " + m_solver->getName());
-}
-
-void AnalysisOrchestrator::logAnalysisComplete(const AnalysisResults& results) const {
-    if (!m_options.verbose) return;
-    
-    Logger::info("Analysis complete!");
-    Logger::info("  Converged: " + std::string(results.converged ? "Yes" : "No"));
-    Logger::info("  Max displacement: " + std::to_string(results.maxDisplacement));
-    Logger::info("  Max stress: " + std::to_string(results.maxStress));
 }
 
 } // namespace truss::core::analysis
