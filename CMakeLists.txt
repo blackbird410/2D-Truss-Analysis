@@ -39,8 +39,6 @@ set(CMAKE_AUTOUIC ON)
 
 # Create library for core functionality
 add_library(TrussCore STATIC
-    src/core/Logger.cpp
-    src/core/Logger.hpp
     src/core/Application.cpp
     src/core/Application.hpp
     # Domain model in model/ subdirectory
@@ -82,6 +80,14 @@ add_library(TrussCore STATIC
     src/infrastructure/export/latex_exporter.hpp
     src/infrastructure/export/text_exporter.cpp
     src/infrastructure/export/text_exporter.hpp
+    # Phase 4 - Infrastructure layer (logging subsystem)
+    src/infrastructure/logging/logger.hpp
+    src/infrastructure/logging/console_logger.cpp
+    src/infrastructure/logging/console_logger.hpp
+    src/infrastructure/logging/file_logger.cpp
+    src/infrastructure/logging/file_logger.hpp
+    src/infrastructure/logging/logger_factory.cpp
+    src/infrastructure/logging/logger_factory.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -89,6 +95,7 @@ target_include_directories(TrussCore PUBLIC
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/analysis
     ${CMAKE_SOURCE_DIR}/src/infrastructure/export
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
 )
 
 target_link_libraries(TrussCore PUBLIC
