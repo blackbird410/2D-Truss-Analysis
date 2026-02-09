@@ -164,7 +164,10 @@ if(BUILD_TESTING)
     )
     
     target_include_directories(unit_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/core
+        ${CMAKE_SOURCE_DIR}/src/infrastructure/export
+        ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
     )
     
     add_test(NAME UnitTests COMMAND unit_tests)
@@ -189,7 +192,10 @@ if(BUILD_TESTING)
     )
     
     target_include_directories(integration_tests PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/core
+        ${CMAKE_SOURCE_DIR}/src/infrastructure/export
+        ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
     )
     
     add_test(NAME IntegrationTests COMMAND integration_tests)
