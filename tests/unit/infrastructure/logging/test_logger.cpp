@@ -5,10 +5,10 @@
  * @version 3.0.0
  */
 
-#include "../../../../src/infrastructure/logging/logger.hpp"
-#include "../../../../src/infrastructure/logging/console_logger.hpp"
-#include "../../../../src/infrastructure/logging/file_logger.hpp"
-#include "../../../../src/infrastructure/logging/logger_factory.hpp"
+#include "infrastructure/logging/logger.hpp"
+#include "infrastructure/logging/console_logger.hpp"
+#include "infrastructure/logging/file_logger.hpp"
+#include "infrastructure/logging/logger_factory.hpp"
 #include <gtest/gtest.h>
 #include <filesystem>
 #include <fstream>
