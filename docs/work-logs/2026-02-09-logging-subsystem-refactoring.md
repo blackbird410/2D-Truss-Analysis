@@ -575,8 +575,9 @@ make TrussCore -j4
 #### Unit Test Creation
 
 **File:** `tests/unit/infrastructure/logging/test_logger.cpp`  
-**Lines:** ~400  
-**Test Count:** 15 tests
+**Lines:** ~360  
+**Test Count:** 13 tests (GoogleTest)  
+**Framework:** ✅ **GoogleTest (migrated from legacy TestFramework.hpp)**
 
 **Test Coverage:**
 
@@ -598,10 +599,35 @@ make TrussCore -j4
    - Create null logger
    - File creation failure fallback
 
-4. **LogLevel Tests (3 tests)**
+4. **LogLevel Tests (1 test)**
    - Enum ordering (Trace < Debug < Info < Warning < Error < Critical)
-   - Level comparison operators
-   - Level string conversion
+
+**Test Implementation Pattern:**
+
+```cpp
+// GoogleTest fixture pattern
+class ConsoleLoggerTest : public ::testing::Test {
+protected:
+    void SetUp() override { cleanupTestFiles(); }
+    void TearDown() override { cleanupTestFiles(); }
+    void cleanupTestFiles() { /* cleanup logic */ }
+};
+
+// GoogleTest test case
+TEST_F(ConsoleLoggerTest, LogLevelFiltering) {
+    ConsoleLogger logger(LogLevel::Warning, false);
+    EXPECT_TRUE(logger.isLevelEnabled(LogLevel::Error));
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Info));
+}
+```
+
+**Migration Notes:**
+
+- ✅ **Framework Consistency**: All tests use GoogleTest (zero legacy TestFramework.hpp)
+- ✅ **TEST_F Fixtures**: Test classes inherit from `::testing::Test`
+- ✅ **EXPECT/ASSERT Macros**: `EXPECT_TRUE`, `EXPECT_EQ`, `EXPECT_NE`, `EXPECT_NO_THROW`
+- ✅ **GTest Main**: Linked to `gtest_main` for automatic test runner
+- ✅ **Namespace**: Uses `truss::infrastructure::logging`
 
 **Test Registration:**
 
