@@ -106,15 +106,12 @@ bool FileLogger::isOpen() const {
 }
 
 void FileLogger::log(LogLevel level, const std::string& message) {
-    // Check level with mutex protection to avoid double-locking
-    {
-        std::lock_guard<std::mutex> lock(m_mutex);
-        if (static_cast<int>(level) < static_cast<int>(m_minLevel)) {
-            return;
-        }
-    }
-    
     std::lock_guard<std::mutex> lock(m_mutex);
+    
+    // Early exit if level is filtered
+    if (static_cast<int>(level) < static_cast<int>(m_minLevel)) {
+        return;
+    }
     
     if (!m_file.is_open()) {
         return; // Silently fail if file is closed
