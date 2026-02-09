@@ -301,6 +301,7 @@ TEST_F(LoggerFactoryTest, CreateDefaultLogger) {
         auto logger = LoggerFactory::createDefaultLogger(testFile, LogLevel::Warning, false);
         
         ASSERT_NE(logger, nullptr);
+        // createDefaultLogger MUST respect the requested log level
         EXPECT_EQ(logger->getLevel(), LogLevel::Warning);
         
         logger->warn("Default logger test");
