@@ -8,7 +8,6 @@
 #include "core/analysis/AnalysisOrchestrator.hpp"
 #include "core/analysis/DirectSolver.hpp"
 #include "core/model/Truss.hpp"
-#include "core/Logger.hpp"
 #include <iostream>
 #include <fstream>
 #include <string>
