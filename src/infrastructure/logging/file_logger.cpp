@@ -37,7 +37,7 @@ FileLogger::FileLogger(
     // Log initialization message
     if (m_file.is_open()) {
         std::string timestamp = getCurrentTimestamp();
-        m_file << "[" << timestamp << "] [INFO ] Logging system initialized (file: "
+        m_file << "[" << timestamp << "] [INFO ] Logger initialized (file: "
                << m_filePath.filename().string() << ")" << std::endl;
         m_file.flush();
     }
@@ -46,7 +46,7 @@ FileLogger::FileLogger(
 FileLogger::~FileLogger() {
     if (m_file.is_open()) {
         std::string timestamp = getCurrentTimestamp();
-        m_file << "[" << timestamp << "] [INFO ] Shutting down logging system" << std::endl;
+        m_file << "[" << timestamp << "] [INFO ] Logger shutting down" << std::endl;
         m_file.flush();
         m_file.close();
     }

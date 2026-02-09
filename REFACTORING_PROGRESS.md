@@ -518,13 +518,16 @@
     - ✅ Deleted `src/core/Logger.hpp` (112 lines)
     - ✅ Deleted `src/core/Logger.cpp` (157 lines)
     - **Total removed**: 269 lines
-  - **Unit Tests** (15 tests):
+  - **Unit Tests** (13 tests - **MIGRATED TO GOOGLETEST 2026-02-09**):
     - ✅ Created `tests/unit/infrastructure/logging/test_logger.cpp`
+    - ✅ **Framework Migration Complete**: All tests use GoogleTest exclusively
     - ✅ ConsoleLogger: log level filtering, color codes, all log levels (3 tests)
     - ✅ FileLogger: file creation, append mode, log level filtering, shutdown message (4 tests)
     - ✅ LoggerFactory: create console/file/default/null loggers, file creation failure fallback (5 tests)
     - ✅ LogLevel enum: ordering validation (1 test)
     - ✅ Registered in CMakeLists.txt
+    - ✅ **Test Framework Consistency**: Zero legacy TestFramework.hpp references
+    - ✅ **Migration Pattern**: TEST*F fixtures, EXPECT*_/ASSERT\__ macros, gtest_main
   - **Build Validation**:
     - ✅ TrussCore builds successfully (zero Logger dependencies)
     - ✅ All syntax errors resolved (bracket mismatch in AnalysisOrchestrator.cpp fixed)

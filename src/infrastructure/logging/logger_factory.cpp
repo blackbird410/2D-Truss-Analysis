@@ -52,9 +52,9 @@ LoggerPtr LoggerFactory::createNullLogger() {
 // ===== CompositeLogger Implementation =====
 
 LoggerFactory::CompositeLogger::CompositeLogger(std::vector<LoggerPtr> loggers)
-    : m_loggers(std::move(loggers)), m_minLevel(LogLevel::Info) {
+    : m_loggers(std::move(loggers)), m_minLevel(LogLevel::Critical) {
     
-    // Set minimum level based on most permissive logger
+    // Set minimum level to the most permissive (lowest enum value) among child loggers
     for (const auto& logger : m_loggers) {
         if (static_cast<int>(logger->getLevel()) < static_cast<int>(m_minLevel)) {
             m_minLevel = logger->getLevel();
