@@ -108,7 +108,8 @@ bool FileLogger::isOpen() const {
 void FileLogger::log(LogLevel level, const std::string& message) {
     std::lock_guard<std::mutex> lock(m_mutex);
     
-    // Early exit if level is filtered
+    // Check level filter (duplicates isLevelEnabled logic to avoid deadlock,
+    // since isLevelEnabled() also acquires m_mutex)
     if (static_cast<int>(level) < static_cast<int>(m_minLevel)) {
         return;
     }
