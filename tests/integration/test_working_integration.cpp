@@ -39,9 +39,12 @@ TEST(WorkingIntegrationTest, MemorySafeTriangularTrussAnalysis) {
     // Apply load
     truss.applyForce(node3->getId(), Force2D(0.0, -10000.0));
     
-    // Verify truss is valid
+    // Verify truss is valid (using deprecated methods for backward compatibility testing)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     EXPECT_TRUE(truss.isValid());
     EXPECT_TRUE(truss.isStaticallyDeterminate());
+    #pragma GCC diagnostic pop
     
     // Perform analysis - use unique_ptr to avoid copy issues
     truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
@@ -96,8 +99,11 @@ TEST(WorkingIntegrationTest, MemorySafeBridgeTrussAnalysis) {
     // Apply load at the center
     truss.applyForce(node3->getId(), Force2D(0.0, -5000.0));
     
-    // Verify structure
+    // Verify structure (using deprecated method for backward compatibility testing)
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
     EXPECT_TRUE(truss.isValid());
+    #pragma GCC diagnostic pop
     EXPECT_EQ(truss.getNodeCount(), 5);
     EXPECT_EQ(truss.getMemberCount(), 7);
     
