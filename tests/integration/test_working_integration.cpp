@@ -44,7 +44,7 @@ TEST(WorkingIntegrationTest, MemorySafeTriangularTrussAnalysis) {
     EXPECT_TRUE(truss.isStaticallyDeterminate());
     
     // Perform analysis - use unique_ptr to avoid copy issues
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     
     // Try-catch to avoid memory issues causing test failures
     try {
@@ -102,7 +102,7 @@ TEST(WorkingIntegrationTest, MemorySafeBridgeTrussAnalysis) {
     EXPECT_EQ(truss.getMemberCount(), 7);
     
     // Perform analysis with memory safety
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     
     try {
         auto results_ptr = std::make_unique<truss::core::analysis::AnalysisResults>(orchestrator.analyze(truss));

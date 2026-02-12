@@ -81,6 +81,7 @@ void runExampleAnalysis(bool verbose = false) {
         // Perform analysis with AnalysisOrchestrator
         truss::core::analysis::AnalysisOrchestrator orchestrator(
             std::make_unique<truss::core::analysis::DirectSolver>(),
+            std::make_unique<truss::core::validation::TrussValidator>(),
             options
         );
         

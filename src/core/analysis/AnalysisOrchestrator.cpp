@@ -15,14 +15,19 @@ namespace truss::core::analysis {
 
 AnalysisOrchestrator::AnalysisOrchestrator(
     std::unique_ptr<ILinearSolver> solver,
+    std::unique_ptr<validation::TrussValidator> validator,
     const AnalysisOptions& options)
     : m_assembler(std::make_unique<StiffnessAssembler>())
     , m_bcHandler(std::make_unique<BoundaryConditionHandler>())
     , m_solver(std::move(solver))
+    , m_validator(std::move(validator))
     , m_options(options) {
     
     if (!m_solver) {
         throw std::invalid_argument("Solver cannot be null");
+    }
+    if (!m_validator) {
+        throw std::invalid_argument("Validator cannot be null");
     }
 }
 

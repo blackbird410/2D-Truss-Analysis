@@ -159,7 +159,8 @@ TEST_F(AnalysisOrchestratorTest, SimpleTruss_CompleteWorkflow) {
     analysis::AnalysisOptions options;
     options.checkStability = false;
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver), options);
+    auto validator = std::make_unique<validation::TrussValidator>();
+    AnalysisOrchestrator orchestrator(std::move(solver), std::move(validator), options);
     auto results = orchestrator.analyze(truss);
     
     // Verify results populated correctly
@@ -185,7 +186,8 @@ TEST_F(AnalysisOrchestratorTest, WarrenTruss_ComplexStructure) {
     
     // Analyze with AnalysisOrchestrator
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver));
+    auto validator = std::make_unique<validation::TrussValidator>();
+    AnalysisOrchestrator orchestrator(std::move(solver), std::move(validator));
     auto results = orchestrator.analyze(truss);
     
     // Verify results populated correctly
@@ -216,7 +218,7 @@ TEST_F(AnalysisOrchestratorTest, MetadataPopulation) {
     options.checkStability = false;
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver), options);
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>(), options);
     auto results = orchestrator.analyze(truss);
     
     // Check metadata
@@ -241,7 +243,7 @@ TEST_F(AnalysisOrchestratorTest, TrussResultsUpdate) {
     options.checkStability = false;
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver), options);
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>(), options);
     orchestrator.analyze(truss);
     
     // Check that free node has displacement
@@ -273,7 +275,7 @@ TEST_F(AnalysisOrchestratorTest, ErrorHandling_InvalidTruss) {
     Truss truss;
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver));
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
     
     EXPECT_THROW(orchestrator.analyze(truss), std::runtime_error);
 }
@@ -297,7 +299,7 @@ TEST_F(AnalysisOrchestratorTest, ErrorHandling_UnstableTruss) {
     truss.addMember(member);
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver));
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
     
     EXPECT_THROW(orchestrator.analyze(truss), std::runtime_error);
 }
@@ -312,7 +314,7 @@ TEST_F(AnalysisOrchestratorTest, StiffnessMatrixAssembly) {
     options.checkStability = false;
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver), options);
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>(), options);
     auto results = orchestrator.analyze(truss);
     
     // Check stiffness matrix dimensions
@@ -341,7 +343,7 @@ TEST_F(AnalysisOrchestratorTest, MultipleAnalyses) {
     options.checkStability = false;
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver), options);
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>(), options);
     
     // Analyze first truss
     Truss truss1 = createSimpleTruss();
@@ -372,7 +374,7 @@ TEST_F(AnalysisOrchestratorTest, CustomOptions) {
     options.checkStability = false;  // Disable for simple truss
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver), options);
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>(), options);
     auto results = orchestrator.analyze(truss);
     
     // Results should have reactions
@@ -391,7 +393,7 @@ TEST_F(AnalysisOrchestratorTest, EnergyConservation) {
     options.checkStability = false;
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver), options);
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>(), options);
     auto results = orchestrator.analyze(truss);
     
     // Compute external work: W = (1/2) * F · u

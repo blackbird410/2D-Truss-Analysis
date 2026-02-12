@@ -43,7 +43,7 @@ TEST(SimpleTrussAnalysisTest, TriangularTrussAnalysis) {
     EXPECT_TRUE(truss.isStaticallyDeterminate());
     
     // Perform analysis
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
     
     // Check analysis convergence
@@ -85,7 +85,7 @@ TEST(SimpleTrussAnalysisTest, BridgeTrussAnalysis) {
     EXPECT_EQ(truss.getMemberCount(), 7);
     
     // Perform analysis
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
     
     // Check analysis convergence
@@ -118,7 +118,7 @@ TEST(SimpleTrussAnalysisTest, CustomMaterialProperties) {
     truss.applyForce(node3->getId(), Force2D(0.0, -15000.0));
     
     // Perform analysis
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
     
     // Check results
@@ -138,7 +138,7 @@ TEST(SimpleTrussAnalysisTest, ErrorHandlingInvalidStructures) {
     Truss truss("Error Test");
     
     // Test analysis of empty truss (should throw exception)
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     
     // This should throw an exception for invalid structure
     EXPECT_THROW(orchestrator.analyze(truss), std::runtime_error);
