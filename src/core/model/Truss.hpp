@@ -95,9 +95,15 @@ public:
     void setSupportType(NodeId nodeId, SupportType support);
     
     // Validation
+    [[deprecated("Use TrussValidator::validate() instead. Removal scheduled for v4.0.0")]]
     bool isValid() const;
+    
+    [[deprecated("Use TrussValidator::validateStaticDeterminacy() instead. Removal scheduled for v4.0.0")]]
     bool isStaticallyDeterminate() const;
+    
+    [[deprecated("Use TrussValidator::validateKinematicStability() instead. Removal scheduled for v4.0.0")]]
     bool isKinematicallyStable() const;
+    
     std::vector<std::string> getValidationErrors() const;
     
     // Analysis preparation
