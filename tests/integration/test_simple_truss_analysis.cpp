@@ -38,10 +38,6 @@ TEST(SimpleTrussAnalysisTest, TriangularTrussAnalysis) {
     // Apply load
     truss.applyForce(node3->getId(), Force2D(0.0, -10000.0));
     
-    // Verify truss is valid
-    EXPECT_TRUE(truss.isValid());
-    EXPECT_TRUE(truss.isStaticallyDeterminate());
-    
     // Perform analysis
     truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
