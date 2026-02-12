@@ -922,6 +922,12 @@ All commits follow structured message format with detailed documentation:
 - GUI integration with TrussValidator service
 - Advanced validation rules (buckling, fatigue, serviceability)
 
+#### Documentation
+
+- **Proposal:** [docs/refactoring/REFACTORING-PROPOSAL-VALIDATION-CENTRALIZATION.md](docs/refactoring/REFACTORING-PROPOSAL-VALIDATION-CENTRALIZATION.md)
+- **Work Log:** [docs/work-logs/2026-02-12-validation-centralization-refactoring.md](docs/work-logs/2026-02-12-validation-centralization-refactoring.md)
+- **Progress Tracker:** This document (REFACTORING_PROGRESS.md)
+
 ---
 
 ### 🔄 Phase 4: Interface & Application (In Progress)
