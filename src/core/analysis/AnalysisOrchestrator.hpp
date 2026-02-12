@@ -132,20 +132,6 @@ private:
     void assignDOFs(Truss& truss);
     
     /**
-     * @brief Validate inputs before analysis
-     * @param truss Truss structure
-     * @return true if valid, false otherwise
-     */
-    bool validateInputs(const Truss& truss) const;
-    
-    /**
-     * @brief Check structural validity (stability, determinacy)
-     * @param truss Truss structure
-     * @return true if structurally valid, false otherwise
-     */
-    bool checkStructuralValidity(const Truss& truss) const;
-    
-    /**
      * @brief Assemble load vector from nodal forces
      * @param truss Truss structure
      * @return Global load vector

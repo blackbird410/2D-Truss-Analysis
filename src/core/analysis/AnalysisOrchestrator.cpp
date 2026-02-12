@@ -82,61 +82,6 @@ void AnalysisOrchestrator::assignDOFs(Truss& truss) {
     truss.assignDofNumbers();
 }
 
-bool AnalysisOrchestrator::validateInputs(const Truss& truss) const {
-    // Check minimum requirements
-    if (truss.getNodes().empty() || truss.getMembers().empty()) {
-        return false;
-    }
-    
-    // Check that all nodes have valid coordinates
-    const auto& nodes = truss.getNodes();
-    for (const auto& node : nodes) {
-        const Point2D& pos = node->getPosition();
-        if (!std::isfinite(pos.x) || !std::isfinite(pos.y)) {
-            return false;
-        }
-    }
-    
-    // Check that all members have valid properties
-    const auto& members = truss.getMembers();
-    for (const auto& member : members) {
-        if (member->getLength() <= 0.0) {
-            return false;
-        }
-        
-        const auto& material = member->getMaterial();
-        if (material.youngModulus <= 0.0) {
-            return false;
-        }
-        
-        const auto& section = member->getSection();
-        if (section.area <= 0.0) {
-            return false;
-        }
-    }
-    
-    return true;
-}
-
-bool AnalysisOrchestrator::checkStructuralValidity(const Truss& truss) const {
-    // Check basic validity
-    if (!truss.isValid()) {
-        return false;
-    }
-    
-    // Check static determinacy
-    if (!truss.isStaticallyDeterminate()) {
-        return false;
-    }
-    
-    // Check kinematic stability
-    if (!truss.isKinematicallyStable()) {
-        return false;
-    }
-    
-    return true;
-}
-
 VectorXd AnalysisOrchestrator::assembleLoadVector(const Truss& truss) const {
     size_t totalDofs = truss.getTotalDofs();
     VectorXd F = VectorXd::Zero(totalDofs);
