@@ -32,17 +32,21 @@ AnalysisOrchestrator::AnalysisOrchestrator(
 }
 
 AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
-    // 1. Validate inputs
-    if (!validateInputs(truss)) {
-        throw std::runtime_error("Invalid truss structure for analysis");
+    // 1. Validate using centralized validator
+    validation::ValidationResult validation = m_validator->validate(truss);
+    
+    if (validation.hasFatal() || validation.hasErrors()) {
+        std::string errorMsg = "Truss validation failed:\n" + validation.getSummary();
+        throw std::runtime_error(errorMsg);
     }
     
-    // 2. Check structural validity
-    if (m_options.checkStability && !checkStructuralValidity(truss)) {
-        throw std::runtime_error("Truss structure is not stable or determinate");
+    if (validation.hasWarnings()) {
+        // Log warnings but proceed
+        // Note: Logging infrastructure exists but not injected yet - will be added in future iteration
+        // For now, warnings are silently ignored (validation successful)
     }
     
-    // 3. Assign DOF numbers
+    // 2. Assign DOF numbers
     assignDOFs(truss);
     
     // 4. Assemble global stiffness matrix
