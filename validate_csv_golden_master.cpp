@@ -122,7 +122,7 @@ int main() {
     // Step 2: Run analysis
     std::cout << "Step 2: Running structural analysis..." << std::endl;
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver));
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
     auto results = orchestrator.analyze(*truss);
     
     if (!results.converged) {

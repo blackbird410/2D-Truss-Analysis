@@ -15,29 +15,38 @@ namespace truss::core::analysis {
 
 AnalysisOrchestrator::AnalysisOrchestrator(
     std::unique_ptr<ILinearSolver> solver,
+    std::unique_ptr<validation::TrussValidator> validator,
     const AnalysisOptions& options)
     : m_assembler(std::make_unique<StiffnessAssembler>())
     , m_bcHandler(std::make_unique<BoundaryConditionHandler>())
     , m_solver(std::move(solver))
+    , m_validator(std::move(validator))
     , m_options(options) {
     
     if (!m_solver) {
         throw std::invalid_argument("Solver cannot be null");
     }
+    if (!m_validator) {
+        throw std::invalid_argument("Validator cannot be null");
+    }
 }
 
 AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
-    // 1. Validate inputs
-    if (!validateInputs(truss)) {
-        throw std::runtime_error("Invalid truss structure for analysis");
+    // 1. Validate using centralized validator
+    validation::ValidationResult validation = m_validator->validate(truss);
+    
+    if (validation.hasFatal() || validation.hasErrors()) {
+        std::string errorMsg = "Truss validation failed:\n" + validation.getSummary();
+        throw std::runtime_error(errorMsg);
     }
     
-    // 2. Check structural validity
-    if (m_options.checkStability && !checkStructuralValidity(truss)) {
-        throw std::runtime_error("Truss structure is not stable or determinate");
+    if (validation.hasWarnings()) {
+        // Log warnings but proceed
+        // Note: Logging infrastructure exists but not injected yet - will be added in future iteration
+        // For now, warnings are silently ignored (validation successful)
     }
     
-    // 3. Assign DOF numbers
+    // 2. Assign DOF numbers
     assignDOFs(truss);
     
     // 4. Assemble global stiffness matrix
@@ -71,61 +80,6 @@ AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
 
 void AnalysisOrchestrator::assignDOFs(Truss& truss) {
     truss.assignDofNumbers();
-}
-
-bool AnalysisOrchestrator::validateInputs(const Truss& truss) const {
-    // Check minimum requirements
-    if (truss.getNodes().empty() || truss.getMembers().empty()) {
-        return false;
-    }
-    
-    // Check that all nodes have valid coordinates
-    const auto& nodes = truss.getNodes();
-    for (const auto& node : nodes) {
-        const Point2D& pos = node->getPosition();
-        if (!std::isfinite(pos.x) || !std::isfinite(pos.y)) {
-            return false;
-        }
-    }
-    
-    // Check that all members have valid properties
-    const auto& members = truss.getMembers();
-    for (const auto& member : members) {
-        if (member->getLength() <= 0.0) {
-            return false;
-        }
-        
-        const auto& material = member->getMaterial();
-        if (material.youngModulus <= 0.0) {
-            return false;
-        }
-        
-        const auto& section = member->getSection();
-        if (section.area <= 0.0) {
-            return false;
-        }
-    }
-    
-    return true;
-}
-
-bool AnalysisOrchestrator::checkStructuralValidity(const Truss& truss) const {
-    // Check basic validity
-    if (!truss.isValid()) {
-        return false;
-    }
-    
-    // Check static determinacy
-    if (!truss.isStaticallyDeterminate()) {
-        return false;
-    }
-    
-    // Check kinematic stability
-    if (!truss.isKinematicallyStable()) {
-        return false;
-    }
-    
-    return true;
 }
 
 VectorXd AnalysisOrchestrator::assembleLoadVector(const Truss& truss) const {

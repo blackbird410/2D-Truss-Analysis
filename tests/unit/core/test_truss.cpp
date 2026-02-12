@@ -108,6 +108,12 @@ TEST(TrussTest, ForceApplication) {
 TEST(TrussTest, ValidationAndDeterminacy) {
     Truss truss;
     
+    // DEPRECATED: Testing backward compatibility of deprecated validation methods
+    // These methods are scheduled for removal in v4.0.0
+    // New code should use TrussValidator::validate() instead
+    #pragma GCC diagnostic push
+    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    
     // Empty truss should be invalid
     EXPECT_FALSE(truss.isValid());
     
@@ -122,6 +128,8 @@ TEST(TrussTest, ValidationAndDeterminacy) {
     
     EXPECT_TRUE(truss.isValid());
     EXPECT_TRUE(truss.isStaticallyDeterminate());
+    
+    #pragma GCC diagnostic pop
 }
 
 TEST(TrussTest, StatisticsGeneration) {

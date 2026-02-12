@@ -216,6 +216,8 @@ void Truss::setSupportType(NodeId nodeId, SupportType support) {
     }
 }
 
+// DEPRECATED: Primitive validation check. Use TrussValidator for comprehensive validation.
+// Scheduled for removal in v4.0.0.
 bool Truss::isValid() const {
     // Check minimum requirements
     if (m_nodes.size() < 2 || m_members.size() < 1) {
@@ -232,6 +234,8 @@ bool Truss::isValid() const {
     return true;
 }
 
+// DEPRECATED: Static determinacy check. Use TrussValidator::validateStaticDeterminacy() instead.
+// Scheduled for removal in v4.0.0.
 bool Truss::isStaticallyDeterminate() const {
     // Basic check: 2n = m + r (where n = nodes, m = members, r = reactions)
     size_t n = m_nodes.size();
@@ -241,6 +245,8 @@ bool Truss::isStaticallyDeterminate() const {
     return (2 * n == m + r);
 }
 
+// DEPRECATED: Kinematic stability check. Use TrussValidator::validateKinematicStability() instead.
+// Scheduled for removal in v4.0.0.
 bool Truss::isKinematicallyStable() const {
     // Basic check: ensure there are enough constraints
     return getConstrainedDofs() >= 3; // Minimum constraints to prevent rigid body motion

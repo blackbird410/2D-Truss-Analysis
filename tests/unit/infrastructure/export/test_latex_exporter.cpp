@@ -68,7 +68,7 @@ protected:
      */
     AnalysisResults analyzeAndGetResults(Truss& truss) {
         auto solver = SolverFactory::createDirectSolver();
-        AnalysisOrchestrator orchestrator(std::move(solver));
+        AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
         return orchestrator.analyze(truss);
     }
     
@@ -414,7 +414,7 @@ TEST_F(LaTeXExporterTest, LatexEscaping) {
     node3->setAppliedForce(0.0, -15000.0);
     
     auto solver = SolverFactory::createDirectSolver();
-    AnalysisOrchestrator orchestrator(std::move(solver));
+    AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
     auto results = orchestrator.analyze(*truss);
     
     std::string outputPath = testOutputDir + "/escaping_test.tex";

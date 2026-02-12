@@ -9,6 +9,7 @@
 
 #include "../model/Types.hpp"
 #include "../model/Truss.hpp"
+#include "../validation/TrussValidator.hpp"
 #include "StiffnessAssembler.hpp"
 #include "BoundaryConditionHandler.hpp"
 #include "ILinearSolver.hpp"
@@ -85,12 +86,14 @@ struct AnalysisResults {
 class AnalysisOrchestrator {
 public:
     /**
-     * @brief Construct orchestrator with a linear solver
+     * @brief Construct orchestrator with required dependencies
      * @param solver Solver strategy for the linear system
+     * @param validator Validation service for structural integrity
      * @param options Analysis configuration options
      */
     explicit AnalysisOrchestrator(
         std::unique_ptr<ILinearSolver> solver,
+        std::unique_ptr<validation::TrussValidator> validator,
         const AnalysisOptions& options = AnalysisOptions());
     
     /**
@@ -112,6 +115,7 @@ private:
     std::unique_ptr<StiffnessAssembler> m_assembler;
     std::unique_ptr<BoundaryConditionHandler> m_bcHandler;
     std::unique_ptr<ILinearSolver> m_solver;
+    std::unique_ptr<validation::TrussValidator> m_validator;
     
     // Configuration
     AnalysisOptions m_options;
@@ -126,20 +130,6 @@ private:
      * @param truss Truss structure
      */
     void assignDOFs(Truss& truss);
-    
-    /**
-     * @brief Validate inputs before analysis
-     * @param truss Truss structure
-     * @return true if valid, false otherwise
-     */
-    bool validateInputs(const Truss& truss) const;
-    
-    /**
-     * @brief Check structural validity (stability, determinacy)
-     * @param truss Truss structure
-     * @return true if structurally valid, false otherwise
-     */
-    bool checkStructuralValidity(const Truss& truss) const;
     
     /**
      * @brief Assemble load vector from nodal forces

@@ -68,7 +68,7 @@ protected:
      */
     AnalysisResults analyzeAndGetResults(Truss& truss) {
         auto solver = SolverFactory::createDirectSolver();
-        AnalysisOrchestrator orchestrator(std::move(solver));
+        AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
         return orchestrator.analyze(truss);
     }
     

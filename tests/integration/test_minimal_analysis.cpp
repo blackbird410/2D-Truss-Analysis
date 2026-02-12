@@ -38,7 +38,7 @@ TEST(MinimalAnalysisTest, BasicTriangularTrussWorkflow) {
     truss.applyForce(node3->getId(), Force2D(0.0, -10000.0));
     
     // Create analysis engine
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>());
+    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
     
     // Perform analysis
     try {
