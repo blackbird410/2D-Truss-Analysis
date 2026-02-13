@@ -64,6 +64,9 @@ std::shared_ptr<core::Truss> XmlTrussReader::read(
         if (loads) {
             parseLoads(loads, *truss);
         }
+    } catch (const ParseException& e) {
+        // Preserve existing ParseException messages without adding another prefix
+        throw;
     } catch (const std::exception& e) {
         throw ParseException(std::string("XML structure error: ") + e.what());
     }
