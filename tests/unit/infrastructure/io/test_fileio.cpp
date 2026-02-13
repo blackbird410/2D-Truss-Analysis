@@ -7,12 +7,12 @@
  */
 
 #include <gtest/gtest.h>
-#include "../../../src/infrastructure/io/fileio_factory.hpp"
-#include "../../../src/infrastructure/io/json_truss_reader.hpp"
-#include "../../../src/infrastructure/io/json_truss_writer.hpp"
-#include "../../../src/infrastructure/io/xml_truss_reader.hpp"
-#include "../../../src/infrastructure/io/xml_truss_writer.hpp"
-#include "../../../src/core/model/Truss.hpp"
+#include "infrastructure/io/fileio_factory.hpp"
+#include "infrastructure/io/json_truss_reader.hpp"
+#include "infrastructure/io/json_truss_writer.hpp"
+#include "infrastructure/io/xml_truss_reader.hpp"
+#include "infrastructure/io/xml_truss_writer.hpp"
+#include "core/model/Truss.hpp"
 #include <filesystem>
 #include <fstream>
 
