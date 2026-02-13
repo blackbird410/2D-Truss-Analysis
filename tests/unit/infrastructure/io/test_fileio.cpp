@@ -397,7 +397,7 @@ TEST_F(FileIOTest, ReaderValidationDetectsInvalidTruss) {
     options.validateOnRead = true;
     
     // Should throw validation exception (member references non-existent node)
-    EXPECT_THROW(reader->read(filepath, options), std::exception);
+    EXPECT_THROW(reader->read(filepath, options), ValidationException);
 }
 
 // ============================================================================
