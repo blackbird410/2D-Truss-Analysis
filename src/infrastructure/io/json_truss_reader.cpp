@@ -140,14 +140,18 @@ void JsonTrussReader::parseMembers(const json& j, core::Truss& truss, const std:
         core::NodeId fileEndNodeId = memberJson["endNode"].get<core::NodeId>();
         
         // Translate file node IDs to created node IDs
-        // If node IDs are not found, use them as-is and let Truss::addMember validation catch the error.
-        // This allows the domain layer (Truss) to throw std::invalid_argument, which is caught
-        // and converted to ValidationException rather than throwing ParseException here.
         auto startIt = nodeIdMap.find(fileStartNodeId);
         auto endIt = nodeIdMap.find(fileEndNodeId);
         
-        core::NodeId startNodeId = (startIt != nodeIdMap.end()) ? startIt->second : fileStartNodeId;
-        core::NodeId endNodeId = (endIt != nodeIdMap.end()) ? endIt->second : fileEndNodeId;
+        if (startIt == nodeIdMap.end()) {
+            throw ParseException("Member references unknown start node ID: " + std::to_string(fileStartNodeId));
+        }
+        if (endIt == nodeIdMap.end()) {
+            throw ParseException("Member references unknown end node ID: " + std::to_string(fileEndNodeId));
+        }
+        
+        core::NodeId startNodeId = startIt->second;
+        core::NodeId endNodeId = endIt->second;
         
         // Material properties
         core::MaterialProperties material;
@@ -200,11 +204,12 @@ void JsonTrussReader::parseLoads(const json& j, core::Truss& truss, const std::u
         core::Real fy = loadJson.value("fy", 0.0);
         
         // Translate file node ID to created node ID
-        // If node ID is not found, use it as-is. The applyForce method silently skips
-        // if the node doesn't exist (see Truss::applyForce implementation).
         auto it = nodeIdMap.find(fileNodeId);
-        core::NodeId nodeId = (it != nodeIdMap.end()) ? it->second : fileNodeId;
+        if (it == nodeIdMap.end()) {
+            throw ParseException("Load references unknown node ID: " + std::to_string(fileNodeId));
+        }
         
+        core::NodeId nodeId = it->second;
         truss.applyForce(nodeId, fx, fy);
     }
 }

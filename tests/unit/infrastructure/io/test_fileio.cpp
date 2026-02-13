@@ -17,7 +17,7 @@
 #include <fstream>
 #include <chrono>
 #include <sstream>
-#include <unistd.h>  // for getpid()
+#include <thread>  // for std::this_thread::get_id()
 
 using namespace truss::infrastructure::io;
 using namespace truss::core;
@@ -27,11 +27,11 @@ class FileIOTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Create unique temporary test directory per test instance
-        // Use PID and timestamp to avoid collisions in concurrent test runs
+        // Use thread ID and timestamp to avoid collisions in concurrent test runs
         std::ostringstream dirName;
         dirName << "truss_fileio_test_" 
                 << std::chrono::system_clock::now().time_since_epoch().count()
-                << "_" << ::getpid();
+                << "_" << std::this_thread::get_id();
         testDir = std::filesystem::temp_directory_path() / dirName.str();
         std::filesystem::create_directories(testDir);
     }
@@ -404,8 +404,8 @@ TEST_F(FileIOTest, ReaderValidationDetectsInvalidTruss) {
     FileIOOptions options;
     options.validateOnRead = true;
     
-    // Should throw validation exception (member references non-existent node)
-    EXPECT_THROW(reader->read(filepath, options), ValidationException);
+    // Should throw parse exception (member references non-existent node)
+    EXPECT_THROW(reader->read(filepath, options), ParseException);
 }
 
 // ============================================================================
