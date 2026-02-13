@@ -100,6 +100,7 @@ coverage/
 .cppcheck
 scan-build/
 _codeql_*/
+_codeql_detected_source_root
 
 # Performance profiling
 *.perf
