@@ -399,6 +399,10 @@ TEST_F(XMLExporterTest, PropertiesSection) {
         << "Properties must include Member elements";
     EXPECT_TRUE(fileContains(outputPath, "<Material>"))
         << "Properties must include Material data";
+    EXPECT_TRUE(fileContains(outputPath, "<YoungModulus>"))
+        << "Properties must include YoungModulus data";
+    EXPECT_TRUE(fileContains(outputPath, "<Area>"))
+        << "Properties must include Area data";
 }
 
 /**

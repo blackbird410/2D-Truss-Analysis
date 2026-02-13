@@ -350,6 +350,8 @@ TEST_F(JSONExporterTest, PropertiesSection) {
         << "Properties must include material data";
     EXPECT_TRUE(fileContains(outputPath, "\"youngModulus\""))
         << "Properties must include Young's modulus";
+    EXPECT_TRUE(fileContains(outputPath, "\"area\""))
+        << "Properties must include cross-sectional area";
 }
 
 /**
