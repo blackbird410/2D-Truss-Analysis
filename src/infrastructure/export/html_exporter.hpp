@@ -18,8 +18,8 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
 
 /**
  * @brief HTML format exporter
@@ -63,8 +63,8 @@ public:
      * @param options Export options (precision, sections to include)
      * @return true if export successful, false otherwise
      */
-    bool exportResults(const Truss& truss,
-                      const AnalysisResults& results,
+    bool exportResults(const ITrussView& truss,
+                      const IAnalysisResultsView& results,
                       const std::filesystem::path& filePath,
                       const ExportOptions& options = ExportOptions{}) override;
     
@@ -93,30 +93,30 @@ private:
     std::string escapeHtml(const std::string& text) const;
     
     // Document structure methods
-    void writeHeader(std::ostream& os, const Truss& truss);
+    void writeHeader(std::ostream& os, const ITrussView& truss);
     void writeStyles(std::ostream& os);
     void writeFooter(std::ostream& os);
     
     // Section writers (MUST implement all 8 sections)
-    void writeProjectSection(std::ostream& os, const Truss& truss,
+    void writeProjectSection(std::ostream& os, const ITrussView& truss,
                             const ExportOptions& options);
-    void writeGeometrySection(std::ostream& os, const Truss& truss,
+    void writeGeometrySection(std::ostream& os, const ITrussView& truss,
                              const ExportOptions& options);
-    void writePropertiesSection(std::ostream& os, const Truss& truss,
+    void writePropertiesSection(std::ostream& os, const ITrussView& truss,
                                const ExportOptions& options);
-    void writeLoadsSection(std::ostream& os, const Truss& truss,
+    void writeLoadsSection(std::ostream& os, const ITrussView& truss,
                           const ExportOptions& options);
     void writeDisplacementsSection(std::ostream& os,
-                                  const AnalysisResults& results,
+                                  const IAnalysisResultsView& results,
                                   const ExportOptions& options);
     void writeMemberForcesSection(std::ostream& os,
-                                 const AnalysisResults& results,
+                                 const IAnalysisResultsView& results,
                                  const ExportOptions& options);
     void writeReactionsSection(std::ostream& os,
-                              const AnalysisResults& results,
+                              const IAnalysisResultsView& results,
                               const ExportOptions& options);
     void writeMetadataSection(std::ostream& os,
-                             const AnalysisResults& results,
+                             const IAnalysisResultsView& results,
                              const ExportOptions& options);
 };
 

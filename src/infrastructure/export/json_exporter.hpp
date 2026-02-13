@@ -18,8 +18,8 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
 
 /**
  * @brief JSON format exporter
@@ -42,14 +42,14 @@ public:
     
     /**
      * @brief Export analysis results to JSON file
-     * @param truss The analyzed truss structure
-     * @param results Analysis results
+     * @param truss Read-only view of the analyzed truss structure
+     * @param results Read-only view of analysis results
      * @param filePath Output file path
      * @param options Export options (precision, sections to include)
      * @return true if export successful, false otherwise
      */
-    bool exportResults(const Truss& truss,
-                      const AnalysisResults& results,
+    bool exportResults(const ITrussView& truss,
+                      const IAnalysisResultsView& results,
                       const std::filesystem::path& filePath,
                       const ExportOptions& options = ExportOptions{}) override;
     
@@ -78,21 +78,21 @@ private:
     std::string escapeString(const std::string& str) const;
     
     // Section writers
-    void writeProjectSection(std::ostream& os, const Truss& truss,
+    void writeProjectSection(std::ostream& os, const ITrussView& truss,
                             const ExportOptions& options);
-    void writeGeometrySection(std::ostream& os, const Truss& truss,
+    void writeGeometrySection(std::ostream& os, const ITrussView& truss,
                              const ExportOptions& options, bool& needsComma);
-    void writePropertiesSection(std::ostream& os, const Truss& truss,
+    void writePropertiesSection(std::ostream& os, const ITrussView& truss,
                                const ExportOptions& options, bool& needsComma);
-    void writeLoadsSection(std::ostream& os, const Truss& truss,
+    void writeLoadsSection(std::ostream& os, const ITrussView& truss,
                           const ExportOptions& options, bool& needsComma);
-    void writeDisplacementsSection(std::ostream& os, const AnalysisResults& results,
+    void writeDisplacementsSection(std::ostream& os, const IAnalysisResultsView& results,
                                   const ExportOptions& options, bool& needsComma);
-    void writeMemberForcesSection(std::ostream& os, const AnalysisResults& results,
+    void writeMemberForcesSection(std::ostream& os, const IAnalysisResultsView& results,
                                  const ExportOptions& options, bool& needsComma);
-    void writeReactionsSection(std::ostream& os, const AnalysisResults& results,
+    void writeReactionsSection(std::ostream& os, const IAnalysisResultsView& results,
                               const ExportOptions& options, bool& needsComma);
-    void writeMetadataSection(std::ostream& os, const AnalysisResults& results,
+    void writeMetadataSection(std::ostream& os, const IAnalysisResultsView& results,
                              const ExportOptions& options, bool& needsComma);
 };
 

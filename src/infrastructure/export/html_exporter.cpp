@@ -13,11 +13,13 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
+using core::interfaces::NodeView;
+using core::interfaces::MemberView;
 
-bool HTMLExporter::exportResults(const Truss& truss,
-                                const AnalysisResults& results,
+bool HTMLExporter::exportResults(const ITrussView& truss,
+                                const IAnalysisResultsView& results,
                                 const std::filesystem::path& filePath,
                                 const ExportOptions& options) {
     std::ofstream file(filePath);
@@ -50,15 +52,15 @@ bool HTMLExporter::exportResults(const Truss& truss,
             writeLoadsSection(file, truss, options);
         }
         
-        if (options.includeDisplacements && results.displacements.size() > 0) {
+        if (options.includeDisplacements && results.getDisplacements().size() > 0) {
             writeDisplacementsSection(file, results, options);
         }
         
-        if (options.includeMemberForces && !results.memberForces.empty()) {
+        if (options.includeMemberForces && !results.getMemberForces().empty()) {
             writeMemberForcesSection(file, results, options);
         }
         
-        if (options.includeReactions && !results.reactions.empty()) {
+        if (options.includeReactions && !results.getReactions().empty()) {
             writeReactionsSection(file, results, options);
         }
         
@@ -115,7 +117,7 @@ std::string HTMLExporter::escapeHtml(const std::string& text) const {
     return result;
 }
 
-void HTMLExporter::writeHeader(std::ostream& os, const Truss& truss) {
+void HTMLExporter::writeHeader(std::ostream& os, const ITrussView& truss) {
     os << "<!DOCTYPE html>\n";
     os << "<html lang=\"en\">\n";
     os << "<head>\n";
@@ -230,7 +232,7 @@ void HTMLExporter::writeFooter(std::ostream& os) {
 }
 
 void HTMLExporter::writeProjectSection(std::ostream& os, 
-                                      const Truss& truss,
+                                      const ITrussView& truss,
                                       const ExportOptions& options) {
     os << "<h1>Truss Analysis Results</h1>\n";
     os << "<h2>Project Metadata</h2>\n";
@@ -242,7 +244,7 @@ void HTMLExporter::writeProjectSection(std::ostream& os,
 }
 
 void HTMLExporter::writeGeometrySection(std::ostream& os,
-                                       const Truss& truss,
+                                       const ITrussView& truss,
                                        const ExportOptions& options) {
     os << "<h2>Geometry</h2>\n";
     
@@ -259,12 +261,12 @@ void HTMLExporter::writeGeometrySection(std::ostream& os,
     os << "  </thead>\n";
     os << "  <tbody>\n";
     
-    for (const auto& node : truss.getNodes()) {
+    for (const auto& node : truss.getNodeViews()) {
         os << "    <tr>\n";
-        os << "      <td>" << node->getId() << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(node->getX(), options) << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(node->getY(), options) << "</td>\n";
-        os << "      <td>" << static_cast<int>(node->getSupportType()) << "</td>\n";
+        os << "      <td>" << node.id << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(node.x, options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(node.y, options) << "</td>\n";
+        os << "      <td>" << static_cast<int>(node.support) << "</td>\n";
         os << "    </tr>\n";
     }
     
@@ -284,12 +286,12 @@ void HTMLExporter::writeGeometrySection(std::ostream& os,
     os << "  </thead>\n";
     os << "  <tbody>\n";
     
-    for (const auto& member : truss.getMembers()) {
+    for (const auto& member : truss.getMemberViews()) {
         os << "    <tr>\n";
-        os << "      <td>" << member->getId() << "</td>\n";
-        os << "      <td>" << member->getStartNode()->getId() << "</td>\n";
-        os << "      <td>" << member->getEndNode()->getId() << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(member->getLength(), options) << "</td>\n";
+        os << "      <td>" << member.id << "</td>\n";
+        os << "      <td>" << member.startNodeId << "</td>\n";
+        os << "      <td>" << member.endNodeId << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(member.length, options) << "</td>\n";
         os << "    </tr>\n";
     }
     
@@ -298,7 +300,7 @@ void HTMLExporter::writeGeometrySection(std::ostream& os,
 }
 
 void HTMLExporter::writePropertiesSection(std::ostream& os,
-                                         const Truss& truss,
+                                         const ITrussView& truss,
                                          const ExportOptions& options) {
     os << "<h2>Material and Section Properties</h2>\n";
     os << "<table>\n";
@@ -314,17 +316,13 @@ void HTMLExporter::writePropertiesSection(std::ostream& os,
     os << "  </thead>\n";
     os << "  <tbody>\n";
     
-    for (const auto& member : truss.getMembers()) {
-        const auto& material = member->getMaterial();
-        const auto& section = member->getSection();
-        
+    for (const auto& member : truss.getMemberViews()) {
         os << "    <tr>\n";
-        os << "      <td>" << member->getId() << "</td>\n";
-        os << "      <td>" << escapeHtml(material.name) << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(material.youngModulus, options) << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(material.density, options) << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(section.area, options) << "</td>\n";
-        os << "      <td>" << escapeHtml(section.designation) << "</td>\n";
+        os << "      <td>" << member.id << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(member.youngModulus, options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(member.yieldStrength, options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(member.density, options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(member.area, options) << "</td>\n";
         os << "    </tr>\n";
     }
     
@@ -333,7 +331,7 @@ void HTMLExporter::writePropertiesSection(std::ostream& os,
 }
 
 void HTMLExporter::writeLoadsSection(std::ostream& os,
-                                    const Truss& truss,
+                                    const ITrussView& truss,
                                     const ExportOptions& options) {
     os << "<h2>Applied Loads</h2>\n";
     os << "<table>\n";
@@ -346,14 +344,13 @@ void HTMLExporter::writeLoadsSection(std::ostream& os,
     os << "  </thead>\n";
     os << "  <tbody>\n";
     
-    for (const auto& node : truss.getNodes()) {
-        const auto& force = node->getAppliedForce();
+    for (const auto& node : truss.getNodeViews()) {
         // Only export nodes with non-zero forces
-        if (force.fx != 0.0 || force.fy != 0.0) {
+        if (node.fx != 0.0 || node.fy != 0.0) {
             os << "    <tr>\n";
-            os << "      <td>" << node->getId() << "</td>\n";
-            os << "      <td class=\"number\">" << formatNumber(force.fx, options) << "</td>\n";
-            os << "      <td class=\"number\">" << formatNumber(force.fy, options) << "</td>\n";
+            os << "      <td>" << node.id << "</td>\n";
+            os << "      <td class=\"number\">" << formatNumber(node.fx, options) << "</td>\n";
+            os << "      <td class=\"number\">" << formatNumber(node.fy, options) << "</td>\n";
             os << "    </tr>\n";
         }
     }
@@ -363,7 +360,7 @@ void HTMLExporter::writeLoadsSection(std::ostream& os,
 }
 
 void HTMLExporter::writeDisplacementsSection(std::ostream& os,
-                                            const AnalysisResults& results,
+                                            const IAnalysisResultsView& results,
                                             const ExportOptions& options) {
     os << "<h2>Nodal Displacements</h2>\n";
     os << "<table>\n";
@@ -375,10 +372,10 @@ void HTMLExporter::writeDisplacementsSection(std::ostream& os,
     os << "  </thead>\n";
     os << "  <tbody>\n";
     
-    for (size_t i = 0; i < results.displacements.size(); ++i) {
+    for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
         os << "    <tr>\n";
         os << "      <td>" << i << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(results.displacements[i], options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(results.getDisplacements()[i], options) << "</td>\n";
         os << "    </tr>\n";
     }
     
@@ -386,11 +383,11 @@ void HTMLExporter::writeDisplacementsSection(std::ostream& os,
     os << "</table>\n";
     
     os << "<p><strong>Maximum Displacement:</strong> <span class=\"number\">" 
-       << formatNumber(results.maxDisplacement, options) << "</span></p>\n";
+       << formatNumber(results.getMaxDisplacement(), options) << "</span></p>\n";
 }
 
 void HTMLExporter::writeMemberForcesSection(std::ostream& os,
-                                           const AnalysisResults& results,
+                                           const IAnalysisResultsView& results,
                                            const ExportOptions& options) {
     os << "<h2>Member Forces</h2>\n";
     os << "<table>\n";
@@ -403,8 +400,8 @@ void HTMLExporter::writeMemberForcesSection(std::ostream& os,
     os << "  </thead>\n";
     os << "  <tbody>\n";
     
-    for (size_t i = 0; i < results.memberForces.size(); ++i) {
-        Real force = results.memberForces[i];
+    for (size_t i = 0; i < results.getMemberForces().size(); ++i) {
+        Real force = results.getMemberForces()[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
         std::string cssClass = (force > 0) ? "tension" : "compression";
         
@@ -420,7 +417,7 @@ void HTMLExporter::writeMemberForcesSection(std::ostream& os,
 }
 
 void HTMLExporter::writeReactionsSection(std::ostream& os,
-                                        const AnalysisResults& results,
+                                        const IAnalysisResultsView& results,
                                         const ExportOptions& options) {
     os << "<h2>Support Reactions</h2>\n";
     os << "<table>\n";
@@ -432,10 +429,10 @@ void HTMLExporter::writeReactionsSection(std::ostream& os,
     os << "  </thead>\n";
     os << "  <tbody>\n";
     
-    for (size_t i = 0; i < results.reactions.size(); ++i) {
+    for (size_t i = 0; i < results.getReactions().size(); ++i) {
         os << "    <tr>\n";
         os << "      <td>" << i << "</td>\n";
-        os << "      <td class=\"number\">" << formatNumber(results.reactions[i], options) << "</td>\n";
+        os << "      <td class=\"number\">" << formatNumber(results.getReactions()[i], options) << "</td>\n";
         os << "    </tr>\n";
     }
     
@@ -444,7 +441,7 @@ void HTMLExporter::writeReactionsSection(std::ostream& os,
 }
 
 void HTMLExporter::writeMetadataSection(std::ostream& os,
-                                       const AnalysisResults& results,
+                                       const IAnalysisResultsView& results,
                                        const ExportOptions& options) {
     os << "<h2>Analysis Metadata</h2>\n";
     os << "<table>\n";
@@ -458,32 +455,32 @@ void HTMLExporter::writeMetadataSection(std::ostream& os,
     
     os << "    <tr>\n";
     os << "      <td>Converged</td>\n";
-    os << "      <td>" << (results.converged ? "Yes" : "No") << "</td>\n";
+    os << "      <td>" << (results.hasConverged() ? "Yes" : "No") << "</td>\n";
     os << "    </tr>\n";
     
     os << "    <tr>\n";
     os << "      <td>Iterations</td>\n";
-    os << "      <td>" << results.iterations << "</td>\n";
+    os << "      <td>" << results.getIterations() << "</td>\n";
     os << "    </tr>\n";
     
     os << "    <tr>\n";
     os << "      <td>Total DOFs</td>\n";
-    os << "      <td>" << results.totalDofs << "</td>\n";
+    os << "      <td>" << results.getTotalDofs() << "</td>\n";
     os << "    </tr>\n";
     
     os << "    <tr>\n";
     os << "      <td>Free DOFs</td>\n";
-    os << "      <td>" << results.freeDofs << "</td>\n";
+    os << "      <td>" << results.getFreeDofs() << "</td>\n";
     os << "    </tr>\n";
     
     os << "    <tr>\n";
     os << "      <td>Max Displacement</td>\n";
-    os << "      <td class=\"number\">" << formatNumber(results.maxDisplacement, options) << "</td>\n";
+    os << "      <td class=\"number\">" << formatNumber(results.getMaxDisplacement(), options) << "</td>\n";
     os << "    </tr>\n";
     
     os << "    <tr>\n";
     os << "      <td>Max Stress</td>\n";
-    os << "      <td class=\"number\">" << formatNumber(results.maxStress, options) << "</td>\n";
+    os << "      <td class=\"number\">" << formatNumber(results.getMaxStress(), options) << "</td>\n";
     os << "    </tr>\n";
     
     os << "  </tbody>\n";

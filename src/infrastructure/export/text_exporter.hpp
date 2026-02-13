@@ -18,8 +18,8 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
 
 /**
  * @brief Plain text format exporter
@@ -68,8 +68,8 @@ public:
      * @param options Export options (precision, sections to include)
      * @return true if export successful, false otherwise
      */
-    bool exportResults(const Truss& truss,
-                      const AnalysisResults& results,
+    bool exportResults(const ITrussView& truss,
+                      const IAnalysisResultsView& results,
                       const std::filesystem::path& filePath,
                       const ExportOptions& options = ExportOptions{}) override;
     
@@ -95,7 +95,7 @@ private:
      * @param os Output stream
      * @param truss Truss structure
      */
-    void writeHeader(std::ostream& os, const Truss& truss);
+    void writeHeader(std::ostream& os, const ITrussView& truss);
     
     /**
      * @brief Write project metadata section (Section 1)
@@ -103,7 +103,7 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    void writeProjectSection(std::ostream& os, const Truss& truss, const ExportOptions& options);
+    void writeProjectSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
     
     /**
      * @brief Write geometry section with nodes and members (Section 2)
@@ -111,7 +111,7 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    void writeGeometrySection(std::ostream& os, const Truss& truss, const ExportOptions& options);
+    void writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
     
     /**
      * @brief Write material properties section (Section 3 - placeholder)
@@ -119,7 +119,7 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    void writePropertiesSection(std::ostream& os, const Truss& truss, const ExportOptions& options);
+    void writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
     
     /**
      * @brief Write applied loads section (Section 4 - placeholder)
@@ -127,7 +127,7 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    void writeLoadsSection(std::ostream& os, const Truss& truss, const ExportOptions& options);
+    void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
     
     /**
      * @brief Write nodal displacements section (Section 5)
@@ -135,7 +135,7 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeDisplacementsSection(std::ostream& os, const AnalysisResults& results, const ExportOptions& options);
+    void writeDisplacementsSection(std::ostream& os, const IAnalysisResultsView& results, const ExportOptions& options);
     
     /**
      * @brief Write member forces section (Section 6)
@@ -143,7 +143,7 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeMemberForcesSection(std::ostream& os, const AnalysisResults& results, const ExportOptions& options);
+    void writeMemberForcesSection(std::ostream& os, const IAnalysisResultsView& results, const ExportOptions& options);
     
     /**
      * @brief Write support reactions section (Section 7 - MANDATORY)
@@ -151,7 +151,7 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeReactionsSection(std::ostream& os, const AnalysisResults& results, const ExportOptions& options);
+    void writeReactionsSection(std::ostream& os, const IAnalysisResultsView& results, const ExportOptions& options);
     
     /**
      * @brief Write analysis metadata section (Section 8)
@@ -159,7 +159,7 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeMetadataSection(std::ostream& os, const AnalysisResults& results, const ExportOptions& options);
+    void writeMetadataSection(std::ostream& os, const IAnalysisResultsView& results, const ExportOptions& options);
     
     /**
      * @brief Format a number according to export options

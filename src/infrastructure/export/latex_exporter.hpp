@@ -18,8 +18,8 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
 
 /**
  * @brief LaTeX format exporter
@@ -69,8 +69,8 @@ public:
      * @param options Export options (precision, sections to include)
      * @return true if export successful, false otherwise
      */
-    bool exportResults(const Truss& truss,
-                      const AnalysisResults& results,
+    bool exportResults(const ITrussView& truss,
+                      const IAnalysisResultsView& results,
                       const std::filesystem::path& filePath,
                       const ExportOptions& options = ExportOptions{}) override;
     
@@ -92,7 +92,7 @@ private:
     /**
      * @brief Write LaTeX document preamble
      */
-    void writePreamble(std::ostream& os, const Truss& truss);
+    void writePreamble(std::ostream& os, const ITrussView& truss);
     
     /**
      * @brief Write document closing
@@ -103,56 +103,56 @@ private:
      * @brief Write project metadata section
      */
     void writeProjectSection(std::ostream& os, 
-                            const Truss& truss, 
+                            const ITrussView& truss, 
                             const ExportOptions& options);
     
     /**
      * @brief Write geometry section (nodes + members)
      */
     void writeGeometrySection(std::ostream& os,
-                             const Truss& truss,
+                             const ITrussView& truss,
                              const ExportOptions& options);
     
     /**
      * @brief Write material properties section
      */
     void writePropertiesSection(std::ostream& os,
-                               const Truss& truss,
+                               const ITrussView& truss,
                                const ExportOptions& options);
     
     /**
      * @brief Write applied loads section
      */
     void writeLoadsSection(std::ostream& os,
-                          const Truss& truss,
+                          const ITrussView& truss,
                           const ExportOptions& options);
     
     /**
      * @brief Write displacements section
      */
     void writeDisplacementsSection(std::ostream& os,
-                                  const AnalysisResults& results,
+                                  const IAnalysisResultsView& results,
                                   const ExportOptions& options);
     
     /**
      * @brief Write member forces section
      */
     void writeMemberForcesSection(std::ostream& os,
-                                 const AnalysisResults& results,
+                                 const IAnalysisResultsView& results,
                                  const ExportOptions& options);
     
     /**
      * @brief Write reactions section
      */
     void writeReactionsSection(std::ostream& os,
-                              const AnalysisResults& results,
+                              const IAnalysisResultsView& results,
                               const ExportOptions& options);
     
     /**
      * @brief Write analysis metadata section
      */
     void writeMetadataSection(std::ostream& os,
-                             const AnalysisResults& results,
+                             const IAnalysisResultsView& results,
                              const ExportOptions& options);
     
     /**
