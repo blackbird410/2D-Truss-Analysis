@@ -10,6 +10,7 @@
 #include "Types.hpp"
 #include "Node.hpp"
 #include "Member.hpp"
+#include "../interfaces/ITrussView.hpp"
 #include <vector>
 #include <unordered_map>
 #include <memory>
@@ -23,8 +24,10 @@ namespace truss::core {
  * This class manages the collection of nodes and members that make up
  * a truss structure, providing methods for construction, validation,
  * and analysis preparation.
+ * 
+ * Implements ITrussView to provide read-only access to Infrastructure layer.
  */
-class Truss {
+class Truss : public interfaces::ITrussView {
 public:
     /**
      * @brief Construct an empty truss
@@ -43,8 +46,17 @@ public:
     // Destructor
     ~Truss() = default;
     
+    // ITrussView interface implementation (for Infrastructure layer access)
+    const std::string& getName() const noexcept override { return m_name; }
+    std::vector<interfaces::NodeView> getNodeViews() const override;
+    std::vector<interfaces::MemberView> getMemberViews() const override;
+    size_t getNodeCount() const noexcept override { return m_nodes.size(); }
+    size_t getMemberCount() const noexcept override { return m_members.size(); }
+    size_t getTotalDofs() const override;
+    size_t getFreeDofs() const override;
+    size_t getConstrainedDofs() const override;
+    
     // Basic properties
-    const std::string& getName() const noexcept { return m_name; }
     void setName(const std::string& name) { m_name = name; }
     
     // Node management
@@ -70,13 +82,6 @@ public:
     MemberPtr getMember(MemberId memberId) const;
     const NodeVector& getNodes() const noexcept { return m_nodes; }
     const MemberVector& getMembers() const noexcept { return m_members; }
-    
-    // Counts
-    size_t getNodeCount() const noexcept { return m_nodes.size(); }
-    size_t getMemberCount() const noexcept { return m_members.size(); }
-    size_t getTotalDofs() const;
-    size_t getFreeDofs() const;
-    size_t getConstrainedDofs() const;
     
     // Geometric queries
     std::vector<NodePtr> getNodesInRegion(const Point2D& bottomLeft, const Point2D& topRight) const;

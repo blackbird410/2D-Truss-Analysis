@@ -429,4 +429,53 @@ Truss::TrussStatistics Truss::getStatistics() const {
     return stats;
 }
 
+std::vector<interfaces::NodeView> Truss::getNodeViews() const {
+    std::vector<interfaces::NodeView> views;
+    views.reserve(m_nodes.size());
+    
+    for (const auto& node : m_nodes) {
+        interfaces::NodeView view;
+        view.id = node->getId();
+        view.x = node->getPosition().x;
+        view.y = node->getPosition().y;
+        view.support = node->getSupportType();
+        view.fx = node->getAppliedForce().fx;
+        view.fy = node->getAppliedForce().fy;
+        view.dx = node->getDisplacement().x;
+        view.dy = node->getDisplacement().y;
+        view.rx = node->getReaction().fx;
+        view.ry = node->getReaction().fy;
+        views.push_back(view);
+    }
+    
+    return views;
+}
+
+std::vector<interfaces::MemberView> Truss::getMemberViews() const {
+    std::vector<interfaces::MemberView> views;
+    views.reserve(m_members.size());
+    
+    for (const auto& member : m_members) {
+        interfaces::MemberView view;
+        view.id = member->getId();
+        view.startNodeId = member->getStartNode()->getId();
+        view.endNodeId = member->getEndNode()->getId();
+        view.label = member->getLabel();
+        view.youngModulus = member->getMaterial().youngModulus;
+        view.yieldStrength = member->getMaterial().yieldStrength;
+        view.density = member->getMaterial().density;
+        view.area = member->getSection().area;
+        view.length = member->getLength();
+        view.angle = member->getAngle();
+        view.axialForce = member->getAxialForce();
+        view.axialStress = member->getAxialStress();
+        view.utilizationRatio = member->getUtilizationRatio();
+        view.inTension = member->isInTension();
+        view.yielded = member->hasYielded();
+        views.push_back(view);
+    }
+    
+    return views;
+}
+
 } // namespace truss::core
