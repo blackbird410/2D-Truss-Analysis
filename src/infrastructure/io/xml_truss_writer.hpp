@@ -27,7 +27,7 @@ public:
      * @brief Write truss to XML file
      */
     bool write(
-        const core::Truss& truss,
+        const core::interfaces::TrussDTO& trussData,
         const std::filesystem::path& filepath,
         const FileIOOptions& options = FileIOOptions{}
     ) override;
@@ -45,25 +45,25 @@ private:
      * @brief Create metadata element
      */
     void createMetadata(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* root,
-                       const core::Truss& truss, const FileIOOptions& options);
+                       const core::interfaces::TrussDTO& trussData, const FileIOOptions& options);
     
     /**
      * @brief Create nodes element
      */
     void createNodes(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* root,
-                    const core::Truss& truss);
+                    const core::interfaces::TrussDTO& trussData);
     
     /**
      * @brief Create members element
      */
     void createMembers(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* root,
-                      const core::Truss& truss);
+                      const core::interfaces::TrussDTO& trussData);
     
     /**
      * @brief Create loads element
      */
     void createLoads(tinyxml2::XMLDocument& doc, tinyxml2::XMLElement* root,
-                    const core::Truss& truss);
+                    const core::interfaces::TrussDTO& trussData);
     
     /**
      * @brief Convert support type to string

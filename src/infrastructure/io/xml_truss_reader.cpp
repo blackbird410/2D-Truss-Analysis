@@ -13,7 +13,7 @@
 
 namespace truss::infrastructure::io {
 
-std::shared_ptr<core::Truss> XmlTrussReader::read(
+core::interfaces::TrussDTO XmlTrussReader::read(
     const std::filesystem::path& filepath,
     const FileIOOptions& options
 ) {
@@ -36,18 +36,15 @@ std::shared_ptr<core::Truss> XmlTrussReader::read(
         throw ParseException("Missing root <truss> element");
     }
     
-    // Create truss
-    auto truss = std::make_shared<core::Truss>("Untitled Truss");
-    
-    // Node ID mapping from file IDs to created IDs
-    std::unordered_map<core::NodeId, core::NodeId> nodeIdMap;
+    // Create DTO
+    core::interfaces::TrussDTO dto;
     
     // Parse sections
     try {
         // Metadata (optional)
         tinyxml2::XMLElement* metadata = root->FirstChildElement("metadata");
         if (metadata) {
-            parseMetadata(metadata, *truss);
+            parseMetadata(metadata, dto);
         }
         
         // Nodes (required)
@@ -55,18 +52,18 @@ std::shared_ptr<core::Truss> XmlTrussReader::read(
         if (!nodes) {
             throw ParseException("Missing required <nodes> section");
         }
-        parseNodes(nodes, *truss, nodeIdMap);
+        parseNodes(nodes, dto);
         
         // Members (optional)
         tinyxml2::XMLElement* members = root->FirstChildElement("members");
         if (members) {
-            parseMembers(members, *truss, nodeIdMap);
+            parseMembers(members, dto);
         }
         
         // Loads (optional)
         tinyxml2::XMLElement* loads = root->FirstChildElement("loads");
         if (loads) {
-            parseLoads(loads, *truss, nodeIdMap);
+            parseLoads(loads, dto);
         }
     } catch (const ParseException& e) {
         // Preserve existing ParseException messages without adding another prefix
@@ -75,127 +72,123 @@ std::shared_ptr<core::Truss> XmlTrussReader::read(
         throw ParseException(std::string("XML structure error: ") + e.what());
     }
     
-    // Validate if requested
-    if (options.validateOnRead) {
-        core::validation::TrussValidator validator;
-        auto result = validator.validate(*truss);
-        
-        if (!result.isValid()) {
-            std::ostringstream oss;
-            oss << "Truss validation failed:\n";
-            for (const auto& issue : result.getIssues()) {
-                if (issue.severity == core::validation::ValidationSeverity::Error ||
-                    issue.severity == core::validation::ValidationSeverity::Fatal) {
-                    oss << "  - " << issue.message << "\n";
-                }
-            }
-            throw ValidationException(oss.str());
-        }
-    }
+    // Note: Validation removed - DTOs are pure data, validation happens at Domain level
     
-    return truss;
+    return dto;
 }
 
-void XmlTrussReader::parseMetadata(tinyxml2::XMLElement* element, core::Truss& truss) {
+void XmlTrussReader::parseMetadata(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto) {
     const char* name = element->Attribute("name");
     if (name) {
-        truss.setName(name);
+        dto.name = name;
     }
 }
 
-void XmlTrussReader::parseNodes(tinyxml2::XMLElement* nodesElement, core::Truss& truss, std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap) {
+void XmlTrussReader::parseNodes(tinyxml2::XMLElement* nodesElement, core::interfaces::TrussDTO& dto) {
     for (tinyxml2::XMLElement* nodeElement = nodesElement->FirstChildElement("node");
          nodeElement != nullptr;
          nodeElement = nodeElement->NextSiblingElement("node")) {
         
-        core::NodeId fileId = getIntAttribute(nodeElement, "id");
-        core::Real x = getDoubleAttribute(nodeElement, "x");
-        core::Real y = getDoubleAttribute(nodeElement, "y");
+        core::interfaces::NodeDTO nodeDTO;
+        nodeDTO.id = getIntAttribute(nodeElement, "id");
+        nodeDTO.x = getDoubleAttribute(nodeElement, "x");
+        nodeDTO.y = getDoubleAttribute(nodeElement, "y");
         
         // Check for duplicate node ID
-        if (nodeIdMap.find(fileId) != nodeIdMap.end()) {
-            throw ParseException("Duplicate node ID: " + std::to_string(fileId));
+        for (const auto& existing : dto.nodes) {
+            if (existing.id == nodeDTO.id) {
+                throw ParseException("Duplicate node ID: " + std::to_string(nodeDTO.id));
+            }
         }
         
         const char* supportStr = nodeElement->Attribute("support");
-        core::SupportType support = core::SupportType::Free;
+        nodeDTO.support = core::SupportType::Free;
         if (supportStr) {
-            support = parseSupportType(supportStr);
+            nodeDTO.support = parseSupportType(supportStr);
         }
         
-        auto createdNode = truss.addNode(x, y, support);
-        // Map file ID to created ID
-        nodeIdMap[fileId] = createdNode->getId();
+        // Forces will be set by parseLoads
+        nodeDTO.fx = 0.0;
+        nodeDTO.fy = 0.0;
+        
+        dto.nodes.push_back(nodeDTO);
     }
 }
 
-void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap) {
+void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement, core::interfaces::TrussDTO& dto) {
     for (tinyxml2::XMLElement* memberElement = membersElement->FirstChildElement("member");
          memberElement != nullptr;
          memberElement = memberElement->NextSiblingElement("member")) {
         
-        core::NodeId fileStartNodeId = getIntAttribute(memberElement, "startNode");
-        core::NodeId fileEndNodeId = getIntAttribute(memberElement, "endNode");
+        core::interfaces::MemberDTO memberDTO;
         
-        // Translate file node IDs to created node IDs
-        auto startIt = nodeIdMap.find(fileStartNodeId);
-        auto endIt = nodeIdMap.find(fileEndNodeId);
+        // Get member ID - STRICT REQUIREMENT for validation
+        memberDTO.id = getIntAttribute(memberElement, "id");
+        memberDTO.startNodeId = getIntAttribute(memberElement, "startNode");
+        memberDTO.endNodeId = getIntAttribute(memberElement, "endNode");
         
-        if (startIt == nodeIdMap.end()) {
-            throw ParseException("Member references unknown start node ID: " + std::to_string(fileStartNodeId));
+        // Validate that referenced nodes exist
+        bool startExists = false, endExists = false;
+        for (const auto& node : dto.nodes) {
+            if (node.id == memberDTO.startNodeId) startExists = true;
+            if (node.id == memberDTO.endNodeId) endExists = true;
         }
-        if (endIt == nodeIdMap.end()) {
-            throw ParseException("Member references unknown end node ID: " + std::to_string(fileEndNodeId));
+        
+        if (!startExists) {
+            throw ParseException("Member references unknown start node ID: " + std::to_string(memberDTO.startNodeId));
+        }
+        if (!endExists) {
+            throw ParseException("Member references unknown end node ID: " + std::to_string(memberDTO.endNodeId));
         }
         
-        core::NodeId startNodeId = startIt->second;
-        core::NodeId endNodeId = endIt->second;
-        
-        // Material properties
-        core::MaterialProperties material;
+        // Material properties (defaults if not specified)
         tinyxml2::XMLElement* materialElement = memberElement->FirstChildElement("material");
         if (materialElement) {
-            material.youngModulus = getDoubleAttribute(materialElement, "youngsModulus", material.youngModulus);
-            material.density = getDoubleAttribute(materialElement, "density", material.density);
-            material.yieldStrength = getDoubleAttribute(materialElement, "yieldStrength", material.yieldStrength);
-            
-            const char* name = materialElement->Attribute("name");
-            if (name) material.name = name;
+            memberDTO.youngModulus = getDoubleAttribute(materialElement, "youngsModulus", 210e9);
+            memberDTO.density = getDoubleAttribute(materialElement, "density", 7850.0);
+            memberDTO.yieldStrength = getDoubleAttribute(materialElement, "yieldStrength", 250e6);
+        } else {
+            // Use defaults
+            memberDTO.youngModulus = 210e9;
+            memberDTO.density = 7850.0;
+            memberDTO.yieldStrength = 250e6;
         }
         
         // Section properties
-        core::SectionProperties section;
         tinyxml2::XMLElement* sectionElement = memberElement->FirstChildElement("section");
         if (sectionElement) {
-            section.area = getDoubleAttribute(sectionElement, "area", section.area);
+            memberDTO.area = getDoubleAttribute(sectionElement, "area", 0.01);
+        } else {
+            memberDTO.area = 0.01;
         }
         
-        try {
-            truss.addMember(startNodeId, endNodeId, material, section);
-        } catch (const std::invalid_argument& e) {
-            // Convert domain exceptions to validation exceptions for I/O layer
-            throw ValidationException(std::string("Member validation failed: ") + e.what());
-        }
+        dto.members.push_back(memberDTO);
     }
 }
 
-void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap) {
+void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement, core::interfaces::TrussDTO& dto) {
     for (tinyxml2::XMLElement* loadElement = loadsElement->FirstChildElement("load");
          loadElement != nullptr;
          loadElement = loadElement->NextSiblingElement("load")) {
         
-        core::NodeId fileNodeId = getIntAttribute(loadElement, "nodeId");
+        core::NodeId nodeId = getIntAttribute(loadElement, "nodeId");
         core::Real fx = getDoubleAttribute(loadElement, "fx", 0.0);
         core::Real fy = getDoubleAttribute(loadElement, "fy", 0.0);
         
-        // Translate file node ID to created node ID
-        auto it = nodeIdMap.find(fileNodeId);
-        if (it == nodeIdMap.end()) {
-            throw ParseException("Load references unknown node ID: " + std::to_string(fileNodeId));
+        // Find node and apply force
+        bool found = false;
+        for (auto& node : dto.nodes) {
+            if (node.id == nodeId) {
+                node.fx = fx;
+                node.fy = fy;
+                found = true;
+                break;
+            }
         }
         
-        core::NodeId nodeId = it->second;
-        truss.applyForce(nodeId, fx, fy);
+        if (!found) {
+            throw ParseException("Load references unknown node ID: " + std::to_string(nodeId));
+        }
     }
 }
 

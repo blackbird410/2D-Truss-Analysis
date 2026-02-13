@@ -7,15 +7,15 @@
  */
 
 #include "xml_truss_writer.hpp"
-#include "../../core/validation/TrussValidator.hpp"
 #include <chrono>
 #include <iomanip>
 #include <sstream>
+#include <cmath>
 
 namespace truss::infrastructure::io {
 
 bool XmlTrussWriter::write(
-    const core::Truss& truss,
+    const core::interfaces::TrussDTO& trussData,
     const std::filesystem::path& filepath,
     const FileIOOptions& options
 ) {
@@ -24,23 +24,7 @@ bool XmlTrussWriter::write(
         throw FileWriteException(filepath.string() + " (file exists, overwrite not allowed)");
     }
     
-    // Validate if requested
-    if (options.validateOnWrite) {
-        core::validation::TrussValidator validator;
-        auto result = validator.validate(truss);
-        
-        if (!result.isValid()) {
-            std::ostringstream oss;
-            oss << "Truss validation failed:\n";
-            for (const auto& issue : result.getIssues()) {
-                if (issue.severity == core::validation::ValidationSeverity::Error ||
-                    issue.severity == core::validation::ValidationSeverity::Fatal) {
-                    oss << "  - " << issue.message << "\n";
-                }
-            }
-            throw ValidationException(oss.str());
-        }
-    }
+    // Note: Validation moved to Domain layer - Infrastructure only serializes
     
     // Create XML document
     tinyxml2::XMLDocument doc;
@@ -55,12 +39,12 @@ bool XmlTrussWriter::write(
     
     // Add sections
     if (options.includeMetadata) {
-        createMetadata(doc, root, truss, options);
+        createMetadata(doc, root, trussData, options);
     }
     
-    createNodes(doc, root, truss);
-    createMembers(doc, root, truss);
-    createLoads(doc, root, truss);
+    createNodes(doc, root, trussData);
+    createMembers(doc, root, trussData);
+    createLoads(doc, root, trussData);
     
     // Write to file
     tinyxml2::XMLError result = doc.SaveFile(filepath.string().c_str());
@@ -74,11 +58,11 @@ bool XmlTrussWriter::write(
 void XmlTrussWriter::createMetadata(
     tinyxml2::XMLDocument& doc,
     tinyxml2::XMLElement* root,
-    const core::Truss& truss,
+    const core::interfaces::TrussDTO& trussData,
     const FileIOOptions& options
 ) {
     tinyxml2::XMLElement* metadata = doc.NewElement("metadata");
-    metadata->SetAttribute("name", truss.getName().c_str());
+    metadata->SetAttribute("name", trussData.name.c_str());
     metadata->SetAttribute("version", "3.0.0");
     metadata->SetAttribute("format", "truss-xml-v1");
     
@@ -95,16 +79,16 @@ void XmlTrussWriter::createMetadata(
 void XmlTrussWriter::createNodes(
     tinyxml2::XMLDocument& doc,
     tinyxml2::XMLElement* root,
-    const core::Truss& truss
+    const core::interfaces::TrussDTO& trussData
 ) {
     tinyxml2::XMLElement* nodesElement = doc.NewElement("nodes");
     
-    for (const auto& node : truss.getNodes()) {
+    for (const auto& node : trussData.nodes) {
         tinyxml2::XMLElement* nodeElement = doc.NewElement("node");
-        nodeElement->SetAttribute("id", node->getId());
-        nodeElement->SetAttribute("x", node->getX());
-        nodeElement->SetAttribute("y", node->getY());
-        nodeElement->SetAttribute("support", supportTypeToString(node->getSupportType()).c_str());
+        nodeElement->SetAttribute("id", node.id);
+        nodeElement->SetAttribute("x", node.x);
+        nodeElement->SetAttribute("y", node.y);
+        nodeElement->SetAttribute("support", supportTypeToString(node.support).c_str());
         
         nodesElement->InsertEndChild(nodeElement);
     }
@@ -115,29 +99,26 @@ void XmlTrussWriter::createNodes(
 void XmlTrussWriter::createMembers(
     tinyxml2::XMLDocument& doc,
     tinyxml2::XMLElement* root,
-    const core::Truss& truss
+    const core::interfaces::TrussDTO& trussData
 ) {
     tinyxml2::XMLElement* membersElement = doc.NewElement("members");
     
-    for (const auto& member : truss.getMembers()) {
+    for (const auto& member : trussData.members) {
         tinyxml2::XMLElement* memberElement = doc.NewElement("member");
-        memberElement->SetAttribute("id", member->getId());
-        memberElement->SetAttribute("startNode", member->getStartNode()->getId());
-        memberElement->SetAttribute("endNode", member->getEndNode()->getId());
+        memberElement->SetAttribute("id", member.id);
+        memberElement->SetAttribute("startNode", member.startNodeId);
+        memberElement->SetAttribute("endNode", member.endNodeId);
         
         // Material properties
-        const auto& material = member->getMaterial();
         tinyxml2::XMLElement* materialElement = doc.NewElement("material");
-        materialElement->SetAttribute("youngsModulus", material.youngModulus);
-        materialElement->SetAttribute("density", material.density);
-        materialElement->SetAttribute("yieldStrength", material.yieldStrength);
-        materialElement->SetAttribute("name", material.name.c_str());
+        materialElement->SetAttribute("youngsModulus", member.youngModulus);
+        materialElement->SetAttribute("density", member.density);
+        materialElement->SetAttribute("yieldStrength", member.yieldStrength);
         memberElement->InsertEndChild(materialElement);
         
         // Section properties
-        const auto& section = member->getSection();
         tinyxml2::XMLElement* sectionElement = doc.NewElement("section");
-        sectionElement->SetAttribute("area", section.area);
+        sectionElement->SetAttribute("area", member.area);
         memberElement->InsertEndChild(sectionElement);
         
         membersElement->InsertEndChild(memberElement);
@@ -149,19 +130,18 @@ void XmlTrussWriter::createMembers(
 void XmlTrussWriter::createLoads(
     tinyxml2::XMLDocument& doc,
     tinyxml2::XMLElement* root,
-    const core::Truss& truss
+    const core::interfaces::TrussDTO& trussData
 ) {
     tinyxml2::XMLElement* loadsElement = doc.NewElement("loads");
     
-    for (const auto& node : truss.getLoadedNodes()) {
-        const auto& force = node->getAppliedForce();
-        
+    for (const auto& node : trussData.nodes) {
         // Only write non-zero forces
-        if (force.magnitude() > 1e-10) {
+        double magnitude = std::sqrt(node.fx * node.fx + node.fy * node.fy);
+        if (magnitude > 1e-10) {
             tinyxml2::XMLElement* loadElement = doc.NewElement("load");
-            loadElement->SetAttribute("nodeId", node->getId());
-            loadElement->SetAttribute("fx", force.fx);
-            loadElement->SetAttribute("fy", force.fy);
+            loadElement->SetAttribute("nodeId", node.id);
+            loadElement->SetAttribute("fx", node.fx);
+            loadElement->SetAttribute("fy", node.fy);
             
             loadsElement->InsertEndChild(loadElement);
         }
