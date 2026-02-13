@@ -232,6 +232,7 @@ The Model Sublayer has been fully implemented with the following components:
    ```
 
 3. **Aggregates** (Fully Implemented)
+
    ```cpp
    // src/core/model/truss.hpp
    class Truss {
@@ -424,30 +425,62 @@ public:
 
 **Responsibility:** Technical services supporting domain layer
 
-#### 2.4.1 File I/O Services
+#### 2.4.1 File I/O Services ✅ **IMPLEMENTED (February 13, 2026)**
 
 ```cpp
-// src/infrastructure/io/file_reader.hpp
-class IFileReader {  // Interface
+// src/infrastructure/io/truss_reader.hpp
+class ITrussReader {  // Interface
 public:
-    virtual ~IFileReader() = default;
-    virtual Truss read(const std::filesystem::path& path) = 0;
+    virtual ~ITrussReader() = default;
+    virtual std::shared_ptr<core::Truss> read(
+        const std::filesystem::path& filepath,
+        const FileIOOptions& options
+    ) = 0;
+    virtual bool supportsFormat(FileFormat format) const = 0;
+    virtual FileFormat getFormat() const = 0;
 };
 
-class JsonFileReader : public IFileReader { /* ... */ };
-class XmlFileReader : public IFileReader { /* ... */ };
+class JsonTrussReader : public ITrussReader { /* Implemented */ };
+class XmlTrussReader : public ITrussReader { /* Implemented */ };
 
-// src/infrastructure/io/file_writer.hpp
-class IFileWriter {
+// src/infrastructure/io/truss_writer.hpp
+class ITrussWriter {
 public:
-    virtual ~IFileWriter() = default;
-    virtual bool write(const Truss& truss, const std::filesystem::path& path) = 0;
+    virtual ~ITrussWriter() = default;
+    virtual bool write(
+        const core::Truss& truss,
+        const std::filesystem::path& filepath,
+        const FileIOOptions& options
+    ) = 0;
+    virtual bool supportsFormat(FileFormat format) const = 0;
+    virtual FileFormat getFormat() const = 0;
+};
+
+class JsonTrussWriter : public ITrussWriter { /* Implemented */ };
+class XmlTrussWriter : public ITrussWriter { /* Implemented */ };
+
+// src/infrastructure/io/fileio_factory.hpp
+class FileIOFactory {
+public:
+    static std::unique_ptr<ITrussReader> createReader(FileFormat format);
+    static std::unique_ptr<ITrussWriter> createWriter(FileFormat format);
+    static FileFormat detectFormat(const std::filesystem::path& path);
 };
 ```
 
-**Design:** Strategy pattern allows multiple file formats without changing domain logic.
+**Status:** ✅ Complete (36 tests, 100% pass rate)  
+**Design:** Strategy pattern with Factory for multiple file formats  
+**Features:**
 
-#### 2.4.2 Results Exporters
+- Strict referential integrity validation (duplicate IDs, unknown references)
+- Node ID mapping supporting non-sequential IDs
+- Clear exception hierarchy (ParseException vs ValidationException)
+- JSON and XML format support
+- Extensible for future formats (CSV, YAML)
+
+**Documentation:** [Work Log](../work-logs/2026-02-13-file-io-referential-integrity-implementation.md)
+
+#### 2.4.2 Results Exporters ✅ **IMPLEMENTED (February 8, 2026)**
 
 **Current Problem:** Single class handles all export formats
 
