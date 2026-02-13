@@ -15,6 +15,9 @@
 #include "core/model/Truss.hpp"
 #include <filesystem>
 #include <fstream>
+#include <chrono>
+#include <sstream>
+#include <unistd.h>  // for getpid()
 
 using namespace truss::infrastructure::io;
 using namespace truss::core;
@@ -23,8 +26,13 @@ using namespace truss::core;
 class FileIOTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Create temporary test directory
-        testDir = std::filesystem::temp_directory_path() / "truss_fileio_test";
+        // Create unique temporary test directory per test instance
+        // Use PID and timestamp to avoid collisions in concurrent test runs
+        std::ostringstream dirName;
+        dirName << "truss_fileio_test_" 
+                << std::chrono::system_clock::now().time_since_epoch().count()
+                << "_" << ::getpid();
+        testDir = std::filesystem::temp_directory_path() / dirName.str();
         std::filesystem::create_directories(testDir);
     }
     
