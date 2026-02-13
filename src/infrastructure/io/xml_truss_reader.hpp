@@ -62,18 +62,27 @@ private:
     
     /**
      * @brief Parse nodes section
+     * @param element Nodes XML element
+     * @param truss Target truss
+     * @param nodeIdMap Mapping from file node IDs to created node IDs
      */
-    void parseNodes(tinyxml2::XMLElement* element, core::Truss& truss);
+    void parseNodes(tinyxml2::XMLElement* element, core::Truss& truss, std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
     
     /**
      * @brief Parse members section
+     * @param element Members XML element
+     * @param truss Target truss
+     * @param nodeIdMap Mapping from file node IDs to created node IDs
      */
-    void parseMembers(tinyxml2::XMLElement* element, core::Truss& truss);
+    void parseMembers(tinyxml2::XMLElement* element, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
     
     /**
      * @brief Parse loads section
+     * @param element Loads XML element
+     * @param truss Target truss
+     * @param nodeIdMap Mapping from file node IDs to created node IDs
      */
-    void parseLoads(tinyxml2::XMLElement* element, core::Truss& truss);
+    void parseLoads(tinyxml2::XMLElement* element, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
     
     /**
      * @brief Parse support type from string

@@ -10,6 +10,7 @@
 #include "../../core/validation/TrussValidator.hpp"
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 
 using json = nlohmann::json;
 
@@ -41,6 +42,9 @@ std::shared_ptr<core::Truss> JsonTrussReader::read(
     // Create truss
     auto truss = std::make_shared<core::Truss>("Untitled Truss");
     
+    // Node ID mapping from file IDs to created IDs
+    std::unordered_map<core::NodeId, core::NodeId> nodeIdMap;
+    
     // Parse sections
     try {
         if (j.contains("metadata")) {
@@ -48,17 +52,17 @@ std::shared_ptr<core::Truss> JsonTrussReader::read(
         }
         
         if (j.contains("nodes")) {
-            parseNodes(j["nodes"], *truss);
+            parseNodes(j["nodes"], *truss, nodeIdMap);
         } else {
             throw ParseException("Missing required 'nodes' section");
         }
         
         if (j.contains("members")) {
-            parseMembers(j["members"], *truss);
+            parseMembers(j["members"], *truss, nodeIdMap);
         }
         
         if (j.contains("loads")) {
-            parseLoads(j["loads"], *truss);
+            parseLoads(j["loads"], *truss, nodeIdMap);
         }
     } catch (const json::exception& e) {
         throw ParseException(std::string("JSON structure error: ") + e.what());
@@ -92,7 +96,7 @@ void JsonTrussReader::parseMetadata(const json& j, core::Truss& truss) {
     // Additional metadata fields can be added here
 }
 
-void JsonTrussReader::parseNodes(const json& j, core::Truss& truss) {
+void JsonTrussReader::parseNodes(const json& j, core::Truss& truss, std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap) {
     if (!j.is_array()) {
         throw ParseException("'nodes' must be an array");
     }
@@ -102,22 +106,27 @@ void JsonTrussReader::parseNodes(const json& j, core::Truss& truss) {
             throw ParseException("Node missing required fields (id, x, y)");
         }
         
-        core::NodeId id = nodeJson["id"].get<core::NodeId>();
+        core::NodeId fileId = nodeJson["id"].get<core::NodeId>();
         core::Real x = nodeJson["x"].get<core::Real>();
         core::Real y = nodeJson["y"].get<core::Real>();
+        
+        // Check for duplicate node ID
+        if (nodeIdMap.find(fileId) != nodeIdMap.end()) {
+            throw ParseException("Duplicate node ID: " + std::to_string(fileId));
+        }
         
         core::SupportType support = core::SupportType::Free;
         if (nodeJson.contains("support")) {
             support = parseSupportType(nodeJson["support"].get<std::string>());
         }
         
-        auto node = truss.addNode(x, y, support);
-        // Note: Truss auto-assigns IDs, but we respect the file's ID if needed
-        // For now, we rely on insertion order matching file order
+        auto createdNode = truss.addNode(x, y, support);
+        // Map file ID to created ID
+        nodeIdMap[fileId] = createdNode->getId();
     }
 }
 
-void JsonTrussReader::parseMembers(const json& j, core::Truss& truss) {
+void JsonTrussReader::parseMembers(const json& j, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap) {
     if (!j.is_array()) {
         throw ParseException("'members' must be an array");
     }
@@ -127,8 +136,22 @@ void JsonTrussReader::parseMembers(const json& j, core::Truss& truss) {
             throw ParseException("Member missing required fields (startNode, endNode)");
         }
         
-        core::NodeId startNodeId = memberJson["startNode"].get<core::NodeId>();
-        core::NodeId endNodeId = memberJson["endNode"].get<core::NodeId>();
+        core::NodeId fileStartNodeId = memberJson["startNode"].get<core::NodeId>();
+        core::NodeId fileEndNodeId = memberJson["endNode"].get<core::NodeId>();
+        
+        // Translate file node IDs to created node IDs
+        auto startIt = nodeIdMap.find(fileStartNodeId);
+        auto endIt = nodeIdMap.find(fileEndNodeId);
+        
+        if (startIt == nodeIdMap.end()) {
+            throw ParseException("Member references unknown start node ID: " + std::to_string(fileStartNodeId));
+        }
+        if (endIt == nodeIdMap.end()) {
+            throw ParseException("Member references unknown end node ID: " + std::to_string(fileEndNodeId));
+        }
+        
+        core::NodeId startNodeId = startIt->second;
+        core::NodeId endNodeId = endIt->second;
         
         // Material properties
         core::MaterialProperties material;
@@ -166,7 +189,7 @@ void JsonTrussReader::parseMembers(const json& j, core::Truss& truss) {
     }
 }
 
-void JsonTrussReader::parseLoads(const json& j, core::Truss& truss) {
+void JsonTrussReader::parseLoads(const json& j, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap) {
     if (!j.is_array()) {
         throw ParseException("'loads' must be an array");
     }
@@ -176,10 +199,17 @@ void JsonTrussReader::parseLoads(const json& j, core::Truss& truss) {
             throw ParseException("Load missing required field 'nodeId'");
         }
         
-        core::NodeId nodeId = loadJson["nodeId"].get<core::NodeId>();
+        core::NodeId fileNodeId = loadJson["nodeId"].get<core::NodeId>();
         core::Real fx = loadJson.value("fx", 0.0);
         core::Real fy = loadJson.value("fy", 0.0);
         
+        // Translate file node ID to created node ID
+        auto it = nodeIdMap.find(fileNodeId);
+        if (it == nodeIdMap.end()) {
+            throw ParseException("Load references unknown node ID: " + std::to_string(fileNodeId));
+        }
+        
+        core::NodeId nodeId = it->second;
         truss.applyForce(nodeId, fx, fy);
     }
 }

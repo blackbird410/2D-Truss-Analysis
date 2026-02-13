@@ -53,18 +53,27 @@ private:
     
     /**
      * @brief Parse nodes section
+     * @param j JSON nodes array
+     * @param truss Target truss
+     * @param nodeIdMap Mapping from file node IDs to created node IDs
      */
-    void parseNodes(const nlohmann::json& j, core::Truss& truss);
+    void parseNodes(const nlohmann::json& j, core::Truss& truss, std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
     
     /**
      * @brief Parse members section
+     * @param j JSON members array
+     * @param truss Target truss
+     * @param nodeIdMap Mapping from file node IDs to created node IDs
      */
-    void parseMembers(const nlohmann::json& j, core::Truss& truss);
+    void parseMembers(const nlohmann::json& j, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
     
     /**
      * @brief Parse loads section
+     * @param j JSON loads array
+     * @param truss Target truss
+     * @param nodeIdMap Mapping from file node IDs to created node IDs
      */
-    void parseLoads(const nlohmann::json& j, core::Truss& truss);
+    void parseLoads(const nlohmann::json& j, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
     
     /**
      * @brief Parse support type from string
