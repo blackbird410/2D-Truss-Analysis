@@ -18,10 +18,10 @@ namespace truss::infrastructure::io {
  * 
  * Reads truss structures from JSON files with the following format:
  * {
- *   "metadata": { "name": "...", "description": "...", "version": "..." },
- *   "nodes": [ {"id": 1, "x": 0.0, "y": 0.0, "support": "pinned"}, ... ],
- *   "members": [ {"id": 1, "startNode": 1, "endNode": 2, "material": {...}, "section": {...}}, ... ],
- *   "loads": [ {"id": 1, "nodeId": 1, "fx": 0.0, "fy": -1000.0, "label": "..."}, ... ]
+ *   "metadata": { "name": "...", "version": "..." },
+ *   "nodes": [ { "x": 0.0, "y": 0.0, "support": "pinned" }, ... ],
+ *   "members": [ { "startNode": 1, "endNode": 2, "material": { ... }, "section": { ... } }, ... ],
+ *   "loads": [ { "nodeId": 1, "fx": 0.0, "fy": -1000.0 }, ... ]
  * }
  */
 class JsonTrussReader : public ITrussReader {
