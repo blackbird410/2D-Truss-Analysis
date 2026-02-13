@@ -76,12 +76,9 @@ bool FileIOFactory::isFormatSupported(FileFormat format) {
 }
 
 FileFormat FileIOFactory::detectFormat(const std::filesystem::path& filepath) {
-    std::string ext = filepath.extension().string();
-    
-    if (ext == ".json") return FileFormat::JSON;
-    if (ext == ".xml")  return FileFormat::XML;
-    
-    return FileFormat::Auto;  // Unknown
+    // Delegate to the central format-detection utility to ensure consistent behavior
+    // across the codebase (e.g., for names like "model.json.bak").
+    return io::detectFileFormat(filepath.filename().string());
 }
 
 std::string FileIOFactory::getExtension(FileFormat format) {
