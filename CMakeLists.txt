@@ -70,6 +70,9 @@ add_library(TrussCore STATIC
     src/core/model/Truss.hpp
     src/core/model/Load.cpp
     src/core/model/Load.hpp
+    # Domain assembly utilities
+    src/core/assembly/TrussAssembler.cpp
+    src/core/assembly/TrussAssembler.hpp
     # Domain validation services
     src/core/validation/TrussValidator.cpp
     src/core/validation/TrussValidator.hpp
