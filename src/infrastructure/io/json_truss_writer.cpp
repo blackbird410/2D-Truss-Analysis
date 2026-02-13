@@ -7,7 +7,6 @@
  */
 
 #include "json_truss_writer.hpp"
-#include "../../core/validation/TrussValidator.hpp"
 #include <fstream>
 #include <chrono>
 #include <iomanip>
@@ -18,7 +17,7 @@ using json = nlohmann::json;
 namespace truss::infrastructure::io {
 
 bool JsonTrussWriter::write(
-    const core::Truss& truss,
+    const core::interfaces::TrussDTO& trussData,
     const std::filesystem::path& filepath,
     const FileIOOptions& options
 ) {
@@ -27,34 +26,18 @@ bool JsonTrussWriter::write(
         throw FileWriteException(filepath.string() + " (file exists, overwrite not allowed)");
     }
     
-    // Validate if requested
-    if (options.validateOnWrite) {
-        core::validation::TrussValidator validator;
-        auto result = validator.validate(truss);
-        
-        if (!result.isValid()) {
-            std::ostringstream oss;
-            oss << "Truss validation failed:\n";
-            for (const auto& issue : result.getIssues()) {
-                if (issue.severity == core::validation::ValidationSeverity::Error ||
-                    issue.severity == core::validation::ValidationSeverity::Fatal) {
-                    oss << "  - " << issue.message << "\n";
-                }
-            }
-            throw ValidationException(oss.str());
-        }
-    }
+    // Note: Validation removed - DTOs are pure data, validation happens at Domain level
     
     // Create JSON structure
     json j;
     
     if (options.includeMetadata) {
-        j["metadata"] = createMetadata(truss, options);
+        j["metadata"] = createMetadata(trussData, options);
     }
     
-    j["nodes"] = createNodes(truss);
-    j["members"] = createMembers(truss);
-    j["loads"] = createLoads(truss);
+    j["nodes"] = createNodes(trussData);
+    j["members"] = createMembers(trussData);
+    j["loads"] = createLoads(trussData);
     
     // Write to file
     try {
@@ -76,9 +59,9 @@ bool JsonTrussWriter::write(
     }
 }
 
-json JsonTrussWriter::createMetadata(const core::Truss& truss, const FileIOOptions& options) {
+json JsonTrussWriter::createMetadata(const core::interfaces::TrussDTO& trussData, const FileIOOptions& options) {
     json metadata;
-    metadata["name"] = truss.getName();
+    metadata["name"] = trussData.name;
     metadata["version"] = "3.0.0";
     metadata["format"] = "truss-json-v1";
     
@@ -92,15 +75,15 @@ json JsonTrussWriter::createMetadata(const core::Truss& truss, const FileIOOptio
     return metadata;
 }
 
-json JsonTrussWriter::createNodes(const core::Truss& truss) {
+json JsonTrussWriter::createNodes(const core::interfaces::TrussDTO& trussData) {
     json nodesArray = json::array();
     
-    for (const auto& node : truss.getNodes()) {
+    for (const auto& node : trussData.nodes) {
         json nodeObj;
-        nodeObj["id"] = node->getId();
-        nodeObj["x"] = node->getX();
-        nodeObj["y"] = node->getY();
-        nodeObj["support"] = supportTypeToString(node->getSupportType());
+        nodeObj["id"] = node.id;
+        nodeObj["x"] = node.x;
+        nodeObj["y"] = node.y;
+        nodeObj["support"] = supportTypeToString(node.support);
         
         nodesArray.push_back(nodeObj);
     }
@@ -108,28 +91,25 @@ json JsonTrussWriter::createNodes(const core::Truss& truss) {
     return nodesArray;
 }
 
-json JsonTrussWriter::createMembers(const core::Truss& truss) {
+json JsonTrussWriter::createMembers(const core::interfaces::TrussDTO& trussData) {
     json membersArray = json::array();
     
-    for (const auto& member : truss.getMembers()) {
+    for (const auto& member : trussData.members) {
         json memberObj;
-        memberObj["id"] = member->getId();
-        memberObj["startNode"] = member->getStartNode()->getId();
-        memberObj["endNode"] = member->getEndNode()->getId();
+        memberObj["id"] = member.id;
+        memberObj["startNode"] = member.startNodeId;
+        memberObj["endNode"] = member.endNodeId;
         
-        // Material properties
-        const auto& material = member->getMaterial();
+        // Material properties (flattened from DTO)
         json materialObj;
-        materialObj["youngsModulus"] = material.youngModulus;
-        materialObj["density"] = material.density;
-        materialObj["yieldStrength"] = material.yieldStrength;
-        materialObj["name"] = material.name;
+        materialObj["youngsModulus"] = member.youngModulus;
+        materialObj["density"] = member.density;
+        materialObj["yieldStrength"] = member.yieldStrength;
         memberObj["material"] = materialObj;
         
-        // Section properties
-        const auto& section = member->getSection();
+        // Section properties (flattened from DTO)
         json sectionObj;
-        sectionObj["area"] = section.area;
+        sectionObj["area"] = member.area;
         memberObj["section"] = sectionObj;
         
         membersArray.push_back(memberObj);
@@ -138,18 +118,16 @@ json JsonTrussWriter::createMembers(const core::Truss& truss) {
     return membersArray;
 }
 
-json JsonTrussWriter::createLoads(const core::Truss& truss) {
+json JsonTrussWriter::createLoads(const core::interfaces::TrussDTO& trussData) {
     json loadsArray = json::array();
     
-    for (const auto& node : truss.getLoadedNodes()) {
-        const auto& force = node->getAppliedForce();
-        
+    for (const auto& node : trussData.nodes) {
         // Only write non-zero forces
-        if (force.magnitude() > 1e-10) {
+        if (std::abs(node.fx) > 1e-10 || std::abs(node.fy) > 1e-10) {
             json loadObj;
-            loadObj["nodeId"] = node->getId();
-            loadObj["fx"] = force.fx;
-            loadObj["fy"] = force.fy;
+            loadObj["nodeId"] = node.id;
+            loadObj["fx"] = node.fx;
+            loadObj["fy"] = node.fy;
             
             loadsArray.push_back(loadObj);
         }

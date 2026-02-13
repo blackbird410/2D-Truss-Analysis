@@ -32,7 +32,7 @@ public:
     /**
      * @brief Read truss from JSON file
      */
-    std::shared_ptr<core::Truss> read(
+    core::interfaces::TrussDTO read(
         const std::filesystem::path& filepath,
         const FileIOOptions& options = FileIOOptions{}
     ) override;
@@ -49,31 +49,22 @@ private:
     /**
      * @brief Parse metadata section
      */
-    void parseMetadata(const nlohmann::json& j, core::Truss& truss);
+    void parseMetadata(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
     
     /**
-     * @brief Parse nodes section
-     * @param j JSON nodes array
-     * @param truss Target truss
-     * @param nodeIdMap Mapping from file node IDs to created node IDs
+     * @brief Parse nodes section - creates NodeDTO objects
      */
-    void parseNodes(const nlohmann::json& j, core::Truss& truss, std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
+    void parseNodes(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
     
     /**
-     * @brief Parse members section
-     * @param j JSON members array
-     * @param truss Target truss
-     * @param nodeIdMap Mapping from file node IDs to created node IDs
+     * @brief Parse members section - creates MemberDTO objects
      */
-    void parseMembers(const nlohmann::json& j, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
+    void parseMembers(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
     
     /**
-     * @brief Parse loads section
-     * @param j JSON loads array
-     * @param truss Target truss
-     * @param nodeIdMap Mapping from file node IDs to created node IDs
+     * @brief Parse loads section - updates NodeDTO force fields
      */
-    void parseLoads(const nlohmann::json& j, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
+    void parseLoads(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
     
     /**
      * @brief Parse support type from string
