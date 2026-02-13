@@ -157,7 +157,12 @@ void JsonTrussReader::parseMembers(const json& j, core::Truss& truss) {
             }
         }
         
-        truss.addMember(startNodeId, endNodeId, material, section);
+        try {
+            truss.addMember(startNodeId, endNodeId, material, section);
+        } catch (const std::invalid_argument& e) {
+            // Convert domain exceptions to validation exceptions for I/O layer
+            throw ValidationException(std::string("Member validation failed: ") + e.what());
+        }
     }
 }
 

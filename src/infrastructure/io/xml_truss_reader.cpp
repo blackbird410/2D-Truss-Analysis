@@ -144,7 +144,12 @@ void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement, core::Tr
             section.area = getDoubleAttribute(sectionElement, "area", section.area);
         }
         
-        truss.addMember(startNodeId, endNodeId, material, section);
+        try {
+            truss.addMember(startNodeId, endNodeId, material, section);
+        } catch (const std::invalid_argument& e) {
+            // Convert domain exceptions to validation exceptions for I/O layer
+            throw ValidationException(std::string("Member validation failed: ") + e.what());
+        }
     }
 }
 
