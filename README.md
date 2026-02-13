@@ -175,7 +175,7 @@ sudo dnf install cmake qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel gcc-c++
 # Build as above
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
-````
+```
 
 ### Alternative: Arch Linux
 
