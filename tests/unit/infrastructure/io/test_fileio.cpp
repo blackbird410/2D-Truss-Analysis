@@ -448,3 +448,300 @@ TEST_F(FileIOTest, HandlesLargeTruss) {
     EXPECT_GT(fileSize, 1000);  // Should be more than 1KB for 100 nodes
 }
 
+// ============================================================================
+// Referential Integrity Tests - CRITICAL FOR STRUCTURAL ANALYSIS
+// ============================================================================
+
+TEST_F(FileIOTest, JsonReaderDetectsDuplicateNodeIDs) {
+    auto filepath = testDir / "duplicate_nodes.json";
+    
+    // Create JSON with duplicate node IDs
+    std::ofstream file(filepath);
+    file << R"({
+        "nodes": [
+            {"id": 1, "x": 0.0, "y": 0.0, "support": "pinned"},
+            {"id": 2, "x": 4.0, "y": 0.0, "support": "free"},
+            {"id": 1, "x": 2.0, "y": 3.0, "support": "free"}
+        ]
+    })";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::JSON);
+    FileIOOptions options;
+    options.validateOnRead = false;  // Disable domain validation
+    
+    // Should throw ParseException with clear error message
+    try {
+        reader->read(filepath, options);
+        FAIL() << "Expected ParseException for duplicate node ID";
+    } catch (const ParseException& e) {
+        std::string errorMsg = e.what();
+        EXPECT_TRUE(errorMsg.find("Duplicate node ID") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("1") != std::string::npos);
+    }
+}
+
+TEST_F(FileIOTest, XmlReaderDetectsDuplicateNodeIDs) {
+    auto filepath = testDir / "duplicate_nodes.xml";
+    
+    // Create XML with duplicate node IDs
+    std::ofstream file(filepath);
+    file << R"(<?xml version="1.0"?>
+<truss>
+    <nodes>
+        <node id="1" x="0.0" y="0.0" support="pinned"/>
+        <node id="2" x="4.0" y="0.0" support="free"/>
+        <node id="1" x="2.0" y="3.0" support="free"/>
+    </nodes>
+</truss>
+)";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::XML);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException
+    try {
+        reader->read(filepath, options);
+        FAIL() << "Expected ParseException for duplicate node ID";
+    } catch (const ParseException& e) {
+        std::string errorMsg = e.what();
+        EXPECT_TRUE(errorMsg.find("Duplicate node ID") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("1") != std::string::npos);
+    }
+}
+
+TEST_F(FileIOTest, JsonReaderDetectsUnknownStartNodeInMember) {
+    auto filepath = testDir / "unknown_start_node.json";
+    
+    // Create JSON where member references non-existent start node
+    std::ofstream file(filepath);
+    file << R"({
+        "nodes": [
+            {"id": 1, "x": 0.0, "y": 0.0, "support": "pinned"},
+            {"id": 2, "x": 4.0, "y": 0.0, "support": "free"}
+        ],
+        "members": [
+            {"startNode": 999, "endNode": 2}
+        ]
+    })";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::JSON);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException
+    try {
+        reader->read(filepath, options);
+        FAIL() << "Expected ParseException for unknown start node ID";
+    } catch (const ParseException& e) {
+        std::string errorMsg = e.what();
+        EXPECT_TRUE(errorMsg.find("unknown start node ID") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("999") != std::string::npos);
+    }
+}
+
+TEST_F(FileIOTest, JsonReaderDetectsUnknownEndNodeInMember) {
+    auto filepath = testDir / "unknown_end_node.json";
+    
+    // Create JSON where member references non-existent end node
+    std::ofstream file(filepath);
+    file << R"({
+        "nodes": [
+            {"id": 1, "x": 0.0, "y": 0.0, "support": "pinned"},
+            {"id": 2, "x": 4.0, "y": 0.0, "support": "free"}
+        ],
+        "members": [
+            {"startNode": 1, "endNode": 888}
+        ]
+    })";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::JSON);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException
+    try {
+        reader->read(filepath, options);
+        FAIL() << "Expected ParseException for unknown end node ID";
+    } catch (const ParseException& e) {
+        std::string errorMsg = e.what();
+        EXPECT_TRUE(errorMsg.find("unknown end node ID") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("888") != std::string::npos);
+    }
+}
+
+TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInMember) {
+    auto filepath = testDir / "unknown_node.xml";
+    
+    // Create XML where member references non-existent nodes
+    std::ofstream file(filepath);
+    file << R"(<?xml version="1.0"?>
+<truss>
+    <nodes>
+        <node id="1" x="0.0" y="0.0" support="pinned"/>
+        <node id="2" x="4.0" y="0.0" support="free"/>
+    </nodes>
+    <members>
+        <member startNode="1" endNode="777"/>
+    </members>
+</truss>
+)";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::XML);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException
+    try {
+        reader->read(filepath, options);
+        FAIL() << "Expected ParseException for unknown node ID in member";
+    } catch (const ParseException& e) {
+        std::string errorMsg = e.what();
+        EXPECT_TRUE(errorMsg.find("unknown") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("777") != std::string::npos);
+    }
+}
+
+TEST_F(FileIOTest, JsonReaderDetectsUnknownNodeInLoad) {
+    auto filepath = testDir / "unknown_load_node.json";
+    
+    // Create JSON where load references non-existent node
+    std::ofstream file(filepath);
+    file << R"({
+        "nodes": [
+            {"id": 1, "x": 0.0, "y": 0.0, "support": "pinned"},
+            {"id": 2, "x": 4.0, "y": 0.0, "support": "free"}
+        ],
+        "loads": [
+            {"nodeId": 555, "fx": 0.0, "fy": -1000.0}
+        ]
+    })";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::JSON);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException
+    try {
+        reader->read(filepath, options);
+        FAIL() << "Expected ParseException for unknown node ID in load";
+    } catch (const ParseException& e) {
+        std::string errorMsg = e.what();
+        EXPECT_TRUE(errorMsg.find("unknown node ID") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("555") != std::string::npos);
+    }
+}
+
+TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInLoad) {
+    auto filepath = testDir / "unknown_load_node.xml";
+    
+    // Create XML where load references non-existent node
+    std::ofstream file(filepath);
+    file << R"(<?xml version="1.0"?>
+<truss>
+    <nodes>
+        <node id="1" x="0.0" y="0.0" support="pinned"/>
+        <node id="2" x="4.0" y="0.0" support="free"/>
+    </nodes>
+    <loads>
+        <load nodeId="666" fx="0.0" fy="-1000.0"/>
+    </loads>
+</truss>
+)";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::XML);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException
+    try {
+        reader->read(filepath, options);
+        FAIL() << "Expected ParseException for unknown node ID in load";
+    } catch (const ParseException& e) {
+        std::string errorMsg = e.what();
+        EXPECT_TRUE(errorMsg.find("unknown node ID") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("666") != std::string::npos);
+    }
+}
+
+TEST_F(FileIOTest, JsonReaderRequiresExplicitNodeIDs) {
+    auto filepath = testDir / "missing_node_id.json";
+    
+    // Create JSON with node missing ID field
+    std::ofstream file(filepath);
+    file << R"({
+        "nodes": [
+            {"x": 0.0, "y": 0.0, "support": "pinned"}
+        ]
+    })";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::JSON);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException - node ID is mandatory
+    EXPECT_THROW(reader->read(filepath, options), ParseException);
+}
+
+TEST_F(FileIOTest, XmlReaderRequiresExplicitNodeIDs) {
+    auto filepath = testDir / "missing_node_id.xml";
+    
+    // Create XML with node missing ID attribute
+    std::ofstream file(filepath);
+    file << R"(<?xml version="1.0"?>
+<truss>
+    <nodes>
+        <node x="0.0" y="0.0" support="pinned"/>
+    </nodes>
+</truss>
+)";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::XML);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should throw ParseException - ID attribute is mandatory
+    EXPECT_THROW(reader->read(filepath, options), ParseException);
+}
+
+TEST_F(FileIOTest, JsonValidFileWithNonSequentialIDsSucceeds) {
+    auto filepath = testDir / "non_sequential.json";
+    
+    // Create JSON with non-sequential node IDs (100, 200, 300)
+    std::ofstream file(filepath);
+    file << R"({
+        "nodes": [
+            {"id": 100, "x": 0.0, "y": 0.0, "support": "pinned"},
+            {"id": 200, "x": 4.0, "y": 0.0, "support": "free"},
+            {"id": 300, "x": 2.0, "y": 3.0, "support": "free"}
+        ],
+        "members": [
+            {"startNode": 100, "endNode": 300},
+            {"startNode": 200, "endNode": 300}
+        ],
+        "loads": [
+            {"nodeId": 300, "fx": 0.0, "fy": -10000.0}
+        ]
+    })";
+    file.close();
+    
+    auto reader = FileIOFactory::createReader(FileFormat::JSON);
+    FileIOOptions options;
+    options.validateOnRead = false;
+    
+    // Should succeed - non-sequential IDs are valid
+    auto truss = reader->read(filepath, options);
+    ASSERT_NE(truss, nullptr);
+    EXPECT_EQ(truss->getNodeCount(), 3);
+    EXPECT_EQ(truss->getMemberCount(), 2);
+}
+
