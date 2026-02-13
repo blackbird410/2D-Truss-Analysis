@@ -21,6 +21,25 @@ endif()
 # Find required packages
 find_package(Eigen3 REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(nlohmann_json REQUIRED)
+
+# Find tinyxml2 (note: package name in CMake is lowercase)
+find_package(tinyxml2 QUIET)
+if(NOT tinyxml2_FOUND)
+    # Try alternative search in Homebrew
+    find_library(TINYXML2_LIBRARY tinyxml2 PATHS /opt/homebrew/lib /usr/local/lib)
+    find_path(TINYXML2_INCLUDE_DIR tinyxml2.h PATHS /opt/homebrew/include /usr/local/include)
+    if(TINYXML2_LIBRARY AND TINYXML2_INCLUDE_DIR)
+        add_library(tinyxml2::tinyxml2 UNKNOWN IMPORTED)
+        set_target_properties(tinyxml2::tinyxml2 PROPERTIES
+            IMPORTED_LOCATION "${TINYXML2_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${TINYXML2_INCLUDE_DIR}"
+        )
+        set(tinyxml2_FOUND TRUE)
+    else()
+        message(FATAL_ERROR "tinyxml2 not found")
+    endif()
+endif()
 
 # Enable testing
 include(CTest)
@@ -93,6 +112,20 @@ add_library(TrussCore STATIC
     src/infrastructure/logging/file_logger.hpp
     src/infrastructure/logging/logger_factory.cpp
     src/infrastructure/logging/logger_factory.hpp
+    # Phase 2 (Infrastructure Refactoring) - File I/O subsystem
+    src/infrastructure/io/io_types.hpp
+    src/infrastructure/io/truss_reader.hpp
+    src/infrastructure/io/truss_writer.hpp
+    src/infrastructure/io/json_truss_reader.cpp
+    src/infrastructure/io/json_truss_reader.hpp
+    src/infrastructure/io/json_truss_writer.cpp
+    src/infrastructure/io/json_truss_writer.hpp
+    src/infrastructure/io/xml_truss_reader.cpp
+    src/infrastructure/io/xml_truss_reader.hpp
+    src/infrastructure/io/xml_truss_writer.cpp
+    src/infrastructure/io/xml_truss_writer.hpp
+    src/infrastructure/io/fileio_factory.cpp
+    src/infrastructure/io/fileio_factory.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -101,10 +134,13 @@ target_include_directories(TrussCore PUBLIC
     ${CMAKE_SOURCE_DIR}/src/core/analysis
     ${CMAKE_SOURCE_DIR}/src/infrastructure/export
     ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/io
 )
 
 target_link_libraries(TrussCore PUBLIC
     Eigen3::Eigen
+    nlohmann_json::nlohmann_json
+    tinyxml2::tinyxml2
 )
 
 # Set target properties for library
@@ -162,6 +198,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_xml_exporter.cpp
         tests/unit/infrastructure/export/test_exporter_factory.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
+        tests/unit/infrastructure/io/test_fileio.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
@@ -175,6 +212,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/core
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
+        ${CMAKE_SOURCE_DIR}/src/infrastructure/io
     )
     
     add_test(NAME UnitTests COMMAND unit_tests)
