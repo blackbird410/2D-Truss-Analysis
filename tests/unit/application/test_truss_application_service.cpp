@@ -52,19 +52,19 @@ protected:
         auto filepath = tempDir / filename;
         std::ofstream file(filepath);
         file << R"({
-            "truss": {
-                "name": "Test Truss",
-                "nodes": [
-                    {"id": 1, "x": 0.0, "y": 0.0, "support": "pinned"},
-                    {"id": 2, "x": 4.0, "y": 0.0, "support": "roller_y"},
-                    {"id": 3, "x": 2.0, "y": 3.0, "support": "free", "fx": 0.0, "fy": -1000.0}
-                ],
-                "members": [
-                    {"id": 1, "start": 1, "end": 2, "area": 0.01, "youngs_modulus": 200e9},
-                    {"id": 2, "start": 1, "end": 3, "area": 0.01, "youngs_modulus": 200e9},
-                    {"id": 3, "start": 2, "end": 3, "area": 0.01, "youngs_modulus": 200e9}
-                ]
-            }
+            "metadata": {
+                "name": "Test Truss"
+            },
+            "nodes": [
+                {"id": 1, "x": 0.0, "y": 0.0, "support": "pinned"},
+                {"id": 2, "x": 4.0, "y": 0.0, "support": "roller_y"},
+                {"id": 3, "x": 2.0, "y": 3.0, "support": "free", "fx": 0.0, "fy": -1000.0}
+            ],
+            "members": [
+                {"id": 1, "startNode": 1, "endNode": 2, "area": 0.01, "youngsModulus": 200e9},
+                {"id": 2, "startNode": 1, "endNode": 3, "area": 0.01, "youngsModulus": 200e9},
+                {"id": 3, "startNode": 2, "endNode": 3, "area": 0.01, "youngsModulus": 200e9}
+            ]
         })";
         file.close();
         return filepath;
@@ -77,16 +77,17 @@ protected:
         auto filepath = tempDir / filename;
         std::ofstream file(filepath);
         file << R"(<?xml version="1.0"?>
-<truss name="Test Truss">
+<truss>
+    <metadata name="Test Truss"/>
     <nodes>
         <node id="1" x="0.0" y="0.0" support="pinned"/>
         <node id="2" x="4.0" y="0.0" support="roller_y"/>
         <node id="3" x="2.0" y="3.0" support="free" fx="0.0" fy="-1000.0"/>
     </nodes>
     <members>
-        <member id="1" start="1" end="2" area="0.01" youngs_modulus="200e9"/>
-        <member id="2" start="1" end="3" area="0.01" youngs_modulus="200e9"/>
-        <member id="3" start="2" end="3" area="0.01" youngs_modulus="200e9"/>
+        <member id="1" startNode="1" endNode="2" area="0.01" youngsModulus="200e9"/>
+        <member id="2" startNode="1" endNode="3" area="0.01" youngsModulus="200e9"/>
+        <member id="3" startNode="2" endNode="3" area="0.01" youngsModulus="200e9"/>
     </members>
 </truss>)";
         file.close();
@@ -213,7 +214,7 @@ TEST_F(TrussApplicationServiceTest, LoadTruss_ValidJsonFile_Succeeds) {
     
     auto result = service.loadTruss(filepath);
     
-    ASSERT_TRUE(result.success);
+    ASSERT_TRUE(result.success) << "Error: " << result.errorMessage;
     EXPECT_GT(result.value, 0);
     EXPECT_TRUE(result.errorMessage.empty());
 }
@@ -293,68 +294,81 @@ TEST_F(TrussApplicationServiceTest, LoadTruss_EmptyPath_ReturnsFailure) {
 // ============================================================================
 
 TEST_F(TrussApplicationServiceTest, SaveTruss_ValidHandle_Succeeds) {
-    auto createResult = service.createTruss("SaveTest");
-    ASSERT_TRUE(createResult.success);
+    // Load a valid truss first
+    auto loadPath = createTestJsonFile("valid.json");
+    auto loadResult = service.loadTruss(loadPath);
+    ASSERT_TRUE(loadResult.success);
     
     auto filepath = tempDir / "output.json";
-    auto saveResult = service.saveTruss(createResult.value, filepath, true);
+    auto saveResult = service.saveTruss(loadResult.value, filepath, true);
     
-    EXPECT_TRUE(saveResult.success);
+    EXPECT_TRUE(saveResult.success) << "Error: " << saveResult.errorMessage;
     EXPECT_TRUE(std::filesystem::exists(filepath));
 }
 
 TEST_F(TrussApplicationServiceTest, SaveTruss_JsonFormat_CreatesValidFile) {
-    auto createResult = service.createTruss("SaveTest");
-    ASSERT_TRUE(createResult.success);
+    // Load a valid truss first
+    auto loadPath = createTestJsonFile("valid.json");
+    auto loadResult = service.loadTruss(loadPath);
+    ASSERT_TRUE(loadResult.success);
     
     auto filepath = tempDir / "output.json";
-    service.saveTruss(createResult.value, filepath, FileFormat::JSON, true);
+    auto saveResult = service.saveTruss(loadResult.value, filepath, FileFormat::JSON, true);
+    ASSERT_TRUE(saveResult.success) << "Error: " << saveResult.errorMessage;
     
     // Verify file can be loaded back
-    auto loadResult = service.loadTruss(filepath);
-    EXPECT_TRUE(loadResult.success);
+    auto reloadResult = service.loadTruss(filepath);
+    EXPECT_TRUE(reloadResult.success) << "Error: " << reloadResult.errorMessage;
 }
 
 TEST_F(TrussApplicationServiceTest, SaveTruss_XmlFormat_CreatesValidFile) {
-    auto createResult = service.createTruss("SaveTest");
-    ASSERT_TRUE(createResult.success);
+    // Load a valid truss first
+    auto loadPath = createTestJsonFile("valid.json");
+    auto loadResult = service.loadTruss(loadPath);
+    ASSERT_TRUE(loadResult.success);
     
     auto filepath = tempDir / "output.xml";
-    service.saveTruss(createResult.value, filepath, FileFormat::XML, true);
+    auto saveResult = service.saveTruss(loadResult.value, filepath, FileFormat::XML, true);
+    ASSERT_TRUE(saveResult.success) << "Error: " << saveResult.errorMessage;
     
     // Verify file can be loaded back
-    auto loadResult = service.loadTruss(filepath);
-    EXPECT_TRUE(loadResult.success);
+    auto reloadResult = service.loadTruss(filepath);
+    EXPECT_TRUE(reloadResult.success) << "Error: " << reloadResult.errorMessage;
 }
 
 TEST_F(TrussApplicationServiceTest, SaveTruss_WithoutOverwrite_ExistingFile_ReturnsFailure) {
-    auto createResult = service.createTruss("SaveTest");
-    ASSERT_TRUE(createResult.success);
+    // Load a valid truss first
+    auto loadPath = createTestJsonFile("valid.json");
+    auto loadResult = service.loadTruss(loadPath);
+    ASSERT_TRUE(loadResult.success);
     
     auto filepath = tempDir / "output.json";
     
     // First save
-    auto saveResult1 = service.saveTruss(createResult.value, filepath, true);
-    ASSERT_TRUE(saveResult1.success);
+    auto saveResult1 = service.saveTruss(loadResult.value, filepath, true);
+    ASSERT_TRUE(saveResult1.success) << "Error: " << saveResult1.errorMessage;
     
     // Second save without overwrite flag
-    auto saveResult2 = service.saveTruss(createResult.value, filepath, false);
+    auto saveResult2 = service.saveTruss(loadResult.value, filepath, false);
     EXPECT_FALSE(saveResult2.success);
     EXPECT_FALSE(saveResult2.errorMessage.empty());
 }
 
 TEST_F(TrussApplicationServiceTest, SaveTruss_WithOverwrite_ExistingFile_Succeeds) {
-    auto createResult = service.createTruss("SaveTest");
-    ASSERT_TRUE(createResult.success);
+    // Load a valid truss first
+    auto loadPath = createTestJsonFile("valid.json");
+    auto loadResult = service.loadTruss(loadPath);
+    ASSERT_TRUE(loadResult.success);
     
     auto filepath = tempDir / "output.json";
     
     // First save
-    service.saveTruss(createResult.value, filepath, true);
+    auto saveResult1 = service.saveTruss(loadResult.value, filepath, true);
+    ASSERT_TRUE(saveResult1.success) << "Error: " << saveResult1.errorMessage;
     
     // Second save with overwrite flag
-    auto saveResult2 = service.saveTruss(createResult.value, filepath, true);
-    EXPECT_TRUE(saveResult2.success);
+    auto saveResult2 = service.saveTruss(loadResult.value, filepath, true);
+    EXPECT_TRUE(saveResult2.success) << "Error: " << saveResult2.errorMessage;
 }
 
 TEST_F(TrussApplicationServiceTest, SaveTruss_InvalidHandle_ReturnsFailure) {
