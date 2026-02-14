@@ -223,6 +223,7 @@ if(BUILD_TESTING)
     
     # Unit tests (core functionality tests)
     add_executable(unit_tests
+        # Domain layer tests
         tests/unit/core/test_node.cpp
         tests/unit/core/test_member.cpp
         tests/unit/core/test_truss.cpp
@@ -232,6 +233,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
         tests/unit/core/test_analysis_orchestrator.cpp
+        # Infrastructure layer tests
         tests/unit/infrastructure/export/test_csv_exporter.cpp
         tests/unit/infrastructure/export/test_html_exporter.cpp
         tests/unit/infrastructure/export/test_json_exporter.cpp
@@ -241,9 +243,13 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_exporter_factory.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
+        # Application layer tests (Phase 4)
+        tests/unit/application/test_truss_application_service.cpp
+        tests/unit/application/test_analysis_application_service.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
+        TrussApplication
         TrussCore
         GTest::gtest
         GTest::gtest_main
@@ -252,6 +258,7 @@ if(BUILD_TESTING)
     target_include_directories(unit_tests PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/core
+        ${CMAKE_SOURCE_DIR}/src/application
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
         ${CMAKE_SOURCE_DIR}/src/infrastructure/io
