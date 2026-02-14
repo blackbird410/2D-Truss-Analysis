@@ -59,7 +59,7 @@ void XmlTrussWriter::createMetadata(
     tinyxml2::XMLDocument& doc,
     tinyxml2::XMLElement* root,
     const core::interfaces::TrussDTO& trussData,
-    const FileIOOptions& options
+    [[maybe_unused]] const FileIOOptions& options
 ) {
     tinyxml2::XMLElement* metadata = doc.NewElement("metadata");
     metadata->SetAttribute("name", trussData.name.c_str());

@@ -7,10 +7,9 @@
  */
 
 #include "json_truss_reader.hpp"
-#include "../../core/validation/TrussValidator.hpp"
 #include <fstream>
 #include <sstream>
-#include <unordered_map>
+#include <unordered_set>
 
 using json = nlohmann::json;
 
@@ -18,7 +17,7 @@ namespace truss::infrastructure::io {
 
 core::interfaces::TrussDTO JsonTrussReader::read(
     const std::filesystem::path& filepath,
-    const FileIOOptions& options
+    [[maybe_unused]] const FileIOOptions& options
 ) {
     // Check file exists
     if (!std::filesystem::exists(filepath)) {
@@ -48,18 +47,19 @@ core::interfaces::TrussDTO JsonTrussReader::read(
             parseMetadata(j["metadata"], dto);
         }
         
+        std::unordered_set<core::NodeId> validNodeIds;
         if (j.contains("nodes")) {
-            parseNodes(j["nodes"], dto);
+            validNodeIds = parseNodes(j["nodes"], dto);
         } else {
             throw ParseException("Missing required 'nodes' section");
         }
         
         if (j.contains("members")) {
-            parseMembers(j["members"], dto);
+            parseMembers(j["members"], dto, validNodeIds);
         }
         
         if (j.contains("loads")) {
-            parseLoads(j["loads"], dto);
+            parseLoads(j["loads"], dto, validNodeIds);
         }
     } catch (const json::exception& e) {
         throw ParseException(std::string("JSON structure error: ") + e.what());
@@ -77,10 +77,12 @@ void JsonTrussReader::parseMetadata(const json& j, core::interfaces::TrussDTO& d
     // Additional metadata fields can be added here
 }
 
-void JsonTrussReader::parseNodes(const json& j, core::interfaces::TrussDTO& dto) {
+std::unordered_set<core::NodeId> JsonTrussReader::parseNodes(const json& j, core::interfaces::TrussDTO& dto) {
     if (!j.is_array()) {
         throw ParseException("'nodes' must be an array");
     }
+    
+    std::unordered_set<core::NodeId> seenNodeIds;
     
     for (const auto& nodeJson : j) {
         if (!nodeJson.contains("id") || !nodeJson.contains("x") || !nodeJson.contains("y")) {
@@ -92,11 +94,9 @@ void JsonTrussReader::parseNodes(const json& j, core::interfaces::TrussDTO& dto)
         nodeDTO.x = nodeJson["x"].get<core::Real>();
         nodeDTO.y = nodeJson["y"].get<core::Real>();
         
-        // Check for duplicate node ID
-        for (const auto& existing : dto.nodes) {
-            if (existing.id == nodeDTO.id) {
-                throw ParseException("Duplicate node ID: " + std::to_string(nodeDTO.id));
-            }
+        // Check for duplicate node ID (O(1) with unordered_set)
+        if (!seenNodeIds.insert(nodeDTO.id).second) {
+            throw ParseException("Duplicate node ID: " + std::to_string(nodeDTO.id));
         }
         
         nodeDTO.support = core::SupportType::Free;
@@ -110,9 +110,12 @@ void JsonTrussReader::parseNodes(const json& j, core::interfaces::TrussDTO& dto)
         
         dto.nodes.push_back(nodeDTO);
     }
+    
+    return seenNodeIds;
 }
 
-void JsonTrussReader::parseMembers(const json& j, core::interfaces::TrussDTO& dto) {
+void JsonTrussReader::parseMembers(const json& j, core::interfaces::TrussDTO& dto,
+                                   const std::unordered_set<core::NodeId>& validNodeIds) {
     if (!j.is_array()) {
         throw ParseException("'members' must be an array");
     }
@@ -134,17 +137,11 @@ void JsonTrussReader::parseMembers(const json& j, core::interfaces::TrussDTO& dt
         memberDTO.startNodeId = memberJson["startNode"].get<core::NodeId>();
         memberDTO.endNodeId = memberJson["endNode"].get<core::NodeId>();
         
-        // Validate that referenced nodes exist
-        bool startExists = false, endExists = false;
-        for (const auto& node : dto.nodes) {
-            if (node.id == memberDTO.startNodeId) startExists = true;
-            if (node.id == memberDTO.endNodeId) endExists = true;
-        }
-        
-        if (!startExists) {
+        // Validate that referenced nodes exist (O(1) lookup with unordered_set)
+        if (validNodeIds.find(memberDTO.startNodeId) == validNodeIds.end()) {
             throw ParseException("Member references unknown start node ID: " + std::to_string(memberDTO.startNodeId));
         }
-        if (!endExists) {
+        if (validNodeIds.find(memberDTO.endNodeId) == validNodeIds.end()) {
             throw ParseException("Member references unknown end node ID: " + std::to_string(memberDTO.endNodeId));
         }
         
@@ -166,7 +163,8 @@ void JsonTrussReader::parseMembers(const json& j, core::interfaces::TrussDTO& dt
     }
 }
 
-void JsonTrussReader::parseLoads(const json& j, core::interfaces::TrussDTO& dto) {
+void JsonTrussReader::parseLoads(const json& j, core::interfaces::TrussDTO& dto,
+                                 const std::unordered_set<core::NodeId>& validNodeIds) {
     if (!j.is_array()) {
         throw ParseException("'loads' must be an array");
     }
@@ -180,19 +178,18 @@ void JsonTrussReader::parseLoads(const json& j, core::interfaces::TrussDTO& dto)
         core::Real fx = loadJson.value("fx", 0.0);
         core::Real fy = loadJson.value("fy", 0.0);
         
+        // Validate node exists (O(1) lookup)
+        if (validNodeIds.find(nodeId) == validNodeIds.end()) {
+            throw ParseException("Load references unknown node ID: " + std::to_string(nodeId));
+        }
+        
         // Find node and apply force
-        bool found = false;
         for (auto& node : dto.nodes) {
             if (node.id == nodeId) {
                 node.fx = fx;
                 node.fy = fy;
-                found = true;
                 break;
             }
-        }
-        
-        if (!found) {
-            throw ParseException("Load references unknown node ID: " + std::to_string(nodeId));
         }
     }
 }

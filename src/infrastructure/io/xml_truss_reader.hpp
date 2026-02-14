@@ -64,22 +64,27 @@ private:
      * @brief Parse nodes section
      * @param element Nodes XML element
      * @param dto Target DTO
+     * @return Set of parsed node IDs for validation
      */
-    void parseNodes(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
+    std::unordered_set<core::NodeId> parseNodes(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
     
     /**
      * @brief Parse members section
      * @param element Members XML element
      * @param dto Target DTO
+     * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseMembers(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
+    void parseMembers(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto,
+                      const std::unordered_set<core::NodeId>& validNodeIds);
     
     /**
      * @brief Parse loads section
      * @param element Loads XML element
      * @param dto Target DTO
+     * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseLoads(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
+    void parseLoads(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto,
+                    const std::unordered_set<core::NodeId>& validNodeIds);
     
     /**
      * @brief Parse support type from string

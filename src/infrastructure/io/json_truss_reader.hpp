@@ -53,18 +53,23 @@ private:
     
     /**
      * @brief Parse nodes section - creates NodeDTO objects
+     * @return Set of parsed node IDs for validation
      */
-    void parseNodes(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
+    std::unordered_set<core::NodeId> parseNodes(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
     
     /**
      * @brief Parse members section - creates MemberDTO objects
+     * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseMembers(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
+    void parseMembers(const nlohmann::json& j, core::interfaces::TrussDTO& dto, 
+                      const std::unordered_set<core::NodeId>& validNodeIds);
     
     /**
      * @brief Parse loads section - updates NodeDTO force fields
+     * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseLoads(const nlohmann::json& j, core::interfaces::TrussDTO& dto);
+    void parseLoads(const nlohmann::json& j, core::interfaces::TrussDTO& dto,
+                    const std::unordered_set<core::NodeId>& validNodeIds);
     
     /**
      * @brief Parse support type from string

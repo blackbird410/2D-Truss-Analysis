@@ -7,15 +7,14 @@
  */
 
 #include "xml_truss_reader.hpp"
-#include "../../core/validation/TrussValidator.hpp"
 #include <sstream>
-#include <unordered_map>
+#include <unordered_set>
 
 namespace truss::infrastructure::io {
 
 core::interfaces::TrussDTO XmlTrussReader::read(
     const std::filesystem::path& filepath,
-    const FileIOOptions& options
+    [[maybe_unused]] const FileIOOptions& options
 ) {
     // Check file exists
     if (!std::filesystem::exists(filepath)) {
@@ -52,18 +51,18 @@ core::interfaces::TrussDTO XmlTrussReader::read(
         if (!nodes) {
             throw ParseException("Missing required <nodes> section");
         }
-        parseNodes(nodes, dto);
+        std::unordered_set<core::NodeId> validNodeIds = parseNodes(nodes, dto);
         
         // Members (optional)
         tinyxml2::XMLElement* members = root->FirstChildElement("members");
         if (members) {
-            parseMembers(members, dto);
+            parseMembers(members, dto, validNodeIds);
         }
         
         // Loads (optional)
         tinyxml2::XMLElement* loads = root->FirstChildElement("loads");
         if (loads) {
-            parseLoads(loads, dto);
+            parseLoads(loads, dto, validNodeIds);
         }
     } catch (const ParseException& e) {
         // Preserve existing ParseException messages without adding another prefix
@@ -84,7 +83,9 @@ void XmlTrussReader::parseMetadata(tinyxml2::XMLElement* element, core::interfac
     }
 }
 
-void XmlTrussReader::parseNodes(tinyxml2::XMLElement* nodesElement, core::interfaces::TrussDTO& dto) {
+std::unordered_set<core::NodeId> XmlTrussReader::parseNodes(tinyxml2::XMLElement* nodesElement, core::interfaces::TrussDTO& dto) {
+    std::unordered_set<core::NodeId> seenNodeIds;
+    
     for (tinyxml2::XMLElement* nodeElement = nodesElement->FirstChildElement("node");
          nodeElement != nullptr;
          nodeElement = nodeElement->NextSiblingElement("node")) {
@@ -94,11 +95,9 @@ void XmlTrussReader::parseNodes(tinyxml2::XMLElement* nodesElement, core::interf
         nodeDTO.x = getDoubleAttribute(nodeElement, "x");
         nodeDTO.y = getDoubleAttribute(nodeElement, "y");
         
-        // Check for duplicate node ID
-        for (const auto& existing : dto.nodes) {
-            if (existing.id == nodeDTO.id) {
-                throw ParseException("Duplicate node ID: " + std::to_string(nodeDTO.id));
-            }
+        // Check for duplicate node ID (O(1) with unordered_set)
+        if (!seenNodeIds.insert(nodeDTO.id).second) {
+            throw ParseException("Duplicate node ID: " + std::to_string(nodeDTO.id));
         }
         
         const char* supportStr = nodeElement->Attribute("support");
@@ -113,9 +112,12 @@ void XmlTrussReader::parseNodes(tinyxml2::XMLElement* nodesElement, core::interf
         
         dto.nodes.push_back(nodeDTO);
     }
+    
+    return seenNodeIds;
 }
 
-void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement, core::interfaces::TrussDTO& dto) {
+void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement, core::interfaces::TrussDTO& dto,
+                                  const std::unordered_set<core::NodeId>& validNodeIds) {
     for (tinyxml2::XMLElement* memberElement = membersElement->FirstChildElement("member");
          memberElement != nullptr;
          memberElement = memberElement->NextSiblingElement("member")) {
@@ -127,17 +129,11 @@ void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement, core::in
         memberDTO.startNodeId = getIntAttribute(memberElement, "startNode");
         memberDTO.endNodeId = getIntAttribute(memberElement, "endNode");
         
-        // Validate that referenced nodes exist
-        bool startExists = false, endExists = false;
-        for (const auto& node : dto.nodes) {
-            if (node.id == memberDTO.startNodeId) startExists = true;
-            if (node.id == memberDTO.endNodeId) endExists = true;
-        }
-        
-        if (!startExists) {
+        // Validate that referenced nodes exist (O(1) lookup with unordered_set)
+        if (validNodeIds.find(memberDTO.startNodeId) == validNodeIds.end()) {
             throw ParseException("Member references unknown start node ID: " + std::to_string(memberDTO.startNodeId));
         }
-        if (!endExists) {
+        if (validNodeIds.find(memberDTO.endNodeId) == validNodeIds.end()) {
             throw ParseException("Member references unknown end node ID: " + std::to_string(memberDTO.endNodeId));
         }
         
@@ -166,7 +162,8 @@ void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement, core::in
     }
 }
 
-void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement, core::interfaces::TrussDTO& dto) {
+void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement, core::interfaces::TrussDTO& dto,
+                                const std::unordered_set<core::NodeId>& validNodeIds) {
     for (tinyxml2::XMLElement* loadElement = loadsElement->FirstChildElement("load");
          loadElement != nullptr;
          loadElement = loadElement->NextSiblingElement("load")) {
@@ -175,19 +172,18 @@ void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement, core::interf
         core::Real fx = getDoubleAttribute(loadElement, "fx", 0.0);
         core::Real fy = getDoubleAttribute(loadElement, "fy", 0.0);
         
+        // Validate node exists (O(1) lookup)
+        if (validNodeIds.find(nodeId) == validNodeIds.end()) {
+            throw ParseException("Load references unknown node ID: " + std::to_string(nodeId));
+        }
+        
         // Find node and apply force
-        bool found = false;
         for (auto& node : dto.nodes) {
             if (node.id == nodeId) {
                 node.fx = fx;
                 node.fy = fy;
-                found = true;
                 break;
             }
-        }
-        
-        if (!found) {
-            throw ParseException("Load references unknown node ID: " + std::to_string(nodeId));
         }
     }
 }

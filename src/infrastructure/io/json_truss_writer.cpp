@@ -59,7 +59,8 @@ bool JsonTrussWriter::write(
     }
 }
 
-json JsonTrussWriter::createMetadata(const core::interfaces::TrussDTO& trussData, const FileIOOptions& options) {
+json JsonTrussWriter::createMetadata(const core::interfaces::TrussDTO& trussData, 
+                                     [[maybe_unused]] const FileIOOptions& options) {
     json metadata;
     metadata["name"] = trussData.name;
     metadata["version"] = "3.0.0";
