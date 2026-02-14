@@ -18,6 +18,18 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic -O3 -march=native)
 endif()
 
+# Coverage options (enabled when CMAKE_BUILD_TYPE=Coverage)
+option(ENABLE_COVERAGE "Enable code coverage reporting" OFF)
+if(ENABLE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
+        add_link_options(--coverage)
+        message(STATUS "Code coverage enabled")
+    else()
+        message(WARNING "Coverage reporting is only supported with GCC/Clang")
+    endif()
+endif()
+
 # Find required packages
 find_package(Eigen3 REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
@@ -330,6 +342,42 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 message(STATUS "Linux optimizations enabled")
+
+# Coverage reporting targets
+if(ENABLE_COVERAGE)
+    find_program(LCOV lcov)
+    find_program(GENHTML genhtml)
+    
+    if(LCOV AND GENHTML)
+        add_custom_target(coverage
+            COMMAND ${CMAKE_COMMAND} -E echo "Running tests to generate coverage data..."
+            COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+            COMMAND ${CMAKE_COMMAND} -E echo "Capturing coverage data..."
+            COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${CMAKE_COMMAND} -E echo "Filtering coverage data..."
+            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${CMAKE_COMMAND} -E echo "Generating HTML report..."
+            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent
+            COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated: coverage_html/index.html"
+            COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage summary..."
+            COMMAND ${LCOV} --summary coverage_filtered.info
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating code coverage report"
+        )
+        
+        add_custom_target(coverage-clean
+            COMMAND ${CMAKE_COMMAND} -E remove -f coverage.info coverage_filtered.info
+            COMMAND ${CMAKE_COMMAND} -E remove_directory coverage_html
+            COMMAND find ${CMAKE_BINARY_DIR} -name "*.gcda" -delete
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Cleaning coverage data"
+        )
+        
+        message(STATUS "Coverage targets available: 'make coverage' and 'make coverage-clean'")
+    else()
+        message(WARNING "lcov or genhtml not found - coverage target unavailable")
+    endif()
+endif()
 
 # CPack configuration for Linux packaging
 set(CPACK_GENERATOR "TGZ;DEB")
