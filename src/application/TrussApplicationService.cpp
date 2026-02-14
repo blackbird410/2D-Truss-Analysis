@@ -28,8 +28,8 @@ Result<TrussHandle> TrussApplicationService::createTruss(const std::string& name
 
 Result<TrussHandle> TrussApplicationService::loadTruss(const std::filesystem::path& filepath) {
     try {
-        // Auto-detect format from extension
-        auto format = detectFileFormat(filepath);
+        // Auto-detect format from extension using FileIOFactory
+        auto format = FileIOFactory::detectFormat(filepath);
         if (format == FileFormat::Auto) {
             return Result<TrussHandle>::Failure(
                 "Could not detect file format from extension: " + filepath.string()
@@ -89,8 +89,8 @@ Result<bool> TrussApplicationService::saveTruss(
     bool overwrite) {
     
     try {
-        // Auto-detect format from extension
-        auto format = detectFileFormat(filepath);
+        // Auto-detect format from extension using FileIOFactory
+        auto format = FileIOFactory::detectFormat(filepath);
         if (format == FileFormat::Auto) {
             return Result<bool>::Failure(
                 "Could not detect file format from extension: " + filepath.string()
