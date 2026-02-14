@@ -93,8 +93,15 @@ Result<bool> AnalysisApplicationService::exportResults(
         // Create exporter for specified format
         auto exporter = infrastructure::export_::ExporterFactory::create(format);
         
-        // Export results
-        exporter->exportResults(truss, results, filepath, options);
+        // Export results - check return value for file I/O errors
+        bool exportSuccess = exporter->exportResults(truss, results, filepath, options);
+        if (!exportSuccess) {
+            std::string errorMsg = exporter->getLastError();
+            if (errorMsg.empty()) {
+                errorMsg = "Export failed for unknown reason";
+            }
+            return Result<bool>::Failure(errorMsg);
+        }
         
         return Result<bool>::Success(true);
         
