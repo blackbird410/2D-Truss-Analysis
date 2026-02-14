@@ -215,18 +215,18 @@ void LaTeXExporter::writePropertiesSection(std::ostream& os,
                                           const ITrussView& truss,
                                           const ExportOptions& options) {
     os << "\\section{Material and Section Properties}\n\n";
-    os << "\\begin{longtable}{cccccc}\n";
+    os << "\\begin{longtable}{ccccc}\n";
     os << "\\toprule\n";
-    os << "Member ID & Material & E (Pa) & Density (kg/m³) & Area (m²) & Section \\\\\n";
+    os << "Member ID & E (Pa) & Yield Strength (Pa) & Density (kg/m³) & Area (m²) \\\\\n";
     os << "\\midrule\n";
     os << "\\endfirsthead\n\n";
-    os << "\\multicolumn{6}{c}{{\\tablename\\ \\thetable{} -- continued from previous page}} \\\\\n";
+    os << "\\multicolumn{5}{c}{{\\tablename\\ \\thetable{} -- continued from previous page}} \\\\\n";
     os << "\\toprule\n";
-    os << "Member ID & Material & E (Pa) & Density (kg/m³) & Area (m²) & Section \\\\\n";
+    os << "Member ID & E (Pa) & Yield Strength (Pa) & Density (kg/m³) & Area (m²) \\\\\n";
     os << "\\midrule\n";
     os << "\\endhead\n\n";
     os << "\\midrule\n";
-    os << "\\multicolumn{6}{r}{{Continued on next page}} \\\\\n";
+    os << "\\multicolumn{5}{r}{{Continued on next page}} \\\\\n";
     os << "\\endfoot\n\n";
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";

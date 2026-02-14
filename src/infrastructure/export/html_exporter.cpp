@@ -307,11 +307,10 @@ void HTMLExporter::writePropertiesSection(std::ostream& os,
     os << "  <thead>\n";
     os << "    <tr>\n";
     os << "      <th>Member ID</th>\n";
-    os << "      <th>Material</th>\n";
     os << "      <th>Young's Modulus (Pa)</th>\n";
+    os << "      <th>Yield Strength (Pa)</th>\n";
     os << "      <th>Density (kg/m³)</th>\n";
     os << "      <th>Area (m²)</th>\n";
-    os << "      <th>Section</th>\n";
     os << "    </tr>\n";
     os << "  </thead>\n";
     os << "  <tbody>\n";
