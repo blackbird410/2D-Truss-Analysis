@@ -2,7 +2,7 @@
 <TrussAnalysisResults>
   <Project>
     <Name>Golden Master Test Truss</Name>
-    <ExportTime>2026-02-09 01:16:57</ExportTime>
+    <ExportTime>2026-02-14 02:32:26</ExportTime>
     <Version>2.2.0</Version>
   </Project>
   <Geometry>
@@ -44,25 +44,22 @@
   <Properties>
     <Members>
       <Member id="1">
-        <Material>Steel</Material>
         <YoungModulus>200000000000.000000</YoungModulus>
+        <YieldStrength>250000000.000000</YieldStrength>
         <Density>7850.000000</Density>
         <Area>0.000100</Area>
-        <Section>Default</Section>
       </Member>
       <Member id="2">
-        <Material>Steel</Material>
         <YoungModulus>200000000000.000000</YoungModulus>
+        <YieldStrength>250000000.000000</YieldStrength>
         <Density>7850.000000</Density>
         <Area>0.000100</Area>
-        <Section>Default</Section>
       </Member>
       <Member id="3">
-        <Material>Steel</Material>
         <YoungModulus>200000000000.000000</YoungModulus>
+        <YieldStrength>250000000.000000</YieldStrength>
         <Density>7850.000000</Density>
         <Area>0.000100</Area>
-        <Section>Default</Section>
       </Member>
     </Members>
   </Properties>

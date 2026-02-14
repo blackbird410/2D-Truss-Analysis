@@ -10,6 +10,7 @@
 #include "../model/Types.hpp"
 #include "../model/Truss.hpp"
 #include "../validation/TrussValidator.hpp"
+#include "../interfaces/IAnalysisResultsView.hpp"
 #include "StiffnessAssembler.hpp"
 #include "BoundaryConditionHandler.hpp"
 #include "ILinearSolver.hpp"
@@ -32,8 +33,10 @@ struct AnalysisOptions {
 
 /**
  * @brief Complete analysis results for the truss system
+ * 
+ * Implements IAnalysisResultsView to provide read-only access to Infrastructure layer.
  */
-struct AnalysisResults {
+struct AnalysisResults : public interfaces::IAnalysisResultsView {
     std::vector<Real> displacements;           ///< Global displacement vector
     std::vector<Real> reactions;               ///< Support reaction forces
     std::vector<Real> memberForces;            ///< Member axial forces
@@ -58,6 +61,26 @@ struct AnalysisResults {
     Real maxStress{0.0};                     ///< Maximum stress in any member
     
     AnalysisResults() = default;
+    
+    // IAnalysisResultsView interface implementation
+    const std::vector<Real>& getDisplacements() const override { return displacements; }
+    const std::vector<Real>& getReactions() const override { return reactions; }
+    const std::vector<Real>& getMemberForces() const override { return memberForces; }
+    const std::vector<Real>& getMemberStresses() const override { return memberStresses; }
+    const std::vector<Real>& getUtilizationRatios() const override { return utilizationRatios; }
+    const std::vector<std::vector<Real>>& getStiffnessMatrix() const override { return stiffnessMatrix; }
+    
+    bool hasConverged() const override { return converged; }
+    int getIterations() const override { return iterations; }
+    Real getResidualNorm() const override { return residualNorm; }
+    Real getConditionNumber() const override { return conditionNumber; }
+    
+    size_t getTotalDofs() const override { return totalDofs; }
+    size_t getFreeDofs() const override { return freeDofs; }
+    size_t getConstrainedDofs() const override { return constrainedDofs; }
+    Real getTotalStrain() const override { return totalStrain; }
+    Real getMaxDisplacement() const override { return maxDisplacement; }
+    Real getMaxStress() const override { return maxStress; }
 };
 
 /**

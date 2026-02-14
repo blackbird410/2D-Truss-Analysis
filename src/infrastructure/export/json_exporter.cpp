@@ -13,11 +13,13 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
+using core::interfaces::NodeView;
+using core::interfaces::MemberView;
 
-bool JSONExporter::exportResults(const Truss& truss,
-                                 const AnalysisResults& results,
+bool JSONExporter::exportResults(const ITrussView& truss,
+                                 const IAnalysisResultsView& results,
                                  const std::filesystem::path& filePath,
                                  const ExportOptions& options) {
     std::ofstream file(filePath);
@@ -48,15 +50,15 @@ bool JSONExporter::exportResults(const Truss& truss,
             writeLoadsSection(file, truss, options, needsComma);
         }
         
-        if (options.includeDisplacements && results.displacements.size() > 0) {
+        if (options.includeDisplacements && results.getDisplacements().size() > 0) {
             writeDisplacementsSection(file, results, options, needsComma);
         }
         
-        if (options.includeMemberForces && !results.memberForces.empty()) {
+        if (options.includeMemberForces && !results.getMemberForces().empty()) {
             writeMemberForcesSection(file, results, options, needsComma);
         }
         
-        if (options.includeReactions && !results.reactions.empty()) {
+        if (options.includeReactions && !results.getReactions().empty()) {
             writeReactionsSection(file, results, options, needsComma);
         }
         
@@ -122,7 +124,7 @@ std::string JSONExporter::escapeString(const std::string& str) const {
     return result;
 }
 
-void JSONExporter::writeProjectSection(std::ostream& os, const Truss& truss,
+void JSONExporter::writeProjectSection(std::ostream& os, const ITrussView& truss,
                                        const ExportOptions& options) {
     os << "  \"project\": {\n";
     os << "    \"name\": \"" << escapeString(truss.getName()) << "\",\n";
@@ -131,7 +133,7 @@ void JSONExporter::writeProjectSection(std::ostream& os, const Truss& truss,
     os << "  }";
 }
 
-void JSONExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
+void JSONExporter::writeGeometrySection(std::ostream& os, const ITrussView& truss,
                                        const ExportOptions& options, bool& needsComma) {
     if (needsComma) {
         os << ",\n";
@@ -140,28 +142,28 @@ void JSONExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     os << "  \"geometry\": {\n";
     os << "    \"nodes\": [\n";
     
-    const auto& nodes = truss.getNodes();
+    const auto& nodes = truss.getNodeViews();
     for (size_t i = 0; i < nodes.size(); ++i) {
         const auto& node = nodes[i];
         os << "      {\n";
-        os << "        \"id\": " << node->getId() << ",\n";
-        os << "        \"x\": " << formatNumber(node->getX(), options) << ",\n";
-        os << "        \"y\": " << formatNumber(node->getY(), options) << ",\n";
-        os << "        \"supportType\": \"" << static_cast<int>(node->getSupportType()) << "\"\n";
+        os << "        \"id\": " << node.id << ",\n";
+        os << "        \"x\": " << formatNumber(node.x, options) << ",\n";
+        os << "        \"y\": " << formatNumber(node.y, options) << ",\n";
+        os << "        \"supportType\": \"" << static_cast<int>(node.support) << "\"\n";
         os << "      }" << (i < nodes.size() - 1 ? "," : "") << "\n";
     }
     
     os << "    ],\n";
     os << "    \"members\": [\n";
     
-    const auto& members = truss.getMembers();
+    const auto& members = truss.getMemberViews();
     for (size_t i = 0; i < members.size(); ++i) {
         const auto& member = members[i];
         os << "      {\n";
-        os << "        \"id\": " << member->getId() << ",\n";
-        os << "        \"startNode\": " << member->getStartNode()->getId() << ",\n";
-        os << "        \"endNode\": " << member->getEndNode()->getId() << ",\n";
-        os << "        \"length\": " << formatNumber(member->getLength(), options) << "\n";
+        os << "        \"id\": " << member.id << ",\n";
+        os << "        \"startNode\": " << member.startNodeId << ",\n";
+        os << "        \"endNode\": " << member.endNodeId << ",\n";
+        os << "        \"length\": " << formatNumber(member.length, options) << "\n";
         os << "      }" << (i < members.size() - 1 ? "," : "") << "\n";
     }
     
@@ -171,7 +173,7 @@ void JSONExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     needsComma = true;
 }
 
-void JSONExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
+void JSONExporter::writePropertiesSection(std::ostream& os, const ITrussView& truss,
                                          const ExportOptions& options, bool& needsComma) {
     if (needsComma) {
         os << ",\n";
@@ -180,19 +182,16 @@ void JSONExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
     os << "  \"properties\": {\n";
     os << "    \"members\": [\n";
     
-    const auto& members = truss.getMembers();
+    const auto& members = truss.getMemberViews();
     for (size_t i = 0; i < members.size(); ++i) {
         const auto& member = members[i];
-        const auto& material = member->getMaterial();
-        const auto& section = member->getSection();
         
         os << "      {\n";
-        os << "        \"memberId\": " << member->getId() << ",\n";
-        os << "        \"material\": \"" << escapeString(material.name) << "\",\n";
-        os << "        \"youngModulus\": " << formatNumber(material.youngModulus, options) << ",\n";
-        os << "        \"density\": " << formatNumber(material.density, options) << ",\n";
-        os << "        \"area\": " << formatNumber(section.area, options) << ",\n";
-        os << "        \"section\": \"" << escapeString(section.designation) << "\"\n";
+        os << "        \"memberId\": " << member.id << ",\n";
+        os << "        \"youngModulus\": " << formatNumber(member.youngModulus, options) << ",\n";
+        os << "        \"yieldStrength\": " << formatNumber(member.yieldStrength, options) << ",\n";
+        os << "        \"density\": " << formatNumber(member.density, options) << ",\n";
+        os << "        \"area\": " << formatNumber(member.area, options) << "\n";
         os << "      }" << (i < members.size() - 1 ? "," : "") << "\n";
     }
     
@@ -202,7 +201,7 @@ void JSONExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
     needsComma = true;
 }
 
-void JSONExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
+void JSONExporter::writeLoadsSection(std::ostream& os, const ITrussView& truss,
                                     const ExportOptions& options, bool& needsComma) {
     if (needsComma) {
         os << ",\n";
@@ -212,22 +211,20 @@ void JSONExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
     os << "    \"nodalForces\": [\n";
     
     // Collect nodes with non-zero forces
-    std::vector<std::shared_ptr<const core::Node>> loadedNodes;
-    for (const auto& node : truss.getNodes()) {
-        const auto& force = node->getAppliedForce();
-        if (force.fx != 0.0 || force.fy != 0.0) {
+    std::vector<NodeView> loadedNodes;
+    for (const auto& node : truss.getNodeViews()) {
+        if (node.fx != 0.0 || node.fy != 0.0) {
             loadedNodes.push_back(node);
         }
     }
     
     for (size_t i = 0; i < loadedNodes.size(); ++i) {
         const auto& node = loadedNodes[i];
-        const auto& force = node->getAppliedForce();
         
         os << "      {\n";
-        os << "        \"nodeId\": " << node->getId() << ",\n";
-        os << "        \"fx\": " << formatNumber(force.fx, options) << ",\n";
-        os << "        \"fy\": " << formatNumber(force.fy, options) << "\n";
+        os << "        \"nodeId\": " << node.id << ",\n";
+        os << "        \"fx\": " << formatNumber(node.fx, options) << ",\n";
+        os << "        \"fy\": " << formatNumber(node.fy, options) << "\n";
         os << "      }" << (i < loadedNodes.size() - 1 ? "," : "") << "\n";
     }
     
@@ -238,7 +235,7 @@ void JSONExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
 }
 
 void JSONExporter::writeDisplacementsSection(std::ostream& os,
-                                            const AnalysisResults& results,
+                                            const IAnalysisResultsView& results,
                                             const ExportOptions& options,
                                             bool& needsComma) {
     if (needsComma) {
@@ -248,22 +245,22 @@ void JSONExporter::writeDisplacementsSection(std::ostream& os,
     os << "  \"displacements\": {\n";
     os << "    \"values\": [";
     
-    for (size_t i = 0; i < results.displacements.size(); ++i) {
-        os << formatNumber(results.displacements[i], options);
-        if (i < results.displacements.size() - 1) {
+    for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
+        os << formatNumber(results.getDisplacements()[i], options);
+        if (i < results.getDisplacements().size() - 1) {
             os << ", ";
         }
     }
     
     os << "],\n";
-    os << "    \"maxDisplacement\": " << formatNumber(results.maxDisplacement, options) << "\n";
+    os << "    \"maxDisplacement\": " << formatNumber(results.getMaxDisplacement(), options) << "\n";
     os << "  }";
     
     needsComma = true;
 }
 
 void JSONExporter::writeMemberForcesSection(std::ostream& os,
-                                           const AnalysisResults& results,
+                                           const IAnalysisResultsView& results,
                                            const ExportOptions& options,
                                            bool& needsComma) {
     if (needsComma) {
@@ -273,9 +270,9 @@ void JSONExporter::writeMemberForcesSection(std::ostream& os,
     os << "  \"memberForces\": {\n";
     os << "    \"values\": [";
     
-    for (size_t i = 0; i < results.memberForces.size(); ++i) {
-        os << formatNumber(results.memberForces[i], options);
-        if (i < results.memberForces.size() - 1) {
+    for (size_t i = 0; i < results.getMemberForces().size(); ++i) {
+        os << formatNumber(results.getMemberForces()[i], options);
+        if (i < results.getMemberForces().size() - 1) {
             os << ", ";
         }
     }
@@ -287,7 +284,7 @@ void JSONExporter::writeMemberForcesSection(std::ostream& os,
 }
 
 void JSONExporter::writeReactionsSection(std::ostream& os,
-                                        const AnalysisResults& results,
+                                        const IAnalysisResultsView& results,
                                         const ExportOptions& options,
                                         bool& needsComma) {
     if (needsComma) {
@@ -297,9 +294,9 @@ void JSONExporter::writeReactionsSection(std::ostream& os,
     os << "  \"reactions\": {\n";
     os << "    \"values\": [";
     
-    for (size_t i = 0; i < results.reactions.size(); ++i) {
-        os << formatNumber(results.reactions[i], options);
-        if (i < results.reactions.size() - 1) {
+    for (size_t i = 0; i < results.getReactions().size(); ++i) {
+        os << formatNumber(results.getReactions()[i], options);
+        if (i < results.getReactions().size() - 1) {
             os << ", ";
         }
     }
@@ -311,7 +308,7 @@ void JSONExporter::writeReactionsSection(std::ostream& os,
 }
 
 void JSONExporter::writeMetadataSection(std::ostream& os,
-                                       const AnalysisResults& results,
+                                       const IAnalysisResultsView& results,
                                        const ExportOptions& options,
                                        bool& needsComma) {
     if (needsComma) {
@@ -319,11 +316,11 @@ void JSONExporter::writeMetadataSection(std::ostream& os,
     }
     
     os << "  \"analysis\": {\n";
-    os << "    \"converged\": " << (results.converged ? "true" : "false") << ",\n";
-    os << "    \"iterations\": " << results.iterations << ",\n";
-    os << "    \"totalDofs\": " << results.totalDofs << ",\n";
-    os << "    \"freeDofs\": " << results.freeDofs << ",\n";
-    os << "    \"maxStress\": " << formatNumber(results.maxStress, options) << "\n";
+    os << "    \"converged\": " << (results.hasConverged() ? "true" : "false") << ",\n";
+    os << "    \"iterations\": " << results.getIterations() << ",\n";
+    os << "    \"totalDofs\": " << results.getTotalDofs() << ",\n";
+    os << "    \"freeDofs\": " << results.getFreeDofs() << ",\n";
+    os << "    \"maxStress\": " << formatNumber(results.getMaxStress(), options) << "\n";
     os << "  }\n";
     
     needsComma = true;

@@ -329,7 +329,7 @@ TEST_F(JSONExporterTest, ReactionsSection) {
  * 
  * Material properties section is REQUIRED for 8-section export contract.
  * Domain model provides complete material and section data through
- * Member::getMaterial() and Member::getSection().
+ * ITrussView::getMemberViews().
  */
 TEST_F(JSONExporterTest, PropertiesSection) {
     auto truss = createSimpleTriangleTruss();
@@ -346,10 +346,15 @@ TEST_F(JSONExporterTest, PropertiesSection) {
         << "JSON export MUST include properties section";
     EXPECT_TRUE(fileContains(outputPath, "\"members\""))
         << "Properties must include members array";
-    EXPECT_TRUE(fileContains(outputPath, "\"material\""))
-        << "Properties must include material data";
+    // Material properties are directly in member objects (flat format)
     EXPECT_TRUE(fileContains(outputPath, "\"youngModulus\""))
         << "Properties must include Young's modulus";
+    EXPECT_TRUE(fileContains(outputPath, "\"yieldStrength\""))
+        << "Properties must include yield strength";
+    EXPECT_TRUE(fileContains(outputPath, "\"density\""))
+        << "Properties must include density";
+    EXPECT_TRUE(fileContains(outputPath, "\"area\""))
+        << "Properties must include cross-sectional area";
 }
 
 /**

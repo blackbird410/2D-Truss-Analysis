@@ -18,9 +18,40 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic -O3 -march=native)
 endif()
 
+# Coverage options (enabled when CMAKE_BUILD_TYPE=Coverage)
+option(ENABLE_COVERAGE "Enable code coverage reporting" OFF)
+if(ENABLE_COVERAGE)
+    if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
+        add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
+        add_link_options(--coverage)
+        message(STATUS "Code coverage enabled")
+    else()
+        message(WARNING "Coverage reporting is only supported with GCC/Clang")
+    endif()
+endif()
+
 # Find required packages
 find_package(Eigen3 REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(nlohmann_json REQUIRED)
+
+# Find tinyxml2 (note: package name in CMake is lowercase)
+find_package(tinyxml2 QUIET)
+if(NOT tinyxml2_FOUND)
+    # Try alternative search in Homebrew
+    find_library(TINYXML2_LIBRARY tinyxml2 PATHS /opt/homebrew/lib /usr/local/lib)
+    find_path(TINYXML2_INCLUDE_DIR tinyxml2.h PATHS /opt/homebrew/include /usr/local/include)
+    if(TINYXML2_LIBRARY AND TINYXML2_INCLUDE_DIR)
+        add_library(tinyxml2::tinyxml2 UNKNOWN IMPORTED)
+        set_target_properties(tinyxml2::tinyxml2 PROPERTIES
+            IMPORTED_LOCATION "${TINYXML2_LIBRARY}"
+            INTERFACE_INCLUDE_DIRECTORIES "${TINYXML2_INCLUDE_DIR}"
+        )
+        set(tinyxml2_FOUND TRUE)
+    else()
+        message(FATAL_ERROR "tinyxml2 not found")
+    endif()
+endif()
 
 # Enable testing
 include(CTest)
@@ -51,6 +82,9 @@ add_library(TrussCore STATIC
     src/core/model/Truss.hpp
     src/core/model/Load.cpp
     src/core/model/Load.hpp
+    # Domain assembly utilities
+    src/core/assembly/TrussAssembler.cpp
+    src/core/assembly/TrussAssembler.hpp
     # Domain validation services
     src/core/validation/TrussValidator.cpp
     src/core/validation/TrussValidator.hpp
@@ -93,6 +127,20 @@ add_library(TrussCore STATIC
     src/infrastructure/logging/file_logger.hpp
     src/infrastructure/logging/logger_factory.cpp
     src/infrastructure/logging/logger_factory.hpp
+    # Phase 2 (Infrastructure Refactoring) - File I/O subsystem
+    src/infrastructure/io/io_types.hpp
+    src/infrastructure/io/truss_reader.hpp
+    src/infrastructure/io/truss_writer.hpp
+    src/infrastructure/io/json_truss_reader.cpp
+    src/infrastructure/io/json_truss_reader.hpp
+    src/infrastructure/io/json_truss_writer.cpp
+    src/infrastructure/io/json_truss_writer.hpp
+    src/infrastructure/io/xml_truss_reader.cpp
+    src/infrastructure/io/xml_truss_reader.hpp
+    src/infrastructure/io/xml_truss_writer.cpp
+    src/infrastructure/io/xml_truss_writer.hpp
+    src/infrastructure/io/fileio_factory.cpp
+    src/infrastructure/io/fileio_factory.hpp
 )
 
 target_include_directories(TrussCore PUBLIC
@@ -101,10 +149,13 @@ target_include_directories(TrussCore PUBLIC
     ${CMAKE_SOURCE_DIR}/src/core/analysis
     ${CMAKE_SOURCE_DIR}/src/infrastructure/export
     ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/io
 )
 
 target_link_libraries(TrussCore PUBLIC
     Eigen3::Eigen
+    nlohmann_json::nlohmann_json
+    tinyxml2::tinyxml2
 )
 
 # Set target properties for library
@@ -162,6 +213,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_xml_exporter.cpp
         tests/unit/infrastructure/export/test_exporter_factory.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
+        tests/unit/infrastructure/io/test_fileio.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
@@ -175,6 +227,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/core
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
+        ${CMAKE_SOURCE_DIR}/src/infrastructure/io
     )
     
     add_test(NAME UnitTests COMMAND unit_tests)
@@ -289,6 +342,42 @@ if(CMAKE_BUILD_TYPE STREQUAL "Release")
 endif()
 
 message(STATUS "Linux optimizations enabled")
+
+# Coverage reporting targets
+if(ENABLE_COVERAGE)
+    find_program(LCOV lcov)
+    find_program(GENHTML genhtml)
+    
+    if(LCOV AND GENHTML)
+        add_custom_target(coverage
+            COMMAND ${CMAKE_COMMAND} -E echo "Running tests to generate coverage data..."
+            COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+            COMMAND ${CMAKE_COMMAND} -E echo "Capturing coverage data..."
+            COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${CMAKE_COMMAND} -E echo "Filtering coverage data..."
+            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${CMAKE_COMMAND} -E echo "Generating HTML report..."
+            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent
+            COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated: coverage_html/index.html"
+            COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage summary..."
+            COMMAND ${LCOV} --summary coverage_filtered.info
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Generating code coverage report"
+        )
+        
+        add_custom_target(coverage-clean
+            COMMAND ${CMAKE_COMMAND} -E remove -f coverage.info coverage_filtered.info
+            COMMAND ${CMAKE_COMMAND} -E remove_directory coverage_html
+            COMMAND find ${CMAKE_BINARY_DIR} -name "*.gcda" -delete
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            COMMENT "Cleaning coverage data"
+        )
+        
+        message(STATUS "Coverage targets available: 'make coverage' and 'make coverage-clean'")
+    else()
+        message(WARNING "lcov or genhtml not found - coverage target unavailable")
+    endif()
+endif()
 
 # CPack configuration for Linux packaging
 set(CPACK_GENERATOR "TGZ;DEB")

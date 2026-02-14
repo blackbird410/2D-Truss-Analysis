@@ -13,6 +13,7 @@
 
 #include <gtest/gtest.h>
 #include "../../src/core/model/Truss.hpp"
+#include "../../src/core/validation/TrussValidator.hpp"
 
 using namespace truss::core;
 
@@ -108,14 +109,11 @@ TEST(TrussTest, ForceApplication) {
 TEST(TrussTest, ValidationAndDeterminacy) {
     Truss truss;
     
-    // DEPRECATED: Testing backward compatibility of deprecated validation methods
-    // These methods are scheduled for removal in v4.0.0
-    // New code should use TrussValidator::validate() instead
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
+    // Test validation using TrussValidator (replacement for deprecated methods)
+    truss::core::validation::TrussValidator validator;
     
     // Empty truss should be invalid
-    EXPECT_FALSE(truss.isValid());
+    EXPECT_FALSE(validator.isValid(truss));
     
     // Add nodes and members to create a valid triangular truss
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
@@ -126,10 +124,10 @@ TEST(TrussTest, ValidationAndDeterminacy) {
     truss.addMember(node1, node3);
     truss.addMember(node2, node3);
     
-    EXPECT_TRUE(truss.isValid());
-    EXPECT_TRUE(truss.isStaticallyDeterminate());
-    
-    #pragma GCC diagnostic pop
+    // Validate using TrussValidator
+    auto result = validator.validate(truss);
+    EXPECT_TRUE(result.isValid());
+    EXPECT_FALSE(result.hasErrors());
 }
 
 TEST(TrussTest, StatisticsGeneration) {

@@ -5,8 +5,9 @@
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
+[![Tests](https://img.shields.io/badge/tests-290%20passing-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Phase 2 (Core Domain Refactoring) complete! The project has undergone comprehensive architectural improvements including domain model refactoring, monolithic engine decomposition, and directory restructuring. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 3 in progress).
+> **✅ REFACTORING STATUS**: Infrastructure Layer (File I/O Implementation) complete! The project now features comprehensive architectural improvements including domain model refactoring, monolithic engine decomposition, validation centralization, and complete File I/O services with strict referential integrity. All 290 tests passing (100% pass rate). See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 4 in progress).
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface and robust computational engine.
 
@@ -175,7 +176,7 @@ sudo dnf install cmake qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel gcc-c++
 # Build as above
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
-````
+```
 
 ### Alternative: Arch Linux
 

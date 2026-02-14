@@ -15,6 +15,7 @@
 #include "../../src/core/model/Truss.hpp"
 #include "../../src/core/analysis/AnalysisOrchestrator.hpp"
 #include "../../src/core/analysis/DirectSolver.hpp"
+#include "../../src/core/validation/TrussValidator.hpp"
 
 using namespace truss::core;
 
@@ -75,8 +76,9 @@ TEST(SimpleTrussAnalysisTest, BridgeTrussAnalysis) {
     // Apply load at the center
     truss.applyForce(node3->getId(), Force2D(0.0, -5000.0));
     
-    // Verify structure
-    EXPECT_TRUE(truss.isValid());
+    // Verify structure (using TrussValidator)
+    truss::core::validation::TrussValidator validator;
+    EXPECT_TRUE(validator.isValid(truss));
     EXPECT_EQ(truss.getNodeCount(), 5);
     EXPECT_EQ(truss.getMemberCount(), 7);
     

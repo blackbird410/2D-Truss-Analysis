@@ -234,24 +234,6 @@ bool Truss::isValid() const {
     return true;
 }
 
-// DEPRECATED: Static determinacy check. Use TrussValidator::validateStaticDeterminacy() instead.
-// Scheduled for removal in v4.0.0.
-bool Truss::isStaticallyDeterminate() const {
-    // Basic check: 2n = m + r (where n = nodes, m = members, r = reactions)
-    size_t n = m_nodes.size();
-    size_t m = m_members.size();
-    size_t r = getConstrainedDofs();
-    
-    return (2 * n == m + r);
-}
-
-// DEPRECATED: Kinematic stability check. Use TrussValidator::validateKinematicStability() instead.
-// Scheduled for removal in v4.0.0.
-bool Truss::isKinematicallyStable() const {
-    // Basic check: ensure there are enough constraints
-    return getConstrainedDofs() >= 3; // Minimum constraints to prevent rigid body motion
-}
-
 void Truss::assignDofNumbers() {
     size_t dofIndex = 0;
     
@@ -339,11 +321,16 @@ std::vector<std::string> Truss::getValidationErrors() const {
         errors.push_back("Truss must have at least 1 member");
     }
     
-    if (!isStaticallyDeterminate()) {
+    // Static determinacy: 2n = m + r (where n = nodes, m = members, r = reactions)
+    size_t n = m_nodes.size();
+    size_t m = m_members.size();
+    size_t r = getConstrainedDofs();
+    if (2 * n != m + r) {
         errors.push_back("Truss is not statically determinate");
     }
     
-    if (!isKinematicallyStable()) {
+    // Kinematic stability: minimum 3 constraints to prevent rigid body motion
+    if (getConstrainedDofs() < 3) {
         errors.push_back("Truss is not kinematically stable");
     }
     
@@ -427,6 +414,55 @@ Truss::TrussStatistics Truss::getStatistics() const {
     }
     
     return stats;
+}
+
+std::vector<interfaces::NodeView> Truss::getNodeViews() const {
+    std::vector<interfaces::NodeView> views;
+    views.reserve(m_nodes.size());
+    
+    for (const auto& node : m_nodes) {
+        interfaces::NodeView view;
+        view.id = node->getId();
+        view.x = node->getPosition().x;
+        view.y = node->getPosition().y;
+        view.support = node->getSupportType();
+        view.fx = node->getAppliedForce().fx;
+        view.fy = node->getAppliedForce().fy;
+        view.dx = node->getDisplacement().x;
+        view.dy = node->getDisplacement().y;
+        view.rx = node->getReaction().fx;
+        view.ry = node->getReaction().fy;
+        views.push_back(view);
+    }
+    
+    return views;
+}
+
+std::vector<interfaces::MemberView> Truss::getMemberViews() const {
+    std::vector<interfaces::MemberView> views;
+    views.reserve(m_members.size());
+    
+    for (const auto& member : m_members) {
+        interfaces::MemberView view;
+        view.id = member->getId();
+        view.startNodeId = member->getStartNode()->getId();
+        view.endNodeId = member->getEndNode()->getId();
+        view.label = member->getLabel();
+        view.youngModulus = member->getMaterial().youngModulus;
+        view.yieldStrength = member->getMaterial().yieldStrength;
+        view.density = member->getMaterial().density;
+        view.area = member->getSection().area;
+        view.length = member->getLength();
+        view.angle = member->getAngle();
+        view.axialForce = member->getAxialForce();
+        view.axialStress = member->getAxialStress();
+        view.utilizationRatio = member->getUtilizationRatio();
+        view.inTension = member->isInTension();
+        view.yielded = member->hasYielded();
+        views.push_back(view);
+    }
+    
+    return views;
 }
 
 } // namespace truss::core
