@@ -39,8 +39,10 @@ protected:
     
     void SetUp() override {
         // Create temporary directory for export tests (unique per fixture instance)
-        tempDir = std::filesystem::temp_directory_path() /
-                  std::filesystem::unique_path("analysis_app_service_test-%%%%-%%%%-%%%%-%%%%");
+        auto uniqueName = "analysis_app_service_test-" + std::to_string(
+            std::chrono::system_clock::now().time_since_epoch().count()
+        );
+        tempDir = std::filesystem::temp_directory_path() / uniqueName;
         std::filesystem::create_directories(tempDir);
         
         // Default material properties
