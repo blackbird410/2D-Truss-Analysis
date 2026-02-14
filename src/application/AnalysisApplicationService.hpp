@@ -62,9 +62,13 @@ using ResultsHandle = size_t;
  *     auto analysisResult = analysisService.analyze(truss);
  *     if (analysisResult) {
  *         const auto& results = analysisService.getResultsView(analysisResult.value);
- *         analysisService.exportResults(analysisResult.value, 
- *                                      infrastructure::export::ExportFormat::CSV, 
- *                                      "results.csv");
+ *         analysisService.exportResults(
+ *             analysisResult.value,
+ *             infrastructure::export_::ExportFormat::CSV,
+ *             "results.csv",
+ *             truss,
+ *             {}
+ *         );
  *     }
  * }
  * @endcode
