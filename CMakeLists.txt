@@ -390,13 +390,14 @@ if(ENABLE_COVERAGE)
             COMMAND ${CMAKE_COMMAND} -E echo "Capturing coverage data..."
             COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
             COMMAND ${CMAKE_COMMAND} -E echo "Filtering coverage data..."
-            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,unused
             COMMAND ${CMAKE_COMMAND} -E echo "Generating HTML report..."
-            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent
+            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent,category
             COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated: coverage_html/index.html"
             COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage summary..."
-            COMMAND ${LCOV} --summary coverage_filtered.info
+            COMMAND ${LCOV} --summary coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            DEPENDS unit_tests test_gtest_integration integration_tests
             COMMENT "Generating code coverage report"
         )
         
