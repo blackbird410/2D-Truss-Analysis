@@ -165,12 +165,39 @@ set_target_properties(TrussCore PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
+# ============================================================================
+# APPLICATION LAYER (Phase 4 - Facades for Interface Layer)
+# ============================================================================
+
+add_library(TrussApplication STATIC
+    src/application/TrussApplicationService.cpp
+    src/application/TrussApplicationService.hpp
+    src/application/AnalysisApplicationService.cpp
+    src/application/AnalysisApplicationService.hpp
+)
+
+target_include_directories(TrussApplication PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/application
+)
+
+target_link_libraries(TrussApplication PUBLIC
+    TrussCore
+)
+
+set_target_properties(TrussApplication PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    POSITION_INDEPENDENT_CODE ON
+)
+
 # Main application CLI executable
 add_executable(TrussAnalysisCLI
     src/main_app.cpp
 )
 
 target_link_libraries(TrussAnalysisCLI PRIVATE
+    TrussApplication
     TrussCore
 )
 
