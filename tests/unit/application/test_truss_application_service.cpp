@@ -20,6 +20,8 @@
 #include <chrono>
 #include <filesystem>
 #include <fstream>
+#include <thread>
+#include <sstream>
 
 using namespace truss::application;
 using namespace truss::core;
@@ -35,10 +37,12 @@ protected:
     
     void SetUp() override {
         // Create temporary directory for test files (unique per fixture instance)
-        auto uniqueName = "truss_app_service_test-" + std::to_string(
-            std::chrono::system_clock::now().time_since_epoch().count()
-        );
-        tempDir = std::filesystem::temp_directory_path() / uniqueName;
+        // Using both timestamp and thread ID to avoid collisions in parallel execution
+        std::ostringstream oss;
+        oss << "truss_app_service_test-" 
+            << std::chrono::system_clock::now().time_since_epoch().count()
+            << "-" << std::this_thread::get_id();
+        tempDir = std::filesystem::temp_directory_path() / oss.str();
         std::filesystem::create_directories(tempDir);
     }
     
