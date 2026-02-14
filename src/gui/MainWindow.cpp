@@ -30,7 +30,7 @@ MainWindow::MainWindow(QWidget* parent)
       m_clearButton(new QPushButton("Clear All", this)),
       m_statusLabel(new QLabel(this)),
       m_coordinateLabel(new QLabel(this)),
-      m_analysisEngine(std::make_unique<truss::core::AnalysisEngine>()),
+      m_lastResultsHandle(0),
       m_hasResults(false) {
           
     setupUI();
@@ -307,27 +307,34 @@ void MainWindow::analyze() {
         m_logTextEdit->append("Starting structural analysis...");
         QApplication::processEvents(); // Update UI
         
-        // Perform analysis
-        auto analysisResults = m_analysisEngine->analyze(*truss);
+        // Perform analysis using Application service
+        truss::core::analysis::AnalysisOptions options;
+        auto result = m_analysisService.analyze(*truss, options);
         
-        if (analysisResults.converged) {
+        if (result.success) {
+            m_lastResultsHandle = result.value;
             m_hasResults = true;
+            
+            // Get results view
+            const auto& analysisResults = m_analysisService.getResultsView(m_lastResultsHandle);
+            
+            // Update display
             updateResultsDisplay();
             
             QString message = QString("Analysis completed successfully!\n")
                 + QString("Nodes: %1, Members: %2\n").arg(truss->getNodeCount()).arg(truss->getMemberCount())
-                + QString("Max displacement: %1 mm\n").arg(analysisResults.maxDisplacement * 1000, 0, 'f', 3)
-                + QString("Max stress: %1 MPa").arg(analysisResults.maxStress / 1e6, 0, 'f', 2);
+                + QString("Max displacement: %1 mm\n").arg(analysisResults.getMaxDisplacement() * 1000, 0, 'f', 3)
+                + QString("Max stress: %1 MPa").arg(analysisResults.getMaxStress() / 1e6, 0, 'f', 2);
             
             m_logTextEdit->append("Analysis completed successfully!");
-            m_logTextEdit->append(QString("Max displacement: %1 mm").arg(analysisResults.maxDisplacement * 1000, 0, 'f', 3));
-            m_logTextEdit->append(QString("Max stress: %1 MPa").arg(analysisResults.maxStress / 1e6, 0, 'f', 2));
+            m_logTextEdit->append(QString("Max displacement: %1 mm").arg(analysisResults.getMaxDisplacement() * 1000, 0, 'f', 3));
+            m_logTextEdit->append(QString("Max stress: %1 MPa").arg(analysisResults.getMaxStress() / 1e6, 0, 'f', 2));
             
             showInfoMessage(message);
             m_statusLabel->setText("Analysis complete - View results in the results tab");
         } else {
-            showErrorMessage("Analysis failed to converge. Check your structure and loads.");
-            m_logTextEdit->append("ERROR: Analysis failed to converge");
+            showErrorMessage(QString("Analysis failed: %1").arg(QString::fromStdString(result.errorMessage)));
+            m_logTextEdit->append(QString("ERROR: %1").arg(QString::fromStdString(result.errorMessage)));
             m_statusLabel->setText("Analysis failed");
         }
         
@@ -340,9 +347,14 @@ void MainWindow::analyze() {
 
 void MainWindow::clearAll() {
     m_drawingWidget->clearTruss();
-    m_hasResults = false;
     
-    // Clear results
+    // Clear results and handle
+    if (m_hasResults) {
+        m_analysisService.clearResults(m_lastResultsHandle);
+        m_lastResultsHandle = 0;
+        m_hasResults = false;
+    }
+    
     m_resultsWidget->clearResults();
     m_logTextEdit->clear();
     
@@ -459,12 +471,6 @@ void MainWindow::exportResults() {
         // Detect format from file extension using factory
         auto format = truss::infrastructure::export_::ExporterFactory::detectFormat(fileName.toStdString());
         
-        // Create appropriate exporter via factory
-        auto exporter = truss::infrastructure::export_::ExporterFactory::create(format);
-        
-        // Get analysis results
-        truss::core::AnalysisResults results = m_analysisEngine->getLastResults();
-        
         // Configure export options
         truss::infrastructure::export_::ExportOptions options;
         options.includeGeometry = true;
@@ -478,13 +484,17 @@ void MainWindow::exportResults() {
         options.includeMetadata = true;
         options.precision = 6;
 
-        // Export results
-        if (exporter->exportResults(*getTruss(), results, fileName.toStdString(), options)) {
+        // Export results using Application service
+        auto result = m_analysisService.exportResults(m_lastResultsHandle, format, 
+                                                       fileName.toStdString(), 
+                                                       *getTruss(), options);
+        
+        if (result.success) {
             QFileInfo fileInfo(fileName);
             m_statusLabel->setText(QString("Results exported: %1").arg(fileInfo.fileName()));
             showInfoMessage(QString("Results exported successfully to %1!").arg(fileInfo.fileName()));
         } else {
-            showErrorMessage(QString("Failed to export results: %1").arg(QString::fromStdString(exporter->getLastError())));
+            showErrorMessage(QString("Failed to export results: %1").arg(QString::fromStdString(result.errorMessage)));
             m_statusLabel->setText("Failed to export results");
         }
     }
@@ -537,7 +547,9 @@ void MainWindow::updateResultsDisplay() {
     auto* truss = getTruss();
     if (truss && m_hasResults) {
         m_deformedTrussWidget->setTruss(truss);
-        m_deformedTrussWidget->setAnalysisResults(m_analysisEngine->getLastResults());
+        // Get mutable results for DeformedTrussWidget
+        auto& results = m_analysisService.getResults(m_lastResultsHandle);
+        m_deformedTrussWidget->setAnalysisResults(results);
     }
 }
 

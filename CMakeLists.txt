@@ -165,12 +165,39 @@ set_target_properties(TrussCore PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
+# ============================================================================
+# APPLICATION LAYER (Phase 4 - Facades for Interface Layer)
+# ============================================================================
+
+add_library(TrussApplication STATIC
+    src/application/TrussApplicationService.cpp
+    src/application/TrussApplicationService.hpp
+    src/application/AnalysisApplicationService.cpp
+    src/application/AnalysisApplicationService.hpp
+)
+
+target_include_directories(TrussApplication PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/application
+)
+
+target_link_libraries(TrussApplication PUBLIC
+    TrussCore
+)
+
+set_target_properties(TrussApplication PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    POSITION_INDEPENDENT_CODE ON
+)
+
 # Main application CLI executable
 add_executable(TrussAnalysisCLI
     src/main_app.cpp
 )
 
 target_link_libraries(TrussAnalysisCLI PRIVATE
+    TrussApplication
     TrussCore
 )
 
@@ -196,6 +223,7 @@ if(BUILD_TESTING)
     
     # Unit tests (core functionality tests)
     add_executable(unit_tests
+        # Domain layer tests
         tests/unit/core/test_node.cpp
         tests/unit/core/test_member.cpp
         tests/unit/core/test_truss.cpp
@@ -205,6 +233,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
         tests/unit/core/test_analysis_orchestrator.cpp
+        # Infrastructure layer tests
         tests/unit/infrastructure/export/test_csv_exporter.cpp
         tests/unit/infrastructure/export/test_html_exporter.cpp
         tests/unit/infrastructure/export/test_json_exporter.cpp
@@ -214,9 +243,13 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_exporter_factory.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
+        # Application layer tests (Phase 4)
+        tests/unit/application/test_truss_application_service.cpp
+        tests/unit/application/test_analysis_application_service.cpp
     )
     
     target_link_libraries(unit_tests PRIVATE
+        TrussApplication
         TrussCore
         GTest::gtest
         GTest::gtest_main
@@ -225,6 +258,7 @@ if(BUILD_TESTING)
     target_include_directories(unit_tests PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/core
+        ${CMAKE_SOURCE_DIR}/src/application
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
         ${CMAKE_SOURCE_DIR}/src/infrastructure/io
@@ -295,6 +329,7 @@ add_executable(TrussAnalysisGUI
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
+    TrussApplication
     TrussCore
     Qt6::Core
     Qt6::Widgets
@@ -355,13 +390,14 @@ if(ENABLE_COVERAGE)
             COMMAND ${CMAKE_COMMAND} -E echo "Capturing coverage data..."
             COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
             COMMAND ${CMAKE_COMMAND} -E echo "Filtering coverage data..."
-            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,unused
             COMMAND ${CMAKE_COMMAND} -E echo "Generating HTML report..."
-            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent
+            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent,category
             COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated: coverage_html/index.html"
             COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage summary..."
-            COMMAND ${LCOV} --summary coverage_filtered.info
+            COMMAND ${LCOV} --summary coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            DEPENDS unit_tests test_gtest_integration integration_tests
             COMMENT "Generating code coverage report"
         )
         

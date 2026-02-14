@@ -118,17 +118,45 @@ The refactored architecture follows these core principles:
 
 **Responsibility:** Simplified, coarse-grained API for application workflows
 
+**IMPLEMENTATION STATUS (Updated February 14, 2026):** ✅ **COMPLETE**
+
 **Components:**
 
-- **TrussAnalysisFacade**
+- **TrussApplicationService** (IMPLEMENTED ✅)
+
   ```cpp
-  class TrussAnalysisFacade {
+  class TrussApplicationService {
   public:
-      // High-level workflow methods
-      AnalysisResults analyzeFromFile(const std::filesystem::path& path);
-      AnalysisResults analyzeInteractive(TrussBuilder& builder);
-      bool exportResults(const AnalysisResults& results, ExportFormat format);
-      ValidationReport validateTruss(const Truss& truss);
+      // Lifecycle operations
+      Result<TrussHandle> createTruss(const std::string& name);
+      Result<TrussHandle> loadTruss(const std::filesystem::path& filepath);
+      Result<TrussHandle> loadTruss(const std::filesystem::path& filepath, FileFormat format);
+      Result<bool> saveTruss(TrussHandle handle, const std::filesystem::path& filepath, bool overwrite = false);
+      Result<bool> saveTruss(TrussHandle handle, const std::filesystem::path& filepath, FileFormat format, bool overwrite = false);
+
+      // Validation and access
+      Result<ValidationResult> validateTruss(TrussHandle handle);
+      const ITrussView& getTrussView(TrussHandle handle);
+      Truss& getTrussMutable(TrussHandle handle);
+      bool clearTruss(TrussHandle handle);
+  };
+  ```
+
+- **AnalysisApplicationService** (IMPLEMENTED ✅)
+  ```cpp
+  class AnalysisApplicationService {
+  public:
+      // Analysis operations
+      Result<ResultsHandle> analyze(Truss& truss);
+
+      // Results management
+      const IAnalysisResultsView& getResultsView(ResultsHandle handle);
+      Result<bool> exportResults(ResultsHandle handle, const Truss& truss,
+                                ExportFormat format, const std::filesystem::path& filepath);
+      Result<bool> exportResults(ResultsHandle handle, const Truss& truss,
+                                ExportFormat format, const std::filesystem::path& filepath,
+                                const ExportOptions& options);
+      bool clearResults(ResultsHandle handle);
   };
   ```
 
@@ -136,10 +164,20 @@ The refactored architecture follows these core principles:
 
 - Hides complexity of domain layer
 - Orchestrates workflows across multiple services
-- Transaction-like behavior (all-or-nothing)
-- Clear error propagation
+- Handle-based resource management (opaque references)
+- Result<T> monad for explicit error handling
+- Clear error propagation from Infrastructure to Interface
 
-**Benefit:** Decouples application layer from domain complexity
+**Benefit:** Decouples application layer from domain complexity, enforces DIP compliance
+
+**Test Coverage:** 86 test cases (43 per service, 100% method coverage)
+
+**Commit History:**
+
+- `2ef27a6` - Implement AnalysisApplicationService facade
+- `08957c4` - Implement TrussApplicationService facade
+- `bf10eb7` - Unit tests for TrussApplicationService
+- `2419c09` - Unit tests for AnalysisApplicationService
 
 ---
 
@@ -147,14 +185,15 @@ The refactored architecture follows these core principles:
 
 The heart of the application containing all structural analysis logic.
 
-**IMPLEMENTATION STATUS (Updated February 9, 2026):**
+**IMPLEMENTATION STATUS (Updated February 14, 2026):**
 
 - ✅ **Model Sublayer: COMPLETE** (Node, Member, Truss, Load entities)
 - ✅ **Analysis Sublayer: COMPLETE** (AnalysisOrchestrator, StiffnessAssembler, BoundaryConditionHandler, Linear Solvers)
 - ✅ **Validation Sublayer: COMPLETE** (TrussValidator with 8 validation categories)
-- ⏳ **Interface Layer: NOT IMPLEMENTED** (Facades deferred to Phase 4+)
+- ✅ **Application Layer: COMPLETE** (TrussApplicationService, AnalysisApplicationService facades)
 
-See [DOMAIN_LAYER_COMPLETION.md](../archive/DOMAIN_LAYER_COMPLETION.md) for full implementation details.
+See [DOMAIN_LAYER_COMPLETION.md](../archive/DOMAIN_LAYER_COMPLETION.md) for Domain layer implementation details.
+See [PHASE_4_PROGRESS.md](../architecture/PHASE_4_PROGRESS.md) for Application layer implementation details.
 
 ---
 

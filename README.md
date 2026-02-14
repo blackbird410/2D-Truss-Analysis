@@ -5,11 +5,11 @@
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
-[![Tests](https://img.shields.io/badge/tests-290%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-372%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Infrastructure Layer (File I/O Implementation) complete! The project now features comprehensive architectural improvements including domain model refactoring, monolithic engine decomposition, validation centralization, and complete File I/O services with strict referential integrity. All 290 tests passing (100% pass rate). See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 4 in progress).
+> **✅ REFACTORING STATUS**: Phase 4 (Application Layer) complete! The project now features a professional architecture with strict layered separation, Application facades for GUI/CLI, comprehensive test coverage (372/373 tests passing, 99.7% pass rate), and zero architectural violations. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 5 ready).
 
-A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface and robust computational engine.
+A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface, robust computational engine, and clean layered architecture following SOLID principles and industry best practices.
 
 ## Overview
 
@@ -95,6 +95,8 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 
 **Advanced Analysis Engine**
 
+- Layered architecture (Interface → Application → Domain → Infrastructure)
+- Application facades for simplified API (TrussApplicationService, AnalysisApplicationService)
 - Direct stiffness method implementation
 - Support for various load types and boundary conditions
 - Automated calculation of displacements, forces, and reactions

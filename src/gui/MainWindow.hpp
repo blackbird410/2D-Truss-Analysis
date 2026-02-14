@@ -32,8 +32,8 @@
 #include <QtCore/QTimer>
 #include <memory>
 
-#include "../core/model/Truss.hpp"
-#include "../core/analysis/AnalysisOrchestrator.hpp"
+#include "../application/TrussApplicationService.hpp"
+#include "../application/AnalysisApplicationService.hpp"
 #include "InteractiveDrawingWidget.hpp"
 #include "DeformedTrussWidget.hpp"
 
@@ -62,9 +62,9 @@ protected:
 public:
     // Public accessors for widgets
     truss::core::Truss* getTruss() const;
-    truss::core::AnalysisEngine* getAnalysisEngine() const { return m_analysisEngine.get(); }
+    application::AnalysisApplicationService& getAnalysisService() { return m_analysisService; }
     bool hasResults() const { return m_hasResults; }
-    const truss::core::AnalysisResults& getLastResults() const { return m_analysisEngine->getLastResults(); }
+    application::ResultsHandle getLastResultsHandle() const { return m_lastResultsHandle; }
 
 private slots:
     void analyze();
@@ -113,8 +113,10 @@ private:
     QLabel* m_statusLabel;
     QLabel* m_coordinateLabel;
     
-    // Data model
-    std::unique_ptr<truss::core::AnalysisEngine> m_analysisEngine;
+    // Application services
+    application::TrussApplicationService m_trussService;
+    application::AnalysisApplicationService m_analysisService;
+    application::ResultsHandle m_lastResultsHandle;
     bool m_hasResults;
     QString m_currentFileName;
 };
