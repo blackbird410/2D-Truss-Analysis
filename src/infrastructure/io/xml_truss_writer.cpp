@@ -24,7 +24,11 @@ bool XmlTrussWriter::write(
         throw FileWriteException(filepath.string() + " (file exists, overwrite not allowed)");
     }
     
-    // Note: Validation moved to Domain layer - Infrastructure only serializes
+    // Note: validateOnWrite flag exists but is not enforced here.
+    // Infrastructure layer works with DTOs (data), not Domain objects.
+    // Validation should occur at Application layer using TrussValidator
+    // BEFORE calling write(). Tests set validateOnWrite=false to skip
+    // application-level validation when testing pure I/O serialization.
     
     // Create XML document
     tinyxml2::XMLDocument doc;

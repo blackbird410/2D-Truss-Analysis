@@ -65,7 +65,11 @@ core::interfaces::TrussDTO JsonTrussReader::read(
         throw ParseException(std::string("JSON structure error: ") + e.what());
     }
     
-    // Note: Validation removed - DTOs are pure data, validation happens at Domain level
+    // Note: validateOnRead flag exists but is not enforced here.
+    // Infrastructure layer works with DTOs (data), not Domain objects.
+    // Validation should occur at Application layer using TrussValidator
+    // AFTER assembling DTO → Truss via TrussAssembler. Tests set
+    // validateOnRead=false to skip validation when testing pure I/O parsing.
     
     return dto;
 }
