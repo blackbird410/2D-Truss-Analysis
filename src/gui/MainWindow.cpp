@@ -471,9 +471,6 @@ void MainWindow::exportResults() {
         // Detect format from file extension using factory
         auto format = truss::infrastructure::export_::ExporterFactory::detectFormat(fileName.toStdString());
         
-        // Create appropriate exporter via factory
-        auto exporter = truss::infrastructure::export_::ExporterFactory::create(format);
-        
         // Configure export options
         truss::infrastructure::export_::ExportOptions options;
         options.includeGeometry = true;
