@@ -27,11 +27,11 @@ enum class FileFormat {
  */
 struct FileIOOptions {
     bool prettyPrint{true};           ///< Pretty-print output (adds indentation/whitespace)
-    bool validateOnRead{true};        ///< Validate truss structure after reading
-    bool validateOnWrite{true};       ///< Validate truss structure before writing
     int indentSize{2};                ///< Number of spaces for indentation
     bool includeMetadata{true};       ///< Include metadata (timestamp, version, etc.)
     bool overwriteExisting{false};    ///< Allow overwriting existing files
+    bool validateOnWrite{false};      ///< Validate domain model before serialization (via TrussValidator)
+    bool validateOnRead{false};       ///< Validate domain model after deserialization (via TrussValidator)
 };
 
 /**

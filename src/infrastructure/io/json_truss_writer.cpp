@@ -26,7 +26,11 @@ bool JsonTrussWriter::write(
         throw FileWriteException(filepath.string() + " (file exists, overwrite not allowed)");
     }
     
-    // Note: Validation removed - DTOs are pure data, validation happens at Domain level
+    // Note: validateOnWrite flag exists but is not enforced here.
+    // Infrastructure layer works with DTOs (data), not Domain objects.
+    // Validation should occur at Application layer using TrussValidator
+    // BEFORE calling write(). Tests set validateOnWrite=false to skip
+    // application-level validation when testing pure I/O serialization.
     
     // Create JSON structure
     json j;
@@ -59,7 +63,8 @@ bool JsonTrussWriter::write(
     }
 }
 
-json JsonTrussWriter::createMetadata(const core::interfaces::TrussDTO& trussData, const FileIOOptions& options) {
+json JsonTrussWriter::createMetadata(const core::interfaces::TrussDTO& trussData, 
+                                     [[maybe_unused]] const FileIOOptions& options) {
     json metadata;
     metadata["name"] = trussData.name;
     metadata["version"] = "3.0.0";
