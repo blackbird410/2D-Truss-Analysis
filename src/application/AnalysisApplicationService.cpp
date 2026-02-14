@@ -36,9 +36,9 @@ Result<ResultsHandle> AnalysisApplicationService::analyze(
             std::move(validator),
             options);
         
-        // Phase 3: Run analysis (note: analyze() takes non-const reference)
-        auto& mutableTruss = const_cast<core::Truss&>(truss);
-        auto results = orchestrator.analyze(mutableTruss);
+        // Phase 3: Run analysis on a local mutable copy
+        core::Truss trussCopy = truss;
+        auto results = orchestrator.analyze(trussCopy);
         
         // Phase 4: Store results and generate handle
         auto handle = generateHandle();
