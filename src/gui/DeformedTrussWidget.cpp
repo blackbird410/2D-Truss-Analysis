@@ -215,7 +215,7 @@ void DeformedTrussWidget::setTruss(truss::core::Truss* truss) {
     update();
 }
 
-void DeformedTrussWidget::setAnalysisResults(const truss::core::AnalysisResults& results) {
+void DeformedTrussWidget::setAnalysisResults(const truss::core::analysis::AnalysisResults& results) {
     m_results = results;
     m_hasResults = true;
     

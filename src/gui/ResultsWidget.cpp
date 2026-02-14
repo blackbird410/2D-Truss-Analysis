@@ -241,10 +241,11 @@ void ResultsWidget::updateSummary() {
     
     // Get analysis results if available
     if (mainWindow->hasResults()) {
-        const auto& results = mainWindow->getLastResults();
-        summary += QString("Maximum Displacement: %1 m\n").arg(results.maxDisplacement, 0, 'e', 3);
-        summary += QString("Maximum Stress: %1 Pa\n").arg(results.maxStress, 0, 'e', 3);
-        summary += QString("Analysis converged in %1 iterations\n").arg(results.iterations);
+        auto handle = mainWindow->getLastResultsHandle();
+        const auto& results = mainWindow->getAnalysisService().getResultsView(handle);
+        summary += QString("Maximum Displacement: %1 m\n").arg(results.getMaxDisplacement(), 0, 'e', 3);
+        summary += QString("Maximum Stress: %1 Pa\n").arg(results.getMaxStress(), 0, 'e', 3);
+        summary += QString("Analysis converged in %1 iterations\n").arg(results.getIterations());
     }
     
     m_summaryText->setPlainText(summary);
@@ -258,7 +259,8 @@ void ResultsWidget::updateStiffnessTable() {
         return;
     }
     
-    const auto& results = mainWindow->getLastResults();
+    auto handle = mainWindow->getLastResultsHandle();
+    auto& results = mainWindow->getAnalysisService().getResults(handle);
     const auto& stiffnessMatrix = results.stiffnessMatrix;
     
     if (stiffnessMatrix.empty()) {
