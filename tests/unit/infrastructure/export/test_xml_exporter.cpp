@@ -374,9 +374,9 @@ TEST_F(XMLExporterTest, ReactionsSection) {
 /**
  * @brief Test properties section (CONTRACT COMPLETENESS)
  * 
- * Material properties section is REQUIRED for 8-section export contract,
- * even though domain model does not yet implement this feature.
- * Placeholder ensures forward compatibility and explicit contract definition.
+ * Material properties section is REQUIRED for 8-section export contract.
+ * Domain model provides complete material and section data through
+ * ITrussView::getMemberViews().
  */
 TEST_F(XMLExporterTest, PropertiesSection) {
     auto truss = createSimpleTriangleTruss();
@@ -397,8 +397,15 @@ TEST_F(XMLExporterTest, PropertiesSection) {
         << "Properties section must have closing tag";
     EXPECT_TRUE(fileContains(outputPath, "<Member id"))
         << "Properties must include Member elements";
-    EXPECT_TRUE(fileContains(outputPath, "<Material>"))
-        << "Properties must include Material data";
+    // Material properties are directly in Member elements (flat format)
+    EXPECT_TRUE(fileContains(outputPath, "<YoungModulus>"))
+        << "Properties must include YoungModulus data";
+    EXPECT_TRUE(fileContains(outputPath, "<YieldStrength>"))
+        << "Properties must include YieldStrength data";
+    EXPECT_TRUE(fileContains(outputPath, "<Density>"))
+        << "Properties must include Density data";
+    EXPECT_TRUE(fileContains(outputPath, "<Area>"))
+        << "Properties must include Area data";
 }
 
 /**

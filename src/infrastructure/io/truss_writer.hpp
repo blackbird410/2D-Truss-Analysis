@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../core/model/Truss.hpp"
+#include "../../core/interfaces/TrussDTO.hpp"
 #include "io_types.hpp"
 #include <filesystem>
 
@@ -34,15 +34,18 @@ public:
     /**
      * @brief Write a truss structure to a file
      * 
-     * @param truss The truss structure to write
+     * @param trussData The truss data to write (as DTO)
      * @param filepath Path to the file to write
      * @param options File I/O options
      * @return true if write successful, false otherwise
      * @throws FileWriteException if file cannot be written
-     * @throws ValidationException if truss structure is invalid (when validateOnWrite=true)
+     * 
+     * NOTE: Accepts DTO to enforce DIP - Infrastructure depends on data structures,
+     * not concrete Domain objects. Clients should use ITrussView to create DTOs from
+     * Domain objects if needed.
      */
     virtual bool write(
-        const core::Truss& truss,
+        const core::interfaces::TrussDTO& trussData,
         const std::filesystem::path& filepath,
         const FileIOOptions& options = FileIOOptions{}
     ) = 0;

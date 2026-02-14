@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../core/model/Truss.hpp"
+#include "../../core/interfaces/TrussDTO.hpp"
 #include "io_types.hpp"
 #include <filesystem>
 #include <memory>
@@ -37,13 +37,15 @@ public:
      * 
      * @param filepath Path to the file to read
      * @param options File I/O options
-     * @return Shared pointer to the loaded truss structure
+     * @return TrussDTO containing the loaded truss data
      * @throws FileNotFoundException if file doesn't exist
      * @throws FileReadException if file cannot be read
      * @throws ParseException if file format is invalid
-     * @throws ValidationException if truss structure is invalid (when validateOnRead=true)
+     * 
+     * NOTE: Returns DTO to enforce DIP - Infrastructure does not create Domain objects.
+     * Clients should use TrussAssembler to convert DTO → Domain object if needed.
      */
-    virtual std::shared_ptr<core::Truss> read(
+    virtual core::interfaces::TrussDTO read(
         const std::filesystem::path& filepath,
         const FileIOOptions& options = FileIOOptions{}
     ) = 0;

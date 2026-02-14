@@ -13,11 +13,13 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
+using core::interfaces::NodeView;
+using core::interfaces::MemberView;
 
-bool TextExporter::exportResults(const Truss& truss,
-                                const AnalysisResults& results,
+bool TextExporter::exportResults(const ITrussView& truss,
+                                const IAnalysisResultsView& results,
                                 const std::filesystem::path& filePath,
                                 const ExportOptions& options) {
     std::ofstream file(filePath);
@@ -46,15 +48,15 @@ bool TextExporter::exportResults(const Truss& truss,
             writeLoadsSection(file, truss, options);
         }
         
-        if (options.includeDisplacements && results.displacements.size() > 0) {
+        if (options.includeDisplacements && results.getDisplacements().size() > 0) {
             writeDisplacementsSection(file, results, options);
         }
         
-        if (options.includeMemberForces && !results.memberForces.empty()) {
+        if (options.includeMemberForces && !results.getMemberForces().empty()) {
             writeMemberForcesSection(file, results, options);
         }
         
-        if (options.includeReactions && !results.reactions.empty()) {
+        if (options.includeReactions && !results.getReactions().empty()) {
             writeReactionsSection(file, results, options);
         }
         
@@ -106,7 +108,7 @@ void TextExporter::writeSectionHeader(std::ostream& os, const std::string& title
     writeSeparator(os);
 }
 
-void TextExporter::writeHeader(std::ostream& os, const Truss& truss) {
+void TextExporter::writeHeader(std::ostream& os, const ITrussView& truss) {
     writeSeparator(os);
     os << "2D TRUSS ANALYSIS RESULTS\n";
     os << truss.getName() << "\n";
@@ -117,7 +119,7 @@ void TextExporter::writeHeader(std::ostream& os, const Truss& truss) {
 }
 
 void TextExporter::writeProjectSection(std::ostream& os, 
-                                      const Truss& truss,
+                                      const ITrussView& truss,
                                       const ExportOptions& /*options*/) {
     writeSectionHeader(os, "PROJECT METADATA");
     
@@ -129,7 +131,7 @@ void TextExporter::writeProjectSection(std::ostream& os,
 }
 
 void TextExporter::writeGeometrySection(std::ostream& os,
-                                       const Truss& truss,
+                                       const ITrussView& truss,
                                        const ExportOptions& options) {
     writeSectionHeader(os, "GEOMETRY");
     
@@ -141,9 +143,9 @@ void TextExporter::writeGeometrySection(std::ostream& os,
        << std::setw(15) << "Support Type" << "\n";
     os << "  " << std::string(53, '-') << "\n";
     
-    for (const auto& node : truss.getNodes()) {
+    for (const auto& node : truss.getNodeViews()) {
         std::string supportType;
-        switch (node->getSupportType()) {
+        switch (node.support) {
             case core::SupportType::Free: supportType = "Free"; break;
             case core::SupportType::Pinned: supportType = "Pinned"; break;
             case core::SupportType::PinnedX: supportType = "Pinned-X"; break;
@@ -153,9 +155,9 @@ void TextExporter::writeGeometrySection(std::ostream& os,
             default: supportType = "Unknown"; break;
         }
         
-        os << "  " << std::left << std::setw(8) << node->getId()
-           << std::setw(15) << formatNumber(node->getX(), options)
-           << std::setw(15) << formatNumber(node->getY(), options)
+        os << "  " << std::left << std::setw(8) << node.id
+           << std::setw(15) << formatNumber(node.x, options)
+           << std::setw(15) << formatNumber(node.y, options)
            << std::setw(15) << supportType << "\n";
     }
     
@@ -167,16 +169,16 @@ void TextExporter::writeGeometrySection(std::ostream& os,
        << std::setw(15) << "Length (m)" << "\n";
     os << "  " << std::string(49, '-') << "\n";
     
-    for (const auto& member : truss.getMembers()) {
-        os << "  " << std::left << std::setw(10) << member->getId()
-           << std::setw(12) << member->getStartNode()->getId()
-           << std::setw(12) << member->getEndNode()->getId()
-           << std::setw(15) << formatNumber(member->getLength(), options) << "\n";
+    for (const auto& member : truss.getMemberViews()) {
+        os << "  " << std::left << std::setw(10) << member.id
+           << std::setw(12) << member.startNodeId
+           << std::setw(12) << member.endNodeId
+           << std::setw(15) << formatNumber(member.length, options) << "\n";
     }
 }
 
 void TextExporter::writePropertiesSection(std::ostream& os,
-                                         const Truss& truss,
+                                         const ITrussView& truss,
                                          const ExportOptions& options) {
     writeSectionHeader(os, "MATERIAL AND SECTION PROPERTIES");
     
@@ -188,21 +190,17 @@ void TextExporter::writePropertiesSection(std::ostream& os,
        << std::setw(15) << "Section" << "\n";
     os << "  " << std::string(82, '-') << "\n";
     
-    for (const auto& member : truss.getMembers()) {
-        const auto& material = member->getMaterial();
-        const auto& section = member->getSection();
-        
-        os << "  " << std::left << std::setw(10) << member->getId()
-           << std::setw(12) << material.name
-           << std::setw(15) << formatNumber(material.youngModulus, options)
-           << std::setw(15) << formatNumber(material.density, options)
-           << std::setw(15) << formatNumber(section.area, options)
-           << std::setw(15) << section.designation << "\n";
+    for (const auto& member : truss.getMemberViews()) {
+        os << "  " << std::left << std::setw(10) << member.id
+           << std::setw(15) << formatNumber(member.youngModulus, options)
+           << std::setw(15) << formatNumber(member.yieldStrength, options)
+           << std::setw(15) << formatNumber(member.density, options)
+           << std::setw(15) << formatNumber(member.area, options) << "\n";
     }
 }
 
 void TextExporter::writeLoadsSection(std::ostream& os,
-                                    const Truss& truss,
+                                    const ITrussView& truss,
                                     const ExportOptions& options) {
     writeSectionHeader(os, "APPLIED LOADS");
     
@@ -212,13 +210,12 @@ void TextExporter::writeLoadsSection(std::ostream& os,
     os << "  " << std::string(50, '-') << "\n";
     
     bool hasLoads = false;
-    for (const auto& node : truss.getNodes()) {
-        const auto& force = node->getAppliedForce();
+    for (const auto& node : truss.getNodeViews()) {
         // Only export nodes with non-zero forces
-        if (force.fx != 0.0 || force.fy != 0.0) {
-            os << "  " << std::left << std::setw(10) << node->getId()
-               << std::setw(20) << formatNumber(force.fx, options)
-               << std::setw(20) << formatNumber(force.fy, options) << "\n";
+        if (node.fx != 0.0 || node.fy != 0.0) {
+            os << "  " << std::left << std::setw(10) << node.id
+               << std::setw(20) << formatNumber(node.fx, options)
+               << std::setw(20) << formatNumber(node.fy, options) << "\n";
             hasLoads = true;
         }
     }
@@ -229,7 +226,7 @@ void TextExporter::writeLoadsSection(std::ostream& os,
 }
 
 void TextExporter::writeDisplacementsSection(std::ostream& os,
-                                            const AnalysisResults& results,
+                                            const IAnalysisResultsView& results,
                                             const ExportOptions& options) {
     writeSectionHeader(os, "NODAL DISPLACEMENTS");
     
@@ -237,17 +234,17 @@ void TextExporter::writeDisplacementsSection(std::ostream& os,
        << std::setw(20) << "Displacement (m)" << "\n";
     os << "  " << std::string(30, '-') << "\n";
     
-    for (size_t i = 0; i < results.displacements.size(); ++i) {
+    for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
         os << "  " << std::left << std::setw(10) << i
-           << std::setw(20) << formatNumber(results.displacements[i], options) << "\n";
+           << std::setw(20) << formatNumber(results.getDisplacements()[i], options) << "\n";
     }
     
     os << "\n  Maximum Displacement: " 
-       << formatNumber(results.maxDisplacement, options) << " m\n";
+       << formatNumber(results.getMaxDisplacement(), options) << " m\n";
 }
 
 void TextExporter::writeMemberForcesSection(std::ostream& os,
-                                           const AnalysisResults& results,
+                                           const IAnalysisResultsView& results,
                                            const ExportOptions& options) {
     writeSectionHeader(os, "MEMBER FORCES");
     
@@ -256,8 +253,8 @@ void TextExporter::writeMemberForcesSection(std::ostream& os,
        << std::setw(15) << "Type" << "\n";
     os << "  " << std::string(47, '-') << "\n";
     
-    for (size_t i = 0; i < results.memberForces.size(); ++i) {
-        Real force = results.memberForces[i];
+    for (size_t i = 0; i < results.getMemberForces().size(); ++i) {
+        Real force = results.getMemberForces()[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
         
         os << "  " << std::left << std::setw(12) << (i + 1)
@@ -267,7 +264,7 @@ void TextExporter::writeMemberForcesSection(std::ostream& os,
 }
 
 void TextExporter::writeReactionsSection(std::ostream& os,
-                                        const AnalysisResults& results,
+                                        const IAnalysisResultsView& results,
                                         const ExportOptions& options) {
     writeSectionHeader(os, "SUPPORT REACTIONS");
     
@@ -275,23 +272,23 @@ void TextExporter::writeReactionsSection(std::ostream& os,
        << std::setw(25) << "Reaction Force (N)" << "\n";
     os << "  " << std::string(35, '-') << "\n";
     
-    for (size_t i = 0; i < results.reactions.size(); ++i) {
+    for (size_t i = 0; i < results.getReactions().size(); ++i) {
         os << "  " << std::left << std::setw(10) << i
-           << std::setw(25) << formatNumber(results.reactions[i], options) << "\n";
+           << std::setw(25) << formatNumber(results.getReactions()[i], options) << "\n";
     }
 }
 
 void TextExporter::writeMetadataSection(std::ostream& os,
-                                       const AnalysisResults& results,
+                                       const IAnalysisResultsView& results,
                                        const ExportOptions& options) {
     writeSectionHeader(os, "ANALYSIS METADATA");
     
-    os << "  Converged:          " << (results.converged ? "Yes" : "No") << "\n";
-    os << "  Iterations:         " << results.iterations << "\n";
-    os << "  Total DOFs:         " << results.totalDofs << "\n";
-    os << "  Free DOFs:          " << results.freeDofs << "\n";
-    os << "  Max Displacement:   " << formatNumber(results.maxDisplacement, options) << " m\n";
-    os << "  Max Stress:         " << formatNumber(results.maxStress, options) << " Pa\n";
+    os << "  Converged:          " << (results.hasConverged() ? "Yes" : "No") << "\n";
+    os << "  Iterations:         " << results.getIterations() << "\n";
+    os << "  Total DOFs:         " << results.getTotalDofs() << "\n";
+    os << "  Free DOFs:          " << results.getFreeDofs() << "\n";
+    os << "  Max Displacement:   " << formatNumber(results.getMaxDisplacement(), options) << " m\n";
+    os << "  Max Stress:         " << formatNumber(results.getMaxStress(), options) << " Pa\n";
 }
 
 } // namespace truss::infrastructure::export_

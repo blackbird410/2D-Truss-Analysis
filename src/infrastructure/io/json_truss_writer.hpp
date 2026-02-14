@@ -28,7 +28,7 @@ public:
      * @brief Write truss to JSON file
      */
     bool write(
-        const core::Truss& truss,
+        const core::interfaces::TrussDTO& trussData,
         const std::filesystem::path& filepath,
         const FileIOOptions& options = FileIOOptions{}
     ) override;
@@ -45,22 +45,22 @@ private:
     /**
      * @brief Create metadata JSON object
      */
-    nlohmann::json createMetadata(const core::Truss& truss, const FileIOOptions& options);
+    nlohmann::json createMetadata(const core::interfaces::TrussDTO& trussData, const FileIOOptions& options);
     
     /**
      * @brief Create nodes JSON array
      */
-    nlohmann::json createNodes(const core::Truss& truss);
+    nlohmann::json createNodes(const core::interfaces::TrussDTO& trussData);
     
     /**
      * @brief Create members JSON array
      */
-    nlohmann::json createMembers(const core::Truss& truss);
+    nlohmann::json createMembers(const core::interfaces::TrussDTO& trussData);
     
     /**
      * @brief Create loads JSON array
      */
-    nlohmann::json createLoads(const core::Truss& truss);
+    nlohmann::json createLoads(const core::interfaces::TrussDTO& trussData);
     
     /**
      * @brief Convert support type to string

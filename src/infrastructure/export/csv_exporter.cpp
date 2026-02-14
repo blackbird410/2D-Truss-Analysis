@@ -13,11 +13,13 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
+using core::interfaces::NodeView;
+using core::interfaces::MemberView;
 
-bool CSVExporter::exportResults(const Truss& truss,
-                                const AnalysisResults& results,
+bool CSVExporter::exportResults(const ITrussView& truss,
+                                const IAnalysisResultsView& results,
                                 const std::filesystem::path& filePath,
                                 const ExportOptions& options) {
     std::ofstream file(filePath);
@@ -99,90 +101,92 @@ std::string CSVExporter::formatTimestamp() const {
 }
 
 void CSVExporter::writeGeometrySection(std::ostream& os,
-                                      const Truss& truss,
+                                      const ITrussView& truss,
                                       const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     // Nodes
     os << "Node ID" << delim << "X" << delim << "Y" << delim << "Support Type" << std::endl;
-    for (const auto& node : truss.getNodes()) {
-        os << node->getId() << delim
-           << formatNumber(node->getX(), options) << delim
-           << formatNumber(node->getY(), options) << delim
-           << static_cast<int>(node->getSupportType()) << std::endl;
+    auto nodes = truss.getNodeViews();
+    for (const auto& node : nodes) {
+        os << node.id << delim
+           << formatNumber(node.x, options) << delim
+           << formatNumber(node.y, options) << delim
+           << static_cast<int>(node.support) << std::endl;
     }
     
     os << std::endl;
     
     // Members
     os << "Member ID" << delim << "Start Node" << delim << "End Node" << delim << "Length" << std::endl;
-    for (const auto& member : truss.getMembers()) {
-        os << member->getId() << delim
-           << member->getStartNode()->getId() << delim
-           << member->getEndNode()->getId() << delim
-           << formatNumber(member->getLength(), options) << std::endl;
+    auto members = truss.getMemberViews();
+    for (const auto& member : members) {
+        os << member.id << delim
+           << member.startNodeId << delim
+           << member.endNodeId << delim
+           << formatNumber(member.length, options) << std::endl;
     }
 }
 
 void CSVExporter::writePropertiesSection(std::ostream& os,
-                                        const Truss& truss,
+                                        const ITrussView& truss,
                                         const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
-    os << "Member ID" << delim << "Material" << delim << "E (Pa)" << delim 
-       << "Density (kg/m³)" << delim << "Area (m²)" << delim << "Section" << std::endl;
+    os << "Member ID" << delim << "E (Pa)" << delim 
+       << "Density (kg/m³)" << delim << "Area (m²)" << delim << "Yield Strength (Pa)" << std::endl;
     
-    for (const auto& member : truss.getMembers()) {
-        const auto& material = member->getMaterial();
-        const auto& section = member->getSection();
-        os << member->getId() << delim
-           << material.name << delim
-           << formatNumber(material.youngModulus, options) << delim
-           << formatNumber(material.density, options) << delim
-           << formatNumber(section.area, options) << delim
-           << section.designation << std::endl;
+    auto members = truss.getMemberViews();
+    for (const auto& member : members) {
+        os << member.id << delim
+           << formatNumber(member.youngModulus, options) << delim
+           << formatNumber(member.density, options) << delim
+           << formatNumber(member.area, options) << delim
+           << formatNumber(member.yieldStrength, options) << std::endl;
     }
 }
 
 void CSVExporter::writeLoadsSection(std::ostream& os,
-                                   const Truss& truss,
+                                   const ITrussView& truss,
                                    const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "Node ID" << delim << "Fx (N)" << delim << "Fy (N)" << std::endl;
     
-    for (const auto& node : truss.getNodes()) {
-        const auto& force = node->getAppliedForce();
+    auto nodes = truss.getNodeViews();
+    for (const auto& node : nodes) {
         // Only export nodes with non-zero forces
-        if (force.fx != 0.0 || force.fy != 0.0) {
-            os << node->getId() << delim
-               << formatNumber(force.fx, options) << delim
-               << formatNumber(force.fy, options) << std::endl;
+        if (node.fx != 0.0 || node.fy != 0.0) {
+            os << node.id << delim
+               << formatNumber(node.fx, options) << delim
+               << formatNumber(node.fy, options) << std::endl;
         }
     }
 }
 
 void CSVExporter::writeDisplacementsSection(std::ostream& os,
-                                           const Truss& /*truss*/,
-                                           const AnalysisResults& results,
+                                           const ITrussView& /*truss*/,
+                                           const IAnalysisResultsView& results,
                                            const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "DOF" << delim << "Displacement" << std::endl;
-    for (size_t i = 0; i < results.displacements.size(); ++i) {
-        os << i << delim << formatNumber(results.displacements[i], options) << std::endl;
+    const auto& displacements = results.getDisplacements();
+    for (size_t i = 0; i < displacements.size(); ++i) {
+        os << i << delim << formatNumber(displacements[i], options) << std::endl;
     }
 }
 
 void CSVExporter::writeMemberForcesSection(std::ostream& os,
-                                          const Truss& truss,
-                                          const AnalysisResults& results,
+                                          const ITrussView& truss,
+                                          const IAnalysisResultsView& results,
                                           const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "Member ID" << delim << "Axial Force" << delim << "Type" << std::endl;
-    for (size_t i = 0; i < results.memberForces.size() && i < truss.getMemberCount(); ++i) {
-        Real force = results.memberForces[i];
+    const auto& memberForces = results.getMemberForces();
+    for (size_t i = 0; i < memberForces.size() && i < truss.getMemberCount(); ++i) {
+        Real force = memberForces[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
         os << (i + 1) << delim
            << formatNumber(force, options) << delim
@@ -191,29 +195,30 @@ void CSVExporter::writeMemberForcesSection(std::ostream& os,
 }
 
 void CSVExporter::writeReactionsSection(std::ostream& os,
-                                       const Truss& /*truss*/,
-                                       const AnalysisResults& results,
+                                       const ITrussView& /*truss*/,
+                                       const IAnalysisResultsView& results,
                                        const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "DOF" << delim << "Reaction Force" << std::endl;
-    for (size_t i = 0; i < results.reactions.size(); ++i) {
-        os << i << delim << formatNumber(results.reactions[i], options) << std::endl;
+    const auto& reactions = results.getReactions();
+    for (size_t i = 0; i < reactions.size(); ++i) {
+        os << i << delim << formatNumber(reactions[i], options) << std::endl;
     }
 }
 
 void CSVExporter::writeMetadataSection(std::ostream& os,
-                                      const AnalysisResults& results,
+                                      const IAnalysisResultsView& results,
                                       const ExportOptions& options) {
     const std::string& delim = options.delimiter;
     
     os << "Property" << delim << "Value" << std::endl;
-    os << "Converged" << delim << (results.converged ? "Yes" : "No") << std::endl;
-    os << "Iterations" << delim << results.iterations << std::endl;
-    os << "Total DOFs" << delim << results.totalDofs << std::endl;
-    os << "Free DOFs" << delim << results.freeDofs << std::endl;
-    os << "Max Displacement" << delim << formatNumber(results.maxDisplacement, options) << std::endl;
-    os << "Max Stress" << delim << formatNumber(results.maxStress, options) << std::endl;
+    os << "Converged" << delim << (results.hasConverged() ? "Yes" : "No") << std::endl;
+    os << "Iterations" << delim << results.getIterations() << std::endl;
+    os << "Total DOFs" << delim << results.getTotalDofs() << std::endl;
+    os << "Free DOFs" << delim << results.getFreeDofs() << std::endl;
+    os << "Max Displacement" << delim << formatNumber(results.getMaxDisplacement(), options) << std::endl;
+    os << "Max Stress" << delim << formatNumber(results.getMaxStress(), options) << std::endl;
 }
 
 } // namespace truss::infrastructure::export_

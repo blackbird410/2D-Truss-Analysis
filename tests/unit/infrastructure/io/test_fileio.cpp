@@ -13,6 +13,7 @@
 #include "infrastructure/io/xml_truss_reader.hpp"
 #include "infrastructure/io/xml_truss_writer.hpp"
 #include "core/model/Truss.hpp"
+#include "core/assembly/TrussAssembler.hpp"
 #include <filesystem>
 #include <fstream>
 #include <chrono>
@@ -166,7 +167,9 @@ TEST_F(FileIOTest, JsonWriterCreatesValidFile) {
     options.validateOnWrite = false;
     options.overwriteExisting = true;
     
-    EXPECT_TRUE(writer->write(*truss, filepath, options));
+    // Convert Truss to DTO for writing
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_TRUE(writer->write(dto, filepath, options));
     EXPECT_TRUE(std::filesystem::exists(filepath));
 }
 
@@ -180,13 +183,14 @@ TEST_F(FileIOTest, JsonWriterThrowsOnExistingFileWithoutOverwrite) {
     FileIOOptions options1;
     options1.overwriteExisting = true;
     options1.validateOnWrite = false;
-    writer->write(*truss, filepath, options1);
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    writer->write(dto, filepath, options1);
     
     // Second write without overwrite should throw
     FileIOOptions options2;
     options2.overwriteExisting = false;
     options2.validateOnWrite = false;
-    EXPECT_THROW(writer->write(*truss, filepath, options2), FileWriteException);
+    EXPECT_THROW(writer->write(dto, filepath, options2), FileWriteException);
 }
 
 TEST_F(FileIOTest, JsonWriterIncludesMetadata) {
@@ -199,7 +203,8 @@ TEST_F(FileIOTest, JsonWriterIncludesMetadata) {
     options.overwriteExisting = true;
     options.validateOnWrite = false;
     
-    writer->write(*truss, filepath, options);
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    writer->write(dto, filepath, options);
     
     // Read file and verify metadata exists
     std::ifstream file(filepath);
@@ -257,13 +262,15 @@ TEST_F(FileIOTest, JsonRoundTripPreservesData) {
     FileIOOptions writeOptions;
     writeOptions.validateOnWrite = false;
     writeOptions.overwriteExisting = true;
-    writer->write(*originalTruss, filepath, writeOptions);
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*originalTruss);
+    writer->write(dto, filepath, writeOptions);
     
     // Read
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions readOptions;
     readOptions.validateOnRead = false;
-    auto loadedTruss = reader->read(filepath, readOptions);
+    auto loadedDTO = reader->read(filepath, readOptions);
+    auto loadedTruss = truss::core::assembly::TrussAssembler::assembleTruss(loadedDTO);
     
     // Verify equivalence
     verifyTrussEquivalence(*originalTruss, *loadedTruss);
@@ -280,7 +287,8 @@ TEST_F(FileIOTest, JsonRoundTripWithPrettyPrint) {
     options.indentSize = 2;
     options.overwriteExisting = true;
     options.validateOnWrite = false;
-    writer->write(*truss, filepath, options);
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    writer->write(dto, filepath, options);
     
     // Verify file contains newlines (pretty-printed)
     std::ifstream file(filepath);
@@ -302,7 +310,8 @@ TEST_F(FileIOTest, XmlWriterCreatesValidFile) {
     options.validateOnWrite = false;
     options.overwriteExisting = true;
     
-    EXPECT_TRUE(writer->write(*truss, filepath, options));
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_TRUE(writer->write(dto, filepath, options));
     EXPECT_TRUE(std::filesystem::exists(filepath));
 }
 
@@ -316,13 +325,14 @@ TEST_F(FileIOTest, XmlWriterThrowsOnExistingFileWithoutOverwrite) {
     FileIOOptions options1;
     options1.overwriteExisting = true;
     options1.validateOnWrite = false;
-    writer->write(*truss, filepath, options1);
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    writer->write(dto, filepath, options1);
     
     // Second write without overwrite should throw
     FileIOOptions options2;
     options2.overwriteExisting = false;
     options2.validateOnWrite = false;
-    EXPECT_THROW(writer->write(*truss, filepath, options2), FileWriteException);
+    EXPECT_THROW(writer->write(dto, filepath, options2), FileWriteException);
 }
 
 // ============================================================================
@@ -373,13 +383,15 @@ TEST_F(FileIOTest, XmlRoundTripPreservesData) {
     FileIOOptions writeOptions;
     writeOptions.validateOnWrite = false;
     writeOptions.overwriteExisting = true;
-    writer->write(*originalTruss, filepath, writeOptions);
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*originalTruss);
+    writer->write(dto, filepath, writeOptions);
     
     // Read
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     FileIOOptions readOptions;
     readOptions.validateOnRead = false;
-    auto loadedTruss = reader->read(filepath, readOptions);
+    auto loadedDTO = reader->read(filepath, readOptions);
+    auto loadedTruss = truss::core::assembly::TrussAssembler::assembleTruss(loadedDTO);
     
     // Verify equivalence
     verifyTrussEquivalence(*originalTruss, *loadedTruss);
@@ -423,7 +435,8 @@ TEST_F(FileIOTest, HandlesEmptyTruss) {
     options.validateOnWrite = false;
     options.overwriteExisting = true;
     
-    EXPECT_NO_THROW(writer->write(*truss, filepath, options));
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_NO_THROW(writer->write(dto, filepath, options));
 }
 
 TEST_F(FileIOTest, HandlesLargeTruss) {
@@ -441,7 +454,8 @@ TEST_F(FileIOTest, HandlesLargeTruss) {
     options.validateOnWrite = false;
     options.overwriteExisting = true;
     
-    EXPECT_NO_THROW(writer->write(*truss, filepath, options));
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_NO_THROW(writer->write(dto, filepath, options));
     
     // Verify file size is reasonable
     auto fileSize = std::filesystem::file_size(filepath);
@@ -586,7 +600,7 @@ TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInMember) {
         <node id="2" x="4.0" y="0.0" support="free"/>
     </nodes>
     <members>
-        <member startNode="1" endNode="777"/>
+        <member id="1" startNode="1" endNode="777"/>
     </members>
 </truss>
 )";
@@ -602,8 +616,8 @@ TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInMember) {
         FAIL() << "Expected ParseException for unknown node ID in member";
     } catch (const ParseException& e) {
         std::string errorMsg = e.what();
-        EXPECT_TRUE(errorMsg.find("unknown") != std::string::npos);
-        EXPECT_TRUE(errorMsg.find("777") != std::string::npos);
+        EXPECT_TRUE(errorMsg.find("unknown") != std::string::npos) << "Actual error: " << errorMsg;
+        EXPECT_TRUE(errorMsg.find("777") != std::string::npos) << "Actual error: " << errorMsg;
     }
 }
 
@@ -739,7 +753,8 @@ TEST_F(FileIOTest, JsonValidFileWithNonSequentialIDsSucceeds) {
     options.validateOnRead = false;
     
     // Should succeed - non-sequential IDs are valid
-    auto truss = reader->read(filepath, options);
+    auto dto = reader->read(filepath, options);
+    auto truss = truss::core::assembly::TrussAssembler::assembleTruss(dto);
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getNodeCount(), 3);
     EXPECT_EQ(truss->getMemberCount(), 2);

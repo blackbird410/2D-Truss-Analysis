@@ -13,11 +13,13 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
+using core::interfaces::NodeView;
+using core::interfaces::MemberView;
 
-bool XMLExporter::exportResults(const Truss& truss,
-                                const AnalysisResults& results,
+bool XMLExporter::exportResults(const ITrussView& truss,
+                                const IAnalysisResultsView& results,
                                 const std::filesystem::path& filePath,
                                 const ExportOptions& options) {
     std::ofstream file(filePath);
@@ -50,17 +52,17 @@ bool XMLExporter::exportResults(const Truss& truss,
         }
         
         // Displacements section (conditional)
-        if (options.includeDisplacements && results.displacements.size() > 0) {
+        if (options.includeDisplacements && results.getDisplacements().size() > 0) {
             writeDisplacementsSection(file, results, options);
         }
         
         // Member forces section (conditional)
-        if (options.includeMemberForces && !results.memberForces.empty()) {
+        if (options.includeMemberForces && !results.getMemberForces().empty()) {
             writeMemberForcesSection(file, results, options);
         }
         
         // Reactions section (conditional)
-        if (options.includeReactions && !results.reactions.empty()) {
+        if (options.includeReactions && !results.getReactions().empty()) {
             writeReactionsSection(file, results, options);
         }
         
@@ -124,7 +126,7 @@ std::string XMLExporter::escapeString(const std::string& str) const {
     return result;
 }
 
-void XMLExporter::writeProjectSection(std::ostream& os, const Truss& truss,
+void XMLExporter::writeProjectSection(std::ostream& os, const ITrussView& truss,
                                        const ExportOptions& options) {
     os << "  <Project>\n";
     os << "    <Name>" << escapeString(truss.getName()) << "</Name>\n";
@@ -133,28 +135,28 @@ void XMLExporter::writeProjectSection(std::ostream& os, const Truss& truss,
     os << "  </Project>\n";
 }
 
-void XMLExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
+void XMLExporter::writeGeometrySection(std::ostream& os, const ITrussView& truss,
                                         const ExportOptions& options) {
     os << "  <Geometry>\n";
     
     // Nodes
     os << "    <Nodes>\n";
-    for (const auto& node : truss.getNodes()) {
-        os << "      <Node id=\"" << node->getId() << "\">\n";
-        os << "        <X>" << formatNumber(node->getX(), options) << "</X>\n";
-        os << "        <Y>" << formatNumber(node->getY(), options) << "</Y>\n";
-        os << "        <SupportType>" << static_cast<int>(node->getSupportType()) << "</SupportType>\n";
+    for (const auto& node : truss.getNodeViews()) {
+        os << "      <Node id=\"" << node.id << "\">\n";
+        os << "        <X>" << formatNumber(node.x, options) << "</X>\n";
+        os << "        <Y>" << formatNumber(node.y, options) << "</Y>\n";
+        os << "        <SupportType>" << static_cast<int>(node.support) << "</SupportType>\n";
         os << "      </Node>\n";
     }
     os << "    </Nodes>\n";
     
     // Members
     os << "    <Members>\n";
-    for (const auto& member : truss.getMembers()) {
-        os << "      <Member id=\"" << member->getId() << "\">\n";
-        os << "        <StartNode>" << member->getStartNode()->getId() << "</StartNode>\n";
-        os << "        <EndNode>" << member->getEndNode()->getId() << "</EndNode>\n";
-        os << "        <Length>" << formatNumber(member->getLength(), options) << "</Length>\n";
+    for (const auto& member : truss.getMemberViews()) {
+        os << "      <Member id=\"" << member.id << "\">\n";
+        os << "        <StartNode>" << member.startNodeId << "</StartNode>\n";
+        os << "        <EndNode>" << member.endNodeId << "</EndNode>\n";
+        os << "        <Length>" << formatNumber(member.length, options) << "</Length>\n";
         os << "      </Member>\n";
     }
     os << "    </Members>\n";
@@ -162,21 +164,17 @@ void XMLExporter::writeGeometrySection(std::ostream& os, const Truss& truss,
     os << "  </Geometry>\n";
 }
 
-void XMLExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
+void XMLExporter::writePropertiesSection(std::ostream& os, const ITrussView& truss,
                                         const ExportOptions& options) {
     os << "  <Properties>\n";
     os << "    <Members>\n";
     
-    for (const auto& member : truss.getMembers()) {
-        const auto& material = member->getMaterial();
-        const auto& section = member->getSection();
-        
-        os << "      <Member id=\"" << member->getId() << "\">\n";
-        os << "        <Material>" << escapeString(material.name) << "</Material>\n";
-        os << "        <YoungModulus>" << formatNumber(material.youngModulus, options) << "</YoungModulus>\n";
-        os << "        <Density>" << formatNumber(material.density, options) << "</Density>\n";
-        os << "        <Area>" << formatNumber(section.area, options) << "</Area>\n";
-        os << "        <Section>" << escapeString(section.designation) << "</Section>\n";
+    for (const auto& member : truss.getMemberViews()) {
+        os << "      <Member id=\"" << member.id << "\">\n";
+        os << "        <YoungModulus>" << formatNumber(member.youngModulus, options) << "</YoungModulus>\n";
+        os << "        <YieldStrength>" << formatNumber(member.yieldStrength, options) << "</YieldStrength>\n";
+        os << "        <Density>" << formatNumber(member.density, options) << "</Density>\n";
+        os << "        <Area>" << formatNumber(member.area, options) << "</Area>\n";
         os << "      </Member>\n";
     }
     
@@ -184,18 +182,17 @@ void XMLExporter::writePropertiesSection(std::ostream& os, const Truss& truss,
     os << "  </Properties>\n";
 }
 
-void XMLExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
+void XMLExporter::writeLoadsSection(std::ostream& os, const ITrussView& truss,
                                    const ExportOptions& options) {
     os << "  <Loads>\n";
     os << "    <NodalForces>\n";
     
-    for (const auto& node : truss.getNodes()) {
-        const auto& force = node->getAppliedForce();
+    for (const auto& node : truss.getNodeViews()) {
         // Only export nodes with non-zero forces
-        if (force.fx != 0.0 || force.fy != 0.0) {
-            os << "      <Force nodeId=\"" << node->getId() << "\">\n";
-            os << "        <Fx>" << formatNumber(force.fx, options) << "</Fx>\n";
-            os << "        <Fy>" << formatNumber(force.fy, options) << "</Fy>\n";
+        if (node.fx != 0.0 || node.fy != 0.0) {
+            os << "      <Force nodeId=\"" << node.id << "\">\n";
+            os << "        <Fx>" << formatNumber(node.fx, options) << "</Fx>\n";
+            os << "        <Fy>" << formatNumber(node.fy, options) << "</Fy>\n";
             os << "      </Force>\n";
         }
     }
@@ -205,31 +202,31 @@ void XMLExporter::writeLoadsSection(std::ostream& os, const Truss& truss,
 }
 
 void XMLExporter::writeDisplacementsSection(std::ostream& os,
-                                           const AnalysisResults& results,
+                                           const IAnalysisResultsView& results,
                                            const ExportOptions& options) {
     os << "  <Displacements>\n";
     os << "    <Values>\n";
     
-    for (size_t i = 0; i < results.displacements.size(); ++i) {
+    for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
         os << "      <Displacement dof=\"" << i << "\">";
-        os << formatNumber(results.displacements[i], options);
+        os << formatNumber(results.getDisplacements()[i], options);
         os << "</Displacement>\n";
     }
     
     os << "    </Values>\n";
-    os << "    <MaxDisplacement>" << formatNumber(results.maxDisplacement, options) 
+    os << "    <MaxDisplacement>" << formatNumber(results.getMaxDisplacement(), options) 
        << "</MaxDisplacement>\n";
     os << "  </Displacements>\n";
 }
 
 void XMLExporter::writeMemberForcesSection(std::ostream& os,
-                                          const AnalysisResults& results,
+                                          const IAnalysisResultsView& results,
                                           const ExportOptions& options) {
     os << "  <MemberForces>\n";
     os << "    <Values>\n";
     
-    for (size_t i = 0; i < results.memberForces.size(); ++i) {
-        Real force = results.memberForces[i];
+    for (size_t i = 0; i < results.getMemberForces().size(); ++i) {
+        Real force = results.getMemberForces()[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
         os << "      <Force memberId=\"" << (i + 1) << "\" type=\"" << type << "\">";
         os << formatNumber(force, options);
@@ -241,14 +238,14 @@ void XMLExporter::writeMemberForcesSection(std::ostream& os,
 }
 
 void XMLExporter::writeReactionsSection(std::ostream& os,
-                                       const AnalysisResults& results,
+                                       const IAnalysisResultsView& results,
                                        const ExportOptions& options) {
     os << "  <Reactions>\n";
     os << "    <Values>\n";
     
-    for (size_t i = 0; i < results.reactions.size(); ++i) {
+    for (size_t i = 0; i < results.getReactions().size(); ++i) {
         os << "      <Reaction dof=\"" << i << "\">";
-        os << formatNumber(results.reactions[i], options);
+        os << formatNumber(results.getReactions()[i], options);
         os << "</Reaction>\n";
     }
     
@@ -257,14 +254,14 @@ void XMLExporter::writeReactionsSection(std::ostream& os,
 }
 
 void XMLExporter::writeMetadataSection(std::ostream& os,
-                                      const AnalysisResults& results,
+                                      const IAnalysisResultsView& results,
                                       const ExportOptions& options) {
     os << "  <Analysis>\n";
-    os << "    <Converged>" << (results.converged ? "true" : "false") << "</Converged>\n";
-    os << "    <Iterations>" << results.iterations << "</Iterations>\n";
-    os << "    <TotalDofs>" << results.totalDofs << "</TotalDofs>\n";
-    os << "    <FreeDofs>" << results.freeDofs << "</FreeDofs>\n";
-    os << "    <MaxStress>" << formatNumber(results.maxStress, options) << "</MaxStress>\n";
+    os << "    <Converged>" << (results.hasConverged() ? "true" : "false") << "</Converged>\n";
+    os << "    <Iterations>" << results.getIterations() << "</Iterations>\n";
+    os << "    <TotalDofs>" << results.getTotalDofs() << "</TotalDofs>\n";
+    os << "    <FreeDofs>" << results.getFreeDofs() << "</FreeDofs>\n";
+    os << "    <MaxStress>" << formatNumber(results.getMaxStress(), options) << "</MaxStress>\n";
     os << "  </Analysis>\n";
 }
 

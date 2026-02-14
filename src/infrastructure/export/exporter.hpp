@@ -9,16 +9,16 @@
 #pragma once
 
 #include "export_types.hpp"
-#include "../../core/model/Truss.hpp"
-#include "../../core/analysis/AnalysisOrchestrator.hpp"
+#include "../../core/interfaces/ITrussView.hpp"
+#include "../../core/interfaces/IAnalysisResultsView.hpp"
 #include <string>
 #include <filesystem>
 
 namespace truss::infrastructure::export_ {
 
-// Import AnalysisResults from core
-using core::analysis::AnalysisResults;
-using core::Truss;
+// Import view interfaces from core
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
 
 /**
  * @brief Abstract interface for results exporters
@@ -30,6 +30,9 @@ using core::Truss;
  * - Context: ExporterFactory
  * - Strategy: IResultsExporter (this interface)
  * - Concrete Strategies: CSVExporter, JSONExporter, etc.
+ * 
+ * Architecture: Depends on abstractions (ITrussView, IAnalysisResultsView),
+ * not concrete Domain types (Truss, AnalysisResults). This enforces DIP.
  */
 class IResultsExporter {
 public:
@@ -38,8 +41,8 @@ public:
     /**
      * @brief Export analysis results to file
      * 
-     * @param truss The analyzed truss structure (provides geometry, properties)
-     * @param results Analysis results (displacements, forces, reactions)
+     * @param truss Read-only view of the analyzed truss structure
+     * @param results Read-only view of analysis results
      * @param filePath Output file path
      * @param options Export options (what to include, formatting)
      * @return true if export successful, false otherwise
@@ -48,8 +51,8 @@ public:
      * @throws std::invalid_argument if truss or results are invalid
      */
     virtual bool exportResults(
-        const Truss& truss,
-        const AnalysisResults& results,
+        const ITrussView& truss,
+        const IAnalysisResultsView& results,
         const std::filesystem::path& filePath,
         const ExportOptions& options = ExportOptions{}
     ) = 0;

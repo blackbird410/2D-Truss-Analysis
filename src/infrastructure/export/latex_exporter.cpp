@@ -13,11 +13,13 @@ namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::Truss;
-using core::analysis::AnalysisResults;
+using core::interfaces::ITrussView;
+using core::interfaces::IAnalysisResultsView;
+using core::interfaces::NodeView;
+using core::interfaces::MemberView;
 
-bool LaTeXExporter::exportResults(const Truss& truss,
-                                 const AnalysisResults& results,
+bool LaTeXExporter::exportResults(const ITrussView& truss,
+                                 const IAnalysisResultsView& results,
                                  const std::filesystem::path& filePath,
                                  const ExportOptions& options) {
     std::ofstream file(filePath);
@@ -48,15 +50,15 @@ bool LaTeXExporter::exportResults(const Truss& truss,
             writeLoadsSection(file, truss, options);
         }
         
-        if (options.includeDisplacements && results.displacements.size() > 0) {
+        if (options.includeDisplacements && results.getDisplacements().size() > 0) {
             writeDisplacementsSection(file, results, options);
         }
         
-        if (options.includeMemberForces && !results.memberForces.empty()) {
+        if (options.includeMemberForces && !results.getMemberForces().empty()) {
             writeMemberForcesSection(file, results, options);
         }
         
-        if (options.includeReactions && !results.reactions.empty()) {
+        if (options.includeReactions && !results.getReactions().empty()) {
             writeReactionsSection(file, results, options);
         }
         
@@ -117,7 +119,7 @@ std::string LaTeXExporter::escapeLatex(const std::string& text) const {
     return result;
 }
 
-void LaTeXExporter::writePreamble(std::ostream& os, const Truss& truss) {
+void LaTeXExporter::writePreamble(std::ostream& os, const ITrussView& truss) {
     os << "\\documentclass[11pt,a4paper]{article}\n";
     os << "\\usepackage[utf8]{inputenc}\n";
     os << "\\usepackage{amsmath}\n";
@@ -136,7 +138,7 @@ void LaTeXExporter::writeClosing(std::ostream& os) {
 }
 
 void LaTeXExporter::writeProjectSection(std::ostream& os, 
-                                       const Truss& truss, 
+                                       const ITrussView& truss, 
                                        const ExportOptions& /*options*/) {
     os << "\\maketitle\n\n";
     os << "\\section{Project Metadata}\n\n";
@@ -144,13 +146,13 @@ void LaTeXExporter::writeProjectSection(std::ostream& os,
     os << "  \\item \\textbf{Project Name:} " << escapeLatex(truss.getName()) << "\n";
     os << "  \\item \\textbf{Generated:} " << formatTimestamp() << "\n";
     os << "  \\item \\textbf{Software:} 2D Truss Analysis v3.0.0\n";
-    os << "  \\item \\textbf{Nodes:} " << truss.getNodes().size() << "\n";
-    os << "  \\item \\textbf{Members:} " << truss.getMembers().size() << "\n";
+    os << "  \\item \\textbf{Nodes:} " << truss.getNodeViews().size() << "\n";
+    os << "  \\item \\textbf{Members:} " << truss.getMemberViews().size() << "\n";
     os << "\\end{itemize}\n\n";
 }
 
 void LaTeXExporter::writeGeometrySection(std::ostream& os,
-                                        const Truss& truss,
+                                        const ITrussView& truss,
                                         const ExportOptions& options) {
     os << "\\section{Geometry}\n\n";
     
@@ -172,11 +174,11 @@ void LaTeXExporter::writeGeometrySection(std::ostream& os,
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";
     
-    for (const auto& node : truss.getNodes()) {
-        os << node->getId() << " & "
-           << formatNumber(node->getX(), options) << " & "
-           << formatNumber(node->getY(), options) << " & "
-           << static_cast<int>(node->getSupportType()) << " \\\\\n";
+    for (const auto& node : truss.getNodeViews()) {
+        os << node.id << " & "
+           << formatNumber(node.x, options) << " & "
+           << formatNumber(node.y, options) << " & "
+           << static_cast<int>(node.support) << " \\\\\n";
     }
     
     os << "\\end{longtable}\n\n";
@@ -199,18 +201,18 @@ void LaTeXExporter::writeGeometrySection(std::ostream& os,
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";
     
-    for (const auto& member : truss.getMembers()) {
-        os << member->getId() << " & "
-           << member->getStartNode()->getId() << " & "
-           << member->getEndNode()->getId() << " & "
-           << formatNumber(member->getLength(), options) << " \\\\\n";
+    for (const auto& member : truss.getMemberViews()) {
+        os << member.id << " & "
+           << member.startNodeId << " & "
+           << member.endNodeId << " & "
+           << formatNumber(member.length, options) << " \\\\\n";
     }
     
     os << "\\end{longtable}\n\n";
 }
 
 void LaTeXExporter::writePropertiesSection(std::ostream& os,
-                                          const Truss& truss,
+                                          const ITrussView& truss,
                                           const ExportOptions& options) {
     os << "\\section{Material and Section Properties}\n\n";
     os << "\\begin{longtable}{cccccc}\n";
@@ -229,23 +231,19 @@ void LaTeXExporter::writePropertiesSection(std::ostream& os,
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";
     
-    for (const auto& member : truss.getMembers()) {
-        const auto& material = member->getMaterial();
-        const auto& section = member->getSection();
-        
-        os << member->getId() << " & "
-           << escapeLatex(material.name) << " & "
-           << formatNumber(material.youngModulus, options) << " & "
-           << formatNumber(material.density, options) << " & "
-           << formatNumber(section.area, options) << " & "
-           << escapeLatex(section.designation) << " \\\\\n";
+    for (const auto& member : truss.getMemberViews()) {
+        os << member.id << " & "
+           << formatNumber(member.youngModulus, options) << " & "
+           << formatNumber(member.yieldStrength, options) << " & "
+           << formatNumber(member.density, options) << " & "
+           << formatNumber(member.area, options) << " \\\\\n";
     }
     
     os << "\\end{longtable}\n\n";
 }
 
 void LaTeXExporter::writeLoadsSection(std::ostream& os,
-                                     const Truss& truss,
+                                     const ITrussView& truss,
                                      const ExportOptions& options) {
     os << "\\section{Applied Loads}\n\n";
     os << "\\begin{longtable}{ccc}\n";
@@ -264,13 +262,12 @@ void LaTeXExporter::writeLoadsSection(std::ostream& os,
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";
     
-    for (const auto& node : truss.getNodes()) {
-        const auto& force = node->getAppliedForce();
+    for (const auto& node : truss.getNodeViews()) {
         // Only export nodes with non-zero forces
-        if (force.fx != 0.0 || force.fy != 0.0) {
-            os << node->getId() << " & "
-               << formatNumber(force.fx, options) << " & "
-               << formatNumber(force.fy, options) << " \\\\\n";
+        if (node.fx != 0.0 || node.fy != 0.0) {
+            os << node.id << " & "
+               << formatNumber(node.fx, options) << " & "
+               << formatNumber(node.fy, options) << " \\\\\n";
         }
     }
     
@@ -278,7 +275,7 @@ void LaTeXExporter::writeLoadsSection(std::ostream& os,
 }
 
 void LaTeXExporter::writeDisplacementsSection(std::ostream& os,
-                                             const AnalysisResults& results,
+                                             const IAnalysisResultsView& results,
                                              const ExportOptions& options) {
     os << "\\section{Nodal Displacements}\n\n";
     os << "\\begin{longtable}{cc}\n";
@@ -297,17 +294,17 @@ void LaTeXExporter::writeDisplacementsSection(std::ostream& os,
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";
     
-    for (size_t i = 0; i < results.displacements.size(); ++i) {
-        os << i << " & " << formatNumber(results.displacements[i], options) << " \\\\\n";
+    for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
+        os << i << " & " << formatNumber(results.getDisplacements()[i], options) << " \\\\\n";
     }
     
     os << "\\end{longtable}\n\n";
     os << "\\textbf{Maximum Displacement:} " 
-       << formatNumber(results.maxDisplacement, options) << " m\n\n";
+       << formatNumber(results.getMaxDisplacement(), options) << " m\n\n";
 }
 
 void LaTeXExporter::writeMemberForcesSection(std::ostream& os,
-                                            const AnalysisResults& results,
+                                            const IAnalysisResultsView& results,
                                             const ExportOptions& options) {
     os << "\\section{Member Forces}\n\n";
     os << "\\begin{longtable}{ccc}\n";
@@ -326,8 +323,8 @@ void LaTeXExporter::writeMemberForcesSection(std::ostream& os,
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";
     
-    for (size_t i = 0; i < results.memberForces.size(); ++i) {
-        Real force = results.memberForces[i];
+    for (size_t i = 0; i < results.getMemberForces().size(); ++i) {
+        Real force = results.getMemberForces()[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
         os << (i + 1) << " & "
            << formatNumber(force, options) << " & "
@@ -338,7 +335,7 @@ void LaTeXExporter::writeMemberForcesSection(std::ostream& os,
 }
 
 void LaTeXExporter::writeReactionsSection(std::ostream& os,
-                                         const AnalysisResults& results,
+                                         const IAnalysisResultsView& results,
                                          const ExportOptions& options) {
     os << "\\section{Support Reactions}\n\n";
     os << "\\begin{longtable}{cc}\n";
@@ -357,27 +354,27 @@ void LaTeXExporter::writeReactionsSection(std::ostream& os,
     os << "\\bottomrule\n";
     os << "\\endlastfoot\n\n";
     
-    for (size_t i = 0; i < results.reactions.size(); ++i) {
-        os << i << " & " << formatNumber(results.reactions[i], options) << " \\\\\n";
+    for (size_t i = 0; i < results.getReactions().size(); ++i) {
+        os << i << " & " << formatNumber(results.getReactions()[i], options) << " \\\\\n";
     }
     
     os << "\\end{longtable}\n\n";
 }
 
 void LaTeXExporter::writeMetadataSection(std::ostream& os,
-                                        const AnalysisResults& results,
+                                        const IAnalysisResultsView& results,
                                         const ExportOptions& options) {
     os << "\\section{Analysis Metadata}\n\n";
     os << "\\begin{tabular}{ll}\n";
     os << "\\toprule\n";
     os << "Property & Value \\\\\n";
     os << "\\midrule\n";
-    os << "Converged & " << (results.converged ? "Yes" : "No") << " \\\\\n";
-    os << "Iterations & " << results.iterations << " \\\\\n";
-    os << "Total DOFs & " << results.totalDofs << " \\\\\n";
-    os << "Free DOFs & " << results.freeDofs << " \\\\\n";
-    os << "Max Displacement & " << formatNumber(results.maxDisplacement, options) << " m \\\\\n";
-    os << "Max Stress & " << formatNumber(results.maxStress, options) << " Pa \\\\\n";
+    os << "Converged & " << (results.hasConverged() ? "Yes" : "No") << " \\\\\n";
+    os << "Iterations & " << results.getIterations() << " \\\\\n";
+    os << "Total DOFs & " << results.getTotalDofs() << " \\\\\n";
+    os << "Free DOFs & " << results.getFreeDofs() << " \\\\\n";
+    os << "Max Displacement & " << formatNumber(results.getMaxDisplacement(), options) << " m \\\\\n";
+    os << "Max Stress & " << formatNumber(results.getMaxStress(), options) << " Pa \\\\\n";
     os << "\\bottomrule\n";
     os << "\\end{tabular}\n\n";
 }

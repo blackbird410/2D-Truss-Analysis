@@ -41,7 +41,7 @@ public:
     /**
      * @brief Read truss from XML file
      */
-    std::shared_ptr<core::Truss> read(
+    core::interfaces::TrussDTO read(
         const std::filesystem::path& filepath,
         const FileIOOptions& options = FileIOOptions{}
     ) override;
@@ -58,31 +58,28 @@ private:
     /**
      * @brief Parse metadata section
      */
-    void parseMetadata(tinyxml2::XMLElement* element, core::Truss& truss);
+    void parseMetadata(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
     
     /**
      * @brief Parse nodes section
      * @param element Nodes XML element
-     * @param truss Target truss
-     * @param nodeIdMap Mapping from file node IDs to created node IDs
+     * @param dto Target DTO
      */
-    void parseNodes(tinyxml2::XMLElement* element, core::Truss& truss, std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
+    void parseNodes(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
     
     /**
      * @brief Parse members section
      * @param element Members XML element
-     * @param truss Target truss
-     * @param nodeIdMap Mapping from file node IDs to created node IDs
+     * @param dto Target DTO
      */
-    void parseMembers(tinyxml2::XMLElement* element, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
+    void parseMembers(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
     
     /**
      * @brief Parse loads section
      * @param element Loads XML element
-     * @param truss Target truss
-     * @param nodeIdMap Mapping from file node IDs to created node IDs
+     * @param dto Target DTO
      */
-    void parseLoads(tinyxml2::XMLElement* element, core::Truss& truss, const std::unordered_map<core::NodeId, core::NodeId>& nodeIdMap);
+    void parseLoads(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
     
     /**
      * @brief Parse support type from string
