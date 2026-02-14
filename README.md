@@ -5,9 +5,9 @@
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
-[![Tests](https://img.shields.io/badge/tests-373%20passing-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-372%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Phase 4 (Application Layer) complete! The project now features a professional architecture with strict layered separation, Application facades for GUI/CLI, comprehensive test coverage (373/373 tests, 100% pass rate), and zero architectural violations. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 5 ready).
+> **✅ REFACTORING STATUS**: Phase 4 (Application Layer) complete! The project now features a professional architecture with strict layered separation, Application facades for GUI/CLI, comprehensive test coverage (372/373 tests passing, 99.7% pass rate), and zero architectural violations. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 5 ready).
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface, robust computational engine, and clean layered architecture following SOLID principles and industry best practices.
 
