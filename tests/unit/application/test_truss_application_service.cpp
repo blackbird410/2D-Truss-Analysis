@@ -17,6 +17,7 @@
 #include "../../../src/application/TrussApplicationService.hpp"
 #include "../../../src/core/model/Truss.hpp"
 #include "../../../src/infrastructure/io/fileio_factory.hpp"
+#include <chrono>
 #include <filesystem>
 #include <fstream>
 
@@ -33,8 +34,11 @@ protected:
     std::filesystem::path tempDir;
     
     void SetUp() override {
-        // Create temporary directory for test files
-        tempDir = std::filesystem::temp_directory_path() / "truss_app_service_test";
+        // Create temporary directory for test files (unique per fixture instance)
+        auto uniqueName = "truss_app_service_test-" + std::to_string(
+            std::chrono::system_clock::now().time_since_epoch().count()
+        );
+        tempDir = std::filesystem::temp_directory_path() / uniqueName;
         std::filesystem::create_directories(tempDir);
     }
     

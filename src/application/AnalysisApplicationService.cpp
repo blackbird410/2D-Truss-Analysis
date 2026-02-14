@@ -29,7 +29,13 @@ Result<ResultsHandle> AnalysisApplicationService::analyze(
         
         // Phase 2: Create orchestrator with solver and validator
         // Note: AnalysisOrchestrator takes ownership of solver and validator
-        auto solver = std::make_unique<core::analysis::DirectSolver>();
+        // Select solver based on options.useDirectSolver
+        std::unique_ptr<core::analysis::ILinearSolver> solver;
+        if (options.useDirectSolver) {
+            solver = std::make_unique<core::analysis::DirectSolver>();
+        } else {
+            solver = std::make_unique<core::analysis::IterativeSolver>();
+        }
         auto validator = std::make_unique<core::validation::TrussValidator>();
         core::analysis::AnalysisOrchestrator orchestrator(
             std::move(solver), 
