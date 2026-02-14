@@ -183,14 +183,16 @@ void TextExporter::writePropertiesSection(std::ostream& os,
     writeSectionHeader(os, "MATERIAL AND SECTION PROPERTIES");
     
     os << "\n  " << std::left << std::setw(10) << "Member ID"
+       << std::setw(15) << "Material"
        << std::setw(15) << "E (Pa)"
        << std::setw(18) << "Yield Strength"
        << std::setw(15) << "Density"
        << std::setw(15) << "Area (m²)" << "\n";
-    os << "  " << std::string(73, '-') << "\n";
+    os << "  " << std::string(88, '-') << "\n";
     
     for (const auto& member : truss.getMemberViews()) {
         os << "  " << std::left << std::setw(10) << member.id
+           << std::setw(15) << "Steel"  // TODO: Add material type to MemberView struct
            << std::setw(15) << formatNumber(member.youngModulus, options)
            << std::setw(18) << formatNumber(member.yieldStrength, options)
            << std::setw(15) << formatNumber(member.density, options)

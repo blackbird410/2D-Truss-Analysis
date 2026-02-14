@@ -10,6 +10,7 @@
 
 #include "truss_reader.hpp"
 #include <nlohmann/json.hpp>
+#include <unordered_set>
 
 namespace truss::infrastructure::io {
 

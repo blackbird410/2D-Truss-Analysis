@@ -10,6 +10,7 @@
 
 #include "truss_reader.hpp"
 #include <tinyxml2.h>
+#include <unordered_set>
 
 namespace truss::infrastructure::io {
 
