@@ -38,8 +38,9 @@ protected:
     SectionProperties section;
     
     void SetUp() override {
-        // Create temporary directory for export tests
-        tempDir = std::filesystem::temp_directory_path() / "analysis_app_service_test";
+        // Create temporary directory for export tests (unique per fixture instance)
+        tempDir = std::filesystem::temp_directory_path() /
+                  std::filesystem::unique_path("analysis_app_service_test-%%%%-%%%%-%%%%-%%%%");
         std::filesystem::create_directories(tempDir);
         
         // Default material properties
