@@ -234,24 +234,6 @@ bool Truss::isValid() const {
     return true;
 }
 
-// DEPRECATED: Static determinacy check. Use TrussValidator::validateStaticDeterminacy() instead.
-// Scheduled for removal in v4.0.0.
-bool Truss::isStaticallyDeterminate() const {
-    // Basic check: 2n = m + r (where n = nodes, m = members, r = reactions)
-    size_t n = m_nodes.size();
-    size_t m = m_members.size();
-    size_t r = getConstrainedDofs();
-    
-    return (2 * n == m + r);
-}
-
-// DEPRECATED: Kinematic stability check. Use TrussValidator::validateKinematicStability() instead.
-// Scheduled for removal in v4.0.0.
-bool Truss::isKinematicallyStable() const {
-    // Basic check: ensure there are enough constraints
-    return getConstrainedDofs() >= 3; // Minimum constraints to prevent rigid body motion
-}
-
 void Truss::assignDofNumbers() {
     size_t dofIndex = 0;
     
@@ -339,11 +321,16 @@ std::vector<std::string> Truss::getValidationErrors() const {
         errors.push_back("Truss must have at least 1 member");
     }
     
-    if (!isStaticallyDeterminate()) {
+    // Static determinacy: 2n = m + r (where n = nodes, m = members, r = reactions)
+    size_t n = m_nodes.size();
+    size_t m = m_members.size();
+    size_t r = getConstrainedDofs();
+    if (2 * n != m + r) {
         errors.push_back("Truss is not statically determinate");
     }
     
-    if (!isKinematicallyStable()) {
+    // Kinematic stability: minimum 3 constraints to prevent rigid body motion
+    if (getConstrainedDofs() < 3) {
         errors.push_back("Truss is not kinematically stable");
     }
     

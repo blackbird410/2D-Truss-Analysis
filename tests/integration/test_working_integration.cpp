@@ -16,6 +16,7 @@
 #include "../../src/core/model/Truss.hpp"
 #include "../../src/core/analysis/AnalysisOrchestrator.hpp"
 #include "../../src/core/analysis/DirectSolver.hpp"
+#include "../../src/core/validation/TrussValidator.hpp"
 
 using namespace truss::core;
 
@@ -39,12 +40,9 @@ TEST(WorkingIntegrationTest, MemorySafeTriangularTrussAnalysis) {
     // Apply load
     truss.applyForce(node3->getId(), Force2D(0.0, -10000.0));
     
-    // Verify truss is valid (using deprecated methods for backward compatibility testing)
-    #pragma GCC diagnostic push
-    #pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    EXPECT_TRUE(truss.isValid());
-    EXPECT_TRUE(truss.isStaticallyDeterminate());
-    #pragma GCC diagnostic pop
+    // Verify truss is valid (using TrussValidator instead of deprecated methods)
+    truss::core::validation::TrussValidator validator;
+    EXPECT_TRUE(validator.isValid(truss));
     
     // Perform analysis - use unique_ptr to avoid copy issues
     truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
