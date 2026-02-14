@@ -17,10 +17,6 @@ using core::interfaces::ITrussView;
 using core::interfaces::IAnalysisResultsView;
 using core::interfaces::NodeView;
 using core::interfaces::MemberView;
-using core::interfaces::ITrussView;
-using core::interfaces::IAnalysisResultsView;
-using core::interfaces::NodeView;
-using core::interfaces::MemberView;
 
 bool CSVExporter::exportResults(const ITrussView& truss,
                                 const IAnalysisResultsView& results,
