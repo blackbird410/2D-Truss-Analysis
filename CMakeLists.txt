@@ -322,6 +322,7 @@ add_executable(TrussAnalysisGUI
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
+    TrussApplication
     TrussCore
     Qt6::Core
     Qt6::Widgets
