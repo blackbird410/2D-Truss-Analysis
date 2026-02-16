@@ -6,7 +6,13 @@
  * 
  * Implements Command Pattern with dependency injection.
  * Wires Application services to CLI commands and dispatches execution.
+ * 
+ * Phase 5A.2+5A.4: Updated to wire IApplicationOutput through DI chain.
  */
+
+// Infrastructure Layer includes
+#include "infrastructure/logging/logger_factory.hpp"
+#include "infrastructure/adapters/ConsoleOutputAdapter.hpp"
 
 // Application Layer includes
 #include "application/TrussApplicationService.hpp"
@@ -19,7 +25,6 @@
 #include "cli/commands/HelpCommand.hpp"
 #include "cli/presenters/ConsolePresenter.hpp"
 
-#include <iostream>
 #include <memory>
 #include <map>
 #include <vector>
@@ -29,16 +34,18 @@
  * 
  * @param args Parsed command line arguments
  * @param commands Map of registered commands
+ * @param presenter Presenter for error messages
  * @return Exit code (0 = success)
  */
 int executeCommand(
     const truss::cli::ParsedArgs& args,
-    std::map<std::string, std::unique_ptr<truss::cli::commands::ICommand>>& commands
+    std::map<std::string, std::unique_ptr<truss::cli::commands::ICommand>>& commands,
+    truss::cli::presenters::ConsolePresenter& presenter
 ) {
     auto it = commands.find(args.commandName);
     if (it == commands.end()) {
-        std::cerr << "ERROR: Unknown command '" << args.commandName << "'\n";
-        std::cerr << "Run 'TrussAnalysisCLI help' for available commands.\n";
+        presenter.displayError("Unknown command '" + args.commandName + "'");
+        presenter.displayInfo("Run 'TrussAnalysisCLI help' for available commands.");
         return 1;
     }
     
@@ -49,14 +56,26 @@ int executeCommand(
  * @brief CLI entry point
  * 
  * Wires dependencies and dispatches command execution:
- * 1. Creates Application services and presenters
- * 2. Parses command-line arguments
- * 3. Registers commands with dependency injection
- * 4. Routes to appropriate command and executes
+ * 1. Creates Infrastructure logger and output adapter
+ * 2. Creates Application services and presenters
+ * 3. Parses command-line arguments
+ * 4. Registers commands with dependency injection
+ * 5. Routes to appropriate command and executes
+ * 
+ * Phase 5A.4: Complete DI chain - Logger → Adapter → Presenter → Commands
  */
 int main(int argc, char* argv[]) {
-    // Create presenter and display header
-    truss::cli::presenters::ConsolePresenter presenter;
+    // Create Infrastructure dependencies (innermost layer)
+    auto logger = truss::infrastructure::logging::LoggerFactory::createConsoleLogger(
+        truss::infrastructure::logging::LogLevel::Info,
+        true  // enable colors
+    );
+    
+    // Create Application output adapter (bridges layers)
+    truss::infrastructure::adapters::ConsoleOutputAdapter consoleOutput(*logger);
+    
+    // Create presenter with output dependency (CLI layer)
+    truss::cli::presenters::ConsolePresenter presenter(consoleOutput);
     presenter.displayHeader();
     
     // Create Application services
@@ -92,5 +111,5 @@ int main(int argc, char* argv[]) {
     commands["help"] = std::move(helpCmd);
     
     // Route and execute
-    return executeCommand(args, commands);
+    return executeCommand(args, commands, presenter);
 }

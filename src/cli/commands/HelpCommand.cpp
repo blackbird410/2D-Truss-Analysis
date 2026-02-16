@@ -4,7 +4,7 @@
  */
 
 #include "HelpCommand.hpp"
-#include <iostream>
+#include <sstream>
 
 namespace truss::cli::commands {
 
@@ -22,27 +22,32 @@ int HelpCommand::execute() {
 }
 
 void HelpCommand::displayUsage() const {
-    std::cout << "Usage:\n";
-    std::cout << "  TrussAnalysisCLI [options] <command>\n\n";
-    std::cout << "Options:\n";
-    std::cout << "  -h, --help     Show this help message\n";
-    std::cout << "  -v, --verbose  Enable verbose output\n\n";
+    m_presenter.displayInfo("Usage:");
+    m_presenter.displayInfo("  TrussAnalysisCLI [options] <command>");
+    m_presenter.displayInfo("");
+    m_presenter.displayInfo("Options:");
+    m_presenter.displayInfo("  -h, --help     Show this help message");
+    m_presenter.displayInfo("  -v, --verbose  Enable verbose output");
+    m_presenter.displayInfo("");
 }
 
 void HelpCommand::displayCommands() const {
-    std::cout << "Available Commands:\n";
+    m_presenter.displayInfo("Available Commands:");
     
     for (const auto* cmd : m_commands) {
         if (cmd) {
-            std::cout << "  " << cmd->getName() << "\t\t" 
-                     << cmd->getDescription() << "\n";
+            std::ostringstream oss;
+            oss << "  " << cmd->getName() << "\t\t" << cmd->getDescription();
+            m_presenter.displayInfo(oss.str());
         }
     }
     
-    std::cout << "\nExamples:\n";
-    std::cout << "  TrussAnalysisCLI example        # Run example analysis\n";
-    std::cout << "  TrussAnalysisCLI help           # Show this help\n";
-    std::cout << "  TrussAnalysisCLI -v example     # Run with verbose output\n\n";
+    m_presenter.displayInfo("");
+    m_presenter.displayInfo("Examples:");
+    m_presenter.displayInfo("  TrussAnalysisCLI example        # Run example analysis");
+    m_presenter.displayInfo("  TrussAnalysisCLI help           # Show this help");
+    m_presenter.displayInfo("  TrussAnalysisCLI -v example     # Run with verbose output");
+    m_presenter.displayInfo("");
 }
 
 } // namespace truss::cli::commands

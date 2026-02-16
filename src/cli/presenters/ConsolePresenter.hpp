@@ -6,14 +6,17 @@
  * 
  * Formats and displays data to console via view interfaces.
  * Does not contain business logic or orchestration.
+ * 
+ * Phase 5A.2: Refactored to use IApplicationOutput abstraction.
+ * Eliminates direct I/O coupling (std::cout/cerr).
  */
 
 #pragma once
 
 #include "../../core/interfaces/ITrussView.hpp"
 #include "../../core/interfaces/IAnalysisResultsView.hpp"
+#include "../../application/interfaces/IApplicationOutput.hpp"
 #include <string>
-#include <iostream>
 
 namespace truss::cli::presenters {
 
@@ -26,10 +29,23 @@ using truss::core::interfaces::IAnalysisResultsView;
  * 
  * Consumes view interfaces (ITrussView, IAnalysisResultsView)
  * to format and display data without direct Domain access.
+ * 
+ * Architecture:
+ * - Depends on IApplicationOutput (Application layer abstraction)
+ * - Formats data into strings (presentation concern)
+ * - Delegates output routing to abstraction (no direct I/O)
  */
 class ConsolePresenter {
 public:
-    ConsolePresenter() = default;
+    /**
+     * @brief Construct presenter with output dependency
+     * @param output Application output abstraction for message routing
+     * 
+     * The output reference must outlive this presenter instance.
+     * Typically injected from composition root (main_app.cpp).
+     */
+    explicit ConsolePresenter(application::interfaces::IApplicationOutput& output);
+    
     ~ConsolePresenter() = default;
     
     /**
@@ -66,6 +82,9 @@ public:
      * @param message Info message
      */
     void displayInfo(const std::string& message) const;
+
+private:
+    application::interfaces::IApplicationOutput& m_output;
 };
 
 } // namespace truss::cli::presenters
