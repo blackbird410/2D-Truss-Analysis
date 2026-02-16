@@ -93,15 +93,15 @@ void ConsolePresenter::displayAnalysisResults(const IAnalysisResultsView& result
 }
 
 void ConsolePresenter::displayError(const std::string& message) const {
-    m_output.error("ERROR: " + message);
+    m_output.error(message);
 }
 
 void ConsolePresenter::displaySuccess(const std::string& message) const {
-    m_output.success("SUCCESS: " + message);
+    m_output.success(message);
 }
 
 void ConsolePresenter::displayInfo(const std::string& message) const {
-    m_output.info("INFO: " + message);
+    m_output.info(message);
 }
 
 } // namespace truss::cli::presenters
