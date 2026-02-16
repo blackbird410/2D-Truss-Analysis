@@ -191,9 +191,22 @@ set_target_properties(TrussApplication PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
+# ============================================================================
+# CLI APPLICATION
+# ============================================================================
+
+# CLI source files
+set(CLI_SOURCES
+    src/cli/ArgumentParser.cpp
+    src/cli/commands/ExampleCommand.cpp
+    src/cli/commands/HelpCommand.cpp
+    src/cli/presenters/ConsolePresenter.cpp
+)
+
 # Main application CLI executable
 add_executable(TrussAnalysisCLI
     src/main_app.cpp
+    ${CLI_SOURCES}
 )
 
 target_link_libraries(TrussAnalysisCLI PRIVATE
