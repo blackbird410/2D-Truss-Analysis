@@ -93,4 +93,25 @@ std::string ArgumentParser::extractOptionValue(const std::string& arg) const {
     return "";
 }
 
+std::optional<std::string> ArgumentParser::getOption(
+    const ParsedArgs& args, 
+    const std::string& longForm, 
+    const std::string& shortForm
+) {
+    // Try long form first
+    auto it = args.options.find(longForm);
+    if (it != args.options.end()) {
+        return it->second;
+    }
+    
+    // Try short form if long form not found
+    it = args.options.find(shortForm);
+    if (it != args.options.end()) {
+        return it->second;
+    }
+    
+    // Not found
+    return std::nullopt;
+}
+
 } // namespace truss::cli

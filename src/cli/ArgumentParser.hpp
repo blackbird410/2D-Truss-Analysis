@@ -13,6 +13,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <optional>
 
 namespace truss::cli {
 
@@ -48,6 +49,19 @@ public:
      * @return Parsed arguments
      */
     ParsedArgs parse(int argc, char* argv[]) const;
+    
+    /**
+     * @brief Get option value with fallback to short form
+     * @param args Parsed arguments
+     * @param longForm Long option name (e.g., "file")
+     * @param shortForm Short option name (e.g., "f")
+     * @return Optional value if found
+     */
+    static std::optional<std::string> getOption(
+        const ParsedArgs& args, 
+        const std::string& longForm, 
+        const std::string& shortForm
+    );
 
 private:
     bool isOption(const std::string& arg) const;
