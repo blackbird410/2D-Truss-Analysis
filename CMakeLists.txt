@@ -203,6 +203,9 @@ set(CLI_SOURCES
     src/cli/ArgumentParser.cpp
     src/cli/commands/ExampleCommand.cpp
     src/cli/commands/HelpCommand.cpp
+    src/cli/commands/AnalyzeCommand.cpp
+    src/cli/commands/ValidateCommand.cpp
+    src/cli/commands/ExportCommand.cpp
     src/cli/presenters/ConsolePresenter.cpp
     src/infrastructure/adapters/ConsoleOutputAdapter.cpp
 )
@@ -264,10 +267,13 @@ if(BUILD_TESTING)
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
-        # CLI layer tests (Phase 5A & 5B)
+        # CLI layer tests (Phase 5A & 5B & Phase 6)
         tests/unit/cli/test_console_presenter.cpp
         tests/unit/cli/test_help_command.cpp
         tests/unit/cli/test_argument_parser.cpp
+        tests/unit/cli/test_analyze_command.cpp
+        tests/unit/cli/test_validate_command.cpp
+        tests/unit/cli/test_export_command.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
