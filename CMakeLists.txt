@@ -127,6 +127,9 @@ add_library(TrussCore STATIC
     src/infrastructure/logging/file_logger.hpp
     src/infrastructure/logging/logger_factory.cpp
     src/infrastructure/logging/logger_factory.hpp
+    # Phase 5A - Infrastructure adapters
+    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
+    src/infrastructure/adapters/ConsoleOutputAdapter.hpp
     # Phase 2 (Infrastructure Refactoring) - File I/O subsystem
     src/infrastructure/io/io_types.hpp
     src/infrastructure/io/truss_reader.hpp
@@ -256,6 +259,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_exporter_factory.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
+        tests/unit/infrastructure/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
@@ -266,6 +270,7 @@ if(BUILD_TESTING)
         TrussCore
         GTest::gtest
         GTest::gtest_main
+        GTest::gmock
     )
     
     target_include_directories(unit_tests PRIVATE
