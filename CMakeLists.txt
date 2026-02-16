@@ -263,6 +263,11 @@ if(BUILD_TESTING)
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
+        # CLI layer tests (Phase 5A)
+        tests/unit/cli/test_console_presenter.cpp
+        tests/unit/cli/test_help_command.cpp
+        # CLI source files (needed for linking CLI tests)
+        ${CLI_SOURCES}
     )
     
     target_link_libraries(unit_tests PRIVATE
