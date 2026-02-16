@@ -5,9 +5,9 @@
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
-[![Tests](https://img.shields.io/badge/tests-372%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-458%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Phase 4 (Application Layer) complete! The project now features a professional architecture with strict layered separation, Application facades for GUI/CLI, comprehensive test coverage (372/373 tests passing, 99.7% pass rate), and zero architectural violations. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev (Phase 5 ready).
+> **✅ REFACTORING STATUS**: Phase 5 (CLI Layer) complete! The project now features a professional CLI with Command Pattern architecture, comprehensive argument parsing with dual-form option support, analyze/validate/export commands, and enhanced console output formatting. Test coverage: 458/459 tests passing (99.8% pass rate). See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev.
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface, robust computational engine, and clean layered architecture following SOLID principles and industry best practices.
 
@@ -205,12 +205,43 @@ TrussAnalysisGUI.exe  # On Windows
 
 ### Command Line Interface
 
-Run the CLI version:
+The CLI version supports comprehensive structural analysis workflows with multiple commands:
 
 ```bash
-./TrussAnalysisCLI --example    # Run example analysis
-./TrussAnalysisCLI --help       # Show usage information
+# Display help and available commands
+./TrussAnalysisCLI help
+
+# Run example analysis (built-in 3-member truss)
+./TrussAnalysisCLI example
+./TrussAnalysisCLI -v example        # With verbose output
+
+# Analyze truss structure from file
+./TrussAnalysisCLI analyze --file truss.json
+./TrussAnalysisCLI analyze -f truss.json --output results.json
+./TrussAnalysisCLI analyze -f truss.json -o results.xml --format XML
+
+# Validate truss structure without analysis
+./TrussAnalysisCLI validate --file truss.json
+./TrussAnalysisCLI validate -f truss.json --verbose
+
+# Export analysis results to various formats
+./TrussAnalysisCLI export --truss truss.json --results analysis.json --output report.html
+./TrussAnalysisCLI export -t truss.json -r results.json -o report.pdf --format LaTeX
 ```
+
+**Available Commands:**
+
+- `example` - Run hardcoded example truss analysis (3-member truss)
+- `analyze` - Analyze truss structure from file (supports JSON, XML, CSV formats)
+- `validate` - Validate truss structure from file without performing analysis
+- `export` - Export analysis results to various formats (JSON, XML, CSV, HTML, LaTeX, TSV, TXT)
+- `help` - Display usage information and available commands
+
+**Supported File Formats:**
+
+- **Input**: JSON, XML, CSV
+- **Output**: JSON, XML, CSV, TSV, TXT, HTML, LaTeX
+- **Export**: All output formats plus automatic format detection from file extensions
 
 ## Documentation
 

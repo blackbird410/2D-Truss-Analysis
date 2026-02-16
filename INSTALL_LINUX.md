@@ -19,22 +19,26 @@ This guide provides comprehensive instructions for building, installing, and run
 ## Dependencies
 
 ### Ubuntu/Debian
+
 ```bash
 sudo apt update
 sudo apt install cmake build-essential pkg-config qt6-base-dev qt6-charts-dev libeigen3-dev
 ```
 
 ### Fedora/RHEL/CentOS
+
 ```bash
 sudo dnf install cmake gcc-c++ pkg-config qt6-qtbase-devel qt6-qtcharts-devel eigen3-devel
 ```
 
 ### Arch Linux
+
 ```bash
 sudo pacman -S cmake gcc pkg-config qt6-base qt6-charts eigen
 ```
 
 ### openSUSE
+
 ```bash
 sudo zypper install cmake gcc-c++ pkg-config qt6-base-devel qt6-charts-devel eigen3-devel
 ```
@@ -100,21 +104,25 @@ make install DESTDIR=$HOME/.local
 ## What Gets Installed
 
 ### Executables
+
 - **TrussAnalysisGUI**: Graphical user interface
 - **TrussAnalysisCLI**: Command-line interface
 
 ### Desktop Integration
+
 - **Desktop Entry**: `~/.local/share/applications/trussanalysis.desktop`
 - **Application Icon**: `~/.local/share/icons/trussanalysis.svg`
 - **Man Pages**: `man TrussAnalysisGUI`, `man TrussAnalysisCLI`
 
 ### File Associations
+
 - **MIME Type**: `application/x-truss-project`
 - **Keywords**: truss, structural, analysis, engineering, civil
 
 ## Running the Application
 
 ### GUI Application
+
 ```bash
 # From terminal
 TrussAnalysisGUI
@@ -127,38 +135,50 @@ TrussAnalysisGUI project.truss
 ```
 
 ### CLI Application
+
 ```bash
-# Show help
-TrussAnalysisCLI --help
+# Show help and available commands
+TrussAnalysisCLI help
 
 # Run example analysis
-TrussAnalysisCLI --example
+TrussAnalysisCLI example
 
-# Analyze project file
-TrussAnalysisCLI project.truss
+# Analyze truss from file
+TrussAnalysisCLI analyze --file project.json
+
+# Validate truss structure
+TrussAnalysisCLI validate --file project.json
+
+# Export analysis results
+TrussAnalysisCLI export --truss project.json --results analysis.json --output report.html
 ```
 
 ## Build Options
 
 ### Debug Build
+
 ```bash
 ./build_linux.sh Debug
 ```
+
 - Includes debug symbols
 - No optimizations
 - Larger binary size
 - Better for development
 
 ### Release Build (Default)
+
 ```bash
 ./build_linux.sh Release
 ```
+
 - Optimized for performance
 - Debug symbols stripped
 - Smaller binary size
 - Best for production use
 
 ### Custom CMake Options
+
 ```bash
 mkdir build_custom && cd build_custom
 
@@ -176,6 +196,7 @@ make -j$(nproc)
 ### Common Issues
 
 #### Qt6 Not Found
+
 ```bash
 # Ubuntu/Debian
 sudo apt install qt6-base-dev qt6-charts-dev
@@ -188,6 +209,7 @@ sudo pacman -S qt6-base qt6-charts
 ```
 
 #### Eigen3 Not Found
+
 ```bash
 # Ubuntu/Debian
 sudo apt install libeigen3-dev
@@ -200,6 +222,7 @@ sudo pacman -S eigen
 ```
 
 #### CMake Version Too Old
+
 ```bash
 # Install newer CMake from Kitware APT repository (Ubuntu/Debian)
 wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null | gpg --dearmor - | sudo tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null
@@ -209,6 +232,7 @@ sudo apt install cmake
 ```
 
 #### Build Fails with C++20 Errors
+
 ```bash
 # Ensure GCC 7+ or Clang 5+
 gcc --version
@@ -222,6 +246,7 @@ sudo dnf install gcc-c++      # Fedora
 ### Build Performance
 
 #### Parallel Compilation
+
 ```bash
 # Use all CPU cores
 make -j$(nproc)
@@ -231,6 +256,7 @@ make -j4
 ```
 
 #### Memory Issues
+
 ```bash
 # If build runs out of memory, reduce parallel jobs
 make -j2
@@ -242,6 +268,7 @@ make -j1
 ### Runtime Issues
 
 #### Application Won't Start
+
 ```bash
 # Check library dependencies
 ldd build_linux/TrussAnalysisGUI
@@ -252,6 +279,7 @@ which TrussAnalysisGUI
 ```
 
 #### Qt Platform Plugin Issues
+
 ```bash
 # Install Qt platform plugins
 sudo apt install qt6-qpa-plugins  # Ubuntu/Debian
@@ -264,6 +292,7 @@ TrussAnalysisGUI
 ## Uninstallation
 
 ### Automated Uninstall Script
+
 ```bash
 # Create uninstall script
 cat > uninstall_linux.sh << 'EOF'
@@ -282,6 +311,7 @@ chmod +x uninstall_linux.sh
 ```
 
 ### Manual Uninstall
+
 ```bash
 # Remove executables
 sudo rm /usr/local/bin/TrussAnalysis{GUI,CLI}
@@ -297,6 +327,7 @@ rm ~/.local/share/icons/trussanalysis.svg
 ## Package Distribution
 
 ### Creating DEB Package
+
 ```bash
 # Install packaging tools
 sudo apt install devscripts debhelper
@@ -307,6 +338,7 @@ cpack -G DEB
 ```
 
 ### Creating RPM Package
+
 ```bash
 # Install packaging tools
 sudo dnf install rpm-build rpmlint
@@ -317,6 +349,7 @@ cpack -G RPM
 ```
 
 ### Creating Flatpak (Advanced)
+
 ```bash
 # Requires flatpak-builder and runtime setup
 # See: https://docs.flatpak.org/en/latest/building.html
@@ -327,6 +360,7 @@ cpack -G RPM
 ### IDE Configuration
 
 #### VSCode
+
 ```bash
 # Install C++ extension
 code --install-extension ms-vscode.cpptools
@@ -336,11 +370,13 @@ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON ..
 ```
 
 #### CLion
+
 - Open CMakeLists.txt as project
 - Configure toolchain to use system GCC/Clang
 - Set CMake options as needed
 
 ### Code Formatting
+
 ```bash
 # Install clang-format
 sudo apt install clang-format  # Ubuntu/Debian
@@ -353,6 +389,7 @@ find src -name "*.cpp" -o -name "*.hpp" | xargs clang-format -i
 ## Performance Optimization
 
 ### Build Optimizations
+
 ```bash
 # Maximum optimization
 cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-O3 -march=native" ..
@@ -362,6 +399,7 @@ cmake -DCMAKE_BUILD_TYPE=Release -DCMAKE_INTERPROCEDURAL_OPTIMIZATION=ON ..
 ```
 
 ### Runtime Optimizations
+
 ```bash
 # Use faster memory allocator
 export LD_PRELOAD=/usr/lib/x86_64-linux-gnu/libjemalloc.so.2
