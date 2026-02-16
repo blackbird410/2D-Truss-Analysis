@@ -127,6 +127,9 @@ add_library(TrussCore STATIC
     src/infrastructure/logging/file_logger.hpp
     src/infrastructure/logging/logger_factory.cpp
     src/infrastructure/logging/logger_factory.hpp
+    # Phase 5A - Infrastructure adapters
+    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
+    src/infrastructure/adapters/ConsoleOutputAdapter.hpp
     # Phase 2 (Infrastructure Refactoring) - File I/O subsystem
     src/infrastructure/io/io_types.hpp
     src/infrastructure/io/truss_reader.hpp
@@ -191,9 +194,26 @@ set_target_properties(TrussApplication PROPERTIES
     POSITION_INDEPENDENT_CODE ON
 )
 
+# ============================================================================
+# CLI APPLICATION
+# ============================================================================
+
+# CLI source files
+set(CLI_SOURCES
+    src/cli/ArgumentParser.cpp
+    src/cli/commands/ExampleCommand.cpp
+    src/cli/commands/HelpCommand.cpp
+    src/cli/commands/AnalyzeCommand.cpp
+    src/cli/commands/ValidateCommand.cpp
+    src/cli/commands/ExportCommand.cpp
+    src/cli/presenters/ConsolePresenter.cpp
+    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
+)
+
 # Main application CLI executable
 add_executable(TrussAnalysisCLI
     src/main_app.cpp
+    ${CLI_SOURCES}
 )
 
 target_link_libraries(TrussAnalysisCLI PRIVATE
@@ -243,9 +263,19 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_exporter_factory.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
+        tests/unit/infrastructure/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
+        # CLI layer tests (Phase 5A & 5B & Phase 6)
+        tests/unit/cli/test_console_presenter.cpp
+        tests/unit/cli/test_help_command.cpp
+        tests/unit/cli/test_argument_parser.cpp
+        tests/unit/cli/test_analyze_command.cpp
+        tests/unit/cli/test_validate_command.cpp
+        tests/unit/cli/test_export_command.cpp
+        # CLI source files (needed for linking CLI tests)
+        ${CLI_SOURCES}
     )
     
     target_link_libraries(unit_tests PRIVATE
@@ -253,6 +283,7 @@ if(BUILD_TESTING)
         TrussCore
         GTest::gtest
         GTest::gtest_main
+        GTest::gmock
     )
     
     target_include_directories(unit_tests PRIVATE
@@ -277,12 +308,16 @@ if(BUILD_TESTING)
         tests/integration/test_simple_integration.cpp
         tests/integration/test_working_integration.cpp
         tests/integration/test_minimal_analysis.cpp
+        tests/integration/test_cli_workflows.cpp
+        ${CLI_SOURCES}
     )
     
     target_link_libraries(integration_tests PRIVATE
         TrussCore
+        TrussApplication
         GTest::gtest
         GTest::gtest_main
+        GTest::gmock
     )
     
     target_include_directories(integration_tests PRIVATE

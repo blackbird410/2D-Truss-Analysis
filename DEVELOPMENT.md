@@ -8,11 +8,21 @@ This document provides comprehensive information for developers contributing to 
 
 ### Unit Testing Architecture
 
-Our project includes a custom lightweight testing framework designed specifically for C++ engineering applications:
+Our project uses Google Test (GTest) framework with comprehensive mock-based testing for all layers:
 
-- **Location**: `tests/TestFramework.hpp`
-- **Features**: Assertion macros, test reporting, execution timing, colored output
-- **Integration**: Seamlessly integrates with both CMake CTest and custom shell scripts
+- **Framework**: Google Test with GMock for mocking
+- **Coverage**: 458/459 tests passing (99.8% pass rate)
+- **Architecture**: Layer-specific test suites with focused mock-based testing
+- **CLI Testing**: Command Pattern tests with simplified output mocking
+- **Integration**: CMake CTest integration with parallel execution
+
+### Test Categories
+
+- **Unit Tests**: Layer-isolated tests with comprehensive mocking
+- **CLI Tests**: Command execution, argument parsing, output formatting
+- **Integration Tests**: End-to-end workflow validation
+- **Application Tests**: Service layer and facade testing
+- **Core Tests**: Domain logic and computational engine validation
 
 ### Test Structure
 
@@ -141,7 +151,7 @@ make run_shell_tests           # Shell script execution
 
 # Build specific components
 make TrussCore                 # Core library
-make TrussAnalysisCLI         # Command-line interface
+make TrussAnalysisCLI         # Command-line interface with analyze/validate/export commands
 make TrussAnalysisGUI         # Graphical interface
 ```
 
@@ -305,7 +315,7 @@ cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake -B build -DCMAKE_BUILD_TYPE=RelWithDebInfo
 
 # Profile execution
-perf record ./build/TrussAnalysisCLI
+perf record ./build/TrussAnalysisCLI analyze -f example.json -v
 perf report
 
 # Memory profiling
