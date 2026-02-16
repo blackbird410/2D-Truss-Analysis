@@ -25,7 +25,7 @@ void ConsolePresenter::displayHeader() const {
     m_output.info("       2D Truss Analysis Software v3.0.0       ");
     m_output.info("   Civil Engineering Software Solutions         ");
     m_output.info("=================================================");
-    m_output.info("");
+    m_output.info(""); // Intentional spacing
 }
 
 void ConsolePresenter::displayTrussStatistics(const ITrussView& trussView) const {
