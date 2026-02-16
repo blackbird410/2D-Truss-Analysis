@@ -21,61 +21,81 @@ ConsolePresenter::ConsolePresenter(application::interfaces::IApplicationOutput& 
 }
 
 void ConsolePresenter::displayHeader() const {
-    std::ostringstream oss;
-    oss << "=================================================\n";
-    oss << "       2D Truss Analysis Software v3.0.0       \n";
-    oss << "   Civil Engineering Software Solutions         \n";
-    oss << "=================================================\n";
-    m_output.info(oss.str());
+    m_output.info("=================================================");
+    m_output.info("       2D Truss Analysis Software v3.0.0       ");
+    m_output.info("   Civil Engineering Software Solutions         ");
+    m_output.info("=================================================");
+    m_output.info("");
 }
 
 void ConsolePresenter::displayTrussStatistics(const ITrussView& trussView) const {
-    std::ostringstream oss;
-    oss << "Truss Statistics:\n";
-    oss << "  Name: " << trussView.getName() << "\n";
-    oss << "  Nodes: " << trussView.getNodeCount() << "\n";
-    oss << "  Members: " << trussView.getMemberCount() << "\n";
-    oss << "  Total DOFs: " << trussView.getTotalDofs() << "\n";
-    oss << "  Free DOFs: " << trussView.getFreeDofs() << "\n";
-    oss << "  Constrained DOFs: " << trussView.getConstrainedDofs() << "\n";
-    m_output.info(oss.str());
+    m_output.info("Truss Statistics:");
+    m_output.info("  Name: " + trussView.getName());
+    m_output.info("  Nodes: " + std::to_string(trussView.getNodeCount()));
+    m_output.info("  Members: " + std::to_string(trussView.getMemberCount()));
+    m_output.info("  Total DOFs: " + std::to_string(trussView.getTotalDofs()));
+    m_output.info("  Free DOFs: " + std::to_string(trussView.getFreeDofs()));
+    m_output.info("  Constrained DOFs: " + std::to_string(trussView.getConstrainedDofs()));
 }
 
 void ConsolePresenter::displayAnalysisResults(const IAnalysisResultsView& resultsView) const {
-    std::ostringstream oss;
-    oss << "\nAnalysis Results:\n";
-    oss << "  Converged: " << (resultsView.hasConverged() ? "Yes" : "No") << "\n";
-    oss << "  Maximum displacement: " << std::fixed << std::setprecision(4)
-        << resultsView.getMaxDisplacement() * 1000 << " mm\n";
-    oss << "  Maximum stress: " << std::fixed << std::setprecision(2)
-        << resultsView.getMaxStress() / 1e6 << " MPa\n";
-    oss << "  Total strain: " << std::scientific << std::setprecision(3)
-        << resultsView.getTotalStrain() << "\n";
-    oss << "  Matrix condition number: " << std::fixed << std::setprecision(1)
-        << resultsView.getConditionNumber() << "\n";
+    m_output.info("");
+    m_output.info("Analysis Results:");
+    m_output.info("  Converged: " + std::string(resultsView.hasConverged() ? "Yes" : "No"));
+    
+    {
+        std::ostringstream oss;
+        oss << "  Maximum displacement: " << std::fixed << std::setprecision(4)
+            << resultsView.getMaxDisplacement() * 1000 << " mm";
+        m_output.info(oss.str());
+    }
+    
+    {
+        std::ostringstream oss;
+        oss << "  Maximum stress: " << std::fixed << std::setprecision(2)
+            << resultsView.getMaxStress() / 1e6 << " MPa";
+        m_output.info(oss.str());
+    }
+    
+    {
+        std::ostringstream oss;
+        oss << "  Total strain: " << std::scientific << std::setprecision(3)
+            << resultsView.getTotalStrain();
+        m_output.info(oss.str());
+    }
+    
+    {
+        std::ostringstream oss;
+        oss << "  Matrix condition number: " << std::fixed << std::setprecision(1)
+            << resultsView.getConditionNumber();
+        m_output.info(oss.str());
+    }
     
     // Display member forces
     const auto& memberForces = resultsView.getMemberForces();
     const auto& memberStresses = resultsView.getMemberStresses();
     const auto& utilizationRatios = resultsView.getUtilizationRatios();
     
-    oss << "\nMember Forces:\n";
+    m_output.info("");
+    m_output.info("Member Forces:");
     for (size_t i = 0; i < memberForces.size(); ++i) {
         Real force = memberForces[i];
         Real stress = memberStresses[i];
         Real utilization = utilizationRatios[i];
         
+        std::ostringstream oss;
         oss << "  Member " << (i+1) 
             << ": Force = " << std::fixed << std::setprecision(2) << force/1000 << " kN"
             << ", Stress = " << std::fixed << std::setprecision(1) << stress/1e6 << " MPa"
             << ", Utilization = " << std::fixed << std::setprecision(1) << utilization*100 << "%"
-            << (force > 0 ? " (Tension)" : " (Compression)")
-            << "\n";
+            << (force > 0 ? " (Tension)" : " (Compression)");
+        m_output.info(oss.str());
     }
     
     // Display node displacements
     const auto& displacements = resultsView.getDisplacements();
-    oss << "\nNode Displacements:\n";
+    m_output.info("");
+    m_output.info("Node Displacements:");
     
     // Note: This is a simplified display. Full implementation would iterate through nodes.
     // For now, display first few DOFs as examples.
@@ -84,12 +104,12 @@ void ConsolePresenter::displayAnalysisResults(const IAnalysisResultsView& result
         Real dispX = displacements[i] * 1000; // mm
         Real dispY = displacements[i+1] * 1000; // mm
         
+        std::ostringstream oss;
         oss << "  Node " << (i/2 + 1) 
             << ": (" << std::fixed << std::setprecision(4) 
-            << dispX << ", " << dispY << ") mm\n";
+            << dispX << ", " << dispY << ") mm";
+        m_output.info(oss.str());
     }
-    
-    m_output.info(oss.str());
 }
 
 void ConsolePresenter::displayError(const std::string& message) const {

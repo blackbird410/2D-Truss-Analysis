@@ -131,26 +131,29 @@ TEST_F(ConsolePresenterTest, DisplaySuccess_MessagePassedVerbatim) {
 TEST_F(ConsolePresenterTest, DisplayHeader_FormatsCorrectly) {
     ConsolePresenter presenter(mockOutput);
     
-    // Verify single call with all expected content
-    EXPECT_CALL(mockOutput, info(AllOf(
-        HasSubstr("2D Truss Analysis Software v3.0.0"),
-        HasSubstr("Civil Engineering Software Solutions"),
-        HasSubstr("=========")
-    )))
+    // Verify each line is called separately with expected content
+    // Note: The separator line appears twice (top and bottom)
+    EXPECT_CALL(mockOutput, info("================================================="))
+        .Times(2);  // Called twice - top and bottom separator
+    EXPECT_CALL(mockOutput, info("       2D Truss Analysis Software v3.0.0       "))
+        .Times(1);
+    EXPECT_CALL(mockOutput, info("   Civil Engineering Software Solutions         "))
+        .Times(1);
+    EXPECT_CALL(mockOutput, info(""))
         .Times(1);
     
     presenter.displayHeader();
 }
 
 /**
- * @test Verify displayHeader() uses single info() call (efficient)
+ * @test Verify displayHeader() uses multiple info() calls (one per line)
  */
-TEST_F(ConsolePresenterTest, DisplayHeader_SingleDelegationCall) {
+TEST_F(ConsolePresenterTest, DisplayHeader_MultipleLinesCalls) {
     ConsolePresenter presenter(mockOutput);
     
-    // Should format entire header then make ONE call to info()
+    // Should make 5 separate calls to info() - one for each header line plus empty line
     EXPECT_CALL(mockOutput, info(_))
-        .Times(1);
+        .Times(5);
     
     presenter.displayHeader();
 }
