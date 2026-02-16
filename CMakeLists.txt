@@ -204,6 +204,7 @@ set(CLI_SOURCES
     src/cli/commands/ExampleCommand.cpp
     src/cli/commands/HelpCommand.cpp
     src/cli/presenters/ConsolePresenter.cpp
+    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
 )
 
 # Main application CLI executable
@@ -263,9 +264,10 @@ if(BUILD_TESTING)
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
-        # CLI layer tests (Phase 5A)
+        # CLI layer tests (Phase 5A & 5B)
         tests/unit/cli/test_console_presenter.cpp
         tests/unit/cli/test_help_command.cpp
+        tests/unit/cli/test_argument_parser.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
@@ -300,12 +302,16 @@ if(BUILD_TESTING)
         tests/integration/test_simple_integration.cpp
         tests/integration/test_working_integration.cpp
         tests/integration/test_minimal_analysis.cpp
+        tests/integration/test_cli_workflows.cpp
+        ${CLI_SOURCES}
     )
     
     target_link_libraries(integration_tests PRIVATE
         TrussCore
+        TrussApplication
         GTest::gtest
         GTest::gtest_main
+        GTest::gmock
     )
     
     target_include_directories(integration_tests PRIVATE
