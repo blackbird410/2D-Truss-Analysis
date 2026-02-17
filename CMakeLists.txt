@@ -361,6 +361,14 @@ add_executable(TrussAnalysisGUI
     src/gui/InteractiveDrawingWidget.cpp
     src/gui/ProjectFileManager.cpp
     src/gui/DeformedTrussWidget.cpp
+    # Phase 3A - Presenters
+    src/gui/presenters/AnalysisResultsPresenter.cpp
+    src/gui/presenters/TrussDataPresenter.cpp
+    src/gui/presenters/ValidationPresenter.cpp
+    # Phase 3A - Controllers
+    src/gui/controllers/TrussEditController.cpp
+    src/gui/controllers/AnalysisController.cpp
+    src/gui/controllers/ProjectController.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
