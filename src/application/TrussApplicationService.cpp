@@ -18,6 +18,7 @@ Result<TrussHandle> TrussApplicationService::createTruss(const std::string& name
         auto truss = std::make_shared<Truss>(name);
         TrussHandle handle = generateHandle();
         m_trusses[handle] = truss;
+        m_modifiedFlags[handle] = false;  // New truss, not modified yet
         return Result<TrussHandle>::Success(handle);
     } catch (const std::exception& e) {
         return Result<TrussHandle>::Failure(
@@ -70,6 +71,7 @@ Result<TrussHandle> TrussApplicationService::loadTruss(
         // Store and return handle
         TrussHandle handle = generateHandle();
         m_trusses[handle] = truss;
+        m_modifiedFlags[handle] = false;  // Loaded truss, not modified yet
         return Result<TrussHandle>::Success(handle);
         
     } catch (const FileIOException& e) {
@@ -139,6 +141,7 @@ Result<bool> TrussApplicationService::saveTruss(
         options.includeMetadata = true;
         
         writer->write(dto, filepath, options);
+        markAsSaved(handle);  // Mark as saved after successful write
         return Result<bool>::Success(true);
         
     } catch (const FileIOException& e) {
@@ -184,15 +187,202 @@ core::Truss& TrussApplicationService::getTrussMutable(TrussHandle handle) {
 }
 
 bool TrussApplicationService::clearTruss(TrussHandle handle) {
+    m_modifiedFlags.erase(handle);
     return m_trusses.erase(handle) > 0;
 }
 
 void TrussApplicationService::clearAll() {
     m_trusses.clear();
+    m_modifiedFlags.clear();
 }
 
 bool TrussApplicationService::isValidHandle(TrussHandle handle) const {
     return m_trusses.find(handle) != m_trusses.end();
 }
 
+// ============================================================
+// NEW GUI-FACING METHOD IMPLEMENTATIONS (Phase 3B)
+// ============================================================
+
+Result<NodeId> TrussApplicationService::addNode(
+    TrussHandle handle,
+    const Point2D& position,
+    SupportType supportType) {
+    
+    try {
+        if (!isValidHandle(handle)) {
+            return Result<NodeId>::Failure("Invalid truss handle");
+        }
+        
+        auto& truss = *m_trusses[handle];
+        NodePtr node = truss.addNode(position, supportType);
+        markAsModified(handle);
+        
+        return Result<NodeId>::Success(node->getId());
+        
+    } catch (const std::exception& e) {
+        return Result<NodeId>::Failure(
+            std::string("Failed to add node: ") + e.what()
+        );
+    }
+}
+
+Result<MemberId> TrussApplicationService::addMember(
+    TrussHandle handle,
+    NodeId startNodeId,
+    NodeId endNodeId,
+    const MaterialProperties& material,
+    const SectionProperties& section) {
+    
+    try {
+        if (!isValidHandle(handle)) {
+            return Result<MemberId>::Failure("Invalid truss handle");
+        }
+        
+        auto& truss = *m_trusses[handle];
+        MemberPtr member = truss.addMember(startNodeId, endNodeId, material, section);
+        markAsModified(handle);
+        
+        return Result<MemberId>::Success(member->getId());
+        
+    } catch (const std::exception& e) {
+        return Result<MemberId>::Failure(
+            std::string("Failed to add member: ") + e.what()
+        );
+    }
+}
+
+Result<bool> TrussApplicationService::removeNode(TrussHandle handle, NodeId nodeId) {
+    try {
+        if (!isValidHandle(handle)) {
+            return Result<bool>::Failure("Invalid truss handle");
+        }
+        
+        auto& truss = *m_trusses[handle];
+        bool removed = truss.removeNode(nodeId);
+        
+        if (removed) {
+            markAsModified(handle);
+            return Result<bool>::Success(true);
+        } else {
+            return Result<bool>::Failure("Node not found: " + std::to_string(nodeId));
+        }
+        
+    } catch (const std::exception& e) {
+        return Result<bool>::Failure(
+            std::string("Failed to remove node: ") + e.what()
+        );
+    }
+}
+
+Result<bool> TrussApplicationService::removeMember(TrussHandle handle, MemberId memberId) {
+    try {
+        if (!isValidHandle(handle)) {
+            return Result<bool>::Failure("Invalid truss handle");
+        }
+        
+        auto& truss = *m_trusses[handle];
+        bool removed = truss.removeMember(memberId);
+        
+        if (removed) {
+            markAsModified(handle);
+            return Result<bool>::Success(true);
+        } else {
+            return Result<bool>::Failure("Member not found: " + std::to_string(memberId));
+        }
+        
+    } catch (const std::exception& e) {
+        return Result<bool>::Failure(
+            std::string("Failed to remove member: ") + e.what()
+        );
+    }
+}
+
+Result<bool> TrussApplicationService::setNodeSupport(
+    TrussHandle handle,
+    NodeId nodeId,
+    SupportType supportType) {
+    
+    try {
+        if (!isValidHandle(handle)) {
+            return Result<bool>::Failure("Invalid truss handle");
+        }
+        
+        auto& truss = *m_trusses[handle];
+        truss.setSupportType(nodeId, supportType);
+        markAsModified(handle);
+        return Result<bool>::Success(true);
+        
+    } catch (const std::exception& e) {
+        return Result<bool>::Failure(
+            std::string("Failed to set node support: ") + e.what()
+        );
+    }
+}
+
+Result<bool> TrussApplicationService::applyNodeLoad(
+    TrussHandle handle,
+    NodeId nodeId,
+    const Force2D& force) {
+    
+    try {
+        if (!isValidHandle(handle)) {
+            return Result<bool>::Failure("Invalid truss handle");
+        }
+        
+        auto& truss = *m_trusses[handle];
+        truss.applyForce(nodeId, force);
+        markAsModified(handle);
+        return Result<bool>::Success(true);
+        
+    } catch (const std::exception& e) {
+        return Result<bool>::Failure(
+            std::string("Failed to apply node load: ") + e.what()
+        );
+    }
+}
+
+Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId nodeId) {
+    try {
+        if (!isValidHandle(handle)) {
+            return Result<bool>::Failure("Invalid truss handle");
+        }
+        
+        auto& truss = *m_trusses[handle];
+        // Get the node and clear its force
+        auto node = truss.getNode(nodeId);
+        if (!node) {
+            return Result<bool>::Failure("Node not found: " + std::to_string(nodeId));
+        }
+        
+        node->setAppliedForce(Force2D{0.0, 0.0});
+        markAsModified(handle);
+        return Result<bool>::Success(true);
+        
+    } catch (const std::exception& e) {
+        return Result<bool>::Failure(
+            std::string("Failed to clear node load: ") + e.what()
+        );
+    }
+}
+
+bool TrussApplicationService::hasUnsavedChanges(TrussHandle handle) const {
+    if (!isValidHandle(handle)) {
+        return false;
+    }
+    auto it = m_modifiedFlags.find(handle);
+    return it != m_modifiedFlags.end() && it->second;
+}
+
+void TrussApplicationService::markAsSaved(TrussHandle handle) {
+    if (isValidHandle(handle)) {
+        m_modifiedFlags[handle] = false;
+    }
+}
+
+void TrussApplicationService::markAsModified(TrussHandle handle) {
+    m_modifiedFlags[handle] = true;
+}
+
 } // namespace truss::application
+

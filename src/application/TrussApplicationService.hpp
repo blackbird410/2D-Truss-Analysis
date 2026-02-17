@@ -183,13 +183,104 @@ public:
      * @return Number of trusses currently managed
      */
     size_t getTrussCount() const { return m_trusses.size(); }
+    
+    // ============================================================
+    // NEW GUI-FACING METHODS (Phase 3B)
+    // ============================================================
+    
+    /**
+     * @brief Add node to truss
+     * @param handle Truss handle
+     * @param position Node position in world coordinates
+     * @param supportType Support condition (default: Free)
+     * @return Result containing NodeId on success
+     */
+    Result<core::NodeId> addNode(TrussHandle handle,
+                                  const core::Point2D& position,
+                                  core::SupportType supportType = core::SupportType::Free);
+    
+    /**
+     * @brief Add member connecting two nodes
+     * @param handle Truss handle
+     * @param startNodeId Start node identifier
+     * @param endNodeId End node identifier
+     * @param material Material properties
+     * @param section Section properties
+     * @return Result containing MemberId on success
+     */
+    Result<core::MemberId> addMember(TrussHandle handle,
+                                      core::NodeId startNodeId,
+                                      core::NodeId endNodeId,
+                                      const core::MaterialProperties& material,
+                                      const core::SectionProperties& section);
+    
+    /**
+     * @brief Remove node from truss
+     * @param handle Truss handle
+     * @param nodeId Node to remove
+     * @return Result indicating success/failure
+     */
+    Result<bool> removeNode(TrussHandle handle, core::NodeId nodeId);
+    
+    /**
+     * @brief Remove member from truss
+     * @param handle Truss handle
+     * @param memberId Member to remove
+     * @return Result indicating success/failure
+     */
+    Result<bool> removeMember(TrussHandle handle, core::MemberId memberId);
+    
+    /**
+     * @brief Update node support condition
+     * @param handle Truss handle
+     * @param nodeId Node to update
+     * @param supportType New support type
+     * @return Result indicating success/failure
+     */
+    Result<bool> setNodeSupport(TrussHandle handle,
+                                 core::NodeId nodeId,
+                                 core::SupportType supportType);
+    
+    /**
+     * @brief Apply force to node
+     * @param handle Truss handle
+     * @param nodeId Node to apply load
+     * @param force Force vector
+     * @return Result indicating success/failure
+     */
+    Result<bool> applyNodeLoad(TrussHandle handle,
+                                core::NodeId nodeId,
+                                const core::Force2D& force);
+    
+    /**
+     * @brief Remove load from node
+     * @param handle Truss handle
+     * @param nodeId Node to clear load
+     * @return Result indicating success/failure
+     */
+    Result<bool> clearNodeLoad(TrussHandle handle, core::NodeId nodeId);
+    
+    /**
+     * @brief Check if truss has unsaved changes
+     * @param handle Truss handle
+     * @return true if modified since last save
+     */
+    bool hasUnsavedChanges(TrussHandle handle) const;
+    
+    /**
+     * @brief Mark truss as saved (clear modification flag)
+     * @param handle Truss handle
+     */
+    void markAsSaved(TrussHandle handle);
 
 private:
     std::unordered_map<TrussHandle, std::shared_ptr<core::Truss>> m_trusses;
+    std::unordered_map<TrussHandle, bool> m_modifiedFlags;  // Track unsaved changes
     core::validation::TrussValidator m_validator;
     TrussHandle m_nextHandle{1};
     
     TrussHandle generateHandle() { return m_nextHandle++; }
+    void markAsModified(TrussHandle handle);  // Internal helper
 };
 
 } // namespace truss::application
