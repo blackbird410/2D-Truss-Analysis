@@ -268,6 +268,8 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
+        tests/unit/application/test_truss_application_service_gui_methods.cpp
+        tests/unit/application/test_material_library_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
         # CLI layer tests (Phase 5A & 5B & Phase 6)
         tests/unit/cli/test_console_presenter.cpp
