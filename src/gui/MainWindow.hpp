@@ -32,8 +32,14 @@
 #include <QtCore/QTimer>
 #include <memory>
 
-#include "../application/TrussApplicationService.hpp"
-#include "../application/AnalysisApplicationService.hpp"
+#include "application/TrussApplicationService.hpp"
+#include "application/AnalysisApplicationService.hpp"
+#include "gui/controllers/AnalysisController.hpp"
+#include "gui/controllers/ProjectController.hpp"
+#include "gui/controllers/TrussEditController.hpp"
+#include "gui/presenters/AnalysisResultsPresenter.hpp"
+#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/presenters/ValidationPresenter.hpp"
 #include "InteractiveDrawingWidget.hpp"
 #include "DeformedTrussWidget.hpp"
 
@@ -53,31 +59,86 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(QWidget *parent = nullptr);
+    /**
+     * @brief Construct MainWindow with dependency injection
+     * 
+     * @param trussService Application service for truss operations
+     * @param analysisService Application service for analysis
+     * @param analysisController Controller for analysis workflow
+     * @param projectController Controller for project lifecycle
+     * @param trussEditController Controller for truss editing (optional)
+     * @param analysisPresenter Presenter for analysis results formatting
+     * @param trussDataPresenter Presenter for truss data formatting
+     * @param validationPresenter Presenter for validation messages
+     * @param parent Qt parent widget
+     */
+    explicit MainWindow(
+        application::TrussApplicationService& trussService,
+        application::AnalysisApplicationService& analysisService,
+        truss_controllers::AnalysisController& analysisController,
+        truss_controllers::ProjectController& projectController,
+        truss_presenters::AnalysisResultsPresenter& analysisPresenter,
+        truss_presenters::TrussDataPresenter& trussDataPresenter,
+        truss_presenters::ValidationPresenter& validationPresenter,
+        QWidget *parent = nullptr);
+    
     ~MainWindow() override;
     
 protected:
     void closeEvent(QCloseEvent* event) override;
     
 public:
-    // Public accessors for widgets
-    truss::core::Truss* getTruss() const;
-    application::AnalysisApplicationService& getAnalysisService() { return m_analysisService; }
+    /**
+     * @brief Get current truss handle
+     * 
+     * @return TrussHandle Handle to current truss
+     */
+    application::TrussHandle getCurrentTrussHandle() const;
+    
+    /**
+     * @brief Check if analysis results are available
+     * 
+     * @return true if results exist
+     */
     bool hasResults() const { return m_hasResults; }
+    
+    /**
+     * @brief Get last results handle
+     * 
+     * @return ResultsHandle Handle to last analysis results
+     */
     application::ResultsHandle getLastResultsHandle() const { return m_lastResultsHandle; }
+    
+    /**
+     * @deprecated Legacy accessor for old widgets - will be removed
+     * @brief Get raw truss pointer (temporary for legacy widgets)
+     * 
+     * @return Truss* Pointer to truss (from drawing widget)
+     */
+    [[deprecated("Use getCurrentTrussHandle() and Application services instead")]]
+    truss::core::Truss* getTruss() const;
+    
+    /**
+     * @deprecated Legacy accessor for old widgets - will be removed
+     * @brief Get analysis service reference (temporary for legacy widgets)
+     * 
+     * @return AnalysisApplicationService& Reference to analysis service
+     */
+    [[deprecated("Use injected dependencies instead")]]
+    application::AnalysisApplicationService& getAnalysisService() { return m_analysisService; }
 
 private slots:
-    void analyze();
-    void clearAll();
-    void exitApplication();
-    void newProject();
-    void openProject();
-    void saveProject();
-    void saveProjectAs();
-    void exportResults();
-    void showAbout();
+    void onAnalysisCompleted(size_t resultsHandle);
+    void onAnalysisFailed(const QString& errorMessage);
+    void onValidationFailed(const truss_presenters::ValidationPresenter::ValidationDisplay& display);
+    void onProjectOpened(application::TrussHandle handle, const QString& filepath);
+    void onProjectSaved(const QString& filepath);
+    void onProjectClosed();
+    void onOperationFailed(const QString& errorMessage);
     void onTrussModified();
     void updateStatusMessage(const QString& message);
+    void exitApplication();
+    void showAbout();
 
 private:
     void setupUI();
@@ -91,6 +152,15 @@ private:
     void showErrorMessage(const QString& message);
     void showInfoMessage(const QString& message);
     void enableAnalysis(bool enable);
+    
+    // Menu action handlers (delegate to controllers)
+    void requestAnalyze();
+    void requestClearAll();
+    void requestNewProject();
+    void requestOpenProject();
+    void requestSaveProject();
+    void requestSaveProjectAs();
+    void requestExportResults();
 
     // UI Components
     QWidget* m_centralWidget;
@@ -113,12 +183,18 @@ private:
     QLabel* m_statusLabel;
     QLabel* m_coordinateLabel;
     
-    // Application services
-    application::TrussApplicationService m_trussService;
-    application::AnalysisApplicationService m_analysisService;
+    // Injected dependencies (references, not owned)
+    application::TrussApplicationService& m_trussService;
+    application::AnalysisApplicationService& m_analysisService;
+    truss_controllers::AnalysisController& m_analysisController;
+    truss_controllers::ProjectController& m_projectController;
+    truss_presenters::AnalysisResultsPresenter& m_analysisPresenter;
+    truss_presenters::TrussDataPresenter& m_trussDataPresenter;
+    truss_presenters::ValidationPresenter& m_validationPresenter;
+    
+    // State
     application::ResultsHandle m_lastResultsHandle;
     bool m_hasResults;
-    QString m_currentFileName;
 };
 
 /**

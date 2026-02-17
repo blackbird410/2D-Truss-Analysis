@@ -4,8 +4,6 @@
  */
 
 #include "MainWindow.hpp"
-#include "ProjectFileManager.hpp"
-#include "infrastructure/export/exporter_factory.hpp"
 #include <QtWidgets/QFileDialog>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QSettings>
@@ -17,7 +15,15 @@
 
 namespace truss::gui {
 
-MainWindow::MainWindow(QWidget* parent) 
+MainWindow::MainWindow(
+    application::TrussApplicationService& trussService,
+    application::AnalysisApplicationService& analysisService,
+    truss_controllers::AnalysisController& analysisController,
+    truss_controllers::ProjectController& projectController,
+    truss_presenters::AnalysisResultsPresenter& analysisPresenter,
+    truss_presenters::TrussDataPresenter& trussDataPresenter,
+    truss_presenters::ValidationPresenter& validationPresenter,
+    QWidget* parent) 
     : QMainWindow(parent),
       m_centralWidget(new QWidget(this)),
       m_mainSplitter(new QSplitter(Qt::Vertical, this)),
@@ -30,6 +36,13 @@ MainWindow::MainWindow(QWidget* parent)
       m_clearButton(new QPushButton("Clear All", this)),
       m_statusLabel(new QLabel(this)),
       m_coordinateLabel(new QLabel(this)),
+      m_trussService(trussService),
+      m_analysisService(analysisService),
+      m_analysisController(analysisController),
+      m_projectController(projectController),
+      m_analysisPresenter(analysisPresenter),
+      m_trussDataPresenter(trussDataPresenter),
+      m_validationPresenter(validationPresenter),
       m_lastResultsHandle(0),
       m_hasResults(false) {
           
@@ -95,24 +108,24 @@ void MainWindow::setupMenuBar() {
     auto* fileMenu = menuBar->addMenu("&File");
     auto* newAction = fileMenu->addAction("&New Project");
     newAction->setShortcut(QKeySequence::New);
-    connect(newAction, &QAction::triggered, this, &MainWindow::newProject);
+    connect(newAction, &QAction::triggered, this, &MainWindow::requestNewProject);
     
     auto* openAction = fileMenu->addAction("&Open...");
     openAction->setShortcut(QKeySequence::Open);
-    connect(openAction, &QAction::triggered, this, &MainWindow::openProject);
+    connect(openAction, &QAction::triggered, this, &MainWindow::requestOpenProject);
     
     auto* saveAction = fileMenu->addAction("&Save");
     saveAction->setShortcut(QKeySequence::Save);
-    connect(saveAction, &QAction::triggered, this, &MainWindow::saveProject);
+    connect(saveAction, &QAction::triggered, this, &MainWindow::requestSaveProject);
     
     auto* saveAsAction = fileMenu->addAction("Save &As...");
     saveAsAction->setShortcut(QKeySequence::SaveAs);
-    connect(saveAsAction, &QAction::triggered, this, &MainWindow::saveProjectAs);
+    connect(saveAsAction, &QAction::triggered, this, &MainWindow::requestSaveProjectAs);
     
     fileMenu->addSeparator();
     
     auto* exportAction = fileMenu->addAction("&Export Results...");
-    connect(exportAction, &QAction::triggered, this, &MainWindow::exportResults);
+    connect(exportAction, &QAction::triggered, this, &MainWindow::requestExportResults);
     
     fileMenu->addSeparator();
     
@@ -124,11 +137,11 @@ void MainWindow::setupMenuBar() {
     auto* analysisMenu = menuBar->addMenu("&Analysis");
     auto* analyzeAction = analysisMenu->addAction("&Analyze Structure");
     analyzeAction->setShortcut(QKeySequence("F5"));
-    connect(analyzeAction, &QAction::triggered, this, &MainWindow::analyze);
+    connect(analyzeAction, &QAction::triggered, this, &MainWindow::requestAnalyze);
     
     auto* clearAction = analysisMenu->addAction("&Clear All");
     clearAction->setShortcut(QKeySequence("Ctrl+Del"));
-    connect(clearAction, &QAction::triggered, this, &MainWindow::clearAll);
+    connect(clearAction, &QAction::triggered, this, &MainWindow::requestClearAll);
     
     // Help menu
     auto* helpMenu = menuBar->addMenu("&Help");
@@ -250,188 +263,90 @@ void MainWindow::connectSignals() {
             this, &MainWindow::updateStatusMessage);
     
     // Connect control buttons
-    connect(m_analyzeButton, &QPushButton::clicked, this, &MainWindow::analyze);
-    connect(m_clearButton, &QPushButton::clicked, this, &MainWindow::clearAll);
+    connect(m_analyzeButton, &QPushButton::clicked, this, &MainWindow::requestAnalyze);
+    connect(m_clearButton, &QPushButton::clicked, this, &MainWindow::requestClearAll);
+    
+    // Connect AnalysisController signals
+    connect(&m_analysisController, &truss_controllers::AnalysisController::analysisCompleted,
+            this, &MainWindow::onAnalysisCompleted);
+    connect(&m_analysisController, &truss_controllers::AnalysisController::analysisFailed,
+            this, &MainWindow::onAnalysisFailed);
+    connect(&m_analysisController, &truss_controllers::AnalysisController::validationFailed,
+            this, &MainWindow::onValidationFailed);
+    
+    // Connect ProjectController signals
+    connect(&m_projectController, &truss_controllers::ProjectController::projectOpened,
+            this, &MainWindow::onProjectOpened);
+    connect(&m_projectController, &truss_controllers::ProjectController::projectSaved,
+            this, &MainWindow::onProjectSaved);
+    connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
+            this, &MainWindow::onProjectClosed);
+    connect(&m_projectController, &truss_controllers::ProjectController::operationFailed,
+            this, &MainWindow::onOperationFailed);
 }
 
+application::TrussHandle MainWindow::getCurrentTrussHandle() const {
+    return m_projectController.getCurrentTruss();
+}
+
+// Temporary legacy accessor for old widgets
 truss::core::Truss* MainWindow::getTruss() const {
     return m_drawingWidget->getTruss();
 }
 
-void MainWindow::analyze() {
-    auto* truss = getTruss();
-    if (!truss) {
+void MainWindow::requestAnalyze() {
+    auto handle = getCurrentTrussHandle();
+    if (handle == 0) {
         showErrorMessage("No truss structure available for analysis.");
         return;
     }
     
-    // Check if we have at least some nodes and members
-    if (truss->getNodes().empty()) {
-        showErrorMessage("Cannot analyze: No nodes defined.\nUse the drawing tools to create your truss structure.");
-        return;
-    }
+    m_statusLabel->setText("Analyzing structure...");
+    m_logTextEdit->append("Starting structural analysis...");
+    QApplication::processEvents(); // Update UI
     
-    if (truss->getMembers().empty()) {
-        showErrorMessage("Cannot analyze: No members defined.\nAdd members to connect your nodes.");
-        return;
-    }
-    
-    // Check if there are any supports
-    bool hasSupports = false;
-    for (const auto& node : truss->getNodes()) {
-        if (node->getSupportType() != truss::core::SupportType::Free) {
-            hasSupports = true;
-            break;
-        }
-    }
-    if (!hasSupports) {
-        showErrorMessage("Cannot analyze: No supports defined.\nAdd support conditions to prevent rigid body motion.");
-        return;
-    }
-    
-    // Check if there are any loads
-    bool hasLoads = false;
-    for (const auto& node : truss->getNodes()) {
-        if (node->hasAppliedForce()) {
-            hasLoads = true;
-            break;
-        }
-    }
-    if (!hasLoads) {
-        showErrorMessage("Cannot analyze: No loads defined.\nApply loads to your structure for analysis.");
-        return;
-    }
-    
-    try {
-        m_statusLabel->setText("Analyzing structure...");
-        m_logTextEdit->append("Starting structural analysis...");
-        QApplication::processEvents(); // Update UI
-        
-        // Perform analysis using Application service
-        truss::core::analysis::AnalysisOptions options;
-        auto result = m_analysisService.analyze(*truss, options);
-        
-        if (result.success) {
-            m_lastResultsHandle = result.value;
-            m_hasResults = true;
-            
-            // Get results view
-            const auto& analysisResults = m_analysisService.getResultsView(m_lastResultsHandle);
-            
-            // Update display
-            updateResultsDisplay();
-            
-            QString message = QString("Analysis completed successfully!\n")
-                + QString("Nodes: %1, Members: %2\n").arg(truss->getNodeCount()).arg(truss->getMemberCount())
-                + QString("Max displacement: %1 mm\n").arg(analysisResults.getMaxDisplacement() * 1000, 0, 'f', 3)
-                + QString("Max stress: %1 MPa").arg(analysisResults.getMaxStress() / 1e6, 0, 'f', 2);
-            
-            m_logTextEdit->append("Analysis completed successfully!");
-            m_logTextEdit->append(QString("Max displacement: %1 mm").arg(analysisResults.getMaxDisplacement() * 1000, 0, 'f', 3));
-            m_logTextEdit->append(QString("Max stress: %1 MPa").arg(analysisResults.getMaxStress() / 1e6, 0, 'f', 2));
-            
-            showInfoMessage(message);
-            m_statusLabel->setText("Analysis complete - View results in the results tab");
-        } else {
-            showErrorMessage(QString("Analysis failed: %1").arg(QString::fromStdString(result.errorMessage)));
-            m_logTextEdit->append(QString("ERROR: %1").arg(QString::fromStdString(result.errorMessage)));
-            m_statusLabel->setText("Analysis failed");
-        }
-        
-    } catch (const std::exception& e) {
-        showErrorMessage(QString("Analysis error: %1").arg(e.what()));
-        m_logTextEdit->append(QString("ERROR: %1").arg(e.what()));
-        m_statusLabel->setText("Analysis error");
-    }
+    // Delegate to AnalysisController
+    m_analysisController.onAnalyzeRequested(handle);
 }
 
-void MainWindow::clearAll() {
+void MainWindow::requestClearAll() {
+    // Clear drawing widget
     m_drawingWidget->clearTruss();
     
-    // Clear results and handle
-    if (m_hasResults) {
-        m_analysisService.clearResults(m_lastResultsHandle);
-        m_lastResultsHandle = 0;
-        m_hasResults = false;
-    }
+    // Clear results via controller
+    m_analysisController.onClearResults();
     
+    // Clear UI
     m_resultsWidget->clearResults();
     m_logTextEdit->clear();
+    m_hasResults = false;
+    m_lastResultsHandle = 0;
     
     m_statusLabel->setText("Project cleared - Ready to design new structure");
     enableAnalysis(false);
 }
 
-void MainWindow::exitApplication() {
-    close();
+void MainWindow::requestNewProject() {
+    requestClearAll();
+    m_projectController.onNewProject();
 }
 
-void MainWindow::newProject() {
-    clearAll();
-    m_currentFileName.clear();
-    setWindowTitle("2D Truss Analysis - Interactive Design");
-}
-
-void MainWindow::openProject() {
+void MainWindow::requestOpenProject() {
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         "Truss Project Files (*.truss);;All Files (*)");
     
     if (!fileName.isEmpty()) {
-        auto loadedTruss = ProjectFileManager::loadProject(fileName);
-        
-        if (loadedTruss) {
-            // Clear current project
-            clearAll();
-            
-            // Load the truss into the drawing widget
-            m_drawingWidget->setTruss(std::move(loadedTruss));
-            
-            // Update UI
-            m_currentFileName = fileName;
-            QFileInfo fileInfo(fileName);
-            setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
-            
-            onTrussModified();
-            m_statusLabel->setText(QString("Project loaded: %1").arg(fileInfo.fileName()));
-            
-            showInfoMessage("Project loaded successfully!");
-        } else {
-            showErrorMessage(QString("Failed to load project:\n%1").arg(ProjectFileManager::getLastError()));
-            m_statusLabel->setText("Failed to load project");
-        }
+        m_projectController.onOpenProject(fileName);
     }
 }
 
-void MainWindow::saveProject() {
-    if (m_currentFileName.isEmpty()) {
-        saveProjectAs();
-    } else {
-        auto* truss = getTruss();
-        if (!truss) {
-            showErrorMessage("No project to save.");
-            return;
-        }
-        
-        if (ProjectFileManager::saveProject(*truss, m_currentFileName)) {
-            QFileInfo fileInfo(m_currentFileName);
-            m_statusLabel->setText(QString("Project saved: %1").arg(fileInfo.fileName()));
-            showInfoMessage("Project saved successfully!");
-        } else {
-            showErrorMessage(QString("Failed to save project:\n%1").arg(ProjectFileManager::getLastError()));
-            m_statusLabel->setText("Failed to save project");
-        }
-    }
+void MainWindow::requestSaveProject() {
+    m_projectController.onSaveProject();
 }
 
-void MainWindow::saveProjectAs() {
-    auto* truss = getTruss();
-    if (!truss) {
-        showErrorMessage("No project to save.");
-        return;
-    }
-    
+void MainWindow::requestSaveProjectAs() {
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
@@ -443,20 +358,11 @@ void MainWindow::saveProjectAs() {
             fileName += ".truss";
         }
         
-        if (ProjectFileManager::saveProject(*truss, fileName)) {
-            m_currentFileName = fileName;
-            QFileInfo fileInfo(fileName);
-            setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
-            m_statusLabel->setText(QString("Project saved: %1").arg(fileInfo.fileName()));
-            showInfoMessage("Project saved successfully!");
-        } else {
-            showErrorMessage(QString("Failed to save project:\n%1").arg(ProjectFileManager::getLastError()));
-            m_statusLabel->setText("Failed to save project");
-        }
+        m_projectController.onSaveProjectAs(fileName);
     }
 }
 
-void MainWindow::exportResults() {
+void MainWindow::requestExportResults() {
     if (!m_hasResults) {
         showErrorMessage("No analysis results to export. Run analysis first.");
         return;
@@ -468,35 +374,7 @@ void MainWindow::exportResults() {
         "CSV Files (*.csv);;TSV Files (*.tsv);;JSON Files (*.json);;XML Files (*.xml);;Text Files (*.txt);;LaTeX Files (*.tex);;HTML Files (*.html);;All Files (*)");
     
     if (!fileName.isEmpty()) {
-        // Detect format from file extension using factory
-        auto format = truss::infrastructure::export_::ExporterFactory::detectFormat(fileName.toStdString());
-        
-        // Configure export options
-        truss::infrastructure::export_::ExportOptions options;
-        options.includeGeometry = true;
-        options.includeProperties = true;
-        options.includeLoads = true;
-        options.includeDisplacements = true;
-        options.includeMemberForces = true;
-        options.includeReactions = true;
-        options.includeStresses = true;
-        options.includeUtilization = true;
-        options.includeMetadata = true;
-        options.precision = 6;
-
-        // Export results using Application service
-        auto result = m_analysisService.exportResults(m_lastResultsHandle, format, 
-                                                       fileName.toStdString(), 
-                                                       *getTruss(), options);
-        
-        if (result.success) {
-            QFileInfo fileInfo(fileName);
-            m_statusLabel->setText(QString("Results exported: %1").arg(fileInfo.fileName()));
-            showInfoMessage(QString("Results exported successfully to %1!").arg(fileInfo.fileName()));
-        } else {
-            showErrorMessage(QString("Failed to export results: %1").arg(QString::fromStdString(result.errorMessage)));
-            m_statusLabel->setText("Failed to export results");
-        }
+        m_analysisController.onExportRequested(m_lastResultsHandle, fileName);
     }
 }
 
@@ -525,15 +403,106 @@ void MainWindow::showAbout() {
         "<p><b>© 2024 Civil Engineering Software Solutions</b></p>");
 }
 
+// Controller signal handlers
+void MainWindow::onAnalysisCompleted(size_t resultsHandle) {
+    m_lastResultsHandle = resultsHandle;
+    m_hasResults = true;
+    
+    // Get results view and truss view
+    const auto& results = m_analysisService.getResultsView(resultsHandle);
+    const auto& truss = m_trussService.getTrussView(getCurrentTrussHandle());
+    
+    // Format results using Presenter
+    auto displayData = m_analysisPresenter.formatResults(results, truss);
+    
+    // Update display
+    updateResultsDisplay();
+    
+    // Update log
+    m_logTextEdit->append("Analysis completed successfully!");
+    m_logTextEdit->append(displayData.maxDisplacementText);
+    m_logTextEdit->append(displayData.maxStressText);
+    
+    // Show summary
+    showInfoMessage(displayData.summaryMessage);
+    m_statusLabel->setText("Analysis complete - View results in the results tab");
+}
+
+void MainWindow::onAnalysisFailed(const QString& errorMessage) {
+    showErrorMessage(QString("Analysis failed: %1").arg(errorMessage));
+    m_logTextEdit->append(QString("ERROR: %1").arg(errorMessage));
+    m_statusLabel->setText("Analysis failed");
+}
+
+void MainWindow::onValidationFailed(const truss_presenters::ValidationPresenter::ValidationDisplay& display) {
+    showErrorMessage(display.summaryMessage);
+    
+    // Log detailed errors
+    for (const auto& error : display.fatalErrors) {
+        m_logTextEdit->append(QString("FATAL: %1").arg(error));
+    }
+    for (const auto& error : display.errors) {
+        m_logTextEdit->append(QString("ERROR: %1").arg(error));
+    }
+    for (const auto& warning : display.warnings) {
+        m_logTextEdit->append(QString("WARNING: %1").arg(warning));
+    }
+    
+    m_statusLabel->setText("Validation failed - fix errors and try again");
+}
+
+void MainWindow::onProjectOpened(application::TrussHandle, const QString& filepath) {
+    // Update drawing widget with loaded truss
+    // Note: InteractiveDrawingWidget will be refactored in Phase 3D
+    // For now, use temporary workaround
+    QFileInfo fileInfo(filepath);
+    setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
+    
+    onTrussModified();
+    m_statusLabel->setText(QString("Project loaded: %1").arg(fileInfo.fileName()));
+    showInfoMessage("Project loaded successfully!");
+}
+
+void MainWindow::onProjectSaved(const QString& filepath) {
+    QFileInfo fileInfo(filepath);
+    setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
+    m_statusLabel->setText(QString("Project saved: %1").arg(fileInfo.fileName()));
+    showInfoMessage("Project saved successfully!");
+}
+
+void MainWindow::onProjectClosed() {
+    setWindowTitle("2D Truss Analysis - Interactive Design");
+    m_statusLabel->setText("Ready - Use toolbar to start designing your truss structure");
+}
+
+void MainWindow::onOperationFailed(const QString& errorMessage) {
+    showErrorMessage(errorMessage);
+    m_statusLabel->setText("Operation failed");
+}
+
+void MainWindow::exitApplication() {
+    close();
+}
+
 void MainWindow::onTrussModified() {
-    auto* truss = getTruss();
-    bool hasStructure = truss && !truss->getNodes().empty() && !truss->getMembers().empty();
+    auto handle = getCurrentTrussHandle();
+    if (handle == 0) {
+        enableAnalysis(false);
+        return;
+    }
+    
+    const auto& truss = m_trussService.getTrussView(handle);
+    bool hasStructure = truss.getNodeCount() > 0 && truss.getMemberCount() > 0;
     enableAnalysis(hasStructure);
     
     if (hasStructure) {
-        m_statusLabel->setText(QString("Structure updated - %1 nodes, %2 members")
-                             .arg(truss->getNodeCount()).arg(truss->getMemberCount()));
+        // Format status message using Presenter
+        auto statusData = m_trussDataPresenter.formatStatus(truss);
+        m_statusLabel->setText(statusData.statusMessage);
     }
+    
+    // Mark project as modified
+    m_projectController.markAsModified();
 }
 
 void MainWindow::updateStatusMessage(const QString& message) {
@@ -544,11 +513,10 @@ void MainWindow::updateResultsDisplay() {
     m_resultsWidget->updateResults();
     
     // Update deformed truss visualization
-    auto* truss = getTruss();
-    if (truss && m_hasResults) {
-        m_deformedTrussWidget->setTruss(truss);
-        // Get mutable results for DeformedTrussWidget
+    if (m_hasResults) {
+        // TODO Phase 3E: Refactor DeformedTrussWidget to use IAnalysisResultsView
         auto& results = m_analysisService.getResults(m_lastResultsHandle);
+        m_deformedTrussWidget->setTruss(m_drawingWidget->getTruss());
         m_deformedTrussWidget->setAnalysisResults(results);
     }
 }
