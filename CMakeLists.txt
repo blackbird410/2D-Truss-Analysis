@@ -177,6 +177,8 @@ add_library(TrussApplication STATIC
     src/application/TrussApplicationService.hpp
     src/application/AnalysisApplicationService.cpp
     src/application/AnalysisApplicationService.hpp
+    src/application/MaterialLibraryService.cpp
+    src/application/MaterialLibraryService.hpp
 )
 
 target_include_directories(TrussApplication PUBLIC
