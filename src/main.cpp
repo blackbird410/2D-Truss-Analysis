@@ -20,6 +20,14 @@
 #include <memory>
 
 #include "gui/MainWindow.hpp"
+#include "application/TrussApplicationService.hpp"
+#include "application/AnalysisApplicationService.hpp"
+#include "gui/controllers/AnalysisController.hpp"
+#include "gui/controllers/ProjectController.hpp"
+#include "gui/controllers/TrussEditController.hpp"
+#include "gui/presenters/AnalysisResultsPresenter.hpp"
+#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/presenters/ValidationPresenter.hpp"
 #include "core/Application.hpp"
 #include "core/Logger.hpp"
 #include "database/DatabaseManager.hpp"
@@ -143,7 +151,41 @@ int main(int argc, char *argv[]) {
     app.processEvents();
     
     try {
-        auto mainWindow = std::make_unique<truss::gui::MainWindow>();
+        // Create Application Services (no Qt dependencies)
+        truss::application::TrussApplicationService trussService;
+        truss::application::AnalysisApplicationService analysisService;
+        
+        // Create Presenters (formatting layer)
+        truss_presenters::AnalysisResultsPresenter analysisPresenter;
+        truss_presenters::TrussDataPresenter trussDataPresenter;
+        truss_presenters::ValidationPresenter validationPresenter;
+        
+        // Create Controllers (orchestration layer)
+        truss_controllers::AnalysisController analysisController(
+            trussService,
+            analysisService,
+            analysisPresenter,
+            validationPresenter
+        );
+        
+        truss_controllers::ProjectController projectController(trussService);
+        
+        truss_controllers::TrussEditController trussEditController(
+            trussService,
+            trussDataPresenter
+        );
+        
+        // Create MainWindow with dependency injection
+        auto mainWindow = std::make_unique<truss::gui::MainWindow>(
+            trussService,
+            analysisService,
+            analysisController,
+            projectController,
+            analysisPresenter,
+            trussDataPresenter,
+            validationPresenter
+        );
+        
         mainWindow->show();
         
         // Close splash screen after a brief delay

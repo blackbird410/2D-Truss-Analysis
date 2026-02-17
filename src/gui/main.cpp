@@ -8,8 +8,17 @@
 #include <QtCore/QStandardPaths>
 #include <QtCore/QLoggingCategory>
 #include <iostream>
+#include <memory>
 
 #include "MainWindow.hpp"
+#include "application/TrussApplicationService.hpp"
+#include "application/AnalysisApplicationService.hpp"
+#include "controllers/AnalysisController.hpp"
+#include "controllers/ProjectController.hpp"
+#include "controllers/TrussEditController.hpp"
+#include "presenters/AnalysisResultsPresenter.hpp"
+#include "presenters/TrussDataPresenter.hpp"
+#include "presenters/ValidationPresenter.hpp"
 
 int main(int argc, char *argv[]) {
     // Note: High-DPI support is enabled by default in Qt6
@@ -33,9 +42,42 @@ int main(int argc, char *argv[]) {
     // app.setWindowIcon(QIcon(":/icons/app-icon.png"));
     
     try {
-        // Create and show the main window
-        truss::gui::MainWindow mainWindow;
-        mainWindow.show();
+        // Create Application Services (no Qt dependencies)
+        truss::application::TrussApplicationService trussService;
+        truss::application::AnalysisApplicationService analysisService;
+        
+        // Create Presenters (formatting layer)
+        truss_presenters::AnalysisResultsPresenter analysisPresenter;
+        truss_presenters::TrussDataPresenter trussDataPresenter;
+        truss_presenters::ValidationPresenter validationPresenter;
+        
+        // Create Controllers (orchestration layer)
+        truss_controllers::AnalysisController analysisController(
+            trussService,
+            analysisService,
+            analysisPresenter,
+            validationPresenter
+        );
+        
+        truss_controllers::ProjectController projectController(trussService);
+        
+        truss_controllers::TrussEditController trussEditController(
+            trussService,
+            trussDataPresenter
+        );
+        
+        // Create and show the main window with dependency injection
+        auto mainWindow = std::make_unique<truss::gui::MainWindow>(
+            trussService,
+            analysisService,
+            analysisController,
+            projectController,
+            analysisPresenter,
+            trussDataPresenter,
+            validationPresenter
+        );
+        
+        mainWindow->show();
         
         // Start the event loop
         return app.exec();
