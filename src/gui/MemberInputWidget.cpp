@@ -3,14 +3,23 @@
  * @brief Implementation of the member input widget
  */
 
-#include "MainWindow.hpp"
+#include "MemberInputWidget.hpp"
+#include "controllers/TrussEditController.hpp"
 #include <QtWidgets/QFormLayout>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QMessageBox>
 #include <QtGui/QDoubleValidator>
 
 namespace truss::gui {
 
-MemberInputWidget::MemberInputWidget(QWidget *parent)
+MemberInputWidget::MemberInputWidget(
+    truss::application::TrussApplicationService& trussService,
+    truss_controllers::TrussEditController& editController,
+    QWidget *parent)
     : QWidget(parent),
+      m_trussService(trussService),
+      m_editController(editController),
+      m_currentTrussHandle(0),
       m_startNodeCombo(new QComboBox(this)),
       m_endNodeCombo(new QComboBox(this)),
       m_areaEdit(new QLineEdit(this)),
@@ -22,8 +31,15 @@ MemberInputWidget::MemberInputWidget(QWidget *parent)
     
     setupUI();
     
+    // Connect UI signals
     connect(m_addButton, &QPushButton::clicked, this, &MemberInputWidget::addMember);
     connect(m_clearButton, &QPushButton::clicked, this, &MemberInputWidget::clearInputs);
+    
+    // Connect controller signals
+    connect(&m_editController, &truss_controllers::TrussEditController::memberAdded,
+            this, &MemberInputWidget::onMemberAdded);
+    connect(&m_editController, &truss_controllers::TrussEditController::operationFailed,
+            this, &MemberInputWidget::onOperationFailed);
 }
 
 void MemberInputWidget::setupUI() {
@@ -92,26 +108,11 @@ void MemberInputWidget::addMember() {
     size_t startNodeId = m_startNodeCombo->currentData().toULongLong();
     size_t endNodeId = m_endNodeCombo->currentData().toULongLong();
     
-    // Get the main window to access the truss object
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (mainWindow && mainWindow->getTruss()) {
-        try {
-            truss::core::MaterialProperties material{youngModulus, density, yieldStrength, yieldStrength * 1.6, "Steel"};
-            auto memberPtr = mainWindow->getTruss()->addMember(
-                startNodeId, endNodeId, material, truss::core::SectionProperties{area, area*area/12, area, "Custom"});
-            size_t memberId = memberPtr->getId();
-            
-            emit memberAdded();
-            
-            QMessageBox::information(this, "Success", 
-                QString("Member %1 added between nodes %2 and %3")
-                .arg(memberId).arg(startNodeId).arg(endNodeId));
-                
-        } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Error", 
-                QString("Failed to add member: %1").arg(e.what()));
-        }
-    }
+    // Delegate to controller (Clean Architecture)
+    truss::core::MaterialProperties material{youngModulus, density, yieldStrength, yieldStrength * 1.6, "Steel"};
+    truss::core::SectionProperties section{area, area*area/12, area, "Custom"};
+    
+    m_editController.onMemberAddRequested(startNodeId, endNodeId, material, section);
 }
 
 void MemberInputWidget::clearInputs() {
@@ -123,25 +124,42 @@ void MemberInputWidget::clearInputs() {
     m_yieldStrengthEdit->setText("250000000");
 }
 
-void MemberInputWidget::updateNodeList() {
+void MemberInputWidget::updateNodeList(truss::application::TrussHandle trussHandle) {
+    m_currentTrussHandle = trussHandle;
     m_startNodeCombo->clear();
     m_endNodeCombo->clear();
     
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (mainWindow && mainWindow->getTruss()) {
-        const auto& nodes = mainWindow->getTruss()->getNodes();
-        for (size_t i = 0; i < nodes.size(); ++i) {
-            const auto& node = nodes[i];
-            size_t nodeId = node->getId();
-            QString nodeText = QString("Node %1 (%2, %3)")
-                .arg(nodeId)
-                .arg(node->getPosition().x, 0, 'f', 2)
-                .arg(node->getPosition().y, 0, 'f', 2);
-            
-            m_startNodeCombo->addItem(nodeText, static_cast<qulonglong>(nodeId));
-            m_endNodeCombo->addItem(nodeText, static_cast<qulonglong>(nodeId));
-        }
+    if (m_currentTrussHandle == 0) return;
+    
+    // Use ITrussView interface (Clean Architecture)
+    const auto& trussView = m_trussService.getTrussView(m_currentTrussHandle);
+    auto nodeViews = trussView.getNodeViews();
+    
+    for (const auto& nodeView : nodeViews) {
+        QString nodeText = QString("Node %1 (%2, %3)")
+            .arg(nodeView.id)
+            .arg(nodeView.x, 0, 'f', 2)
+            .arg(nodeView.y, 0, 'f', 2);
+        
+        m_startNodeCombo->addItem(nodeText, static_cast<qulonglong>(nodeView.id));
+        m_endNodeCombo->addItem(nodeText, static_cast<qulonglong>(nodeView.id));
     }
+}
+
+void MemberInputWidget::onMemberAdded(truss::core::MemberId memberId) {
+    emit memberAdded();
+    
+    size_t startNodeId = m_startNodeCombo->currentData().toULongLong();
+    size_t endNodeId = m_endNodeCombo->currentData().toULongLong();
+    
+    QMessageBox::information(this, "Success", 
+        QString("Member %1 added between nodes %2 and %3")
+        .arg(memberId).arg(startNodeId).arg(endNodeId));
+}
+
+void MemberInputWidget::onOperationFailed(const QString& errorMessage) {
+    QMessageBox::critical(this, "Error", 
+        QString("Failed to add member: %1").arg(errorMessage));
 }
 
 } // namespace truss::gui
