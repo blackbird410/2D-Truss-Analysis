@@ -539,10 +539,10 @@ void MainWindow::updateResultsDisplay() {
     
     // Update deformed truss visualization
     if (m_hasResults) {
-        // TODO Phase 3E: Refactor DeformedTrussWidget to use IAnalysisResultsView
-        auto& results = m_analysisService.getResults(m_lastResultsHandle);
-        m_deformedTrussWidget->setTruss(m_drawingWidget->getTruss());
-        m_deformedTrussWidget->setAnalysisResults(results);
+        auto trussHandle = m_drawingWidget->getTrussHandle();
+        const auto& trussView = m_trussService.getTrussView(trussHandle);
+        const auto& resultsView = m_analysisService.getResultsView(m_lastResultsHandle);
+        m_deformedTrussWidget->setData(trussView, resultsView, m_lastResultsHandle);
     }
 }
 
