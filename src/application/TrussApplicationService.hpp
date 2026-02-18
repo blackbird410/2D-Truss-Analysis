@@ -24,6 +24,7 @@
 #include "../core/assembly/TrussAssembler.hpp"
 #include "../core/validation/TrussValidator.hpp"
 #include "../infrastructure/io/fileio_factory.hpp"
+#include "TrussEditDTOs.hpp"
 #include <memory>
 #include <string>
 #include <unordered_map>
@@ -201,18 +202,22 @@ public:
     
     /**
      * @brief Add member connecting two nodes
+     * 
+     * Uses Application-layer DTOs instead of Domain types to decouple
+     * Interface layer (GUI/CLI) from Domain implementation.
+     * 
      * @param handle Truss handle
      * @param startNodeId Start node identifier
      * @param endNodeId End node identifier
-     * @param material Material properties
-     * @param section Section properties
+     * @param material Material specification (DTO)
+     * @param section Section specification (DTO)
      * @return Result containing MemberId on success
      */
     Result<core::MemberId> addMember(TrussHandle handle,
                                       core::NodeId startNodeId,
                                       core::NodeId endNodeId,
-                                      const core::MaterialProperties& material,
-                                      const core::SectionProperties& section);
+                                      const MaterialSpec& material,
+                                      const SectionSpec& section);
     
     /**
      * @brief Remove node from truss
