@@ -358,6 +358,7 @@ add_executable(TrussAnalysisGUI
     src/gui/MainWindow.cpp
     src/gui/MainWindow.hpp
     src/gui/NodeInputWidget.cpp
+    src/gui/NodeInputWidget.hpp
     src/gui/MemberInputWidget.cpp
     src/gui/LoadInputWidget.cpp
     src/gui/LoadInputWidget.hpp
