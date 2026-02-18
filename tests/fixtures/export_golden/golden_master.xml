@@ -2,8 +2,8 @@
 <TrussAnalysisResults>
   <Project>
     <Name>Golden Master Test Truss</Name>
-    <ExportTime>2026-02-14 02:32:26</ExportTime>
-    <Version>2.2.0</Version>
+    <ExportTime>2026-02-18 19:02:14</ExportTime>
+    <Version>3.0.0</Version>
   </Project>
   <Geometry>
     <Nodes>

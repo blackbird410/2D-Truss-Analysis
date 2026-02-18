@@ -170,7 +170,7 @@ TEST_F(JSONExporterTest, ProjectSection) {
     EXPECT_TRUE(fileContains(outputPath, "\"project\""));
     EXPECT_TRUE(fileContains(outputPath, "\"name\": \"Test Triangle Truss\""));
     EXPECT_TRUE(fileContains(outputPath, "\"exportTime\""));
-    EXPECT_TRUE(fileContains(outputPath, "\"version\": \"2.2.0\""));
+    EXPECT_TRUE(fileContains(outputPath, "\"version\": \"3.0.0\""));
 }
 
 /**

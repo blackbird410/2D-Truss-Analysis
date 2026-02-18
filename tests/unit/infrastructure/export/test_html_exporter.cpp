@@ -183,7 +183,7 @@ TEST_F(HTMLExporterTest, ProjectSection) {
     EXPECT_TRUE(fileContains(outputPath, "<strong>Project Name:</strong>"));
     EXPECT_TRUE(fileContains(outputPath, "<strong>Export Date:</strong>"));
     EXPECT_TRUE(fileContains(outputPath, "<strong>Version:</strong>"));
-    EXPECT_TRUE(fileContains(outputPath, "2.2.0"));
+    EXPECT_TRUE(fileContains(outputPath, "3.0.0"));
 }
 
 /**

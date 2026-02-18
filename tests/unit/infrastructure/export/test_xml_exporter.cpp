@@ -220,7 +220,7 @@ TEST_F(XMLExporterTest, ProjectSection) {
     EXPECT_TRUE(fileContains(outputPath, "<Name>Test Triangle Truss</Name>"));
     EXPECT_TRUE(fileContains(outputPath, "<ExportTime>"));
     EXPECT_TRUE(fileContains(outputPath, "</ExportTime>"));
-    EXPECT_TRUE(fileContains(outputPath, "<Version>2.2.0</Version>"));
+    EXPECT_TRUE(fileContains(outputPath, "<Version>3.0.0</Version>"));
 }
 
 /**
