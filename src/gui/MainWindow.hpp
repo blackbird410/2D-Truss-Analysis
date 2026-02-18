@@ -43,10 +43,10 @@
 #include "InteractiveDrawingWidget.hpp"
 #include "DeformedTrussWidget.hpp"
 #include "LoadInputWidget.hpp"
+#include "NodeInputWidget.hpp"
 
 namespace truss::gui {
 
-class NodeInputWidget;
 class MemberInputWidget;
 class DataTableWidget;
 class ResultsWidget;
@@ -197,34 +197,6 @@ private:
     // State
     application::ResultsHandle m_lastResultsHandle;
     bool m_hasResults;
-};
-
-/**
- * @brief Widget for node input
- */
-class NodeInputWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit NodeInputWidget(QWidget *parent = nullptr);
-
-signals:
-    void nodeAdded();
-
-public slots:
-    void addNode();
-    void clearInputs();
-
-private:
-    void setupUI();
-    
-    QLineEdit* m_xCoordEdit;
-    QLineEdit* m_yCoordEdit;
-    QComboBox* m_supportTypeCombo;
-    QPushButton* m_addButton;
-    QPushButton* m_clearButton;
-    
-    friend class MainWindow;
 };
 
 /**
