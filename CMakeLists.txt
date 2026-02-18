@@ -356,15 +356,19 @@ set_target_properties(TrussAnalysisCLI PROPERTIES
 add_executable(TrussAnalysisGUI
     src/gui/main.cpp
     src/gui/MainWindow.cpp
+    src/gui/MainWindow.hpp
     src/gui/NodeInputWidget.cpp
     src/gui/MemberInputWidget.cpp
     src/gui/LoadInputWidget.cpp
+    src/gui/LoadInputWidget.hpp
     src/gui/DataTableWidget.cpp
     src/gui/ResultsWidget.cpp
     src/gui/PlotWidget.cpp
     src/gui/InteractiveDrawingWidget.cpp
+    src/gui/InteractiveDrawingWidget.hpp
     src/gui/ProjectFileManager.cpp
     src/gui/DeformedTrussWidget.cpp
+    src/gui/DeformedTrussWidget.hpp
     # Phase 3A - Presenters
     src/gui/presenters/AnalysisResultsPresenter.cpp
     src/gui/presenters/TrussDataPresenter.cpp
