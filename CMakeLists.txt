@@ -360,11 +360,15 @@ add_executable(TrussAnalysisGUI
     src/gui/NodeInputWidget.cpp
     src/gui/NodeInputWidget.hpp
     src/gui/MemberInputWidget.cpp
+    src/gui/MemberInputWidget.hpp
     src/gui/LoadInputWidget.cpp
     src/gui/LoadInputWidget.hpp
     src/gui/DataTableWidget.cpp
+    src/gui/DataTableWidget.hpp
     src/gui/ResultsWidget.cpp
+    src/gui/ResultsWidget.hpp
     src/gui/PlotWidget.cpp
+    src/gui/PlotWidget.hpp
     src/gui/InteractiveDrawingWidget.cpp
     src/gui/InteractiveDrawingWidget.hpp
     src/gui/ProjectFileManager.cpp
