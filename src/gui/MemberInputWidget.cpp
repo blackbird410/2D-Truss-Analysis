@@ -5,6 +5,7 @@
 
 #include "MemberInputWidget.hpp"
 #include "controllers/TrussEditController.hpp"
+#include "application/TrussEditDTOs.hpp"
 #include <QtWidgets/QFormLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QMessageBox>
@@ -108,9 +109,9 @@ void MemberInputWidget::addMember() {
     size_t startNodeId = m_startNodeCombo->currentData().toULongLong();
     size_t endNodeId = m_endNodeCombo->currentData().toULongLong();
     
-    // Delegate to controller (Clean Architecture)
-    truss::core::MaterialProperties material{youngModulus, density, yieldStrength, yieldStrength * 1.6, "Steel"};
-    truss::core::SectionProperties section{area, area*area/12, area, "Custom"};
+    // Delegate to controller (Clean Architecture) - Using Application DTOs
+    truss::application::MaterialSpec material{youngModulus, "Steel"};
+    truss::application::SectionSpec section{area, "Custom"};
     
     m_editController.onMemberAddRequested(startNodeId, endNodeId, material, section);
 }
