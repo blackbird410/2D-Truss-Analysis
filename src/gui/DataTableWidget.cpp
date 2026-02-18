@@ -3,16 +3,24 @@
  * @brief Implementation of the data table widget
  */
 
-#include "MainWindow.hpp"
+#include "DataTableWidget.hpp"
+#include "core/interfaces/ITrussView.hpp"
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QHeaderView>
 
+using namespace truss::application;
+using namespace truss::infrastructure;
+
 namespace truss::gui {
 
-DataTableWidget::DataTableWidget(QWidget *parent)
+DataTableWidget::DataTableWidget(
+    application::TrussApplicationService& trussService,
+    QWidget *parent)
     : QWidget(parent),
+      m_trussService(trussService),
+      m_currentTrussHandle(0),
       m_nodesTable(new QTableWidget(this)),
       m_membersTable(new QTableWidget(this)),
       m_loadsTable(new QTableWidget(this)) {
@@ -60,43 +68,51 @@ void DataTableWidget::setupUI() {
     layout->addWidget(tabWidget);
 }
 
-void DataTableWidget::updateTables() {
-    updateNodesTable();
-    updateMembersTable();
-    updateLoadsTable();
+void DataTableWidget::updateTables(application::TrussHandle trussHandle) {
+    m_currentTrussHandle = trussHandle;
+    updateNodesTable(trussHandle);
+    updateMembersTable(trussHandle);
+    updateLoadsTable(trussHandle);
 }
 
-void DataTableWidget::updateNodesTable() {
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (!mainWindow || !mainWindow->getTruss()) {
+void DataTableWidget::clearTables() {
+    m_currentTrussHandle = 0;
+    m_nodesTable->setRowCount(0);
+    m_membersTable->setRowCount(0);
+    m_loadsTable->setRowCount(0);
+}
+
+void DataTableWidget::updateNodesTable(application::TrussHandle trussHandle) {
+    if (trussHandle == 0) {
         m_nodesTable->setRowCount(0);
         return;
     }
     
-    const auto& nodes = mainWindow->getTruss()->getNodes();
-    m_nodesTable->setRowCount(nodes.size());
+    const auto& trussView = m_trussService.getTrussView(trussHandle);
+    auto nodeViews = trussView.getNodeViews();
+    m_nodesTable->setRowCount(nodeViews.size());
     
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        const auto& node = nodes[i];
+    for (size_t i = 0; i < nodeViews.size(); ++i) {
+        const auto& nodeView = nodeViews[i];
         
         // Node ID
-        auto* idItem = new QTableWidgetItem(QString::number(node->getId()));
+        auto* idItem = new QTableWidgetItem(QString::number(nodeView.id));
         idItem->setFlags(idItem->flags() & ~Qt::ItemIsEditable);
         m_nodesTable->setItem(i, 0, idItem);
         
         // X coordinate
-        auto* xItem = new QTableWidgetItem(QString::number(node->getPosition().x, 'f', 6));
+        auto* xItem = new QTableWidgetItem(QString::number(nodeView.x, 'f', 6));
         xItem->setFlags(xItem->flags() & ~Qt::ItemIsEditable);
         m_nodesTable->setItem(i, 1, xItem);
         
         // Y coordinate
-        auto* yItem = new QTableWidgetItem(QString::number(node->getPosition().y, 'f', 6));
+        auto* yItem = new QTableWidgetItem(QString::number(nodeView.y, 'f', 6));
         yItem->setFlags(yItem->flags() & ~Qt::ItemIsEditable);
         m_nodesTable->setItem(i, 2, yItem);
         
         // Support type
         QString supportTypeStr;
-        switch (node->getSupportType()) {
+        switch (nodeView.support) {
             case truss::core::SupportType::Free: 
                 supportTypeStr = "Free"; 
                 break;
@@ -125,51 +141,51 @@ void DataTableWidget::updateNodesTable() {
     m_nodesTable->resizeColumnsToContents();
 }
 
-void DataTableWidget::updateMembersTable() {
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (!mainWindow || !mainWindow->getTruss()) {
+void DataTableWidget::updateMembersTable(application::TrussHandle trussHandle) {
+    if (trussHandle == 0) {
         m_membersTable->setRowCount(0);
         return;
     }
     
-    const auto& members = mainWindow->getTruss()->getMembers();
-    m_membersTable->setRowCount(members.size());
+    const auto& trussView = m_trussService.getTrussView(trussHandle);
+    auto memberViews = trussView.getMemberViews();
+    m_membersTable->setRowCount(memberViews.size());
     
-    for (size_t i = 0; i < members.size(); ++i) {
-        const auto& member = members[i];
+    for (size_t i = 0; i < memberViews.size(); ++i) {
+        const auto& memberView = memberViews[i];
         
         // Member ID
-        auto* idItem = new QTableWidgetItem(QString::number(member->getId()));
+        auto* idItem = new QTableWidgetItem(QString::number(memberView.id));
         idItem->setFlags(idItem->flags() & ~Qt::ItemIsEditable);
         m_membersTable->setItem(i, 0, idItem);
         
         // Start node ID
-        auto* startItem = new QTableWidgetItem(QString::number(member->getStartNode()->getId()));
+        auto* startItem = new QTableWidgetItem(QString::number(memberView.startNodeId));
         startItem->setFlags(startItem->flags() & ~Qt::ItemIsEditable);
         m_membersTable->setItem(i, 1, startItem);
         
         // End node ID
-        auto* endItem = new QTableWidgetItem(QString::number(member->getEndNode()->getId()));
+        auto* endItem = new QTableWidgetItem(QString::number(memberView.endNodeId));
         endItem->setFlags(endItem->flags() & ~Qt::ItemIsEditable);
         m_membersTable->setItem(i, 2, endItem);
         
         // Cross-sectional area
-        auto* areaItem = new QTableWidgetItem(QString::number(member->getSection().area, 'e', 6));
+        auto* areaItem = new QTableWidgetItem(QString::number(memberView.area, 'e', 6));
         areaItem->setFlags(areaItem->flags() & ~Qt::ItemIsEditable);
         m_membersTable->setItem(i, 3, areaItem);
         
         // Young's modulus
-        auto* eItem = new QTableWidgetItem(QString::number(member->getMaterial().youngModulus, 'e', 3));
+        auto* eItem = new QTableWidgetItem(QString::number(memberView.youngModulus, 'e', 3));
         eItem->setFlags(eItem->flags() & ~Qt::ItemIsEditable);
         m_membersTable->setItem(i, 4, eItem);
         
         // Density
-        auto* densityItem = new QTableWidgetItem(QString::number(member->getMaterial().density, 'f', 1));
+        auto* densityItem = new QTableWidgetItem(QString::number(0.0, 'f', 1));  // Not in view
         densityItem->setFlags(densityItem->flags() & ~Qt::ItemIsEditable);
         m_membersTable->setItem(i, 5, densityItem);
         
         // Yield strength
-        auto* yieldItem = new QTableWidgetItem(QString::number(member->getMaterial().yieldStrength, 'e', 3));
+        auto* yieldItem = new QTableWidgetItem(QString::number(0.0, 'e', 3));  // Not in view
         yieldItem->setFlags(yieldItem->flags() & ~Qt::ItemIsEditable);
         m_membersTable->setItem(i, 6, yieldItem);
     }
@@ -177,20 +193,19 @@ void DataTableWidget::updateMembersTable() {
     m_membersTable->resizeColumnsToContents();
 }
 
-void DataTableWidget::updateLoadsTable() {
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (!mainWindow || !mainWindow->getTruss()) {
+void DataTableWidget::updateLoadsTable(application::TrussHandle trussHandle) {
+    if (trussHandle == 0) {
         m_loadsTable->setRowCount(0);
         return;
     }
     
-    const auto& nodes = mainWindow->getTruss()->getNodes();
+    const auto& trussView = m_trussService.getTrussView(trussHandle);
+    auto nodeViews = trussView.getNodeViews();
     
     // Count nodes with applied forces
     int loadCount = 0;
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        const auto& node = nodes[i];
-        if (node->hasAppliedForce()) {
+    for (const auto& nodeView : nodeViews) {
+        if (nodeView.fx != 0.0 || nodeView.fy != 0.0) {
             loadCount++;
         }
     }
@@ -198,11 +213,8 @@ void DataTableWidget::updateLoadsTable() {
     m_loadsTable->setRowCount(loadCount);
     
     int row = 0;
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        const auto& node = nodes[i];
-        if (!node->hasAppliedForce()) continue;
-        
-        const auto& force = node->getAppliedForce();
+    for (const auto& nodeView : nodeViews) {
+        if (nodeView.fx == 0.0 && nodeView.fy == 0.0) continue;
         
         // Load index (not really an ID since they're stored in nodes)
         auto* idItem = new QTableWidgetItem(QString::number(row + 1));
@@ -210,17 +222,17 @@ void DataTableWidget::updateLoadsTable() {
         m_loadsTable->setItem(row, 0, idItem);
         
         // Node ID
-        auto* nodeItem = new QTableWidgetItem(QString::number(node->getId()));
+        auto* nodeItem = new QTableWidgetItem(QString::number(nodeView.id));
         nodeItem->setFlags(nodeItem->flags() & ~Qt::ItemIsEditable);
         m_loadsTable->setItem(row, 1, nodeItem);
         
         // Force X
-        auto* fxItem = new QTableWidgetItem(QString::number(force.fx, 'f', 6));
+        auto* fxItem = new QTableWidgetItem(QString::number(nodeView.fx, 'f', 6));
         fxItem->setFlags(fxItem->flags() & ~Qt::ItemIsEditable);
         m_loadsTable->setItem(row, 2, fxItem);
         
         // Force Y
-        auto* fyItem = new QTableWidgetItem(QString::number(force.fy, 'f', 6));
+        auto* fyItem = new QTableWidgetItem(QString::number(nodeView.fy, 'f', 6));
         fyItem->setFlags(fyItem->flags() & ~Qt::ItemIsEditable);
         m_loadsTable->setItem(row, 3, fyItem);
         
