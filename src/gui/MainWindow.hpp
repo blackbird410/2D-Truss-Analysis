@@ -44,13 +44,12 @@
 #include "DeformedTrussWidget.hpp"
 #include "LoadInputWidget.hpp"
 #include "NodeInputWidget.hpp"
+#include "MemberInputWidget.hpp"
+#include "PlotWidget.hpp"
+#include "ResultsWidget.hpp"
+#include "DataTableWidget.hpp"
 
 namespace truss::gui {
-
-class MemberInputWidget;
-class DataTableWidget;
-class ResultsWidget;
-class PlotWidget;
 
 /**
  * @brief Main application window with interactive drawing interface
@@ -197,130 +196,6 @@ private:
     // State
     application::ResultsHandle m_lastResultsHandle;
     bool m_hasResults;
-};
-
-/**
- * @brief Widget for member input
- */
-class MemberInputWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit MemberInputWidget(QWidget *parent = nullptr);
-
-signals:
-    void memberAdded();
-
-public slots:
-    void addMember();
-    void clearInputs();
-    void updateNodeList();
-
-private:
-    void setupUI();
-    
-    QComboBox* m_startNodeCombo;
-    QComboBox* m_endNodeCombo;
-    QLineEdit* m_areaEdit;
-    QLineEdit* m_youngModulusEdit;
-    QLineEdit* m_densityEdit;
-    QLineEdit* m_yieldStrengthEdit;
-    QPushButton* m_addButton;
-    QPushButton* m_clearButton;
-    
-    friend class MainWindow;
-};
-
-/**
- * @brief Widget for displaying data tables
- */
-class DataTableWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit DataTableWidget(QWidget *parent = nullptr);
-
-public slots:
-    void updateTables();
-
-private:
-    void setupUI();
-    void updateNodesTable();
-    void updateMembersTable();
-    void updateLoadsTable();
-    
-    QTableWidget* m_nodesTable;
-    QTableWidget* m_membersTable;
-    QTableWidget* m_loadsTable;
-    
-    friend class MainWindow;
-};
-
-/**
- * @brief Widget for displaying analysis results
- */
-class ResultsWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit ResultsWidget(QWidget *parent = nullptr);
-
-public slots:
-    void updateResults();
-    void clearResults();
-
-private:
-    void setupUI();
-    void updateDisplacementsTable();
-    void updateForcesTable();
-    void updateReactionsTable();
-    void updateStiffnessTable();
-    void updateSummary();
-    
-    QTableWidget* m_displacementsTable;
-    QTableWidget* m_forcesTable;
-    QTableWidget* m_reactionsTable;
-    QTableWidget* m_stiffnessTable;
-    QTextEdit* m_summaryText;
-    
-    friend class MainWindow;
-};
-
-/**
- * @brief Widget for plotting the truss structure
- */
-class PlotWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit PlotWidget(QWidget *parent = nullptr);
-
-public slots:
-    void updatePlot();
-    void clearPlot();
-
-protected:
-    void paintEvent(QPaintEvent *event) override;
-
-private:
-    void drawTruss(QPainter &painter);
-    void drawNodes(QPainter &painter);
-    void drawMembers(QPainter &painter);
-    void drawLoads(QPainter &painter);
-    void drawSupports(QPainter &painter);
-    void drawDeformedShape(QPainter &painter);
-    
-    QPoint worldToScreen(const truss::core::Point2D& point) const;
-    void calculateViewport();
-    
-    bool m_showDeformed;
-    bool m_showForces;
-    double m_scaleFactor;
-    QRect m_plotArea;
-    truss::core::Point2D m_minBounds;
-    truss::core::Point2D m_maxBounds;
-    
-    friend class MainWindow;
 };
 
 } // namespace truss::gui

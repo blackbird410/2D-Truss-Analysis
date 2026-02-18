@@ -30,7 +30,7 @@ MainWindow::MainWindow(
       m_mainSplitter(new QSplitter(Qt::Vertical, this)),
       m_drawingWidget(new InteractiveDrawingWidget(trussService, this)),
       m_resultsTabWidget(new QTabWidget(this)),
-      m_resultsWidget(new ResultsWidget(this)),
+      m_resultsWidget(new ResultsWidget(trussService, analysisService, this)),
       m_deformedTrussWidget(new DeformedTrussWidget(this)),
       m_logTextEdit(new QTextEdit(this)),
       m_analyzeButton(new QPushButton("Analyze Structure", this)),
@@ -535,11 +535,11 @@ void MainWindow::updateStatusMessage(const QString& message) {
 }
 
 void MainWindow::updateResultsDisplay() {
-    m_resultsWidget->updateResults();
+    auto trussHandle = m_drawingWidget->getTrussHandle();
+    m_resultsWidget->updateResults(trussHandle);
     
     // Update deformed truss visualization
     if (m_hasResults) {
-        auto trussHandle = m_drawingWidget->getTrussHandle();
         const auto& trussView = m_trussService.getTrussView(trussHandle);
         const auto& resultsView = m_analysisService.getResultsView(m_lastResultsHandle);
         m_deformedTrussWidget->setData(trussView, resultsView, m_lastResultsHandle);
