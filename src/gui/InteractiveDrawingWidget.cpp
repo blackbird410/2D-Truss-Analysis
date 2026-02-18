@@ -4,6 +4,7 @@
  */
 
 #include "InteractiveDrawingWidget.hpp"
+#include "core/interfaces/ITrussView.hpp"
 #include <QtCore/QDebug>
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QMessageBox>
@@ -19,10 +20,12 @@ namespace truss::gui {
 // DrawingCanvas Implementation
 //=============================================================================
 
-DrawingCanvas::DrawingCanvas(QWidget* parent)
+DrawingCanvas::DrawingCanvas(application::TrussApplicationService& trussService,
+                             QWidget* parent)
     : QWidget(parent),
+      m_trussService(trussService),
       m_drawingMode(DrawingMode::Select),
-      m_truss(std::make_unique<truss::core::Truss>()),
+      m_trussHandle(0),
       m_scale(DEFAULT_SCALE),
       m_offset(0.0, 0.0),
       m_gridVisible(true),
@@ -99,7 +102,17 @@ void DrawingCanvas::zoomOut() {
 }
 
 void DrawingCanvas::zoomToFit() {
-    if (!m_truss || m_truss->getNodes().empty()) {
+    if (m_trussHandle == 0) {
+        m_scale = DEFAULT_SCALE;
+        m_offset = truss::core::Point2D(0.0, 0.0);
+        update();
+        return;
+    }
+    
+    const auto& view = m_trussService.getTrussView(m_trussHandle);
+    auto nodeViews = view.getNodeViews();
+    
+    if (nodeViews.empty()) {
         m_scale = DEFAULT_SCALE;
         m_offset = truss::core::Point2D(0.0, 0.0);
         update();
@@ -107,18 +120,16 @@ void DrawingCanvas::zoomToFit() {
     }
     
     // Calculate bounding box
-    const auto& nodes = m_truss->getNodes();
-    double minX = nodes[0]->getPosition().x;
-    double maxX = nodes[0]->getPosition().x;
-    double minY = nodes[0]->getPosition().y;
-    double maxY = nodes[0]->getPosition().y;
+    double minX = nodeViews[0].x;
+    double maxX = nodeViews[0].x;
+    double minY = nodeViews[0].y;
+    double maxY = nodeViews[0].y;
     
-    for (const auto& node : nodes) {
-        const auto& pos = node->getPosition();
-        minX = std::min(minX, pos.x);
-        maxX = std::max(maxX, pos.x);
-        minY = std::min(minY, pos.y);
-        maxY = std::max(maxY, pos.y);
+    for (const auto& nodeView : nodeViews) {
+        minX = std::min(minX, nodeView.x);
+        maxX = std::max(maxX, nodeView.x);
+        minY = std::min(minY, nodeView.y);
+        maxY = std::max(maxY, nodeView.y);
     }
     
     // Add margins
@@ -174,8 +185,8 @@ void DrawingCanvas::setCurrentSection(const SectionPreset& section) {
     m_currentSection = section;
 }
 
-void DrawingCanvas::setTruss(std::unique_ptr<truss::core::Truss> truss) {
-    m_truss = std::move(truss);
+void DrawingCanvas::setTrussHandle(application::TrussHandle handle) {
+    m_trussHandle = handle;
     clearSelection();
     updateViewport();
     update();
@@ -183,11 +194,21 @@ void DrawingCanvas::setTruss(std::unique_ptr<truss::core::Truss> truss) {
 }
 
 void DrawingCanvas::clearTruss() {
-    m_truss = std::make_unique<truss::core::Truss>();
-    clearSelection();
-    updateViewport();
-    update();
-    emit trussModified();
+    // Create new empty truss through Application service
+    auto result = m_trussService.createTruss("Untitled");
+    if (result.success) {
+        m_trussHandle = result.value;
+        clearSelection();
+        updateViewport();
+        update();
+        emit trussModified();
+    }
+}
+
+// Legacy accessor for backward compatibility
+truss::core::Truss* DrawingCanvas::getTruss() const {
+    if (m_trussHandle == 0) return nullptr;
+    return &m_trussService.getTrussMutable(m_trussHandle);
 }
 
 truss::core::Point2D DrawingCanvas::screenToWorld(const QPoint& screenPoint) const {
@@ -224,7 +245,7 @@ void DrawingCanvas::paintEvent(QPaintEvent*) {
     drawCoordinateSystem(painter);
     
     // Draw truss elements
-    if (m_truss) {
+    if (m_trussHandle != 0) {
         drawTruss(painter);
     }
     
@@ -281,14 +302,15 @@ void DrawingCanvas::drawTruss(QPainter& painter) {
 }
 
 void DrawingCanvas::drawNodes(QPainter& painter) {
-    if (!m_truss) return;
+    if (m_trussHandle == 0) return;
     
-    const auto& nodes = m_truss->getNodes();
+    const auto& view = m_trussService.getTrussView(m_trussHandle);
+    auto nodeViews = view.getNodeViews();
     painter.setFont(m_labelFont);
     
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        const auto& node = nodes[i];
-        QPoint screenPos = worldToScreen(node->getPosition());
+    for (size_t i = 0; i < nodeViews.size(); ++i) {
+        const auto& nodeView = nodeViews[i];
+        QPoint screenPos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
         
         // Check if selected
         bool isSelected = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), i) != m_selectedNodes.end();
@@ -303,25 +325,35 @@ void DrawingCanvas::drawNodes(QPainter& painter) {
         // Draw node ID
         painter.setPen(QPen(Qt::black));
         painter.drawText(screenPos + QPoint(NODE_RADIUS + 2, -NODE_RADIUS), 
-                        QString::number(node->getId()));
+                        QString::number(nodeView.id));
     }
 }
 
 void DrawingCanvas::drawMembers(QPainter& painter) {
-    if (!m_truss) return;
+    if (m_trussHandle == 0) return;
     
-    const auto& members = m_truss->getMembers();
+    const auto& view = m_trussService.getTrussView(m_trussHandle);
+    auto memberViews = view.getMemberViews();
+    auto nodeViews = view.getNodeViews();
     painter.setFont(m_labelFont);
     
-    for (size_t i = 0; i < members.size(); ++i) {
-        const auto& member = members[i];
-        auto startNode = member->getStartNode();
-        auto endNode = member->getEndNode();
+    for (size_t i = 0; i < memberViews.size(); ++i) {
+        const auto& memberView = memberViews[i];
         
-        if (!startNode || !endNode) continue;
+        // Find start and end node positions
+        auto startNodeIt = std::find_if(nodeViews.begin(), nodeViews.end(),
+            [&memberView](const truss::core::interfaces::NodeView& nv) {
+                return nv.id == memberView.startNodeId;
+            });
+        auto endNodeIt = std::find_if(nodeViews.begin(), nodeViews.end(),
+            [&memberView](const truss::core::interfaces::NodeView& nv) {
+                return nv.id == memberView.endNodeId;
+            });
         
-        QPoint startPos = worldToScreen(startNode->getPosition());
-        QPoint endPos = worldToScreen(endNode->getPosition());
+        if (startNodeIt == nodeViews.end() || endNodeIt == nodeViews.end()) continue;
+        
+        QPoint startPos = worldToScreen(truss::core::Point2D{startNodeIt->x, startNodeIt->y});
+        QPoint endPos = worldToScreen(truss::core::Point2D{endNodeIt->x, endNodeIt->y});
         
         // Check if selected
         bool isSelected = std::find(m_selectedMembers.begin(), m_selectedMembers.end(), i) != m_selectedMembers.end();
@@ -332,33 +364,32 @@ void DrawingCanvas::drawMembers(QPainter& painter) {
         // Draw member ID at midpoint
         QPoint midPoint = (startPos + endPos) / 2;
         painter.setPen(QPen(Qt::darkGray));
-        painter.drawText(midPoint + QPoint(3, 3), QString("M%1").arg(member->getId()));
+        painter.drawText(midPoint + QPoint(3, 3), QString("M%1").arg(memberView.id));
     }
 }
 
 void DrawingCanvas::drawLoads(QPainter& painter) {
-    if (!m_truss) return;
+    if (m_trussHandle == 0) return;
     
-    const auto& nodes = m_truss->getNodes();
+    const auto& view = m_trussService.getTrussView(m_trussHandle);
+    auto nodeViews = view.getNodeViews();
     painter.setPen(m_loadPen);
     
-    for (const auto& node : nodes) {
-        if (!node->hasAppliedForce()) continue;
-        
-        QPoint nodePos = worldToScreen(node->getPosition());
-        truss::core::Force2D force = node->getAppliedForce();
-        
-        // Scale force for display
-        double magnitude = std::sqrt(force.fx * force.fx + force.fy * force.fy);
+    for (const auto& nodeView : nodeViews) {
+        // Check if node has applied force
+        double magnitude = std::sqrt(nodeView.fx * nodeView.fx + nodeView.fy * nodeView.fy);
         if (magnitude < 1e-6) continue;
         
+        QPoint nodePos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
+        
+        // Scale force for display
         double scale = 50.0; // pixels per kN
         double maxLength = 60.0;
         double length = std::min(scale * magnitude / 1000.0, maxLength);
         
         QPoint forceEnd(
-            nodePos.x() + static_cast<int>(length * force.fx / magnitude),
-            nodePos.y() - static_cast<int>(length * force.fy / magnitude)  // Inverted Y for screen coordinates
+            nodePos.x() + static_cast<int>(length * nodeView.fx / magnitude),
+            nodePos.y() - static_cast<int>(length * nodeView.fy / magnitude)  // Inverted Y for screen coordinates
         );
         
         // Draw force arrow
@@ -366,7 +397,7 @@ void DrawingCanvas::drawLoads(QPainter& painter) {
         
         // Draw arrowhead
         QVector<QPoint> arrowHead;
-        double angle = std::atan2(force.fy, force.fx);  // Correct angle calculation for screen coordinates
+        double angle = std::atan2(nodeView.fy, nodeView.fx);  // Correct angle calculation for screen coordinates
         int arrowSize = 8;
         
         arrowHead << forceEnd
@@ -388,18 +419,19 @@ void DrawingCanvas::drawLoads(QPainter& painter) {
 }
 
 void DrawingCanvas::drawSupports(QPainter& painter) {
-    if (!m_truss) return;
+    if (m_trussHandle == 0) return;
     
-    const auto& nodes = m_truss->getNodes();
+    const auto& view = m_trussService.getTrussView(m_trussHandle);
+    auto nodeViews = view.getNodeViews();
     painter.setPen(QPen(m_supportPen.color(), 2));
     painter.setBrush(QBrush(m_supportPen.color()));
     
-    for (const auto& node : nodes) {
-        if (node->getSupportType() == truss::core::SupportType::Free) continue;
+    for (const auto& nodeView : nodeViews) {
+        if (nodeView.support == truss::core::SupportType::Free) continue;
         
-        QPoint nodePos = worldToScreen(node->getPosition());
+        QPoint nodePos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
         
-        switch (node->getSupportType()) {
+        switch (nodeView.support) {
             case truss::core::SupportType::Pinned: {
                 // Draw triangle below the node (pointing upward)
                 QVector<QPoint> triangle;
@@ -462,13 +494,23 @@ void DrawingCanvas::drawSelection(QPainter& /*painter*/) {
 void DrawingCanvas::drawCurrentOperation(QPainter& painter) {
     if (m_drawingMode == DrawingMode::AddMember && m_isCreatingMember && m_memberStartNode > 0) {
         // Draw line from start node to current mouse position
-        auto startNode = m_truss->getNode(m_memberStartNode);
-        if (startNode) {
-            QPoint startPos = worldToScreen(startNode->getPosition());
-            QPoint mousePos = worldToScreen(m_currentMouseWorld);
+        if (m_trussHandle != 0) {
+            const auto& view = m_trussService.getTrussView(m_trussHandle);
+            auto nodeViews = view.getNodeViews();
             
-            painter.setPen(QPen(Qt::blue, 2, Qt::DashLine));
-            painter.drawLine(startPos, mousePos);
+            // Find the start node by ID
+            auto it = std::find_if(nodeViews.begin(), nodeViews.end(),
+                [this](const truss::core::interfaces::NodeView& nv) {
+                    return nv.id == m_memberStartNode;
+                });
+            
+            if (it != nodeViews.end()) {
+                QPoint startPos = worldToScreen(truss::core::Point2D{it->x, it->y});
+                QPoint mousePos = worldToScreen(m_currentMouseWorld);
+                
+                painter.setPen(QPen(Qt::blue, 2, Qt::DashLine));
+                painter.drawLine(startPos, mousePos);
+            }
         }
     }
 }
@@ -595,11 +637,18 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
         
         case DrawingMode::SetSupport: {
             size_t nodeId = findNodeAt(event->pos());
-            if (nodeId > 0) {
-                // Cycle through support types
-                auto node = m_truss->getNode(nodeId);
-                if (node) {
-                    auto currentType = node->getSupportType();
+            if (nodeId > 0 && m_trussHandle != 0) {
+                // Cycle through support types - get current type from view
+                const auto& view = m_trussService.getTrussView(m_trussHandle);
+                auto nodeViews = view.getNodeViews();
+                
+                auto nodeIt = std::find_if(nodeViews.begin(), nodeViews.end(),
+                    [nodeId](const truss::core::interfaces::NodeView& nv) {
+                        return nv.id == nodeId;
+                    });
+                
+                if (nodeIt != nodeViews.end()) {
+                    auto currentType = nodeIt->support;
                     truss::core::SupportType newType;
                     
                     switch (currentType) {
@@ -767,36 +816,47 @@ truss::core::Point2D DrawingCanvas::snapToGrid(const truss::core::Point2D& point
 }
 
 size_t DrawingCanvas::findNodeAt(const QPoint& screenPos, double tolerance) const {
-    if (!m_truss) return 0;
+    if (m_trussHandle == 0) return 0;
     
-    const auto& nodes = m_truss->getNodes();
-    for (size_t i = 0; i < nodes.size(); ++i) {
-        QPoint nodeScreen = worldToScreen(nodes[i]->getPosition());
+    const auto& view = m_trussService.getTrussView(m_trussHandle);
+    auto nodeViews = view.getNodeViews();
+    
+    for (const auto& nodeView : nodeViews) {
+        QPoint nodeScreen = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
         double distance = std::sqrt(std::pow(screenPos.x() - nodeScreen.x(), 2) + 
                                   std::pow(screenPos.y() - nodeScreen.y(), 2));
         if (distance <= tolerance) {
-            return nodes[i]->getId();
+            return nodeView.id;
         }
     }
     return 0;
 }
 
 size_t DrawingCanvas::findMemberAt(const QPoint& screenPos, double tolerance) const {
-    if (!m_truss) return 0;
+    if (m_trussHandle == 0) return 0;
     
-    const auto& members = m_truss->getMembers();
-    for (size_t i = 0; i < members.size(); ++i) {
-        const auto& member = members[i];
-        auto startNode = member->getStartNode();
-        auto endNode = member->getEndNode();
+    const auto& view = m_trussService.getTrussView(m_trussHandle);
+    auto memberViews = view.getMemberViews();
+    auto nodeViews = view.getNodeViews();
+    
+    for (const auto& memberView : memberViews) {
+        // Find start and end node positions
+        auto startNodeIt = std::find_if(nodeViews.begin(), nodeViews.end(),
+            [&memberView](const truss::core::interfaces::NodeView& nv) {
+                return nv.id == memberView.startNodeId;
+            });
+        auto endNodeIt = std::find_if(nodeViews.begin(), nodeViews.end(),
+            [&memberView](const truss::core::interfaces::NodeView& nv) {
+                return nv.id == memberView.endNodeId;
+            });
         
-        if (!startNode || !endNode) continue;
+        if (startNodeIt == nodeViews.end() || endNodeIt == nodeViews.end()) continue;
         
-        QPoint startScreen = worldToScreen(startNode->getPosition());
-        QPoint endScreen = worldToScreen(endNode->getPosition());
+        QPoint startScreen = worldToScreen(truss::core::Point2D{startNodeIt->x, startNodeIt->y});
+        QPoint endScreen = worldToScreen(truss::core::Point2D{endNodeIt->x, endNodeIt->y});
         
         if (isNearLine(screenPos, startScreen, endScreen, tolerance)) {
-            return member->getId();
+            return memberView.id;
         }
     }
     return 0;
@@ -828,137 +888,93 @@ bool DrawingCanvas::isNearLine(const QPoint& point, const QPoint& lineStart,
 }
 
 void DrawingCanvas::addNodeAtPosition(const truss::core::Point2D& position) {
-    if (!m_truss) return;
-    
-    // Check for duplicate coordinates
-    const auto& nodes = m_truss->getNodes();
-    for (const auto& existingNode : nodes) {
-        if (std::abs(existingNode->getX() - position.x) < 1e-6 && 
-            std::abs(existingNode->getY() - position.y) < 1e-6) {
-            emit statusMessage(QString("Cannot add node: A node already exists at coordinates (%1, %2)")
-                              .arg(position.x, 0, 'f', 3).arg(position.y, 0, 'f', 3));
-            return;
-        }
-    }
-    
-    try {
-        auto node = m_truss->addNode(position);
-        emit trussModified();
-        emit statusMessage(QString("Node added at (%1, %2)").arg(position.x, 0, 'f', 3).arg(position.y, 0, 'f', 3));
-    } catch (const std::exception& e) {
-        emit statusMessage(QString("Failed to add node: %1").arg(e.what()));
-    }
+    // Request node addition - validation handled by Application layer
+    emit nodeAddRequested(position, truss::core::SupportType::Free);
+    emit statusMessage(QString("Node add requested at (%1, %2)")
+                      .arg(position.x, 0, 'f', 3)
+                      .arg(position.y, 0, 'f', 3));
 }
 
 void DrawingCanvas::addMemberBetweenNodes(size_t startNodeId, size_t endNodeId) {
-    if (!m_truss) return;
+    // Create material and section properties
+    truss::core::MaterialProperties material{
+        m_currentMaterial.youngModulus,
+        m_currentMaterial.density,
+        m_currentMaterial.yieldStrength,
+        m_currentMaterial.yieldStrength * 1.6, // Estimate ultimate strength
+        "Steel"
+    };
     
-    try {
-        const auto& nodes = m_truss->getNodes();
-        if (startNodeId >= nodes.size() || endNodeId >= nodes.size()) return;
-        
-        auto startNode = nodes[startNodeId];
-        auto endNode = nodes[endNodeId];
-        
-        // Create material and section properties
-        truss::core::MaterialProperties material{
-            m_currentMaterial.youngModulus,
-            m_currentMaterial.density,
-            m_currentMaterial.yieldStrength,
-            m_currentMaterial.yieldStrength * 1.6, // Estimate ultimate strength
-            "Steel"
-        };
-        
-        truss::core::SectionProperties section{m_currentSection.area, 1e-8, m_currentSection.area, "Default"};
-        
-        auto member = m_truss->addMember(startNode, endNode, material, section);
-        
-        emit trussModified();
-        emit statusMessage(QString("Member added between nodes %1 and %2")
-                          .arg(startNode->getId()).arg(endNode->getId()));
-    } catch (const std::exception& e) {
-        emit statusMessage(QString("Failed to add member: %1").arg(e.what()));
-    }
+    truss::core::SectionProperties section{m_currentSection.area, 1e-8, m_currentSection.area, "Default"};
+    
+    // Request member addition - validation handled by Application layer
+    emit memberAddRequested(
+        static_cast<truss::core::NodeId>(startNodeId),
+        static_cast<truss::core::NodeId>(endNodeId),
+        material,
+        section
+    );
+    emit statusMessage(QString("Member add requested between nodes %1 and %2")
+                      .arg(startNodeId).arg(endNodeId));
 }
 
 void DrawingCanvas::applyLoadToNode(size_t nodeId, const truss::core::Force2D& force) {
-    if (!m_truss) return;
-    
-    try {
-        const auto& nodes = m_truss->getNodes();
-        if (nodeId >= nodes.size()) return;
-        
-        auto node = nodes[nodeId];
-        node->setAppliedForce(force);
-        
-        emit trussModified();
-        emit statusMessage(QString("Load applied to node %1: Fx=%2 kN, Fy=%3 kN")
-                          .arg(node->getId())
-                          .arg(force.fx / 1000.0, 0, 'f', 1)
-                          .arg(force.fy / 1000.0, 0, 'f', 1));
-    } catch (const std::exception& e) {
-        emit statusMessage(QString("Failed to apply load: %1").arg(e.what()));
-    }
+    // Request load application - validation handled by Application layer
+    emit loadApplyRequested(
+        static_cast<truss::core::NodeId>(nodeId),
+        force
+    );
+    emit statusMessage(QString("Load application requested on node %1: Fx=%2 kN, Fy=%3 kN")
+                      .arg(nodeId)
+                      .arg(force.fx / 1000.0, 0, 'f', 1)
+                      .arg(force.fy / 1000.0, 0, 'f', 1));
 }
 
 void DrawingCanvas::setSupportType(size_t nodeId, truss::core::SupportType supportType) {
-    if (!m_truss) return;
+    // Request support type change - validation handled by Application layer
+    emit supportSetRequested(
+        static_cast<truss::core::NodeId>(nodeId),
+        supportType
+    );
     
-    try {
-        const auto& nodes = m_truss->getNodes();
-        if (nodeId >= nodes.size()) return;
-        
-        auto node = nodes[nodeId];
-        node->setSupportType(supportType);
-        
-        emit trussModified();
-        
-        QString supportName;
-        switch (supportType) {
-            case truss::core::SupportType::Free: supportName = "Free"; break;
-            case truss::core::SupportType::Pinned: supportName = "Pinned"; break;
-            case truss::core::SupportType::RollerX: supportName = "Roller X"; break;
-            case truss::core::SupportType::RollerY: supportName = "Roller Y"; break;
-            default: supportName = "Unknown"; break;
-        }
-        
-        emit statusMessage(QString("Node %1 support set to %2").arg(node->getId()).arg(supportName));
-    } catch (const std::exception& e) {
-        emit statusMessage(QString("Failed to set support: %1").arg(e.what()));
+    QString supportName;
+    switch (supportType) {
+        case truss::core::SupportType::Free: supportName = "Free"; break;
+        case truss::core::SupportType::Pinned: supportName = "Pinned"; break;
+        case truss::core::SupportType::RollerX: supportName = "Roller X"; break;
+        case truss::core::SupportType::RollerY: supportName = "Roller Y"; break;
+        default: supportName = "Unknown"; break;
     }
+    
+    emit statusMessage(QString("Support type '%1' requested for node %2")
+                      .arg(supportName).arg(nodeId));
 }
 
 void DrawingCanvas::deleteSelectedElements() {
-    if (!m_truss) return;
-    
-    bool modified = false;
-    
-    // Delete selected members first
-    for (auto it = m_selectedMembers.rbegin(); it != m_selectedMembers.rend(); ++it) {
-        size_t memberId = *it;
-        const auto& members = m_truss->getMembers();
-        if (memberId < members.size()) {
-            auto member = members[memberId];
-            m_truss->removeMember(member->getId());
-            modified = true;
-        }
+    if (m_trussHandle == 0) {
+        emit statusMessage("No truss loaded");
+        return;
     }
     
-    // Delete selected nodes
-    for (auto it = m_selectedNodes.rbegin(); it != m_selectedNodes.rend(); ++it) {
-        size_t nodeId = *it;
-        const auto& nodes = m_truss->getNodes();
-        if (nodeId < nodes.size()) {
-            auto node = nodes[nodeId];
-            m_truss->removeNode(node->getId());
-            modified = true;
-        }
+    int requestedDeletions = 0;
+    
+    // Request deletion of selected members first
+    for (auto memberId : m_selectedMembers) {
+        emit memberRemoveRequested(static_cast<truss::core::MemberId>(memberId));
+        requestedDeletions++;
     }
     
-    if (modified) {
+    // Request deletion of selected nodes
+    for (auto nodeId : m_selectedNodes) {
+        emit nodeRemoveRequested(static_cast<truss::core::NodeId>(nodeId));
+        requestedDeletions++;
+    }
+    
+    if (requestedDeletions > 0) {
         clearSelection();
-        emit trussModified();
-        emit statusMessage("Selected elements deleted");
+        emit statusMessage(QString("Requested deletion of %1 element(s)").arg(requestedDeletions));
+    } else {
+        emit statusMessage("No elements selected for deletion");
     }
 }
 
@@ -1390,19 +1406,30 @@ void PropertyPanel::onNodePositionChanged() {
 // InteractiveDrawingWidget Implementation
 //=============================================================================
 
-InteractiveDrawingWidget::InteractiveDrawingWidget(QWidget* parent)
-    : QWidget(parent) {
+InteractiveDrawingWidget::InteractiveDrawingWidget(
+    application::TrussApplicationService& trussService,
+    QWidget* parent)
+    : QWidget(parent),
+      m_trussService(trussService) {
     setupUI();
     setupToolbar();
     connectSignals();
 }
 
-void InteractiveDrawingWidget::setTruss(std::unique_ptr<truss::core::Truss> truss) {
-    m_canvas->setTruss(std::move(truss));
+void InteractiveDrawingWidget::setTrussHandle(application::TrussHandle handle) {
+    m_canvas->setTrussHandle(handle);
 }
 
 void InteractiveDrawingWidget::clearTruss() {
     m_canvas->clearTruss();
+}
+
+application::TrussHandle InteractiveDrawingWidget::getTrussHandle() const {
+    return m_canvas->getTrussHandle();
+}
+
+truss::core::Truss* InteractiveDrawingWidget::getTruss() const {
+    return m_canvas->getTruss();
 }
 
 void InteractiveDrawingWidget::setupUI() {
@@ -1417,8 +1444,8 @@ void InteractiveDrawingWidget::setupUI() {
     m_mainSplitter = new QSplitter(Qt::Horizontal, this);
     layout->addWidget(m_mainSplitter);
     
-    // Create canvas
-    m_canvas = new DrawingCanvas(this);
+    // Create canvas with dependency injection
+    m_canvas = new DrawingCanvas(m_trussService, this);
     m_mainSplitter->addWidget(m_canvas);
     
     // Create property panel

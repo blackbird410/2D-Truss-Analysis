@@ -27,7 +27,7 @@ MainWindow::MainWindow(
     : QMainWindow(parent),
       m_centralWidget(new QWidget(this)),
       m_mainSplitter(new QSplitter(Qt::Vertical, this)),
-      m_drawingWidget(new InteractiveDrawingWidget(this)),
+      m_drawingWidget(new InteractiveDrawingWidget(trussService, this)),
       m_resultsTabWidget(new QTabWidget(this)),
       m_resultsWidget(new ResultsWidget(this)),
       m_deformedTrussWidget(new DeformedTrussWidget(this)),
@@ -261,6 +261,10 @@ void MainWindow::connectSignals() {
             this, &MainWindow::onTrussModified);
     connect(m_drawingWidget, &InteractiveDrawingWidget::statusMessage,
             this, &MainWindow::updateStatusMessage);
+    
+    // TODO Phase 3D: Connect DrawingCanvas mutation signals to TrussEditController
+    // This requires adding TrussEditController as a MainWindow member
+    // and implementing the missing controller methods
     
     // Connect control buttons
     connect(m_analyzeButton, &QPushButton::clicked, this, &MainWindow::requestAnalyze);
