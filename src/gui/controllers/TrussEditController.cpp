@@ -38,12 +38,7 @@ void TrussEditController::onNodeAddRequested(
     if (result.success) {
         emit nodeAdded(result.value);
         emit trussModified(m_currentHandle);
-        
-        QString statusMsg = QString("Node %1 added at (%2, %3)")
-            .arg(result.value)
-            .arg(position.x, 0, 'f', 3)
-            .arg(position.y, 0, 'f', 3);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatNodeAddedMessage(result.value, position));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
@@ -52,8 +47,8 @@ void TrussEditController::onNodeAddRequested(
 void TrussEditController::onMemberAddRequested(
     truss::core::NodeId startNodeId,
     truss::core::NodeId endNodeId,
-    const truss::core::MaterialProperties& material,
-    const truss::core::SectionProperties& section)
+    const truss::application::MaterialSpec& material,
+    const truss::application::SectionSpec& section)
 {
     if (!validateCurrentHandle()) {
         return;
@@ -70,12 +65,7 @@ void TrussEditController::onMemberAddRequested(
     if (result.success) {
         emit memberAdded(result.value);
         emit trussModified(m_currentHandle);
-        
-        QString statusMsg = QString("Member %1 added (Nodes %2 - %3)")
-            .arg(result.value)
-            .arg(startNodeId)
-            .arg(endNodeId);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatMemberAddedMessage(result.value, startNodeId, endNodeId));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
@@ -123,21 +113,7 @@ void TrussEditController::onSupportTypeChanged(
     
     if (result.success) {
         emit trussModified(m_currentHandle);
-        
-        QString supportTypeStr;
-        switch (supportType) {
-            case truss::core::SupportType::Free: supportTypeStr = "Free"; break;
-            case truss::core::SupportType::Pinned: supportTypeStr = "Pinned"; break;
-            case truss::core::SupportType::PinnedX: supportTypeStr = "Pinned X"; break;
-            case truss::core::SupportType::PinnedY: supportTypeStr = "Pinned Y"; break;
-            case truss::core::SupportType::RollerX: supportTypeStr = "Roller X"; break;
-            case truss::core::SupportType::RollerY: supportTypeStr = "Roller Y"; break;
-        }
-        
-        QString statusMsg = QString("Node %1 support changed to %2")
-            .arg(nodeId)
-            .arg(supportTypeStr);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatSupportChangeMessage(nodeId, supportType));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
@@ -156,12 +132,7 @@ void TrussEditController::onLoadApplied(
     if (result.success) {
         emit trussModified(m_currentHandle);
         emit loadApplied(nodeId, force.fx, force.fy);
-        
-        QString statusMsg = QString("Load applied to Node %1: (%2, %3) N")
-            .arg(nodeId)
-            .arg(force.fx, 0, 'f', 1)
-            .arg(force.fy, 0, 'f', 1);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatLoadAppliedMessage(nodeId, force));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }

@@ -21,6 +21,7 @@
 
 #include <QObject>
 #include "application/TrussApplicationService.hpp"
+#include "application/TrussEditDTOs.hpp"
 #include "gui/presenters/TrussDataPresenter.hpp"
 #include "core/model/Types.hpp"
 
@@ -78,13 +79,13 @@ public slots:
      * 
      * @param startNodeId Start node identifier
      * @param endNodeId End node identifier
-     * @param material Material properties
-     * @param section Section properties
+     * @param material Material specification (Application DTO)
+     * @param section Section specification (Application DTO)
      */
     void onMemberAddRequested(truss::core::NodeId startNodeId,
                                truss::core::NodeId endNodeId,
-                               const truss::core::MaterialProperties& material,
-                               const truss::core::SectionProperties& section);
+                               const truss::application::MaterialSpec& material,
+                               const truss::application::SectionSpec& section);
     
     /**
      * @brief Handle request to remove node
