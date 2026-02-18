@@ -181,6 +181,7 @@ int main(int argc, char *argv[]) {
             analysisService,
             analysisController,
             projectController,
+            trussEditController,
             analysisPresenter,
             trussDataPresenter,
             validationPresenter

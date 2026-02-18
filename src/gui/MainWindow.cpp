@@ -20,6 +20,7 @@ MainWindow::MainWindow(
     application::AnalysisApplicationService& analysisService,
     truss_controllers::AnalysisController& analysisController,
     truss_controllers::ProjectController& projectController,
+    truss_controllers::TrussEditController& trussEditController,
     truss_presenters::AnalysisResultsPresenter& analysisPresenter,
     truss_presenters::TrussDataPresenter& trussDataPresenter,
     truss_presenters::ValidationPresenter& validationPresenter,
@@ -40,6 +41,7 @@ MainWindow::MainWindow(
       m_analysisService(analysisService),
       m_analysisController(analysisController),
       m_projectController(projectController),
+      m_trussEditController(trussEditController),
       m_analysisPresenter(analysisPresenter),
       m_trussDataPresenter(trussDataPresenter),
       m_validationPresenter(validationPresenter),
@@ -262,9 +264,28 @@ void MainWindow::connectSignals() {
     connect(m_drawingWidget, &InteractiveDrawingWidget::statusMessage,
             this, &MainWindow::updateStatusMessage);
     
-    // TODO Phase 3D: Connect DrawingCanvas mutation signals to TrussEditController
-    // This requires adding TrussEditController as a MainWindow member
-    // and implementing the missing controller methods
+    // Connect DrawingCanvas mutation signals to TrussEditController
+    DrawingCanvas* canvas = m_drawingWidget->getCanvas();
+    connect(canvas, &DrawingCanvas::nodeAddRequested,
+            &m_trussEditController, &truss_controllers::TrussEditController::onNodeAddRequested);
+    connect(canvas, &DrawingCanvas::memberAddRequested,
+            &m_trussEditController, &truss_controllers::TrussEditController::onMemberAddRequested);
+    connect(canvas, &DrawingCanvas::nodeRemoveRequested,
+            &m_trussEditController, &truss_controllers::TrussEditController::onNodeRemoveRequested);
+    connect(canvas, &DrawingCanvas::memberRemoveRequested,
+            &m_trussEditController, &truss_controllers::TrussEditController::onMemberRemoveRequested);
+    connect(canvas, &DrawingCanvas::loadApplyRequested,
+            &m_trussEditController, &truss_controllers::TrussEditController::onLoadApplied);
+    connect(canvas, &DrawingCanvas::supportSetRequested,
+            &m_trussEditController, &truss_controllers::TrussEditController::onSupportTypeChanged);
+    
+    // Connect TrussEditController signals back to MainWindow
+    connect(&m_trussEditController, &truss_controllers::TrussEditController::trussModified,
+            this, &MainWindow::onTrussModified);
+    connect(&m_trussEditController, &truss_controllers::TrussEditController::operationFailed,
+            this, &MainWindow::showErrorMessage);
+    connect(&m_trussEditController, &truss_controllers::TrussEditController::statusMessageChanged,
+            this, &MainWindow::updateStatusMessage);
     
     // Connect control buttons
     connect(m_analyzeButton, &QPushButton::clicked, this, &MainWindow::requestAnalyze);

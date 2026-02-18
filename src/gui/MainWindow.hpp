@@ -77,6 +77,7 @@ public:
         application::AnalysisApplicationService& analysisService,
         truss_controllers::AnalysisController& analysisController,
         truss_controllers::ProjectController& projectController,
+        truss_controllers::TrussEditController& trussEditController,
         truss_presenters::AnalysisResultsPresenter& analysisPresenter,
         truss_presenters::TrussDataPresenter& trussDataPresenter,
         truss_presenters::ValidationPresenter& validationPresenter,
@@ -188,6 +189,7 @@ private:
     application::AnalysisApplicationService& m_analysisService;
     truss_controllers::AnalysisController& m_analysisController;
     truss_controllers::ProjectController& m_projectController;
+    truss_controllers::TrussEditController& m_trussEditController;
     truss_presenters::AnalysisResultsPresenter& m_analysisPresenter;
     truss_presenters::TrussDataPresenter& m_trussDataPresenter;
     truss_presenters::ValidationPresenter& m_validationPresenter;
