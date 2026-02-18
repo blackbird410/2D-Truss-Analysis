@@ -29,10 +29,6 @@ void TrussEditController::onNodeAddRequested(
     const truss::core::Point2D& position,
     truss::core::SupportType supportType)
 {
-    // TODO: Implement in Phase 3B - Add addNode() to TrussApplicationService
-    emit operationFailed("Node addition not yet implemented");
-    
-    /* Phase 3B implementation:
     if (!validateCurrentHandle()) {
         return;
     }
@@ -43,14 +39,14 @@ void TrussEditController::onNodeAddRequested(
         emit nodeAdded(result.value);
         emit trussModified(m_currentHandle);
         
-        QString statusMsg = QString("Node %1 added at %2")
+        QString statusMsg = QString("Node %1 added at (%2, %3)")
             .arg(result.value)
-            .arg(m_presenter.formatCoordinate(position));
+            .arg(position.x, 0, 'f', 3)
+            .arg(position.y, 0, 'f', 3);
         emit statusMessageChanged(statusMsg);
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
-    */
 }
 
 void TrussEditController::onMemberAddRequested(
@@ -59,10 +55,6 @@ void TrussEditController::onMemberAddRequested(
     const truss::core::MaterialProperties& material,
     const truss::core::SectionProperties& section)
 {
-    // TODO: Implement in Phase 3B - Add addMember() to TrussApplicationService
-    emit operationFailed("Member addition not yet implemented");
-    
-    /* Phase 3B implementation:
     if (!validateCurrentHandle()) {
         return;
     }
@@ -87,14 +79,9 @@ void TrussEditController::onMemberAddRequested(
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
-    */
 }
 
 void TrussEditController::onNodeRemoveRequested(truss::core::NodeId nodeId) {
-    // TODO: Implement in Phase 3B - Add removeNode() to TrussApplicationService
-    emit operationFailed("Node removal not yet implemented");
-    
-    /* Phase 3B implementation:
     if (!validateCurrentHandle()) {
         return;
     }
@@ -107,14 +94,9 @@ void TrussEditController::onNodeRemoveRequested(truss::core::NodeId nodeId) {
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
-    */
 }
 
 void TrussEditController::onMemberRemoveRequested(truss::core::MemberId memberId) {
-    // TODO: Implement in Phase 3B - Add removeMember() to TrussApplicationService
-    emit operationFailed("Member removal not yet implemented");
-    
-    /* Phase 3B implementation:
     if (!validateCurrentHandle()) {
         return;
     }
@@ -127,17 +109,12 @@ void TrussEditController::onMemberRemoveRequested(truss::core::MemberId memberId
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
-    */
 }
 
 void TrussEditController::onSupportTypeChanged(
     truss::core::NodeId nodeId,
     truss::core::SupportType supportType)
 {
-    // TODO: Implement in Phase 3B - Add setNodeSupport() to TrussApplicationService
-    emit operationFailed("Support type change not yet implemented");
-    
-    /* Phase 3B implementation:
     if (!validateCurrentHandle()) {
         return;
     }
@@ -147,14 +124,23 @@ void TrussEditController::onSupportTypeChanged(
     if (result.success) {
         emit trussModified(m_currentHandle);
         
+        QString supportTypeStr;
+        switch (supportType) {
+            case truss::core::SupportType::Free: supportTypeStr = "Free"; break;
+            case truss::core::SupportType::Pinned: supportTypeStr = "Pinned"; break;
+            case truss::core::SupportType::PinnedX: supportTypeStr = "Pinned X"; break;
+            case truss::core::SupportType::PinnedY: supportTypeStr = "Pinned Y"; break;
+            case truss::core::SupportType::RollerX: supportTypeStr = "Roller X"; break;
+            case truss::core::SupportType::RollerY: supportTypeStr = "Roller Y"; break;
+        }
+        
         QString statusMsg = QString("Node %1 support changed to %2")
             .arg(nodeId)
-            .arg(m_presenter.formatSupportType(supportType));
+            .arg(supportTypeStr);
         emit statusMessageChanged(statusMsg);
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
-    */
 }
 
 void TrussEditController::onLoadApplied(
@@ -182,10 +168,6 @@ void TrussEditController::onLoadApplied(
 }
 
 void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {
-    // TODO: Implement in Phase 3B - Add clearNodeLoad() to TrussApplicationService
-    emit operationFailed("Load clearing not yet implemented");
-    
-    /* Phase 3B implementation:
     if (!validateCurrentHandle()) {
         return;
     }
@@ -198,7 +180,6 @@ void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
-    */
 }
 
 void TrussEditController::onClearTrussRequested() {
