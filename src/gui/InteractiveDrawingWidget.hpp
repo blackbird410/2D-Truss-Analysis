@@ -116,9 +116,8 @@ public:
     application::TrussHandle getTrussHandle() const { return m_trussHandle; }
     void clearTruss();
     
-    // Legacy accessor for MainWindow compatibility (temporary)
-    [[deprecated("Use getTrussHandle() instead")]]
-    truss::core::Truss* getTruss() const;
+    // Service accessor for PropertyPanel
+    application::TrussApplicationService& getTrussService() { return m_trussService; }
     
     // Coordinate conversion
     truss::core::Point2D screenToWorld(const QPoint& screenPoint) const;
@@ -326,10 +325,6 @@ public:
     void setTrussHandle(application::TrussHandle handle);
     application::TrussHandle getTrussHandle() const;
     void clearTruss();
-    
-    // Legacy accessor (temporary)
-    [[deprecated("Use getTrussHandle() instead")]]
-    truss::core::Truss* getTruss() const;
 
 signals:
     void trussModified();

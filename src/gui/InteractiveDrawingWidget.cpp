@@ -205,12 +205,6 @@ void DrawingCanvas::clearTruss() {
     }
 }
 
-// Legacy accessor for backward compatibility
-truss::core::Truss* DrawingCanvas::getTruss() const {
-    if (m_trussHandle == 0) return nullptr;
-    return &m_trussService.getTrussMutable(m_trussHandle);
-}
-
 truss::core::Point2D DrawingCanvas::screenToWorld(const QPoint& screenPoint) const {
     double worldX = m_offset.x + screenPoint.x() / m_scale;
     double worldY = m_offset.y + (height() - screenPoint.y()) / m_scale;
@@ -1010,7 +1004,9 @@ void PropertyPanel::updateFromSelection() {
     
     // Update node properties if one node is selected
     if (selectedNodes.size() == 1) {
-        const auto& nodes = m_canvas->getTruss()->getNodes();
+        auto trussHandle = m_canvas->getTrussHandle();
+        if (trussHandle == 0) return;
+        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
         if (selectedNodes[0] < nodes.size()) {
             auto node = nodes[selectedNodes[0]];
             const auto& pos = node->getPosition();
@@ -1343,7 +1339,9 @@ void PropertyPanel::onLoadChanged() {
     
     const auto& selectedNodes = m_canvas->getSelectedNodes();
     if (selectedNodes.size() == 1) {
-        const auto& nodes = m_canvas->getTruss()->getNodes();
+        auto trussHandle = m_canvas->getTrussHandle();
+        if (trussHandle == 0) return;
+        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
         if (selectedNodes[0] < nodes.size()) {
             auto node = nodes[selectedNodes[0]];
             
@@ -1364,7 +1362,9 @@ void PropertyPanel::onSupportChanged() {
     
     const auto& selectedNodes = m_canvas->getSelectedNodes();
     if (selectedNodes.size() == 1) {
-        const auto& nodes = m_canvas->getTruss()->getNodes();
+        auto trussHandle = m_canvas->getTrussHandle();
+        if (trussHandle == 0) return;
+        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
         if (selectedNodes[0] < nodes.size()) {
             auto node = nodes[selectedNodes[0]];
             
@@ -1390,7 +1390,9 @@ void PropertyPanel::onNodePositionChanged() {
     
     const auto& selectedNodes = m_canvas->getSelectedNodes();
     if (selectedNodes.size() == 1) {
-        const auto& nodes = m_canvas->getTruss()->getNodes();
+        auto trussHandle = m_canvas->getTrussHandle();
+        if (trussHandle == 0) return;
+        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
         if (selectedNodes[0] < nodes.size()) {
             auto node = nodes[selectedNodes[0]];
             
@@ -1426,10 +1428,6 @@ void InteractiveDrawingWidget::clearTruss() {
 
 application::TrussHandle InteractiveDrawingWidget::getTrussHandle() const {
     return m_canvas->getTrussHandle();
-}
-
-truss::core::Truss* InteractiveDrawingWidget::getTruss() const {
-    return m_canvas->getTruss();
 }
 
 void InteractiveDrawingWidget::setupUI() {

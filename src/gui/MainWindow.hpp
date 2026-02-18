@@ -108,24 +108,6 @@ public:
      * @return ResultsHandle Handle to last analysis results
      */
     application::ResultsHandle getLastResultsHandle() const { return m_lastResultsHandle; }
-    
-    /**
-     * @deprecated Legacy accessor for old widgets - will be removed
-     * @brief Get raw truss pointer (temporary for legacy widgets)
-     * 
-     * @return Truss* Pointer to truss (from drawing widget)
-     */
-    [[deprecated("Use getCurrentTrussHandle() and Application services instead")]]
-    truss::core::Truss* getTruss() const;
-    
-    /**
-     * @deprecated Legacy accessor for old widgets - will be removed
-     * @brief Get analysis service reference (temporary for legacy widgets)
-     * 
-     * @return AnalysisApplicationService& Reference to analysis service
-     */
-    [[deprecated("Use injected dependencies instead")]]
-    application::AnalysisApplicationService& getAnalysisService() { return m_analysisService; }
 
 private slots:
     void onAnalysisCompleted(size_t resultsHandle);

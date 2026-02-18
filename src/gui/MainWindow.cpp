@@ -314,11 +314,6 @@ application::TrussHandle MainWindow::getCurrentTrussHandle() const {
     return m_projectController.getCurrentTruss();
 }
 
-// Temporary legacy accessor for old widgets
-truss::core::Truss* MainWindow::getTruss() const {
-    return m_drawingWidget->getTruss();
-}
-
 void MainWindow::requestAnalyze() {
     auto handle = getCurrentTrussHandle();
     if (handle == 0) {
