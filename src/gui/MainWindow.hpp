@@ -42,12 +42,12 @@
 #include "gui/presenters/ValidationPresenter.hpp"
 #include "InteractiveDrawingWidget.hpp"
 #include "DeformedTrussWidget.hpp"
+#include "LoadInputWidget.hpp"
 
 namespace truss::gui {
 
 class NodeInputWidget;
 class MemberInputWidget;
-class LoadInputWidget;
 class DataTableWidget;
 class ResultsWidget;
 class PlotWidget;
@@ -253,35 +253,6 @@ private:
     QLineEdit* m_youngModulusEdit;
     QLineEdit* m_densityEdit;
     QLineEdit* m_yieldStrengthEdit;
-    QPushButton* m_addButton;
-    QPushButton* m_clearButton;
-    
-    friend class MainWindow;
-};
-
-/**
- * @brief Widget for load input
- */
-class LoadInputWidget : public QWidget {
-    Q_OBJECT
-
-public:
-    explicit LoadInputWidget(QWidget *parent = nullptr);
-
-signals:
-    void loadAdded();
-
-public slots:
-    void addLoad();
-    void clearInputs();
-    void updateNodeList();
-
-private:
-    void setupUI();
-    
-    QComboBox* m_nodeCombo;
-    QLineEdit* m_fxEdit;
-    QLineEdit* m_fyEdit;
     QPushButton* m_addButton;
     QPushButton* m_clearButton;
     
