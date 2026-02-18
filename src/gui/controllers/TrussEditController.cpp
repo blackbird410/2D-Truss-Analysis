@@ -161,10 +161,6 @@ void TrussEditController::onLoadApplied(
     truss::core::NodeId nodeId,
     const truss::core::Force2D& force)
 {
-    // TODO: Implement in Phase 3B - Add applyNodeLoad() to TrussApplicationService
-    emit operationFailed("Load application not yet implemented");
-    
-    /* Phase 3B implementation:
     if (!validateCurrentHandle()) {
         return;
     }
@@ -173,6 +169,7 @@ void TrussEditController::onLoadApplied(
     
     if (result.success) {
         emit trussModified(m_currentHandle);
+        emit loadApplied(nodeId, force.fx, force.fy);
         
         QString statusMsg = QString("Load applied to Node %1: (%2, %3) N")
             .arg(nodeId)
@@ -182,7 +179,6 @@ void TrussEditController::onLoadApplied(
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
-    */
 }
 
 void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {

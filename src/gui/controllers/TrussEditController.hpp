@@ -151,6 +151,15 @@ signals:
     void memberAdded(truss::core::MemberId memberId);
     
     /**
+     * @brief Emitted when load is applied successfully
+     * 
+     * @param nodeId Node ID where load was applied
+     * @param fx Force X component
+     * @param fy Force Y component
+     */
+    void loadApplied(size_t nodeId, double fx, double fy);
+    
+    /**
      * @brief Emitted when operation fails
      * 
      * @param errorMessage User-friendly error message
