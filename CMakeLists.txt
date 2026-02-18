@@ -371,7 +371,6 @@ add_executable(TrussAnalysisGUI
     src/gui/PlotWidget.hpp
     src/gui/InteractiveDrawingWidget.cpp
     src/gui/InteractiveDrawingWidget.hpp
-    src/gui/ProjectFileManager.cpp
     src/gui/DeformedTrussWidget.cpp
     src/gui/DeformedTrussWidget.hpp
     # Phase 3A - Presenters
