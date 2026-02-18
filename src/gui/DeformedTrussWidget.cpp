@@ -248,19 +248,6 @@ void DeformedTrussWidget::setData(
     update();
 }
 
-// Deprecated methods - maintained for backward compatibility
-void DeformedTrussWidget::setTruss(truss::core::Truss* truss) {
-    // Legacy method - does nothing in new architecture
-    // Actual data should be set via setData()
-    Q_UNUSED(truss);
-}
-
-void DeformedTrussWidget::setAnalysisResults(const truss::core::analysis::AnalysisResults& results) {
-    // Legacy method - does nothing in new architecture
-    // Actual data should be set via setData()
-    Q_UNUSED(results);
-}
-
 void DeformedTrussWidget::clear() {
     m_nodeViews.clear();
     m_memberViews.clear();

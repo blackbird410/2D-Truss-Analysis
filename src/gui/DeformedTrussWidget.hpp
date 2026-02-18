@@ -57,20 +57,6 @@ public:
                  ResultsHandle resultsHandle);
 
     /**
-     * @brief Deprecated: Use setData() instead
-     * @deprecated Replaced by setData() for Clean Architecture compliance
-     */
-    [[deprecated("Use setData() instead")]]
-    void setTruss(truss::core::Truss* truss);
-
-    /**
-     * @brief Deprecated: Use setData() instead
-     * @deprecated Replaced by setData() for Clean Architecture compliance
-     */
-    [[deprecated("Use setData() instead")]]
-    void setAnalysisResults(const truss::core::analysis::AnalysisResults& results);
-
-    /**
      * @brief Clear the display
      */
     void clear();
