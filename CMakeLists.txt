@@ -280,7 +280,8 @@ if(BUILD_TESTING)
         tests/unit/cli/test_export_command.cpp
         # GUI layer tests (Controller API Stabilization)
         tests/unit/controllers/test_TrussEditController.cpp
-        #tests/unit/controllers/test_ProjectController.cpp
+        tests/unit/controllers/test_ProjectController.cpp
+        tests/unit/controllers/test_AnalysisController.cpp
         tests/unit/presenters/test_TrussDataPresenter.cpp
         # Mock compatibility tests (Phase 6: Dependency Inversion validation)
         tests/unit/test_mock_compatibility.cpp
