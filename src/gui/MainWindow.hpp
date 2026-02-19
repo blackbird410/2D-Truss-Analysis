@@ -128,6 +128,7 @@ private:
     void setupToolBar();
     void setupStatusBar();
     void setupWindowProperties();
+    void initializeEmptyProject();  // Initialize application with empty project
     void connectSignals();
     
     void updateResultsDisplay();

@@ -57,6 +57,9 @@ MainWindow::MainWindow(
     // Configure window for Linux display compatibility
     setupWindowProperties();
     
+    // Initialize empty project (ensures non-null state from startup)
+    initializeEmptyProject();
+    
     // Enable analysis when there's something to analyze
     enableAnalysis(false);
 }
@@ -238,6 +241,17 @@ void MainWindow::setupWindowProperties() {
     
     // Set window icon if available
     // setWindowIcon(QIcon(":/icons/app-icon.png"));
+}
+
+void MainWindow::initializeEmptyProject() {
+    // Create initial empty project automatically on startup
+    // This ensures the application starts in a valid "EmptyProject" state
+    // where users can immediately add nodes without needing to explicitly
+    // create a new project first.
+    m_projectController.onNewProject();
+    
+    // Update status message
+    m_statusLabel->setText("Ready to design - Add nodes by clicking the canvas");
 }
 
 MainWindow::~MainWindow() {
