@@ -300,18 +300,30 @@ void MainWindow::connectSignals() {
             this, &MainWindow::onValidationFailed);
     
     // Connect ProjectController signals
+    // When project is created, update both controllers AND drawing canvas
     connect(&m_projectController, &truss_controllers::ProjectController::projectCreated,
             &m_trussEditController, &truss_controllers::TrussEditController::setCurrentTruss);
+    connect(&m_projectController, &truss_controllers::ProjectController::projectCreated,
+            canvas, &DrawingCanvas::setTrussHandle);
+    
     connect(&m_projectController, &truss_controllers::ProjectController::projectOpened,
             this, &MainWindow::onProjectOpened);
     connect(&m_projectController, &truss_controllers::ProjectController::projectOpened,
             &m_trussEditController, &truss_controllers::TrussEditController::setCurrentTruss);
+    connect(&m_projectController, &truss_controllers::ProjectController::projectOpened,
+            canvas, &DrawingCanvas::setTrussHandle);
+    
     connect(&m_projectController, &truss_controllers::ProjectController::projectSaved,
             this, &MainWindow::onProjectSaved);
+    
     connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
             this, &MainWindow::onProjectClosed);
     connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
-            [this]() { m_trussEditController.setCurrentTruss(0); });
+            [this, canvas]() { 
+                m_trussEditController.setCurrentTruss(0);
+                canvas->setTrussHandle(0);
+            });
+    
     connect(&m_projectController, &truss_controllers::ProjectController::operationFailed,
             this, &MainWindow::onOperationFailed);
 }
@@ -353,7 +365,13 @@ void MainWindow::requestClearAll() {
 }
 
 void MainWindow::requestNewProject() {
-    requestClearAll();
+    // Clear UI elements only - ProjectController will create the new truss
+    m_resultsWidget->clearResults();
+    m_logTextEdit->clear();
+    m_hasResults = false;
+    m_lastResultsHandle = 0;
+    
+    // Create new project via controller
     m_projectController.onNewProject();
 }
 
