@@ -281,8 +281,11 @@ if(BUILD_TESTING)
         # GUI layer tests (Controller API Stabilization)
         tests/unit/controllers/test_TrussEditController.cpp
         tests/unit/presenters/test_TrussDataPresenter.cpp
+        # Mock compatibility tests (Phase 6: Dependency Inversion validation)
+        tests/unit/test_mock_compatibility.cpp
         # GUI source files needed for GUI tests
         src/gui/presenters/TrussDataPresenter.cpp
+        src/gui/controllers/TrussEditController.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
@@ -306,6 +309,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
         ${CMAKE_SOURCE_DIR}/src/infrastructure/io
         ${CMAKE_SOURCE_DIR}/src/gui
+        ${CMAKE_SOURCE_DIR}/tests  # For mocks directory
     )
     
     add_test(NAME UnitTests COMMAND unit_tests)
