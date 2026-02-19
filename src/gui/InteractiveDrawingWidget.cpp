@@ -307,7 +307,7 @@ void DrawingCanvas::drawNodes(QPainter& painter) {
         QPoint screenPos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
         
         // Check if selected
-        bool isSelected = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), i) != m_selectedNodes.end();
+        bool isSelected = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), nodeView.id) != m_selectedNodes.end();
         
         painter.setPen(m_nodePen);
         painter.setBrush(isSelected ? m_selectedBrush : m_nodeBrush);
@@ -1003,9 +1003,9 @@ void PropertyPanel::updateFromSelection() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             const auto& pos = node->getPosition();
             
             m_nodeXSpin->blockSignals(true);
@@ -1338,9 +1338,9 @@ void PropertyPanel::onLoadChanged() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             
             truss::core::Force2D force(
                 m_forceXSpin->value() * 1000.0, // Convert to N
@@ -1361,9 +1361,9 @@ void PropertyPanel::onSupportChanged() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             
             // Map combo box index to correct SupportType enum value
             truss::core::SupportType supportType;
@@ -1389,9 +1389,9 @@ void PropertyPanel::onNodePositionChanged() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             
             truss::core::Point2D newPos(m_nodeXSpin->value(), m_nodeYSpin->value());
             node->setPosition(newPos);
