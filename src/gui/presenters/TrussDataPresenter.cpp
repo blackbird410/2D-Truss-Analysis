@@ -136,8 +136,8 @@ QString TrussDataPresenter::formatNodeAddedMessage(
 {
     return QString("Node %1 added at (%2, %3)")
         .arg(nodeId)
-        .arg(position.x, 0, 'f', 3)
-        .arg(position.y, 0, 'f', 3);
+        .arg(position.x, 0, 'f', COORDINATE_PRECISION)
+        .arg(position.y, 0, 'f', COORDINATE_PRECISION);
 }
 
 QString TrussDataPresenter::formatMemberAddedMessage(
@@ -157,8 +157,8 @@ QString TrussDataPresenter::formatLoadAppliedMessage(
 {
     return QString("Load applied to node %1: (%2, %3) N")
         .arg(nodeId)
-        .arg(force.fx, 0, 'f', 1)
-        .arg(force.fy, 0, 'f', 1);
+        .arg(force.fx, 0, 'f', FORCE_PRECISION)
+        .arg(force.fy, 0, 'f', FORCE_PRECISION);
 }
 
 }  // namespace truss_presenters

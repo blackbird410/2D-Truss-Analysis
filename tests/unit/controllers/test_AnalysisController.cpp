@@ -104,14 +104,14 @@ TEST_F(AnalysisControllerTest, AnalysisWithInvalidHandleEmitsFailure) {
  */
 TEST_F(AnalysisControllerTest, SuccessfulAnalysisWorkflow) {
     // Setup validation success
-    core::validation::ValidationResult validResult;
+    truss::core::validation::ValidationResult validResult;
     // validResult is valid by default (no issues added)
     
     EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<core::validation::ValidationResult>::Success(validResult)));
+        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
     
     // Setup mutable truss access
-    static core::Truss mockTruss;
+    static truss::core::Truss mockTruss;
     EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle))
         .WillOnce(ReturnRef(mockTruss));
     
@@ -134,15 +134,15 @@ TEST_F(AnalysisControllerTest, SuccessfulAnalysisWorkflow) {
  */
 TEST_F(AnalysisControllerTest, ValidationFailureStopsAnalysis) {
     // Setup validation failure
-    core::validation::ValidationResult invalidResult;
-    invalidResult.addIssue(core::validation::ValidationIssue(
-        core::validation::ValidationSeverity::Error,
+    truss::core::validation::ValidationResult invalidResult;
+    invalidResult.addIssue(truss::core::validation::ValidationIssue(
+        truss::core::validation::ValidationSeverity::Error,
         "Structure",
         "No supports defined"
     ));
     
     EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<core::validation::ValidationResult>::Success(invalidResult)));
+        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(invalidResult)));
     
     // Analysis should NOT be called
     EXPECT_CALL(*mockAnalysisService, analyze(_, _))
@@ -162,7 +162,7 @@ TEST_F(AnalysisControllerTest, ValidationFailureStopsAnalysis) {
  */
 TEST_F(AnalysisControllerTest, ValidationServiceFailureEmitsAnalysisFailed) {
     EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<core::validation::ValidationResult>::Failure("Service error")));
+        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Failure("Service error")));
     
     QSignalSpy failedSpy(controller.get(), &AnalysisController::analysisFailed);
     
@@ -177,13 +177,13 @@ TEST_F(AnalysisControllerTest, ValidationServiceFailureEmitsAnalysisFailed) {
  */
 TEST_F(AnalysisControllerTest, AnalysisServiceFailureEmitsAnalysisFailed) {
     // Setup validation success
-    core::validation::ValidationResult validResult;
+    truss::core::validation::ValidationResult validResult;
     // validResult is valid by default (no issues added)
     
     EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<core::validation::ValidationResult>::Success(validResult)));
+        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
     
-    static core::Truss mockTruss;
+    static truss::core::Truss mockTruss;
     EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle))
         .WillOnce(ReturnRef(mockTruss));
     
@@ -229,13 +229,13 @@ TEST_F(AnalysisControllerTest, ExportRequiresTrussHandle) {
  */
 TEST_F(AnalysisControllerTest, SuccessfulExportWorkflow) {
     // First do successful analysis to set up truss handle
-    core::validation::ValidationResult validResult;
+    truss::core::validation::ValidationResult validResult;
     // validResult is valid by default (no issues added)
     
     EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<core::validation::ValidationResult>::Success(validResult)));
+        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
     
-    static core::Truss mockTruss;
+    static truss::core::Truss mockTruss;
     EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle))
         .Times(2)  // Once for analysis, once for export
         .WillRepeatedly(ReturnRef(mockTruss));
@@ -263,13 +263,13 @@ TEST_F(AnalysisControllerTest, SuccessfulExportWorkflow) {
  */
 TEST_F(AnalysisControllerTest, ExportFailureEmitsExportFailed) {
     // Setup analysis first
-    core::validation::ValidationResult validResult;
+    truss::core::validation::ValidationResult validResult;
     // validResult is valid by default (no issues added)
     
     EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<core::validation::ValidationResult>::Success(validResult)));
+        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
     
-    static core::Truss mockTruss;
+    static truss::core::Truss mockTruss;
     EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle))
         .Times(2)
         .WillRepeatedly(ReturnRef(mockTruss));
@@ -295,13 +295,13 @@ TEST_F(AnalysisControllerTest, ExportFailureEmitsExportFailed) {
  * @test Signal emissions for status updates
  */
 TEST_F(AnalysisControllerTest, SignalEmissionsForStatusUpdates) {
-    core::validation::ValidationResult validResult;
+    truss::core::validation::ValidationResult validResult;
     // validResult is valid by default (no issues added)
     
     EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<core::validation::ValidationResult>::Success(validResult)));
+        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
     
-    static core::Truss mockTruss;
+    static truss::core::Truss mockTruss;
     EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle))
         .WillOnce(ReturnRef(mockTruss));
     

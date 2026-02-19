@@ -36,8 +36,8 @@ class TrussEditControllerTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Create Qt application context for signal/slot testing
-        int argc = 0;
-        char* argv[] = {nullptr};
+        static int argc = 0;
+        static char* argv[] = {nullptr};
         if (!QCoreApplication::instance()) {
             app = new QCoreApplication(argc, argv);
         }

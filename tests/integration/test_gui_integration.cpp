@@ -462,16 +462,20 @@ private slots:
         int argc = 0;
         char** argv = nullptr;
 
+        int failures = 0;
+
         TrussEditControllerIntegrationTest editTests;
-        QTest::qExec(&editTests, argc, argv);
+        failures |= QTest::qExec(&editTests, argc, argv);
 
         TrussDataPresenterIntegrationTest presenterTests;
-        QTest::qExec(&presenterTests, argc, argv);
+        failures |= QTest::qExec(&presenterTests, argc, argv);
 
         ProjectControllerIntegrationTest projectTests;
-        QTest::qExec(&projectTests, argc, argv);
+        failures |= QTest::qExec(&projectTests, argc, argv);
+
+        QVERIFY(failures == 0);
     }
 };
 
-QTEST_MAIN(TrussEditControllerIntegrationTest)
+QTEST_MAIN(AllGUIIntegrationTests)
 #include "test_gui_integration.moc"

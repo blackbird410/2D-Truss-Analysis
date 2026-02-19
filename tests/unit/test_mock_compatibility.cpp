@@ -8,6 +8,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <type_traits>
 #include "mocks/MockTrussApplicationService.hpp"
 #include "gui/controllers/TrussEditController.hpp"
 #include "gui/presenters/TrussDataPresenter.hpp"

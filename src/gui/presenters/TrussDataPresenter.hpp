@@ -160,6 +160,7 @@ public:
 private:
     static constexpr int COORDINATE_PRECISION = 3;
     static constexpr int LENGTH_PRECISION = 3;
+    static constexpr int FORCE_PRECISION = 1;
 };
 
 }  // namespace truss_presenters
