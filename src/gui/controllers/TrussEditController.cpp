@@ -1,9 +1,10 @@
 #include "TrussEditController.hpp"
+#include <stdexcept>
 
 namespace truss_controllers {
 
 TrussEditController::TrussEditController(
-    truss::application::TrussApplicationService& trussService,
+    truss::application::ITrussService* trussService,
     truss_presenters::TrussDataPresenter& presenter,
     QObject* parent)
     : QObject(parent)
@@ -11,6 +12,9 @@ TrussEditController::TrussEditController(
     , m_presenter(presenter)
     , m_currentHandle()
 {
+    if (!m_trussService) {
+        throw std::invalid_argument("TrussEditController: null service pointer");
+    }
 }
 
 void TrussEditController::setCurrentTruss(truss::application::TrussHandle handle) {
@@ -33,17 +37,12 @@ void TrussEditController::onNodeAddRequested(
         return;
     }
     
-    auto result = m_trussService.addNode(m_currentHandle, position, supportType);
+    auto result = m_trussService->addNode(m_currentHandle, position, supportType);
     
     if (result.success) {
         emit nodeAdded(result.value);
         emit trussModified(m_currentHandle);
-        
-        QString statusMsg = QString("Node %1 added at (%2, %3)")
-            .arg(result.value)
-            .arg(position.x, 0, 'f', 3)
-            .arg(position.y, 0, 'f', 3);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatNodeAddedMessage(result.value, position));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
@@ -52,14 +51,14 @@ void TrussEditController::onNodeAddRequested(
 void TrussEditController::onMemberAddRequested(
     truss::core::NodeId startNodeId,
     truss::core::NodeId endNodeId,
-    const truss::core::MaterialProperties& material,
-    const truss::core::SectionProperties& section)
+    const truss::application::MaterialSpec& material,
+    const truss::application::SectionSpec& section)
 {
     if (!validateCurrentHandle()) {
         return;
     }
     
-    auto result = m_trussService.addMember(
+    auto result = m_trussService->addMember(
         m_currentHandle,
         startNodeId,
         endNodeId,
@@ -70,12 +69,7 @@ void TrussEditController::onMemberAddRequested(
     if (result.success) {
         emit memberAdded(result.value);
         emit trussModified(m_currentHandle);
-        
-        QString statusMsg = QString("Member %1 added (Nodes %2 - %3)")
-            .arg(result.value)
-            .arg(startNodeId)
-            .arg(endNodeId);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatMemberAddedMessage(result.value, startNodeId, endNodeId));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
@@ -86,7 +80,7 @@ void TrussEditController::onNodeRemoveRequested(truss::core::NodeId nodeId) {
         return;
     }
     
-    auto result = m_trussService.removeNode(m_currentHandle, nodeId);
+    auto result = m_trussService->removeNode(m_currentHandle, nodeId);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -101,7 +95,7 @@ void TrussEditController::onMemberRemoveRequested(truss::core::MemberId memberId
         return;
     }
     
-    auto result = m_trussService.removeMember(m_currentHandle, memberId);
+    auto result = m_trussService->removeMember(m_currentHandle, memberId);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -119,25 +113,11 @@ void TrussEditController::onSupportTypeChanged(
         return;
     }
     
-    auto result = m_trussService.setNodeSupport(m_currentHandle, nodeId, supportType);
+    auto result = m_trussService->setNodeSupport(m_currentHandle, nodeId, supportType);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
-        
-        QString supportTypeStr;
-        switch (supportType) {
-            case truss::core::SupportType::Free: supportTypeStr = "Free"; break;
-            case truss::core::SupportType::Pinned: supportTypeStr = "Pinned"; break;
-            case truss::core::SupportType::PinnedX: supportTypeStr = "Pinned X"; break;
-            case truss::core::SupportType::PinnedY: supportTypeStr = "Pinned Y"; break;
-            case truss::core::SupportType::RollerX: supportTypeStr = "Roller X"; break;
-            case truss::core::SupportType::RollerY: supportTypeStr = "Roller Y"; break;
-        }
-        
-        QString statusMsg = QString("Node %1 support changed to %2")
-            .arg(nodeId)
-            .arg(supportTypeStr);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatSupportChangeMessage(nodeId, supportType));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
@@ -151,17 +131,12 @@ void TrussEditController::onLoadApplied(
         return;
     }
     
-    auto result = m_trussService.applyNodeLoad(m_currentHandle, nodeId, force);
+    auto result = m_trussService->applyNodeLoad(m_currentHandle, nodeId, force);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
         emit loadApplied(nodeId, force.fx, force.fy);
-        
-        QString statusMsg = QString("Load applied to Node %1: (%2, %3) N")
-            .arg(nodeId)
-            .arg(force.fx, 0, 'f', 1)
-            .arg(force.fy, 0, 'f', 1);
-        emit statusMessageChanged(statusMsg);
+        emit statusMessageChanged(m_presenter.formatLoadAppliedMessage(nodeId, force));
     } else {
         emit operationFailed(QString::fromStdString(result.errorMessage));
     }
@@ -172,7 +147,7 @@ void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {
         return;
     }
     
-    auto result = m_trussService.clearNodeLoad(m_currentHandle, nodeId);
+    auto result = m_trussService->clearNodeLoad(m_currentHandle, nodeId);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -187,7 +162,7 @@ void TrussEditController::onClearTrussRequested() {
         return;
     }
     
-    bool result = m_trussService.clearTruss(m_currentHandle);
+    bool result = m_trussService->clearTruss(m_currentHandle);
     
     if (result) {
         emit trussModified(m_currentHandle);

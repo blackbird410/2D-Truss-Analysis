@@ -231,13 +231,29 @@ Result<MemberId> TrussApplicationService::addMember(
     TrussHandle handle,
     NodeId startNodeId,
     NodeId endNodeId,
-    const MaterialProperties& material,
-    const SectionProperties& section) {
+    const MaterialSpec& materialSpec,
+    const SectionSpec& sectionSpec) {
     
     try {
         if (!isValidHandle(handle)) {
             return Result<MemberId>::Failure("Invalid truss handle");
         }
+        
+        // Convert DTOs to Domain types with sensible defaults
+        MaterialProperties material{
+            materialSpec.youngsModulusPa,  // E
+            7850.0,                         // density (default for steel)
+            materialSpec.youngsModulusPa * 0.00125,  // yield strength (estimate)
+            materialSpec.youngsModulusPa * 0.002,    // ultimate strength (estimate)
+            materialSpec.name               // name
+        };
+        
+        SectionProperties section{
+            sectionSpec.areaM2,             // area
+            sectionSpec.areaM2 * sectionSpec.areaM2 / 12.0,  // moment of inertia (estimate)
+            sectionSpec.areaM2,             // shear area
+            sectionSpec.profile             // designation
+        };
         
         auto& truss = *m_trusses[handle];
         MemberPtr member = truss.addMember(startNodeId, endNodeId, material, section);

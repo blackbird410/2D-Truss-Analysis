@@ -35,6 +35,7 @@
 #include <vector>
 
 #include "application/TrussApplicationService.hpp"
+#include "application/TrussEditDTOs.hpp"
 #include "core/interfaces/ITrussView.hpp"
 #include "core/model/Types.hpp"
 
@@ -132,8 +133,8 @@ signals:
     // Mutation request signals (emit intent, not perform action)
     void nodeAddRequested(const truss::core::Point2D& position, truss::core::SupportType support);
     void memberAddRequested(truss::core::NodeId startNode, truss::core::NodeId endNode,
-                           const truss::core::MaterialProperties& material,
-                           const truss::core::SectionProperties& section);
+                           const truss::application::MaterialSpec& material,
+                           const truss::application::SectionSpec& section);
     void nodeRemoveRequested(truss::core::NodeId nodeId);
     void memberRemoveRequested(truss::core::MemberId memberId);
     void loadApplyRequested(truss::core::NodeId nodeId, const truss::core::Force2D& force);

@@ -20,7 +20,8 @@
 #pragma once
 
 #include <QObject>
-#include "application/TrussApplicationService.hpp"
+#include "application/interfaces/ITrussService.hpp"
+#include "application/TrussEditDTOs.hpp"
 #include "gui/presenters/TrussDataPresenter.hpp"
 #include "core/model/Types.hpp"
 
@@ -40,12 +41,14 @@ public:
     /**
      * @brief Construct TrussEditController
      * 
-     * @param trussService Reference to TrussApplicationService
+     * @param trussService Pointer to ITrussService interface (enables DI and mocking)
      * @param presenter Reference to TrussDataPresenter for formatting
      * @param parent Qt parent object
+     * 
+     * @throws std::invalid_argument if trussService is nullptr
      */
     explicit TrussEditController(
-        truss::application::TrussApplicationService& trussService,
+        truss::application::ITrussService* trussService,
         truss_presenters::TrussDataPresenter& presenter,
         QObject* parent = nullptr);
     
@@ -78,13 +81,13 @@ public slots:
      * 
      * @param startNodeId Start node identifier
      * @param endNodeId End node identifier
-     * @param material Material properties
-     * @param section Section properties
+     * @param material Material specification (Application DTO)
+     * @param section Section specification (Application DTO)
      */
     void onMemberAddRequested(truss::core::NodeId startNodeId,
                                truss::core::NodeId endNodeId,
-                               const truss::core::MaterialProperties& material,
-                               const truss::core::SectionProperties& section);
+                               const truss::application::MaterialSpec& material,
+                               const truss::application::SectionSpec& section);
     
     /**
      * @brief Handle request to remove node
@@ -174,7 +177,7 @@ signals:
     void statusMessageChanged(const QString& message);
 
 private:
-    truss::application::TrussApplicationService& m_trussService;
+    truss::application::ITrussService* m_trussService;
     truss_presenters::TrussDataPresenter& m_presenter;
     truss::application::TrussHandle m_currentHandle;
     

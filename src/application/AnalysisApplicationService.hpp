@@ -26,6 +26,7 @@
 #include "../core/validation/TrussValidator.hpp"
 #include "../core/interfaces/IAnalysisResultsView.hpp"
 #include "../infrastructure/export/exporter_factory.hpp"
+#include "interfaces/IAnalysisService.hpp"
 #include "TrussApplicationService.hpp"  // For Result<T> template
 #include <memory>
 #include <string>
@@ -33,11 +34,6 @@
 #include <filesystem>
 
 namespace truss::application {
-
-/**
- * @brief Handle type for managing analysis results
- */
-using ResultsHandle = size_t;
 
 /**
  * @brief Application service for structural analysis operations
@@ -73,10 +69,10 @@ using ResultsHandle = size_t;
  * }
  * @endcode
  */
-class AnalysisApplicationService {
+class AnalysisApplicationService : public IAnalysisService {
 public:
     AnalysisApplicationService();
-    ~AnalysisApplicationService() = default;
+    ~AnalysisApplicationService() override = default;
     
     // Disable copy (manages unique resources)
     AnalysisApplicationService(const AnalysisApplicationService&) = delete;
@@ -93,7 +89,7 @@ public:
      * @return Result containing ResultsHandle on success
      */
     Result<ResultsHandle> analyze(const core::Truss& truss,
-                                   const core::analysis::AnalysisOptions& options = {});
+                                   const core::analysis::AnalysisOptions& options = {}) override;
     
     /**
      * @brief Get read-only view of analysis results
@@ -101,7 +97,7 @@ public:
      * @return Reference to IAnalysisResultsView interface
      * @throws std::invalid_argument if handle is invalid
      */
-    const core::interfaces::IAnalysisResultsView& getResultsView(ResultsHandle handle) const;
+    const core::interfaces::IAnalysisResultsView& getResultsView(ResultsHandle handle) const override;
     
     /**
      * @brief Get mutable access to analysis results
@@ -124,7 +120,7 @@ public:
                                 infrastructure::export_::ExportFormat format,
                                 const std::filesystem::path& filepath,
                                 const core::Truss& truss,
-                                const infrastructure::export_::ExportOptions& options = {});
+                                const infrastructure::export_::ExportOptions& options = {}) override;
     
     /**
      * @brief Export results with auto-detected format
@@ -137,26 +133,26 @@ public:
     Result<bool> exportResults(ResultsHandle handle,
                                 const std::filesystem::path& filepath,
                                 const core::Truss& truss,
-                                const infrastructure::export_::ExportOptions& options = {});
+                                const infrastructure::export_::ExportOptions& options = {}) override;
     
     /**
      * @brief Clear analysis results
      * @param handle Results handle to remove
      * @return true if results were deleted, false if handle was invalid
      */
-    bool clearResults(ResultsHandle handle);
+    bool clearResults(ResultsHandle handle) override;
     
     /**
      * @brief Clear all analysis results
      */
-    void clearAll();
+    void clearAll() override;
     
     /**
      * @brief Check if handle is valid
      * @param handle Results handle to check
      * @return true if handle references existing results
      */
-    bool isValidHandle(ResultsHandle handle) const;
+    bool isValidHandle(ResultsHandle handle) const override;
     
     /**
      * @brief Get count of stored results

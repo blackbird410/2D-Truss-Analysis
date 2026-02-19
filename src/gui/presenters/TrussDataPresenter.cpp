@@ -121,4 +121,44 @@ QString TrussDataPresenter::formatLength(double lengthMeters) const {
     return QString("%1 m").arg(lengthMeters, 0, 'f', LENGTH_PRECISION);
 }
 
+QString TrussDataPresenter::formatSupportChangeMessage(
+    truss::core::NodeId nodeId,
+    truss::core::SupportType supportType) const 
+{
+    return QString("Node %1 support changed to %2")
+        .arg(nodeId)
+        .arg(formatSupportType(supportType));
+}
+
+QString TrussDataPresenter::formatNodeAddedMessage(
+    truss::core::NodeId nodeId,
+    const truss::core::Point2D& position) const 
+{
+    return QString("Node %1 added at (%2, %3)")
+        .arg(nodeId)
+        .arg(position.x, 0, 'f', COORDINATE_PRECISION)
+        .arg(position.y, 0, 'f', COORDINATE_PRECISION);
+}
+
+QString TrussDataPresenter::formatMemberAddedMessage(
+    truss::core::MemberId memberId,
+    truss::core::NodeId startNodeId,
+    truss::core::NodeId endNodeId) const 
+{
+    return QString("Member %1 added (Nodes %2 - %3)")
+        .arg(memberId)
+        .arg(startNodeId)
+        .arg(endNodeId);
+}
+
+QString TrussDataPresenter::formatLoadAppliedMessage(
+    truss::core::NodeId nodeId,
+    const truss::core::Force2D& force) const 
+{
+    return QString("Load applied to node %1: (%2, %3) N")
+        .arg(nodeId)
+        .arg(force.fx, 0, 'f', FORCE_PRECISION)
+        .arg(force.fy, 0, 'f', FORCE_PRECISION);
+}
+
 }  // namespace truss_presenters

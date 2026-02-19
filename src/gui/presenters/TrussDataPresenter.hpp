@@ -114,10 +114,53 @@ public:
      * @return QString Formatted length (e.g., "2.500 m")
      */
     QString formatLength(double lengthMeters) const;
+    
+    /**
+     * @brief Format support change message for status bar
+     * 
+     * @param nodeId Node identifier
+     * @param supportType New support type
+     * @return QString User-friendly status message
+     */
+    QString formatSupportChangeMessage(truss::core::NodeId nodeId,
+                                         truss::core::SupportType supportType) const;
+    
+    /**
+     * @brief Format node added message for status bar
+     * 
+     * @param nodeId Node identifier
+     * @param position Node position
+     * @return QString User-friendly status message
+     */
+    QString formatNodeAddedMessage(truss::core::NodeId nodeId,
+                                     const truss::core::Point2D& position) const;
+    
+    /**
+     * @brief Format member added message for status bar
+     * 
+     * @param memberId Member identifier
+     * @param startNodeId Start node
+     * @param endNodeId End node
+     * @return QString User-friendly status message
+     */
+    QString formatMemberAddedMessage(truss::core::MemberId memberId,
+                                       truss::core::NodeId startNodeId,
+                                       truss::core::NodeId endNodeId) const;
+    
+    /**
+     * @brief Format load applied message for status bar
+     * 
+     * @param nodeId Node identifier
+     * @param force Force vector
+     * @return QString User-friendly status message
+     */
+    QString formatLoadAppliedMessage(truss::core::NodeId nodeId,
+                                       const truss::core::Force2D& force) const;
 
 private:
     static constexpr int COORDINATE_PRECISION = 3;
     static constexpr int LENGTH_PRECISION = 3;
+    static constexpr int FORCE_PRECISION = 1;
 };
 
 }  // namespace truss_presenters

@@ -890,16 +890,13 @@ void DrawingCanvas::addNodeAtPosition(const truss::core::Point2D& position) {
 }
 
 void DrawingCanvas::addMemberBetweenNodes(size_t startNodeId, size_t endNodeId) {
-    // Create material and section properties
-    truss::core::MaterialProperties material{
+    // Create material and section specifications using Application DTOs
+    truss::application::MaterialSpec material{
         m_currentMaterial.youngModulus,
-        m_currentMaterial.density,
-        m_currentMaterial.yieldStrength,
-        m_currentMaterial.yieldStrength * 1.6, // Estimate ultimate strength
         "Steel"
     };
     
-    truss::core::SectionProperties section{m_currentSection.area, 1e-8, m_currentSection.area, "Default"};
+    truss::application::SectionSpec section{m_currentSection.area, "Default"};
     
     // Request member addition - validation handled by Application layer
     emit memberAddRequested(
