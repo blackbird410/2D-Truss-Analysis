@@ -65,7 +65,9 @@ void ProjectController::onOpenProject(const QString& filepath) {
     emit statusMessageChanged("Opening project...");
     
     // Load truss from file
-    auto result = m_trussService->loadTruss(filepath.toStdString());
+    auto result = m_trussService->loadTruss(
+        std::filesystem::u8path(filepath.toUtf8().constData())
+    );
     
     if (result.success) {
         m_currentHandle = result.value;
@@ -138,7 +140,7 @@ bool ProjectController::saveToFile(const QString& filepath) {
     
     auto result = m_trussService->saveTruss(
         m_currentHandle,
-        filepath.toStdString()
+        std::filesystem::u8path(filepath.toUtf8().constData())
     );
     
     if (result.success) {

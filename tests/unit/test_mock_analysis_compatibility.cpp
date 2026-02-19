@@ -6,6 +6,7 @@
  */
 
 #include <gtest/gtest.h>
+#include <type_traits>
 #include <memory>
 #include "mocks/MockAnalysisApplicationService.hpp"
 #include "gui/controllers/AnalysisController.hpp"
