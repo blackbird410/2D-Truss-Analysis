@@ -300,12 +300,18 @@ void MainWindow::connectSignals() {
             this, &MainWindow::onValidationFailed);
     
     // Connect ProjectController signals
+    connect(&m_projectController, &truss_controllers::ProjectController::projectCreated,
+            &m_trussEditController, &truss_controllers::TrussEditController::setCurrentTruss);
     connect(&m_projectController, &truss_controllers::ProjectController::projectOpened,
             this, &MainWindow::onProjectOpened);
+    connect(&m_projectController, &truss_controllers::ProjectController::projectOpened,
+            &m_trussEditController, &truss_controllers::TrussEditController::setCurrentTruss);
     connect(&m_projectController, &truss_controllers::ProjectController::projectSaved,
             this, &MainWindow::onProjectSaved);
     connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
             this, &MainWindow::onProjectClosed);
+    connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
+            [this]() { m_trussEditController.setCurrentTruss(0); });
     connect(&m_projectController, &truss_controllers::ProjectController::operationFailed,
             this, &MainWindow::onOperationFailed);
 }
