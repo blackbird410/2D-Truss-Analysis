@@ -16,6 +16,7 @@
 #include "../Result.hpp"
 #include "../../core/model/Types.hpp"
 #include "../../core/interfaces/ITrussView.hpp"
+#include "../../core/validation/TrussValidator.hpp"  // For ValidationResult
 #include "../TrussEditDTOs.hpp"
 #include <filesystem>
 #include <string>
@@ -23,9 +24,6 @@
 // Forward declarations
 namespace truss::core {
     class Truss;
-    namespace validation {
-        class ValidationResult;
-    }
 }
 
 namespace truss::application {
