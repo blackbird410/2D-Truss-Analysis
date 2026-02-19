@@ -32,7 +32,7 @@ endif()
 
 # Find required packages
 find_package(Eigen3 REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test)
 find_package(nlohmann_json REQUIRED)
 
 # Find tinyxml2 (note: package name in CMake is lowercase)
@@ -278,6 +278,11 @@ if(BUILD_TESTING)
         tests/unit/cli/test_analyze_command.cpp
         tests/unit/cli/test_validate_command.cpp
         tests/unit/cli/test_export_command.cpp
+        # GUI layer tests (Controller API Stabilization)
+        tests/unit/controllers/test_TrussEditController.cpp
+        tests/unit/presenters/test_TrussDataPresenter.cpp
+        # GUI source files needed for GUI tests
+        src/gui/presenters/TrussDataPresenter.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
@@ -288,6 +293,9 @@ if(BUILD_TESTING)
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
+        Qt6::Core
+        Qt6::Widgets
+        Qt6::Test
     )
     
     target_include_directories(unit_tests PRIVATE
@@ -297,6 +305,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
         ${CMAKE_SOURCE_DIR}/src/infrastructure/io
+        ${CMAKE_SOURCE_DIR}/src/gui
     )
     
     add_test(NAME UnitTests COMMAND unit_tests)
@@ -335,6 +344,38 @@ if(BUILD_TESTING)
     set_tests_properties(IntegrationTests PROPERTIES
         TIMEOUT 60
         LABELS "integration;gtest"
+    )
+    
+    # GUI Integration Tests (Qt Test framework)
+    add_executable(gui_integration_test
+        tests/integration/test_gui_integration.cpp
+        # GUI source files needed for integration tests
+        src/gui/presenters/TrussDataPresenter.cpp
+        src/gui/presenters/AnalysisResultsPresenter.cpp
+        src/gui/presenters/ValidationPresenter.cpp
+        src/gui/controllers/TrussEditController.cpp
+        src/gui/controllers/AnalysisController.cpp
+        src/gui/controllers/ProjectController.cpp
+    )
+    
+    target_link_libraries(gui_integration_test PRIVATE
+        TrussApplication
+        TrussCore
+        Qt6::Test
+        Qt6::Widgets
+        Qt6::Core
+    )
+    
+    target_include_directories(gui_integration_test PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/gui
+        ${CMAKE_SOURCE_DIR}/src/application
+    )
+    
+    add_test(NAME GUIIntegrationTests COMMAND gui_integration_test)
+    set_tests_properties(GUIIntegrationTests PROPERTIES
+        TIMEOUT 120
+        LABELS "gui;integration;qt"
     )
     
     # Convenience target to build all new GTest-based tests
