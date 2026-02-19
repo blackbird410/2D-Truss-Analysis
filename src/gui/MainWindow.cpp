@@ -330,6 +330,9 @@ void MainWindow::connectSignals() {
     connect(&m_projectController, &truss_controllers::ProjectController::projectSaved,
             this, &MainWindow::onProjectSaved);
     
+    connect(&m_projectController, &truss_controllers::ProjectController::saveAsRequested,
+            this, &MainWindow::requestSaveProjectAs);
+    
     connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
             this, &MainWindow::onProjectClosed);
     connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
@@ -393,11 +396,7 @@ void MainWindow::requestOpenProject() {
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "Truss Project Files (*.truss);;All Files (*)");
-    
-    if (!fileName.isEmpty()) {
-        m_projectController.onOpenProject(fileName);
-    }
+        "Truss Project Files (*.json *.xml);;JSON Files (*.json);;XML Files (*.xml);;All Files (*)");
 }
 
 void MainWindow::requestSaveProject() {
@@ -408,12 +407,15 @@ void MainWindow::requestSaveProjectAs() {
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "Truss Project Files (*.truss);;All Files (*)");
+        "JSON Files (*.json);;XML Files (*.xml);;All Files (*)",
+        nullptr,
+        QFileDialog::DontConfirmOverwrite);
     
     if (!fileName.isEmpty()) {
-        // Ensure .truss extension
-        if (!fileName.endsWith(".truss", Qt::CaseInsensitive)) {
-            fileName += ".truss";
+        // Ensure valid extension - add .json if no recognized extension
+        if (!fileName.endsWith(".json", Qt::CaseInsensitive) && 
+            !fileName.endsWith(".xml", Qt::CaseInsensitive)) {
+            fileName += ".json";  // Default to JSON
         }
         
         m_projectController.onSaveProjectAs(fileName);
