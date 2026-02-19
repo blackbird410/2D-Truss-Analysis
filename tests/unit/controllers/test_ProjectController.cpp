@@ -293,3 +293,110 @@ TEST_F(ProjectControllerTest, SaveFailureEmitsError) {
     std::filesystem::remove(tempFile);
 }
 
+/**
+ * @test Save As with JSON extension succeeds
+ */
+TEST_F(ProjectControllerTest, SaveAsWithJsonExtension) {
+    const TrussHandle handle = 400;
+    auto tempFile = std::filesystem::temp_directory_path() / "test.json";
+    QString filepath = QString::fromStdString(tempFile.string());
+    
+    EXPECT_CALL(*mockService, createTruss(_))
+        .WillOnce(Return(Result<TrussHandle>::Success(handle)));
+    controller->onNewProject();
+    
+    EXPECT_CALL(*mockService, saveTruss(handle, tempFile, _))
+        .WillOnce(Return(Result<bool>::Success(true)));
+    
+    QSignalSpy savedSpy(controller.get(), &ProjectController::projectSaved);
+    
+    controller->onSaveProjectAs(filepath);
+    
+    EXPECT_EQ(savedSpy.count(), 1);
+    EXPECT_EQ(controller->getCurrentFilepath(), filepath);
+    
+    if (std::filesystem::exists(tempFile)) {
+        std::filesystem::remove(tempFile);
+    }
+}
+
+/**
+ * @test Save As with XML extension succeeds
+ */
+TEST_F(ProjectControllerTest, SaveAsWithXmlExtension) {
+    const TrussHandle handle = 500;
+    auto tempFile = std::filesystem::temp_directory_path() / "test.xml";
+    QString filepath = QString::fromStdString(tempFile.string());
+    
+    EXPECT_CALL(*mockService, createTruss(_))
+        .WillOnce(Return(Result<TrussHandle>::Success(handle)));
+    controller->onNewProject();
+    
+    EXPECT_CALL(*mockService, saveTruss(handle, tempFile, _))
+        .WillOnce(Return(Result<bool>::Success(true)));
+    
+    QSignalSpy savedSpy(controller.get(), &ProjectController::projectSaved);
+    
+    controller->onSaveProjectAs(filepath);
+    
+    EXPECT_EQ(savedSpy.count(), 1);
+    EXPECT_EQ(controller->getCurrentFilepath(), filepath);
+    
+    if (std::filesystem::exists(tempFile)) {
+        std::filesystem::remove(tempFile);
+    }
+}
+
+/**
+ * @test Save As with empty filepath emits error
+ */
+TEST_F(ProjectControllerTest, SaveAsWithEmptyFilepathEmitsError) {
+    const TrussHandle handle = 600;
+    
+    EXPECT_CALL(*mockService, createTruss(_))
+        .WillOnce(Return(Result<TrussHandle>::Success(handle)));
+    controller->onNewProject();
+    
+    QSignalSpy errorSpy(controller.get(), &ProjectController::operationFailed);
+    
+    controller->onSaveProjectAs("");
+    
+    EXPECT_EQ(errorSpy.count(), 1);
+    EXPECT_TRUE(errorSpy.at(0).at(0).toString().contains("No filepath"));
+}
+
+/**
+ * @test Save with no active project emits error
+ */
+TEST_F(ProjectControllerTest, SaveWithNoProjectEmitsError) {
+    QSignalSpy errorSpy(controller.get(), &ProjectController::operationFailed);
+    
+    controller->onSaveProject();
+    
+    EXPECT_EQ(errorSpy.count(), 1);
+    EXPECT_TRUE(errorSpy.at(0).at(0).toString().contains("No project"));
+}
+
+/**
+ * @test Cancel save (empty filepath) does not mutate state
+ */
+TEST_F(ProjectControllerTest, CancelSaveDoesNotMutateState) {
+    const TrussHandle handle = 700;
+    
+    EXPECT_CALL(*mockService, createTruss(_))
+        .WillOnce(Return(Result<TrussHandle>::Success(handle)));
+    controller->onNewProject();
+    
+    controller->markAsModified();
+    EXPECT_TRUE(controller->hasUnsavedChanges());
+    EXPECT_TRUE(controller->getCurrentFilepath().isEmpty());
+    
+    // Simulate cancel by passing empty filepath
+    controller->onSaveProjectAs("");
+    
+    // State should remain unchanged
+    EXPECT_TRUE(controller->hasUnsavedChanges());
+    EXPECT_TRUE(controller->getCurrentFilepath().isEmpty());
+    EXPECT_EQ(controller->getCurrentTruss(), handle);
+}
+
