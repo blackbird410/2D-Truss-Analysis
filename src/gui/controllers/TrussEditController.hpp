@@ -20,7 +20,7 @@
 #pragma once
 
 #include <QObject>
-#include "application/TrussApplicationService.hpp"
+#include "application/interfaces/ITrussService.hpp"
 #include "application/TrussEditDTOs.hpp"
 #include "gui/presenters/TrussDataPresenter.hpp"
 #include "core/model/Types.hpp"
@@ -41,12 +41,14 @@ public:
     /**
      * @brief Construct TrussEditController
      * 
-     * @param trussService Reference to TrussApplicationService
+     * @param trussService Pointer to ITrussService interface (enables DI and mocking)
      * @param presenter Reference to TrussDataPresenter for formatting
      * @param parent Qt parent object
+     * 
+     * @throws std::invalid_argument if trussService is nullptr
      */
     explicit TrussEditController(
-        truss::application::TrussApplicationService& trussService,
+        truss::application::ITrussService* trussService,
         truss_presenters::TrussDataPresenter& presenter,
         QObject* parent = nullptr);
     
@@ -175,7 +177,7 @@ signals:
     void statusMessageChanged(const QString& message);
 
 private:
-    truss::application::TrussApplicationService& m_trussService;
+    truss::application::ITrussService* m_trussService;
     truss_presenters::TrussDataPresenter& m_presenter;
     truss::application::TrussHandle m_currentHandle;
     
