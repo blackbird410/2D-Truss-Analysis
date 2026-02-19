@@ -57,7 +57,7 @@ TEST(MockCompatibilityTest, AllInterfaceMethodsAreOverridden) {
     // Note: We're not setting expectations, just verifying compilation
     
     // Can call lifecycle methods through interface
-    application::ITrussService* service = &mock;
+    // application::ITrussService* service = &mock;
     EXPECT_NO_THROW({
         // These will fail at runtime without EXPECT_CALL, but that's expected
         // We're only verifying the methods exist and are callable

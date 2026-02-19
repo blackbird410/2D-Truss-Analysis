@@ -418,7 +418,10 @@ TEST_F(ExporterFactoryTest, DeterministicBehavior) {
         auto exporter2 = ExporterFactory::create(ExportFormat::JSON);
         
         // Should be same concrete type (both JSONExporter)
-        EXPECT_EQ(typeid(*exporter1).hash_code(), typeid(*exporter2).hash_code());
+        // Store references to avoid evaluation in typeid operand
+        const auto& exp1 = *exporter1;
+        const auto& exp2 = *exporter2;
+        EXPECT_EQ(typeid(exp1).hash_code(), typeid(exp2).hash_code());
         
         // But different instances
         EXPECT_NE(exporter1.get(), exporter2.get());

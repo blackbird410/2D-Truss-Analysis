@@ -407,7 +407,7 @@ private:
 private slots:
     void initTestCase() {
         service = new TrussApplicationService();
-        controller = new ProjectController(*service);
+        controller = new ProjectController(service);
     }
 
     void cleanupTestCase() {
