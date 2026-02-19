@@ -333,6 +333,7 @@ if(BUILD_TESTING)
         tests/integration/test_working_integration.cpp
         tests/integration/test_minimal_analysis.cpp
         tests/integration/test_cli_workflows.cpp
+        tests/integration/test_lifecycle_integration.cpp
         ${CLI_SOURCES}
     )
     
