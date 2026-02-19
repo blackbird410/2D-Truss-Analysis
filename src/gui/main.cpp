@@ -59,7 +59,7 @@ int main(int argc, char *argv[]) {
             validationPresenter
         );
         
-        truss_controllers::ProjectController projectController(trussService);
+        truss_controllers::ProjectController projectController(&trussService);
         
         truss_controllers::TrussEditController trussEditController(
             &trussService,

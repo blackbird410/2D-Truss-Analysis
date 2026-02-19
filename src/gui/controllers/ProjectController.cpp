@@ -1,10 +1,11 @@
 #include "ProjectController.hpp"
 #include <filesystem>
+#include <stdexcept>
 
 namespace truss_controllers {
 
 ProjectController::ProjectController(
-    truss::application::TrussApplicationService& trussService,
+    truss::application::ITrussService* trussService,
     QObject* parent)
     : QObject(parent)
     , m_trussService(trussService)
@@ -12,6 +13,9 @@ ProjectController::ProjectController(
     , m_currentFilepath()
     , m_hasUnsavedChanges(false)
 {
+    if (!m_trussService) {
+        throw std::invalid_argument("ProjectController: null service pointer");
+    }
 }
 
 void ProjectController::markAsModified() {
@@ -31,7 +35,7 @@ void ProjectController::onNewProject() {
     }
     
     // Create new empty truss
-    auto result = m_trussService.createTruss("Untitled");
+    auto result = m_trussService->createTruss("Untitled");
     
     if (result.success) {
         m_currentHandle = result.value;
@@ -61,7 +65,7 @@ void ProjectController::onOpenProject(const QString& filepath) {
     emit statusMessageChanged("Opening project...");
     
     // Load truss from file
-    auto result = m_trussService.loadTruss(filepath.toStdString());
+    auto result = m_trussService->loadTruss(filepath.toStdString());
     
     if (result.success) {
         m_currentHandle = result.value;
@@ -132,7 +136,7 @@ void ProjectController::onCloseProject() {
 bool ProjectController::saveToFile(const QString& filepath) {
     emit statusMessageChanged("Saving project...");
     
-    auto result = m_trussService.saveTruss(
+    auto result = m_trussService->saveTruss(
         m_currentHandle,
         filepath.toStdString()
     );
