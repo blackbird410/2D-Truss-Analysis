@@ -62,7 +62,7 @@ int main(int argc, char *argv[]) {
         truss_controllers::ProjectController projectController(trussService);
         
         truss_controllers::TrussEditController trussEditController(
-            trussService,
+            &trussService,
             trussDataPresenter
         );
         
