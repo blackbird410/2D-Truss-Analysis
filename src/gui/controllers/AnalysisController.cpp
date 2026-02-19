@@ -1,10 +1,11 @@
 #include "AnalysisController.hpp"
+#include <stdexcept>
 
 namespace truss_controllers {
 
 AnalysisController::AnalysisController(
-    truss::application::TrussApplicationService& trussService,
-    truss::application::AnalysisApplicationService& analysisService,
+    truss::application::ITrussService* trussService,
+    truss::application::IAnalysisService* analysisService,
     truss_presenters::AnalysisResultsPresenter& analysisPresenter,
     truss_presenters::ValidationPresenter& validationPresenter,
     QObject* parent)
@@ -16,6 +17,12 @@ AnalysisController::AnalysisController(
     , m_currentResultsHandle(0)
     , m_currentTrussHandle(0)
 {
+    if (!m_trussService) {
+        throw std::invalid_argument("AnalysisController: null truss service pointer");
+    }
+    if (!m_analysisService) {
+        throw std::invalid_argument("AnalysisController: null analysis service pointer");
+    }
 }
 
 void AnalysisController::onAnalyzeRequested(truss::application::TrussHandle trussHandle) {
@@ -31,7 +38,7 @@ void AnalysisController::onAnalyzeRequested(truss::application::TrussHandle trus
     emit statusMessageChanged("Validating structure...");
     
     // Step 1: Validate truss
-    auto validationResult = m_trussService.validateTruss(trussHandle);
+    auto validationResult = m_trussService->validateTruss(trussHandle);
     
     if (!validationResult.success) {
         emit analysisFailed(QString::fromStdString(validationResult.errorMessage));
@@ -49,8 +56,8 @@ void AnalysisController::onAnalyzeRequested(truss::application::TrussHandle trus
     emit statusMessageChanged("Running analysis...");
     
     // Step 2: Execute analysis
-    const auto& truss = m_trussService.getTrussMutable(trussHandle);
-    auto analysisResult = m_analysisService.analyze(truss);
+    const auto& truss = m_trussService->getTrussMutable(trussHandle);
+    auto analysisResult = m_analysisService->analyze(truss);
     
     if (!analysisResult.success) {
         emit analysisFailed(QString::fromStdString(analysisResult.errorMessage));
@@ -80,8 +87,8 @@ void AnalysisController::onExportRequested(
     
     emit statusMessageChanged("Exporting results...");
     
-    const auto& truss = m_trussService.getTrussMutable(m_currentTrussHandle);
-    auto result = m_analysisService.exportResults(
+    const auto& truss = m_trussService->getTrussMutable(m_currentTrussHandle);
+    auto result = m_analysisService->exportResults(
         resultsHandle,
         filepath.toStdString(),
         truss

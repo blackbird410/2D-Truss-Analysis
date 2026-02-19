@@ -49,7 +49,7 @@ private slots:
 
     void init() {
         // Create fresh controller and truss for each test
-        controller = new TrussEditController(*service, *presenter);
+        controller = new TrussEditController(service, *presenter);
         
         auto result = service->createTruss("Integration Test Truss");
         QVERIFY(result.success);
@@ -249,7 +249,7 @@ private slots:
      */
     void testInvalidHandleError() {
         // GIVEN: Controller with no truss set
-        TrussEditController invalidController(*service, *presenter);
+        TrussEditController invalidController(service, *presenter);
 
         QSignalSpy errorSpy(&invalidController, &TrussEditController::operationFailed);
 
@@ -407,7 +407,7 @@ private:
 private slots:
     void initTestCase() {
         service = new TrussApplicationService();
-        controller = new ProjectController(*service);
+        controller = new ProjectController(service);
     }
 
     void cleanupTestCase() {

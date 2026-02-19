@@ -1,9 +1,10 @@
 #include "TrussEditController.hpp"
+#include <stdexcept>
 
 namespace truss_controllers {
 
 TrussEditController::TrussEditController(
-    truss::application::TrussApplicationService& trussService,
+    truss::application::ITrussService* trussService,
     truss_presenters::TrussDataPresenter& presenter,
     QObject* parent)
     : QObject(parent)
@@ -11,6 +12,9 @@ TrussEditController::TrussEditController(
     , m_presenter(presenter)
     , m_currentHandle()
 {
+    if (!m_trussService) {
+        throw std::invalid_argument("TrussEditController: null service pointer");
+    }
 }
 
 void TrussEditController::setCurrentTruss(truss::application::TrussHandle handle) {
@@ -33,7 +37,7 @@ void TrussEditController::onNodeAddRequested(
         return;
     }
     
-    auto result = m_trussService.addNode(m_currentHandle, position, supportType);
+    auto result = m_trussService->addNode(m_currentHandle, position, supportType);
     
     if (result.success) {
         emit nodeAdded(result.value);
@@ -54,7 +58,7 @@ void TrussEditController::onMemberAddRequested(
         return;
     }
     
-    auto result = m_trussService.addMember(
+    auto result = m_trussService->addMember(
         m_currentHandle,
         startNodeId,
         endNodeId,
@@ -76,7 +80,7 @@ void TrussEditController::onNodeRemoveRequested(truss::core::NodeId nodeId) {
         return;
     }
     
-    auto result = m_trussService.removeNode(m_currentHandle, nodeId);
+    auto result = m_trussService->removeNode(m_currentHandle, nodeId);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -91,7 +95,7 @@ void TrussEditController::onMemberRemoveRequested(truss::core::MemberId memberId
         return;
     }
     
-    auto result = m_trussService.removeMember(m_currentHandle, memberId);
+    auto result = m_trussService->removeMember(m_currentHandle, memberId);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -109,7 +113,7 @@ void TrussEditController::onSupportTypeChanged(
         return;
     }
     
-    auto result = m_trussService.setNodeSupport(m_currentHandle, nodeId, supportType);
+    auto result = m_trussService->setNodeSupport(m_currentHandle, nodeId, supportType);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -127,7 +131,7 @@ void TrussEditController::onLoadApplied(
         return;
     }
     
-    auto result = m_trussService.applyNodeLoad(m_currentHandle, nodeId, force);
+    auto result = m_trussService->applyNodeLoad(m_currentHandle, nodeId, force);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -143,7 +147,7 @@ void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {
         return;
     }
     
-    auto result = m_trussService.clearNodeLoad(m_currentHandle, nodeId);
+    auto result = m_trussService->clearNodeLoad(m_currentHandle, nodeId);
     
     if (result.success) {
         emit trussModified(m_currentHandle);
@@ -158,7 +162,7 @@ void TrussEditController::onClearTrussRequested() {
         return;
     }
     
-    bool result = m_trussService.clearTruss(m_currentHandle);
+    bool result = m_trussService->clearTruss(m_currentHandle);
     
     if (result) {
         emit trussModified(m_currentHandle);

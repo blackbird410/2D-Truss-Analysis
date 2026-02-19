@@ -22,7 +22,7 @@
 
 #include <QObject>
 #include <QString>
-#include "application/TrussApplicationService.hpp"
+#include "application/interfaces/ITrussService.hpp"
 
 namespace truss_controllers {
 
@@ -40,11 +40,13 @@ public:
     /**
      * @brief Construct ProjectController
      * 
-     * @param trussService Reference to TrussApplicationService
+     * @param trussService Pointer to ITrussService interface (enables DI and mocking)
      * @param parent Qt parent object
+     * 
+     * @throws std::invalid_argument if trussService is nullptr
      */
     explicit ProjectController(
-        truss::application::TrussApplicationService& trussService,
+        truss::application::ITrussService* trussService,
         QObject* parent = nullptr);
     
     /**
@@ -169,7 +171,7 @@ signals:
     void statusMessageChanged(const QString& message);
 
 private:
-    truss::application::TrussApplicationService& m_trussService;
+    truss::application::ITrussService* m_trussService;
     truss::application::TrussHandle m_currentHandle;
     QString m_currentFilepath;
     bool m_hasUnsavedChanges;
