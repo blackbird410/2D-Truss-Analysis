@@ -15,17 +15,28 @@
  * - hasUnsavedChanges() - initial state, after modifications, after save
  * - markAsSaved() - modification flag cleared
  * 
+ * Architecture: Application Layer Tests (Domain-decoupled)
+ * - Tests interact ONLY through Application Service public API
+ * - No direct Domain layer imports (Domain types accessed via Application API)
+ * - Uses Application DTOs where available (MaterialSpec, SectionSpec)
+ * 
  * Target Coverage: >95%
  */
 
 #include <gtest/gtest.h>
 #include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/core/model/Types.hpp"
 #include <filesystem>
 #include <fstream>
 
 using namespace truss::application;
-using namespace truss::core;
+
+// Import Domain types through Application Service's public API
+// (These are exposed in TrussApplicationService method signatures)
+using truss::core::Point2D;
+using truss::core::SupportType;
+using truss::core::Force2D;
+using truss::core::NodeId;
+using truss::core::MemberId;
 
 /**
  * @brief Test fixture for TrussApplicationService GUI methods
@@ -150,13 +161,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, AddMember_ValidNodes_ReturnsMember
     NodeId node1 = node1Result.value;
     NodeId node2 = node2Result.value;
     
-    MaterialProperties material;
-    material.youngModulus = 200e9;
-    material.density = 7850.0;
-    
-    SectionProperties section;
-    section.area = 0.01;
-    section.momentOfInertia = 1e-6;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     
     auto result = service.addMember(validHandle, node1, node2, material, section);
     
@@ -170,8 +176,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, AddMember_ValidNodes_ReturnsMember
 TEST_F(TrussApplicationServiceGuiMethodsTest, AddMember_InvalidHandle_ReturnsFailure) {
     TrussHandle invalidHandle = 99999;
     
-    MaterialProperties material;
-    SectionProperties section;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     
     auto result = service.addMember(invalidHandle, 1, 2, material, section);
     
@@ -180,11 +186,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, AddMember_InvalidHandle_ReturnsFai
 }
 
 TEST_F(TrussApplicationServiceGuiMethodsTest, AddMember_InvalidNodes_ReturnsFailure) {
-    MaterialProperties material;
-    material.youngModulus = 200e9;
-    
-    SectionProperties section;
-    section.area = 0.01;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     
     // Try to add member between non-existing nodes
     auto result = service.addMember(validHandle, 999, 1000, material, section);
@@ -200,10 +203,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, AddMember_MultipleMembers_ReturnsS
     auto n3 = service.addNode(validHandle, Point2D{2.0, 3.0});
     ASSERT_TRUE(n1.success && n2.success && n3.success);
     
-    MaterialProperties material;
-    material.youngModulus = 200e9;
-    SectionProperties section;
-    section.area = 0.01;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     
     auto m1 = service.addMember(validHandle, n1.value, n2.value, material, section);
     auto m2 = service.addMember(validHandle, n1.value, n3.value, material, section);
@@ -225,8 +226,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, AddMember_MarksAsModified) {
     
     EXPECT_FALSE(service.hasUnsavedChanges(validHandle));
     
-    MaterialProperties material;
-    SectionProperties section;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     service.addMember(validHandle, n1.value, n2.value, material, section);
     
     EXPECT_TRUE(service.hasUnsavedChanges(validHandle));
@@ -285,8 +286,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, RemoveMember_ExistingMember_Succes
     auto n1 = service.addNode(validHandle, Point2D{0.0, 0.0});
     auto n2 = service.addNode(validHandle, Point2D{4.0, 0.0});
     
-    MaterialProperties material;
-    SectionProperties section;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     auto memberResult = service.addMember(validHandle, n1.value, n2.value, material, section);
     ASSERT_TRUE(memberResult.success);
     
@@ -318,8 +319,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, RemoveMember_NonExistingMember_Ret
 TEST_F(TrussApplicationServiceGuiMethodsTest, RemoveMember_MarksAsModified) {
     auto n1 = service.addNode(validHandle, Point2D{0.0, 0.0});
     auto n2 = service.addNode(validHandle, Point2D{4.0, 0.0});
-    MaterialProperties material;
-    SectionProperties section;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     auto memberResult = service.addMember(validHandle, n1.value, n2.value, material, section);
     service.markAsSaved(validHandle);
     
@@ -537,10 +538,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, HasUnsavedChanges_AfterSave_Return
     auto n2 = service.addNode(validHandle, Point2D{4.0, 0.0}, SupportType::RollerY);
     auto n3 = service.addNode(validHandle, Point2D{2.0, 3.0}, SupportType::Free);
     
-    MaterialProperties material;
-    material.youngModulus = 200e9;
-    SectionProperties section;
-    section.area = 0.01;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     
     service.addMember(validHandle, n1.value, n2.value, material, section);
     service.addMember(validHandle, n1.value, n3.value, material, section);
@@ -559,10 +558,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, HasUnsavedChanges_AfterLoad_Return
     auto n2 = service.addNode(validHandle, Point2D{4.0, 0.0}, SupportType::RollerY);
     auto n3 = service.addNode(validHandle, Point2D{2.0, 3.0}, SupportType::Free);
     
-    MaterialProperties material;
-    material.youngModulus = 200e9;
-    SectionProperties section;
-    section.area = 0.01;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     
     service.addMember(validHandle, n1.value, n2.value, material, section);
     service.addMember(validHandle, n1.value, n3.value, material, section);
@@ -598,16 +595,12 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, Integration_BuildCompleteTruss_All
     
     ASSERT_TRUE(n1.success && n2.success && n3.success);
     
-    MaterialProperties steel;
-    steel.youngModulus = 200e9;
-    steel.density = 7850.0;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     
-    SectionProperties section;
-    section.area = 0.01;
-    
-    auto m1 = service.addMember(validHandle, n1.value, n2.value, steel, section);
-    auto m2 = service.addMember(validHandle, n1.value, n3.value, steel, section);
-    auto m3 = service.addMember(validHandle, n2.value, n3.value, steel, section);
+    auto m1 = service.addMember(validHandle, n1.value, n2.value, material, section);
+    auto m2 = service.addMember(validHandle, n1.value, n3.value, material, section);
+    auto m3 = service.addMember(validHandle, n2.value, n3.value, material, section);
     
     ASSERT_TRUE(m1.success && m2.success && m3.success);
     
@@ -635,8 +628,8 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, Integration_ModifyAndRevert_AllOpe
     auto n1 = service.addNode(validHandle, Point2D{0.0, 0.0});
     auto n2 = service.addNode(validHandle, Point2D{4.0, 0.0});
     
-    MaterialProperties material;
-    SectionProperties section;
+    MaterialSpec material{200e9, "Steel"};
+    SectionSpec section{0.01, "TestSection"};
     auto m1 = service.addMember(validHandle, n1.value, n2.value, material, section);
     
     EXPECT_TRUE(service.hasUnsavedChanges(validHandle));
