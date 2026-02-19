@@ -569,24 +569,24 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
                 if (!(event->modifiers() & Qt::ControlModifier)) {
                     clearSelection();
                 }
-                auto it = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), nodeId - 1);
+                auto it = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), nodeId);
                 if (it == m_selectedNodes.end()) {
-                    m_selectedNodes.push_back(nodeId - 1);
+                    m_selectedNodes.push_back(nodeId);
                 } else {
                     m_selectedNodes.erase(it);
                 }
-                emit nodeSelected(nodeId - 1);
+                emit nodeSelected(nodeId);
             } else if (memberId > 0) {
                 if (!(event->modifiers() & Qt::ControlModifier)) {
                     clearSelection();
                 }
-                auto it = std::find(m_selectedMembers.begin(), m_selectedMembers.end(), memberId - 1);
+                auto it = std::find(m_selectedMembers.begin(), m_selectedMembers.end(), memberId);
                 if (it == m_selectedMembers.end()) {
-                    m_selectedMembers.push_back(memberId - 1);
+                    m_selectedMembers.push_back(memberId);
                 } else {
                     m_selectedMembers.erase(it);
                 }
-                emit memberSelected(memberId - 1);
+                emit memberSelected(memberId);
             } else {
                 if (!(event->modifiers() & Qt::ControlModifier)) {
                     clearSelection();
@@ -610,7 +610,7 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
                     m_isCreatingMember = true;
                 } else {
                     if (nodeId != m_memberStartNode) {
-                        addMemberBetweenNodes(m_memberStartNode - 1, nodeId - 1);
+                        addMemberBetweenNodes(m_memberStartNode, nodeId);
                     }
                     m_isCreatingMember = false;
                     m_memberStartNode = 0;
@@ -624,7 +624,7 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
             if (nodeId > 0) {
                 // Show load input dialog or apply default load
                 truss::core::Force2D defaultLoad(0.0, -10000.0); // 10 kN downward
-                applyLoadToNode(nodeId - 1, defaultLoad);
+                applyLoadToNode(nodeId, defaultLoad);
             }
             break;
         }
@@ -660,7 +660,7 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
                             break;
                     }
                     
-                    setSupportType(nodeId - 1, newType);
+                    setSupportType(nodeId, newType);
                 }
             }
             break;
