@@ -397,6 +397,10 @@ void MainWindow::requestOpenProject() {
         "Open Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
         "Truss Project Files (*.json *.xml);;JSON Files (*.json);;XML Files (*.xml);;All Files (*)");
+    
+    if (!fileName.isEmpty()) {
+        m_projectController.onOpenProject(fileName);
+    }
 }
 
 void MainWindow::requestSaveProject() {
