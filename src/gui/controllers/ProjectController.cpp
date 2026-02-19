@@ -65,8 +65,10 @@ void ProjectController::onOpenProject(const QString& filepath) {
     emit statusMessageChanged("Opening project...");
     
     // Load truss from file
+    QByteArray utf8Data = filepath.toUtf8();
+    std::u8string u8str(reinterpret_cast<const char8_t*>(utf8Data.constData()), utf8Data.size());
     auto result = m_trussService->loadTruss(
-        std::filesystem::u8path(filepath.toUtf8().constData())
+        std::filesystem::path(u8str)
     );
     
     if (result.success) {
@@ -138,9 +140,11 @@ void ProjectController::onCloseProject() {
 bool ProjectController::saveToFile(const QString& filepath) {
     emit statusMessageChanged("Saving project...");
     
+    QByteArray utf8Data = filepath.toUtf8();
+    std::u8string u8str(reinterpret_cast<const char8_t*>(utf8Data.constData()), utf8Data.size());
     auto result = m_trussService->saveTruss(
         m_currentHandle,
-        std::filesystem::u8path(filepath.toUtf8().constData())
+        std::filesystem::path(u8str)
     );
     
     if (result.success) {
