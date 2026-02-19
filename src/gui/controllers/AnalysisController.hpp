@@ -22,8 +22,8 @@
 
 #include <QObject>
 #include <QString>
-#include "application/TrussApplicationService.hpp"
-#include "application/AnalysisApplicationService.hpp"
+#include "application/interfaces/ITrussService.hpp"
+#include "application/interfaces/IAnalysisService.hpp"
 #include "gui/presenters/AnalysisResultsPresenter.hpp"
 #include "gui/presenters/ValidationPresenter.hpp"
 
@@ -43,15 +43,17 @@ public:
     /**
      * @brief Construct AnalysisController
      * 
-     * @param trussService Reference to TrussApplicationService
-     * @param analysisService Reference to AnalysisApplicationService
+     * @param trussService Pointer to ITrussService interface (enables DI and mocking)
+     * @param analysisService Pointer to IAnalysisService interface (enables DI and mocking)
      * @param analysisPresenter Reference to AnalysisResultsPresenter
      * @param validationPresenter Reference to ValidationPresenter
      * @param parent Qt parent object
+     * 
+     * @throws std::invalid_argument if trussService or analysisService is nullptr
      */
     explicit AnalysisController(
-        truss::application::TrussApplicationService& trussService,
-        truss::application::AnalysisApplicationService& analysisService,
+        truss::application::ITrussService* trussService,
+        truss::application::IAnalysisService* analysisService,
         truss_presenters::AnalysisResultsPresenter& analysisPresenter,
         truss_presenters::ValidationPresenter& validationPresenter,
         QObject* parent = nullptr);
@@ -136,8 +138,8 @@ signals:
     void statusMessageChanged(const QString& message);
 
 private:
-    truss::application::TrussApplicationService& m_trussService;
-    truss::application::AnalysisApplicationService& m_analysisService;
+    truss::application::ITrussService* m_trussService;
+    truss::application::IAnalysisService* m_analysisService;
     truss_presenters::AnalysisResultsPresenter& m_analysisPresenter;
     truss_presenters::ValidationPresenter& m_validationPresenter;
     size_t m_currentResultsHandle;

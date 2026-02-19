@@ -53,8 +53,8 @@ int main(int argc, char *argv[]) {
         
         // Create Controllers (orchestration layer)
         truss_controllers::AnalysisController analysisController(
-            trussService,
-            analysisService,
+            &trussService,
+            &analysisService,
             analysisPresenter,
             validationPresenter
         );
