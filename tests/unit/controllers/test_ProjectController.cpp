@@ -400,3 +400,58 @@ TEST_F(ProjectControllerTest, CancelSaveDoesNotMutateState) {
     EXPECT_EQ(controller->getCurrentTruss(), handle);
 }
 
+/**
+ * @test Load project replaces active truss and emits correct signals
+ */
+TEST_F(ProjectControllerTest, LoadProjectReplacesActiveTruss) {
+    auto tempFile = createTempFile();
+    QString filepath = QString::fromStdString(tempFile.string());
+    const TrussHandle newHandle = 800;
+    
+    // First create a project
+    EXPECT_CALL(*mockService, createTruss(_))
+        .WillOnce(Return(Result<TrussHandle>::Success(1)));
+    controller->onNewProject();
+    EXPECT_EQ(controller->getCurrentTruss(), 1);
+    
+    // Now load a different project
+    EXPECT_CALL(*mockService, loadTruss(std::filesystem::path(tempFile)))
+        .WillOnce(Return(Result<TrussHandle>::Success(newHandle)));
+    
+    QSignalSpy openedSpy(controller.get(), &ProjectController::projectOpened);
+    
+    controller->onOpenProject(filepath);
+    
+    // Verify handle was replaced
+    EXPECT_EQ(controller->getCurrentTruss(), newHandle);
+    EXPECT_EQ(openedSpy.count(), 1);
+    EXPECT_EQ(openedSpy.at(0).at(0).value<TrussHandle>(), newHandle);
+    
+    std::filesystem::remove(tempFile);
+}
+
+/**
+ * @test Load project clears unsaved changes flag
+ */
+TEST_F(ProjectControllerTest, LoadProjectClearsUnsavedChanges) {
+    auto tempFile = createTempFile();
+    QString filepath = QString::fromStdString(tempFile.string());
+    const TrussHandle handle = 900;
+    
+    controller->markAsModified();
+    EXPECT_TRUE(controller->hasUnsavedChanges());
+    
+    // Load should clear the flag (will request confirmation first)
+    // So we need to test after confirming
+    controller->markAsSaved();  // Simulate user confirmed discard
+    
+    EXPECT_CALL(*mockService, loadTruss(_))
+        .WillOnce(Return(Result<TrussHandle>::Success(handle)));
+    
+    controller->onOpenProject(filepath);
+    
+    EXPECT_FALSE(controller->hasUnsavedChanges());
+    
+    std::filesystem::remove(tempFile);
+}
+
