@@ -301,6 +301,11 @@ void MainWindow::connectSignals() {
     connect(&m_trussEditController, &truss_controllers::TrussEditController::statusMessageChanged,
             this, &MainWindow::updateStatusMessage);
     
+    // CRITICAL: Connect TrussEditController mutation signals to DrawingCanvas refresh
+    // This ensures canvas repaints after any successful mutation (add/remove node/member)
+    connect(&m_trussEditController, &truss_controllers::TrussEditController::trussModified,
+            canvas, QOverload<>::of(&DrawingCanvas::update));
+    
     // Connect control buttons
     connect(m_analyzeButton, &QPushButton::clicked, this, &MainWindow::requestAnalyze);
     connect(m_clearButton, &QPushButton::clicked, this, &MainWindow::requestClearAll);
