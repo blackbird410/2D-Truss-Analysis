@@ -250,6 +250,11 @@ void MainWindow::initializeEmptyProject() {
     // create a new project first.
     m_projectController.onNewProject();
     
+    // CRITICAL FIX: Clear the modified flag after initialization
+    // The initial empty project should NOT be marked as unsaved,
+    // otherwise it prevents File -> Open from working immediately
+    m_projectController.markAsSaved();
+    
     // Update status message
     m_statusLabel->setText("Ready to design - Add nodes by clicking the canvas");
 }
