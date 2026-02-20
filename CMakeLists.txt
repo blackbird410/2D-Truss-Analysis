@@ -334,12 +334,21 @@ if(BUILD_TESTING)
         tests/integration/test_minimal_analysis.cpp
         tests/integration/test_cli_workflows.cpp
         tests/integration/test_lifecycle_integration.cpp
+        tests/integration/test_load_workflow.cpp
+        tests/integration/test_gui_lifecycle.cpp
+        # GUI controllers needed for GUI lifecycle tests
+        src/gui/controllers/TrussEditController.cpp
+        src/gui/controllers/ProjectController.cpp
+        src/gui/presenters/TrussDataPresenter.cpp
         ${CLI_SOURCES}
     )
     
     target_link_libraries(integration_tests PRIVATE
         TrussCore
         TrussApplication
+        Qt6::Core
+        Qt6::Widgets
+        Qt6::Test
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
