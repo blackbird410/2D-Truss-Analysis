@@ -188,7 +188,16 @@ void DrawingCanvas::setCurrentSection(const SectionPreset& section) {
 void DrawingCanvas::setTrussHandle(application::TrussHandle handle) {
     m_trussHandle = handle;
     clearSelection();
-    updateViewport();
+    
+    // CRITICAL FIX: Auto-zoom to fit loaded geometry
+    // When loading a project, geometry may be at any scale/position
+    // Without this, loaded trusses appear "invisible" (off-viewport)
+    if (handle != 0) {
+        zoomToFit();
+    } else {
+        resetView();
+    }
+    
     update();
     emit trussModified();
 }
