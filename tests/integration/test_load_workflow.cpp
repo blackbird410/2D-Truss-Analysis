@@ -89,9 +89,6 @@ TEST_F(LoadWorkflowTest, LoadProjectReconstructsDomain) {
     // Load the project
     auto result = service->loadTruss(testFile);
     
-    if (!result.success) {
-        std::cerr << "Load error: " << result.errorMessage << std::endl;
-    }
     ASSERT_TRUE(result.success) << "Load failed: " << result.errorMessage;
     EXPECT_NE(result.value, 0) << "Invalid handle returned";
     

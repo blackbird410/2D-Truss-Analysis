@@ -9,7 +9,7 @@
  *
  * Test Coverage:
  * - execute() returns success code (0)
- * - execute() delegates to presenter (no direct std::cout)
+ * - execute() delegates to presenter (no direct console I/O)
  * - Usage information displayed via presenter
  * - Command list displayed via presenter
  * - Examples displayed via presenter

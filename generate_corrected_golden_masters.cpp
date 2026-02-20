@@ -24,10 +24,11 @@
 #include "src/infrastructure/export/html_exporter.hpp"
 #include "src/infrastructure/export/latex_exporter.hpp"
 #include "src/infrastructure/export/text_exporter.hpp"
-#include <iostream>
+#include "src/infrastructure/logging/logger_factory.hpp"
 #include <filesystem>
 #include <iomanip>
 #include <memory>
+#include <sstream>
 
 using namespace truss::core;
 using namespace truss::core::analysis;
@@ -56,45 +57,66 @@ Truss createTestTruss() {
 }
 
 int main() {
+    auto logger = truss::infrastructure::logging::LoggerFactory::createConsoleLogger(
+        truss::infrastructure::logging::LogLevel::Info,
+        true
+    );
+
     try {        
-        std::cout << "=============================================================\n";
-        std::cout << "  CORRECTED Golden Master Generator - Data Completeness Fix\n";
-        std::cout << "  2D Truss Analysis v3.0.0\n";
-        std::cout << "=============================================================\n\n";
+        logger->info("=============================================================");
+        logger->info("  CORRECTED Golden Master Generator - Data Completeness Fix");
+        logger->info("  2D Truss Analysis v3.0.0");
+        logger->info("=============================================================");
         
-        std::cout << "BREAKING CHANGE: Generating golden masters with COMPLETE data\n";
-        std::cout << "  - JSON now includes reactions section\n";
-        std::cout << "  - XML now includes displacements, forces, reactions, metadata\n";
-        std::cout << "  - CSVExporter is authoritative reference\n\n";
+        logger->info("BREAKING CHANGE: Generating golden masters with COMPLETE data");
+        logger->info("  - JSON now includes reactions section");
+        logger->info("  - XML now includes displacements, forces, reactions, metadata");
+        logger->info("  - CSVExporter is authoritative reference");
         
         // Output directory (absolute path based on project root)
         std::filesystem::path outputDir = std::filesystem::path(__FILE__).parent_path()
             / "tests/fixtures/export_golden";
         std::filesystem::create_directories(outputDir);
-        std::cout << "Output directory: " << outputDir.string() << "\n\n";
+        logger->info(std::string("Output directory: ") + outputDir.string());
         
         // Step 1: Create test truss
-        std::cout << "Step 1: Creating test truss structure...\n";
+        logger->info("Step 1: Creating test truss structure...");
         Truss truss = createTestTruss();
-        std::cout << "  Nodes: " << truss.getNodes().size() << "\n";
-        std::cout << "  Members: " << truss.getMembers().size() << "\n";
-        std::cout << "  Applied loads: 1 (15 kN downward at top node)\n";
-        std::cout << "  Supports: Pinned (left) + RollerX (right)\n\n";
+        {
+            std::ostringstream oss;
+            oss << "Nodes: " << truss.getNodes().size();
+            logger->info(oss.str());
+        }
+        {
+            std::ostringstream oss;
+            oss << "Members: " << truss.getMembers().size();
+            logger->info(oss.str());
+        }
+        logger->info("Applied loads: 1 (15 kN downward at top node)");
+        logger->info("Supports: Pinned (left) + RollerX (right)");
         
         // Step 2: Run analysis
-        std::cout << "Step 2: Running structural analysis...\n";
+        logger->info("Step 2: Running structural analysis...");
         auto solver = SolverFactory::createSolver(SolverType::Direct);
         AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
         auto results = orchestrator.analyze(truss);
         
         if (results.converged) {
-            std::cout << "  Analysis converged successfully!\n";
-            std::cout << "  Max displacement: " << std::scientific << std::setprecision(6) 
-                     << results.maxDisplacement << " m\n";
-            std::cout << "  Max stress: " << std::scientific << std::setprecision(6)
-                     << results.maxStress << " Pa\n\n";
+            logger->info("Analysis converged successfully!");
+            {
+                std::ostringstream oss;
+                oss << "Max displacement: " << std::scientific << std::setprecision(6)
+                    << results.maxDisplacement << " m";
+                logger->info(oss.str());
+            }
+            {
+                std::ostringstream oss;
+                oss << "Max stress: " << std::scientific << std::setprecision(6)
+                    << results.maxStress << " Pa";
+                logger->info(oss.str());
+            }
         } else {
-            std::cerr << "ERROR: Analysis failed to converge!\n";
+            logger->error("Analysis failed to converge!");
             return 1;
         }
         
@@ -108,7 +130,7 @@ int main() {
         options.precision = 6;
         
         // Step 3: Generate golden masters using CORRECTED exporters
-        std::cout << "Step 3: Generating CORRECTED golden master files...\n";
+        logger->info("Step 3: Generating CORRECTED golden master files...");
         
         struct ExportConfig {
             std::string fileName;
@@ -136,68 +158,81 @@ int main() {
         
         for (auto& config : exporters) {
             std::string fullPath = (outputDir / config.fileName).string();
-            std::cout << "\n  [" << config.description << "]\n";
-            std::cout << "  Generating: " << fullPath << "... ";
+            logger->info(std::string("[") + config.description + "]");
+            logger->info(std::string("Generating: ") + fullPath + "...");
             
             if (config.exporter->exportResults(truss, results, fullPath, options)) {
                 if (std::filesystem::exists(fullPath)) {
                     auto fileSize = std::filesystem::file_size(fullPath);
                     totalBytes += fileSize;
                     fileDetails.push_back({config.fileName, fileSize});
-                    std::cout << "✓ SUCCESS (" << fileSize << " bytes)\n";
+                    {
+                        std::ostringstream oss;
+                        oss << "SUCCESS (" << fileSize << " bytes)";
+                        logger->info(oss.str());
+                    }
                     
                     if (fileSize == 0) {
-                        std::cout << "    ⚠️  WARNING: File is empty!\n";
+                        logger->warn("File is empty");
                         allSuccessful = false;
                     }
                 } else {
-                    std::cout << "✗ FAILED (file not created)\n";
+                    logger->error("FAILED (file not created)");
                     allSuccessful = false;
                 }
             } else {
-                std::cout << "✗ FAILED\n";
-                std::cout << "  Error: " << config.exporter->getLastError() << "\n";
+                logger->error(std::string("FAILED: ") + config.exporter->getLastError());
                 allSuccessful = false;
             }
         }
         
         // Summary
-        std::cout << "\n=============================================================\n";
-        std::cout << "  CORRECTED Golden Master Generation Summary\n";
-        std::cout << "=============================================================\n";
+        logger->info("=============================================================");
+        logger->info("  CORRECTED Golden Master Generation Summary");
+        logger->info("=============================================================");
         
         if (allSuccessful) {
-            std::cout << "✓ Status: ALL FORMATS SUCCESSFUL\n";
-            std::cout << "  Files generated: " << exporters.size() << "\n";
-            std::cout << "  Total size: " << totalBytes << " bytes\n";
-            std::cout << "  Location: \"" << std::filesystem::absolute(outputDir).string() << "\"\n\n";
+            logger->info("Status: ALL FORMATS SUCCESSFUL");
+            {
+                std::ostringstream oss;
+                oss << "Files generated: " << exporters.size();
+                logger->info(oss.str());
+            }
+            {
+                std::ostringstream oss;
+                oss << "Total size: " << totalBytes << " bytes";
+                logger->info(oss.str());
+            }
+            logger->info(std::string("Location: \"") + std::filesystem::absolute(outputDir).string() + "\"");
             
-            std::cout << "CORRECTED golden master files:\n";
+            logger->info("CORRECTED golden master files:");
             for (const auto& [file, size] : fileDetails) {
-                std::cout << "  ✓ " << std::setw(28) << std::left << file 
-                         << "(" << std::setw(8) << std::right << size << " bytes)\n";
+                std::ostringstream oss;
+                oss << "- " << std::setw(28) << std::left << file
+                    << "(" << std::setw(8) << std::right << size << " bytes)";
+                logger->info(oss.str());
             }
             
-            std::cout << "\nBREAKING CHANGE DOCUMENTATION:\n";
-            std::cout << "  - JSON file now includes \"reactions\" section (was omitted)\n";
-            std::cout << "  - XML file now includes <Displacements>, <MemberForces>, <Reactions>, <Analysis>\n";
-            std::cout << "  - Legacy golden masters backed up to: legacy_incomplete/\n\n";
+            logger->info("BREAKING CHANGE DOCUMENTATION:");
+            logger->info("  - JSON file now includes \"reactions\" section (was omitted)");
+            logger->info("  - XML file now includes <Displacements>, <MemberForces>, <Reactions>, <Analysis>");
+            logger->info("  - Legacy golden masters backed up to: legacy_incomplete/");
             
-            std::cout << "Next steps:\n";
-            std::cout << "  1. Review generated files to verify completeness\n";
-            std::cout << "  2. Run test suites to validate against new golden masters\n";
-            std::cout << "  3. Update BREAKING_CHANGES.md documentation\n";
-            std::cout << "  4. Commit corrected golden masters to repository\n";
+            logger->info("Next steps:");
+            logger->info("  1. Review generated files to verify completeness");
+            logger->info("  2. Run test suites to validate against new golden masters");
+            logger->info("  3. Update BREAKING_CHANGES.md documentation");
+            logger->info("  4. Commit corrected golden masters to repository");
             
             return 0;
         } else {
-            std::cerr << "✗ Status: SOME FORMATS FAILED\n";
-            std::cerr << "  Check error messages above for details\n";
+            logger->error("Status: SOME FORMATS FAILED");
+            logger->error("Check error messages above for details");
             return 1;
         }
         
     } catch (const std::exception& e) {
-        std::cerr << "FATAL ERROR: " << e.what() << std::endl;
+        logger->critical(std::string("FATAL ERROR: ") + e.what());
         return 1;
     }
 }

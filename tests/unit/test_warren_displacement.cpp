@@ -10,8 +10,6 @@
 #include "../../src/core/analysis/AnalysisOrchestrator.hpp"
 #include "../../src/core/analysis/SolverFactory.hpp"
 #include "../../src/core/validation/TrussValidator.hpp"
-#include <iostream>
-#include <iomanip>
 
 using namespace truss::core;
 using namespace truss::core::analysis;
@@ -69,68 +67,16 @@ TEST(WarrenTrussDisplacementTest, CheckSignConvention) {
     options.computeReactions = true;
     
     auto solver = SolverFactory::createDirectSolver();
-    auto validator = std::make_unique<TrussValidator>();
     AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<TrussValidator>(), options);
     
     auto results = orchestrator.analyze(truss);
     
-    // Print diagnostic information
-    std::cout << "\n========== DISPLACEMENT SIGN VERIFICATION ==========" << std::endl;
-    std::cout << std::fixed << std::setprecision(6);
-    
-    std::cout << "\nApplied Loads (DOWNWARD = NEGATIVE fy):" << std::endl;
-    std::cout << "  Node 2: fx = " << node2->getAppliedForce().fx 
-              << ", fy = " << node2->getAppliedForce().fy << " N" << std::endl;
-    std::cout << "  Node 3: fx = " << node3->getAppliedForce().fx 
-              << ", fy = " << node3->getAppliedForce().fy << " N" << std::endl;
-    std::cout << "  Node 4: fx = " << node4->getAppliedForce().fx 
-              << ", fy = " << node4->getAppliedForce().fy << " N" << std::endl;
-    
-    std::cout << "\nDisplacements from Analysis Results:" << std::endl;
-    std::cout << "  Node 1 (Pinned):  dx = " << node1->getDisplacement().x * 1000 
-              << " mm, dy = " << node1->getDisplacement().y * 1000 << " mm" << std::endl;
-    std::cout << "  Node 2 (Free):    dx = " << node2->getDisplacement().x * 1000 
-              << " mm, dy = " << node2->getDisplacement().y * 1000 << " mm ← CRITICAL" << std::endl;
-    std::cout << "  Node 3 (Free):    dx = " << node3->getDisplacement().x * 1000 
-              << " mm, dy = " << node3->getDisplacement().y * 1000 << " mm ← CRITICAL" << std::endl;
-    std::cout << "  Node 4 (Free):    dx = " << node4->getDisplacement().x * 1000 
-              << " mm, dy = " << node4->getDisplacement().y * 1000 << " mm ← CRITICAL" << std::endl;
-    std::cout << "  Node 5 (RollerX): dx = " << node5->getDisplacement().x * 1000 
-              << " mm, dy = " << node5->getDisplacement().y * 1000 << " mm" << std::endl;
-    
-    std::cout << "\nSign Convention Check:" << std::endl;
     Real dy2 = node2->getDisplacement().y;
     Real dy3 = node3->getDisplacement().y;
     Real dy4 = node4->getDisplacement().y;
     
-    if (dy2 < 0 && dy3 < 0 && dy4 < 0) {
-        std::cout << "  ✓ CORRECT: All loaded nodes have NEGATIVE (downward) displacements" << std::endl;
-    } else {
-        std::cout << "  ✗ ERROR: Displacement sign convention is WRONG!" << std::endl;
-        std::cout << "    Node 2: dy = " << dy2 << " (expected < 0)" << std::endl;
-        std::cout << "    Node 3: dy = " << dy3 << " (expected < 0)" << std::endl;
-        std::cout << "    Node 4: dy = " << dy4 << " (expected < 0)" << std::endl;
-    }
-    
-    std::cout << "\nReactions (should sum to balance loads):" << std::endl;
-    std::cout << "  Node 1 (Pinned):  rx = " << node1->getReaction().fx 
-              << " N, ry = " << node1->getReaction().fy << " N" << std::endl;
-    std::cout << "  Node 5 (RollerX): rx = " << node5->getReaction().fx 
-              << " N, ry = " << node5->getReaction().fy << " N" << std::endl;
-    
     Real sum_fy = node1->getReaction().fy + node5->getReaction().fy + 
                   node2->getAppliedForce().fy + node3->getAppliedForce().fy + node4->getAppliedForce().fy;
-    
-    std::cout << "\nEquilibrium Check:" << std::endl;
-    std::cout << "  ΣFy = " << sum_fy << " N (should be ~0)" << std::endl;
-    
-    if (std::abs(sum_fy) < 1e-6) {
-        std::cout << "  ✓ EQUILIBRIUM SATISFIED" << std::endl;
-    } else {
-        std::cout << "  ✗ EQUILIBRIUM VIOLATION" << std::endl;
-    }
-    
-    std::cout << "====================================================\n" << std::endl;
     
     // Assertions
     EXPECT_TRUE(results.converged) << "Analysis must converge";

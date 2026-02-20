@@ -7,7 +7,7 @@
 #include <QtCore/QDir>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QLoggingCategory>
-#include <iostream>
+#include <filesystem>
 #include <memory>
 
 #include "MainWindow.hpp"
@@ -19,6 +19,16 @@
 #include "presenters/AnalysisResultsPresenter.hpp"
 #include "presenters/TrussDataPresenter.hpp"
 #include "presenters/ValidationPresenter.hpp"
+#include "infrastructure/logging/logger_factory.hpp"
+
+namespace {
+truss::infrastructure::logging::LoggerPtr createGuiLogger() {
+    QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(appDataPath);
+    std::filesystem::path logPath = std::filesystem::path(appDataPath.toStdString()) / "TrussAnalysis2D.log";
+    return truss::infrastructure::logging::LoggerFactory::createDefaultLogger(logPath);
+}
+} // namespace
 
 int main(int argc, char *argv[]) {
     // Note: High-DPI support is enabled by default in Qt6
@@ -41,6 +51,8 @@ int main(int argc, char *argv[]) {
     // Set application icon if available
     // app.setWindowIcon(QIcon(":/icons/app-icon.png"));
     
+    auto logger = createGuiLogger();
+
     try {
         // Create Application Services (no Qt dependencies)
         truss::application::TrussApplicationService trussService;
@@ -84,10 +96,10 @@ int main(int argc, char *argv[]) {
         return app.exec();
         
     } catch (const std::exception& e) {
-        std::cerr << "Application error: " << e.what() << std::endl;
+        logger->error(std::string("Application error: ") + e.what());
         return 1;
     } catch (...) {
-        std::cerr << "Unknown application error occurred" << std::endl;
+        logger->critical("Unknown application error occurred");
         return 1;
     }
 }

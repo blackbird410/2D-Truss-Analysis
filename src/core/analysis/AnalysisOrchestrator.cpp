@@ -10,7 +10,6 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cmath>
-#include <iostream>
 
 namespace truss::core::analysis {
 

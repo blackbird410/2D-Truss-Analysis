@@ -10,8 +10,7 @@
 #include "src/core/model/Truss.hpp"
 #include "src/core/analysis/AnalysisOrchestrator.hpp"
 #include "src/core/analysis/SolverFactory.hpp"
-#include "src/core/Logger.hpp"
-#include <iostream>
+#include "src/infrastructure/logging/logger_factory.hpp"
 #include <fstream>
 #include <sstream>
 #include <filesystem>
@@ -47,12 +46,14 @@ std::unique_ptr<Truss> createSimpleTriangleTruss() {
 /**
  * @brief Compare two XML files, ignoring timestamp differences
  */
-bool compareXMLFiles(const std::string& file1, const std::string& file2) {
+bool compareXMLFiles(const std::string& file1,
+                     const std::string& file2,
+                     truss::infrastructure::logging::ILogger& logger) {
     std::ifstream f1(file1);
     std::ifstream f2(file2);
     
     if (!f1.is_open() || !f2.is_open()) {
-        std::cerr << "Cannot open files for comparison" << std::endl;
+        logger.error("Cannot open files for comparison");
         return false;
     }
     
@@ -69,18 +70,24 @@ bool compareXMLFiles(const std::string& file1, const std::string& file2) {
         // Skip timestamp comparison
         if (std::regex_search(line1, timestampRegex) && 
             std::regex_search(line2, timestampRegex)) {
-            std::cout << "  Line " << lineNum << ": Skipping timestamp comparison" << std::endl;
+            std::ostringstream oss;
+            oss << "Line " << lineNum << ": Skipping timestamp comparison";
+            logger.info(oss.str());
             continue;
         }
         
         if (line1 != line2) {
             differences++;
-            std::cout << "  Line " << lineNum << " differs:" << std::endl;
-            std::cout << "    Golden: " << line1 << std::endl;
-            std::cout << "    Output: " << line2 << std::endl;
+            {
+                std::ostringstream oss;
+                oss << "Line " << lineNum << " differs:";
+                logger.warn(oss.str());
+            }
+            logger.warn(std::string("Golden: ") + line1);
+            logger.warn(std::string("Output: ") + line2);
             
             if (differences > 10) {
-                std::cout << "  ... (more than 10 differences, stopping comparison)" << std::endl;
+                logger.warn("More than 10 differences, stopping comparison");
                 return false;
             }
         }
@@ -88,46 +95,69 @@ bool compareXMLFiles(const std::string& file1, const std::string& file2) {
     
     // Check if one file has more lines
     if (std::getline(f1, line1) || std::getline(f2, line2)) {
-        std::cout << "  Files have different number of lines" << std::endl;
+        logger.warn("Files have different number of lines");
         return false;
     }
     
     if (differences == 0) {
-        std::cout << "  ✓ Files are identical (excluding timestamps)" << std::endl;
+        logger.info("Files are identical (excluding timestamps)");
         return true;
     } else {
-        std::cout << "  ✗ Files differ in " << differences << " line(s)" << std::endl;
+        std::ostringstream oss;
+        oss << "Files differ in " << differences << " line(s)";
+        logger.warn(oss.str());
         return false;
     }
 }
 
 int main() {
-    std::cout << "Golden Master XML Validation" << std::endl;
-    std::cout << "============================" << std::endl << std::endl;
+    auto logger = truss::infrastructure::logging::LoggerFactory::createConsoleLogger(
+        truss::infrastructure::logging::LogLevel::Info,
+        true
+    );
+
+    logger->info("Golden Master XML Validation");
+    logger->info("============================");
     
     // Step 1: Create test truss
-    std::cout << "Step 1: Creating test truss..." << std::endl;
+    logger->info("Step 1: Creating test truss...");
     auto truss = createSimpleTriangleTruss();
-    std::cout << "  Nodes: " << truss->getNodeCount() << std::endl;
-    std::cout << "  Members: " << truss->getMemberCount() << std::endl << std::endl;
+    {
+        std::ostringstream oss;
+        oss << "Nodes: " << truss->getNodeCount();
+        logger->info(oss.str());
+    }
+    {
+        std::ostringstream oss;
+        oss << "Members: " << truss->getMemberCount();
+        logger->info(oss.str());
+    }
     
     // Step 2: Run analysis
-    std::cout << "Step 2: Running structural analysis..." << std::endl;
+    logger->info("Step 2: Running structural analysis...");
     auto solver = SolverFactory::createDirectSolver();
     AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
     auto results = orchestrator.analyze(*truss);
     
     if (!results.converged) {
-        std::cerr << "ERROR: Analysis did not converge!" << std::endl;
+        logger->error("Analysis did not converge!");
         return 1;
     }
     
-    std::cout << "  Analysis converged successfully!" << std::endl;
-    std::cout << "  Max displacement: " << results.maxDisplacement << " m" << std::endl;
-    std::cout << "  Max stress: " << results.maxStress << " Pa" << std::endl << std::endl;
+    logger->info("Analysis converged successfully!");
+    {
+        std::ostringstream oss;
+        oss << "Max displacement: " << results.maxDisplacement << " m";
+        logger->info(oss.str());
+    }
+    {
+        std::ostringstream oss;
+        oss << "Max stress: " << results.maxStress << " Pa";
+        logger->info(oss.str());
+    }
     
     // Step 3: Export with XMLExporter
-    std::cout << "Step 3: Exporting with XMLExporter..." << std::endl;
+    logger->info("Step 3: Exporting with XMLExporter...");
     
     XMLExporter exporter;
     ExportOptions options;
@@ -147,39 +177,39 @@ int main() {
     bool success = exporter.exportResults(*truss, results, outputPath, options);
     
     if (!success) {
-        std::cerr << "ERROR: Export failed: " << exporter.getLastError() << std::endl;
+        logger->error(std::string("Export failed: ") + exporter.getLastError());
         return 1;
     }
     
-    std::cout << "  Export successful: " << outputPath << std::endl;
-    std::cout << "  File size: " << fs::file_size(outputPath) << " bytes" << std::endl << std::endl;
+    logger->info(std::string("Export successful: ") + outputPath);
+    {
+        std::ostringstream oss;
+        oss << "File size: " << fs::file_size(outputPath) << " bytes";
+        logger->info(oss.str());
+    }
     
     // Step 4: Compare with golden master
-    std::cout << "Step 4: Comparing with golden master..." << std::endl;
+    logger->info("Step 4: Comparing with golden master...");
     std::string goldenPath = "tests/fixtures/export_golden/golden_master.xml";
     
     if (!fs::exists(goldenPath)) {
-        std::cerr << "ERROR: Golden master file not found: " << goldenPath << std::endl;
+        logger->error(std::string("Golden master file not found: ") + goldenPath);
         return 1;
     }
     
-    bool identical = compareXMLFiles(goldenPath, outputPath);
+    bool identical = compareXMLFiles(goldenPath, outputPath, *logger);
     
-    std::cout << std::endl;
-    std::cout << "Validation Result: ";
     if (identical) {
-        std::cout << "✓ PASSED (output matches golden master)" << std::endl;
+        logger->info("Validation Result: PASSED (output matches golden master)");
         
         // Clean up test file
         fs::remove(outputPath);
         return 0;
     } else {
-        std::cout << "✗ FAILED (output differs from golden master)" << std::endl;
-        std::cout << "  Test file preserved for inspection: " << outputPath << std::endl;
-        std::cout << "  Golden master: " << goldenPath << std::endl;
-        std::cout << std::endl;
-        std::cout << "Run diff for detailed comparison:" << std::endl;
-        std::cout << "  diff " << goldenPath << " " << outputPath << std::endl;
+        logger->error("Validation Result: FAILED (output differs from golden master)");
+        logger->warn(std::string("Test file preserved for inspection: ") + outputPath);
+        logger->warn(std::string("Golden master: ") + goldenPath);
+        logger->info(std::string("Run diff for detailed comparison: diff ") + goldenPath + " " + outputPath);
         return 1;
     }
 }

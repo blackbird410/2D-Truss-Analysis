@@ -9,7 +9,6 @@
 #pragma once
 
 #include "logger.hpp"
-#include <iostream>
 #include <mutex>
 #include <sstream>
 

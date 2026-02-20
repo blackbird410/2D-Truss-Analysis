@@ -158,7 +158,7 @@ TEST_F(GUILifecycleTest, LoadProjectEmitsProjectOpenedSignal) {
     // Debug output
     if (operationFailedSpy.count() > 0) {
         QList<QVariant> failArgs = operationFailedSpy.takeFirst();
-        std::cerr << "Load failed: " << failArgs.at(0).toString().toStdString() << std::endl;
+        ADD_FAILURE() << "Load failed: " << failArgs.at(0).toString().toStdString();
     }
     
     // Verify signal emitted
@@ -212,7 +212,7 @@ TEST_F(GUILifecycleTest, LoadProjectReconstructsGeometry) {
     
     // Debug output
     if (failSpy.count() > 0) {
-        std::cerr << "Geometry load failed: " << failSpy.takeFirst().at(0).toString().toStdString() << std::endl;
+        ADD_FAILURE() << "Geometry load failed: " << failSpy.takeFirst().at(0).toString().toStdString();
     }
     
     // Get handle

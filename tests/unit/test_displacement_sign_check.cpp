@@ -14,8 +14,6 @@
 #include "../../src/core/analysis/BoundaryConditionHandler.hpp"
 #include "../../src/core/analysis/SolverFactory.hpp"
 #include "../../src/core/validation/TrussValidator.hpp"
-#include <iostream>
-#include <iomanip>
 
 using namespace truss::core;
 using namespace truss::core::analysis;
@@ -79,49 +77,10 @@ TEST(DisplacementSignTest, DownwardLoad_ProducesNegativeDisplacement) {
     
     auto results = orchestrator.analyze(truss);
     
-    // Print diagnostics
-    std::cout << "\n=== DISPLACEMENT SIGN TEST ===" << std::endl;
-    std::cout << std::fixed << std::setprecision(6);
-    
-    std::cout << "\nApplied Load:" << std::endl;
-    std::cout << "  Node 3: fy = " << node3->getAppliedForce().fy << " N (DOWNWARD)" << std::endl;
-    
-    std::cout << "\nDisplacements from analysis:" << std::endl;
-    std::cout << "  Node 1: dx = " << node1->getDisplacement().x 
-              << ", dy = " << node1->getDisplacement().y << std::endl;
-    std::cout << "  Node 2: dx = " << node2->getDisplacement().x 
-              << ", dy = " << node2->getDisplacement().y << std::endl;
-    std::cout << "  Node 3: dx = " << node3->getDisplacement().x 
-              << ", dy = " << node3->getDisplacement().y << " ← CRITICAL VALUE" << std::endl;
-    
     // CRITICAL TEST: Node 3 dy must be NEGATIVE (downward)
     Real dy_node3 = node3->getDisplacement().y;
-    
-    std::cout << "\n=== VERIFICATION ===" << std::endl;
-    if (dy_node3 < 0) {
-        std::cout << "✓ CORRECT: dy = " << dy_node3 << " (negative = downward)" << std::endl;
-    } else {
-        std::cout << "✗ ERROR: dy = " << dy_node3 << " (should be negative!)" << std::endl;
-    }
-    
-    // Verify equilibrium
-    std::cout << "\nReactions:" << std::endl;
-    std::cout << "  Node 1: rx = " << node1->getReaction().fx 
-              << ", ry = " << node1->getReaction().fy << std::endl;
-    std::cout << "  Node 2: rx = " << node2->getReaction().fx 
-              << ", ry = " << node2->getReaction().fy << std::endl;
-    
+
     Real sum_fy = node1->getReaction().fy + node2->getReaction().fy + node3->getAppliedForce().fy;
-    std::cout << "\nEquilibrium Check (ΣFy = 0):" << std::endl;
-    std::cout << "  ΣFy = " << sum_fy << std::endl;
-    
-    if (std::abs(sum_fy) < 1e-6) {
-        std::cout << "✓ EQUILIBRIUM SATISFIED" << std::endl;
-    } else {
-        std::cout << "✗ EQUILIBRIUM VIOLATION" << std::endl;
-    }
-    
-    std::cout << "===========================\n" << std::endl;
     
     // ASSERTIONS
     EXPECT_TRUE(results.converged) << "Analysis should converge";
@@ -181,17 +140,6 @@ TEST(DisplacementSignTest, VerticalColumn_DownwardLoad) {
     auto results = orchestrator.analyze(truss);
     
     Real dy_node3 = node3->getDisplacement().y;
-    
-    std::cout << "\n=== STABLE TRUSS TEST ===" << std::endl;
-    std::cout << "Applied load: fy = " << node3->getAppliedForce().fy << " N" << std::endl;
-    std::cout << "Node 3 displacement: dy = " << dy_node3 << std::endl;
-    
-    if (dy_node3 < 0) {
-        std::cout << "✓ CORRECT: Downward load produces negative displacement" << std::endl;
-    } else {
-        std::cout << "✗ ERROR: Expected negative displacement" << std::endl;
-    }
-    std::cout << "===========================\n" << std::endl;
     
     EXPECT_LT(dy_node3, 0.0) << "Downward load must produce negative (downward) displacement";
 }

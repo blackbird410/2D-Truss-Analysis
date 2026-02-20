@@ -8,6 +8,7 @@
 
 #include "console_logger.hpp"
 #include <chrono>
+#include <cstdio>
 #include <iomanip>
 #include <sstream>
 
@@ -76,11 +77,10 @@ void ConsoleLogger::log(LogLevel level, const std::string& message) {
     std::string logLine = oss.str();
     
     // Output to appropriate stream
-    if (level >= LogLevel::Error) {
-        std::cerr << logLine << std::endl;
-    } else {
-        std::cout << logLine << std::endl;
-    }
+    std::FILE* stream = (level >= LogLevel::Error) ? stderr : stdout;
+    std::fwrite(logLine.c_str(), 1, logLine.size(), stream);
+    std::fwrite("\n", 1, 1, stream);
+    std::fflush(stream);
 }
 
 std::string ConsoleLogger::getCurrentTimestamp() const {
