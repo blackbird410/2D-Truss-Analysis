@@ -67,9 +67,11 @@ int main() {
         std::cout << "  - XML now includes displacements, forces, reactions, metadata\n";
         std::cout << "  - CSVExporter is authoritative reference\n\n";
         
-        // Output directory
-        std::string outputDir = "tests/fixtures/export_golden";
-        std::cout << "Output directory: " << outputDir << "\n\n";
+        // Output directory (absolute path based on project root)
+        std::filesystem::path outputDir = std::filesystem::path(__FILE__).parent_path()
+            / "tests/fixtures/export_golden";
+        std::filesystem::create_directories(outputDir);
+        std::cout << "Output directory: " << outputDir.string() << "\n\n";
         
         // Step 1: Create test truss
         std::cout << "Step 1: Creating test truss structure...\n";
@@ -133,7 +135,7 @@ int main() {
         std::vector<std::pair<std::string, size_t>> fileDetails;
         
         for (auto& config : exporters) {
-            std::string fullPath = outputDir + "/" + config.fileName;
+            std::string fullPath = (outputDir / config.fileName).string();
             std::cout << "\n  [" << config.description << "]\n";
             std::cout << "  Generating: " << fullPath << "... ";
             
