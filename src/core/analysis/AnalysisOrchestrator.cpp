@@ -10,6 +10,7 @@
 #include <stdexcept>
 #include <algorithm>
 #include <cmath>
+#include <iostream>
 
 namespace truss::core::analysis {
 
@@ -33,17 +34,18 @@ AnalysisOrchestrator::AnalysisOrchestrator(
 
 AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
     // 1. Validate using centralized validator
-    validation::ValidationResult validation = m_validator->validate(truss);
-    
-    if (validation.hasFatal() || validation.hasErrors()) {
-        std::string errorMsg = "Truss validation failed:\n" + validation.getSummary();
-        throw std::runtime_error(errorMsg);
-    }
-    
-    if (validation.hasWarnings()) {
-        // Log warnings but proceed
-        // Note: Logging infrastructure exists but not injected yet - will be added in future iteration
-        // For now, warnings are silently ignored (validation successful)
+    if (m_validator) {
+        validation::ValidationResult validation = m_validator->validate(truss);
+        
+        if (validation.hasFatal() || validation.hasErrors()) {
+            std::string errorMsg = "Truss validation failed:\n" + validation.getSummary();
+            throw std::runtime_error(errorMsg);
+        }
+        
+        if (validation.hasWarnings()) {
+            // Log warnings but proceed
+            // Note: Logging infrastructure exists but not injected yet
+        }
     }
     
     // 2. Assign DOF numbers
@@ -60,13 +62,41 @@ AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
     MatrixXd Kff = m_bcHandler->applyToStiffness(K, freeDofs);
     VectorXd Ff = m_bcHandler->applyToLoad(F, freeDofs);
     
-    // 7. Solve the reduced system
+    // 7. Check for matrix singularity (if stability checking enabled)
+    if (m_options.checkStability) {
+        Real det = checkMatrixSingularity(Kff);
+        if (std::abs(det) < 1e-10) {
+            throw std::runtime_error(
+                "Singular stiffness matrix detected. "
+                "Structure is geometrically unstable or has insufficient constraints. "
+                "Check support configuration."
+            );
+        }
+    }
+    
+    // 8. Solve the reduced system
     VectorXd freeDisplacements = m_solver->solve(Kff, Ff);
     
-    // 8. Expand solution to full displacement vector
+    // 9. Expand solution to full displacement vector
     VectorXd displacements = m_bcHandler->expandDisplacements(freeDisplacements, freeDofs, truss.getTotalDofs());
     
-    // 9. Post-process results
+    // 10. Check for physically unreasonable displacements (numerical instability indicator)
+    Real maxDisp = displacements.cwiseAbs().maxCoeff();
+    const Real DISPLACEMENT_THRESHOLD = 1e6;  // 1000 km - clearly unphysical for engineering structure
+    
+    if (maxDisp > DISPLACEMENT_THRESHOLD) {
+        throw std::runtime_error(
+            "Analysis produced unreasonably large displacements (max = " + 
+            std::to_string(maxDisp) + " m). " +
+            "This indicates numerical instability, likely due to: " +
+            "(1) Geometric instability (check support configuration), " +
+            "(2) Nearly singular stiffness matrix, or " +
+            "(3) Insufficient constraints. " +
+            "For bridge truss: use RollerX (not RollerY) for right support."
+        );
+    }
+    
+    // 11. Post-process results
     AnalysisResults results = postProcessResults(truss, displacements, K);
     
     // Store results
@@ -249,6 +279,32 @@ Real AnalysisOrchestrator::computeConditionNumber(const MatrixXd& K) const {
     }
 }
 
+Real AnalysisOrchestrator::checkMatrixSingularity(const MatrixXd& K) const {
+    // Check for singularity by computing smallest eigenvalue
+    // For symmetric positive definite matrix, all eigenvalues should be > 0
+    
+    if (K.rows() == 0 || K.cols() == 0) {
+        return 0.0;
+    }
+    
+    try {
+        Eigen::SelfAdjointEigenSolver<MatrixXd> solver(K);
+        if (solver.info() != Eigen::Success) {
+            return 0.0;  // Computation failed
+        }
+        
+        VectorXd eigenvalues = solver.eigenvalues();
+        Real minEigenvalue = eigenvalues.minCoeff();  // Smallest eigenvalue
+        
+        // For a stable structure, all eigenvalues should be positive
+        // If minimum eigenvalue is near zero or negative, matrix is singular
+        return minEigenvalue;
+        
+    } catch (...) {
+        return 0.0;
+    }
+}
+
 Real AnalysisOrchestrator::computeStrainEnergy(
     const Truss& truss, 
     const VectorXd& displacements) const {
@@ -378,11 +434,15 @@ void AnalysisOrchestrator::updateTrussResults(
                     nodeResult.reaction.fx = results.reactions[reactionIndex];
                     nodeResult.reaction.fy = results.reactions[reactionIndex + 1];
                 }
-            } else if (nodes[i]->getSupportType() == SupportType::PinnedX) {
+            } else if (nodes[i]->getSupportType() == SupportType::PinnedX || 
+                       nodes[i]->getSupportType() == SupportType::RollerY) {
+                // PinnedX and RollerY constrain X direction
                 if (reactionIndex < results.reactions.size()) {
                     nodeResult.reaction.fx = results.reactions[reactionIndex];
                 }
-            } else if (nodes[i]->getSupportType() == SupportType::PinnedY) {
+            } else if (nodes[i]->getSupportType() == SupportType::PinnedY ||
+                       nodes[i]->getSupportType() == SupportType::RollerX) {
+                // PinnedY and RollerX constrain Y direction
                 if (reactionIndex < results.reactions.size()) {
                     nodeResult.reaction.fy = results.reactions[reactionIndex];
                 }
