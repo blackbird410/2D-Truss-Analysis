@@ -201,7 +201,7 @@ TEST(TrussTest, GetConstrainedNodes) {
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);      // constrained
     auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);     // constrained
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);        // free
-    auto node4 = truss.addNode(6.0, 0.0, SupportType::PinnedY);     // constrained
+    auto node4 = truss.addNode(6.0, 0.0, SupportType::RollerY);     // constrained
     auto node5 = truss.addNode(4.0, 3.0, SupportType::Free);        // free
     
     // Get constrained nodes
@@ -254,7 +254,7 @@ TEST(TrussTest, GetFreeNodes) {
     auto node2 = truss.addNode(4.0, 0.0, SupportType::Free);        // free
     auto node3 = truss.addNode(2.0, 3.0, SupportType::RollerY);     // constrained
     auto node4 = truss.addNode(6.0, 0.0, SupportType::Free);        // free
-    auto node5 = truss.addNode(4.0, 3.0, SupportType::PinnedX);     // constrained
+    auto node5 = truss.addNode(4.0, 3.0, SupportType::RollerX);     // constrained
     
     // Get free nodes
     auto freeNodes = truss.getFreeNodes();

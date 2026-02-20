@@ -102,10 +102,6 @@ QString TrussDataPresenter::formatSupportType(truss::core::SupportType supportTy
     switch (supportType) {
         case truss::core::SupportType::Free:
             return "Free";
-        case truss::core::SupportType::PinnedX:
-            return "PinnedX";
-        case truss::core::SupportType::PinnedY:
-            return "PinnedY";
         case truss::core::SupportType::Pinned:
             return "Pinned";
         case truss::core::SupportType::RollerX:

@@ -196,6 +196,11 @@ core::SupportType XmlTrussReader::parseSupportType(const std::string& str) {
     if (str == "free" || str == "Free") return core::SupportType::Free;
     if (str == "pinned" || str == "Pinned") return core::SupportType::Pinned;
     if (str == "fixed" || str == "Fixed") return core::SupportType::Pinned;  // Fixed maps to Pinned
+    
+    // Backward compatibility: Legacy directional pins map to Pinned (both DOFs constrained)
+    if (str == "pinned_x" || str == "PinnedX") return core::SupportType::Pinned;
+    if (str == "pinned_y" || str == "PinnedY") return core::SupportType::Pinned;
+    
     if (str == "roller_x" || str == "RollerX") return core::SupportType::RollerX;
     if (str == "roller_y" || str == "RollerY") return core::SupportType::RollerY;
     

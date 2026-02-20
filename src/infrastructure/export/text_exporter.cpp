@@ -142,8 +142,6 @@ void TextExporter::writeGeometrySection(std::ostream& os,
         switch (node.support) {
             case core::SupportType::Free: supportType = "Free"; break;
             case core::SupportType::Pinned: supportType = "Pinned"; break;
-            case core::SupportType::PinnedX: supportType = "Pinned-X"; break;
-            case core::SupportType::PinnedY: supportType = "Pinned-Y"; break;
             case core::SupportType::RollerX: supportType = "Roller-X"; break;
             case core::SupportType::RollerY: supportType = "Roller-Y"; break;
             default: supportType = "Unknown"; break;

@@ -46,7 +46,7 @@ protected:
         
         // Create nodes
         auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);   // Left support
-        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);  // Right support
+        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);  // Right support (Y constrained)
         auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);     // Top node
         
         // Create members
@@ -201,11 +201,11 @@ TEST_F(JSONExporterTest, GeometrySection) {
     EXPECT_TRUE(fileContains(outputPath, "\"id\": 1"));
     EXPECT_TRUE(fileContains(outputPath, "\"x\": 0.000000"));
     EXPECT_TRUE(fileContains(outputPath, "\"y\": 0.000000"));
-    EXPECT_TRUE(fileContains(outputPath, "\"supportType\": \"3\""));  // Pinned
+    EXPECT_TRUE(fileContains(outputPath, "\"supportType\": \"1\""));  // Pinned
     
     EXPECT_TRUE(fileContains(outputPath, "\"id\": 2"));
     EXPECT_TRUE(fileContains(outputPath, "\"x\": 4.000000"));
-    EXPECT_TRUE(fileContains(outputPath, "\"supportType\": \"5\""));  // RollerY
+    EXPECT_TRUE(fileContains(outputPath, "\"supportType\": \"2\""));  // RollerX
     
     EXPECT_TRUE(fileContains(outputPath, "\"id\": 3"));
     EXPECT_TRUE(fileContains(outputPath, "\"y\": 3.000000"));
@@ -478,7 +478,7 @@ TEST_F(JSONExporterTest, StringEscaping) {
     
     // Create stable truss structure (3 nodes, 3 members forming triangle)
     auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);
     
     truss->addMember(node1, node2);  // Bottom horizontal
@@ -586,7 +586,7 @@ TEST_F(JSONExporterTest, GoldenMasterEquivalence) {
     auto truss = std::make_unique<Truss>("Golden Master Test Truss");
     
     auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);
     
     truss->addMember(node1, node2);

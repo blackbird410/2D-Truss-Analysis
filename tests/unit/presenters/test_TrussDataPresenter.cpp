@@ -32,16 +32,12 @@ protected:
  * Acceptance Criteria:
  * - formatSupportType(Free) returns "Free"
  * - formatSupportType(Pinned) returns "Pinned"
- * - formatSupportType(PinnedX) returns "PinnedX"
- * - formatSupportType(PinnedY) returns "PinnedY"
  * - formatSupportType(RollerX) returns "RollerX"
  * - formatSupportType(RollerY) returns "RollerY"
  */
 TEST_F(TrussDataPresenterTest, FormatSupportTypeReturnsCorrectStrings) {
     EXPECT_EQ(presenter.formatSupportType(core::SupportType::Free).toStdString(), "Free");
     EXPECT_EQ(presenter.formatSupportType(core::SupportType::Pinned).toStdString(), "Pinned");
-    EXPECT_EQ(presenter.formatSupportType(core::SupportType::PinnedX).toStdString(), "PinnedX");
-    EXPECT_EQ(presenter.formatSupportType(core::SupportType::PinnedY).toStdString(), "PinnedY");
     EXPECT_EQ(presenter.formatSupportType(core::SupportType::RollerX).toStdString(), "RollerX");
     EXPECT_EQ(presenter.formatSupportType(core::SupportType::RollerY).toStdString(), "RollerY");
 }

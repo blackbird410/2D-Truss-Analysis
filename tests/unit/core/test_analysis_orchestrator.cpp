@@ -100,7 +100,7 @@ protected:
         auto node2 = std::make_shared<Node>(2, Point2D{4.0, 0.0}, SupportType::Free);
         auto node3 = std::make_shared<Node>(3, Point2D{4.0, 3.0}, SupportType::Free);
         auto node4 = std::make_shared<Node>(4, Point2D{8.0, 0.0}, SupportType::Free);
-        auto node5 = std::make_shared<Node>(5, Point2D{12.0, 0.0}, SupportType::RollerY);
+        auto node5 = std::make_shared<Node>(5, Point2D{12.0, 0.0}, SupportType::RollerX);
         
         // Apply loads
         node2->setAppliedForce(Force2D{0.0, -5000.0});
@@ -171,7 +171,7 @@ TEST_F(AnalysisOrchestratorTest, SimpleTruss_CompleteWorkflow) {
     ASSERT_TRUE(results.converged);
     ASSERT_EQ(results.displacements.size(), 6); // 3 nodes * 2 DOFs
     ASSERT_EQ(results.memberForces.size(), 3);  // 3 members (updated: added bottom chord)
-    // Reactions only for constrained DOFs (Pinned=2 + RollerY=1 = 3)
+    // Reactions only for constrained DOFs (Pinned=2 + RollerX=1 = 3)
     ASSERT_EQ(results.reactions.size(), 3);
     
     // Verify metadata

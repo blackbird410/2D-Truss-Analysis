@@ -418,9 +418,7 @@ void AnalysisOrchestrator::updateTrussResults(
                         // Count how many constrained DOFs come before this node
                         if (node->getSupportType() == SupportType::Pinned) {
                             reactionIndex += 2;
-                        } else if (node->getSupportType() == SupportType::PinnedX ||
-                                   node->getSupportType() == SupportType::RollerX ||
-                                   node->getSupportType() == SupportType::PinnedY ||
+                        } else if (node->getSupportType() == SupportType::RollerX ||
                                    node->getSupportType() == SupportType::RollerY) {
                             reactionIndex += 1;
                         }
@@ -434,15 +432,13 @@ void AnalysisOrchestrator::updateTrussResults(
                     nodeResult.reaction.fx = results.reactions[reactionIndex];
                     nodeResult.reaction.fy = results.reactions[reactionIndex + 1];
                 }
-            } else if (nodes[i]->getSupportType() == SupportType::PinnedX || 
-                       nodes[i]->getSupportType() == SupportType::RollerY) {
-                // PinnedX and RollerY constrain X direction
+            } else if (nodes[i]->getSupportType() == SupportType::RollerY) {
+                // RollerY constrains X direction only
                 if (reactionIndex < results.reactions.size()) {
                     nodeResult.reaction.fx = results.reactions[reactionIndex];
                 }
-            } else if (nodes[i]->getSupportType() == SupportType::PinnedY ||
-                       nodes[i]->getSupportType() == SupportType::RollerX) {
-                // PinnedY and RollerX constrain Y direction
+            } else if (nodes[i]->getSupportType() == SupportType::RollerX) {
+                // RollerX constrains Y direction only
                 if (reactionIndex < results.reactions.size()) {
                     nodeResult.reaction.fy = results.reactions[reactionIndex];
                 }
