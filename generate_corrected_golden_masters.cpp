@@ -41,7 +41,7 @@ Truss createTestTruss() {
     
     // Create nodes (same as original)
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);    // Left support
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerY);   // Right support
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);   // Right support
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);      // Top node
     
     // Add members to form triangle
@@ -77,7 +77,7 @@ int main() {
         std::cout << "  Nodes: " << truss.getNodes().size() << "\n";
         std::cout << "  Members: " << truss.getMembers().size() << "\n";
         std::cout << "  Applied loads: 1 (15 kN downward at top node)\n";
-        std::cout << "  Supports: Pinned (left) + RollerY (right)\n\n";
+        std::cout << "  Supports: Pinned (left) + RollerX (right)\n\n";
         
         // Step 2: Run analysis
         std::cout << "Step 2: Running structural analysis...\n";
