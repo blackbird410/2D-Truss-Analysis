@@ -223,6 +223,12 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
     TrussCore
 )
 
+# Utility: Generate corrected golden masters
+add_executable(generate_corrected_golden_masters
+    generate_corrected_golden_masters.cpp
+)
+target_link_libraries(generate_corrected_golden_masters PRIVATE TrussCore)
+
 # ============================================================================
 # UNIT TESTS CONFIGURATION
 # ============================================================================
