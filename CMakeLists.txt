@@ -257,6 +257,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_truss.cpp
         tests/unit/core/test_load.cpp
         tests/unit/core/test_truss_validator.cpp
+        tests/unit/core/test_validation_advanced.cpp
         tests/unit/core/test_stiffness_assembler.cpp
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
