@@ -171,10 +171,9 @@ TEST_F(ValidationAdvancedTest, AllNodesConstrained) {
     
     auto result = validator.validate(truss);
     
-    // 3 pinned supports = 6 reactions, 3 members = 3 unknowns
-    // 2*3 = 6 equations, 6+3 = 9 unknowns -> indeterminate
-    // But validator may consider this valid structurally
-    EXPECT_TRUE(result.isValid() || !result.isValid());  // Either outcome acceptable
+    // Behavior is intentionally unspecified here; we only assert that validation runs
+    (void)result;
+    SUCCEED() << "Validator handled fully constrained (indeterminate) truss without crashing.";
 }
 
 TEST_F(ValidationAdvancedTest, OnlyRollerSupports) {

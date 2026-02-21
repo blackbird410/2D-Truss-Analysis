@@ -28,6 +28,7 @@ echo -e "${YELLOW}Checking prerequisites...${NC}"
 command -v gcov >/dev/null 2>&1 || { echo -e "${RED}Error: gcov not found. Install gcc.${NC}"; exit 1; }
 command -v lcov >/dev/null 2>&1 || { echo -e "${RED}Error: lcov not found. Install lcov.${NC}"; exit 1; }
 command -v genhtml >/dev/null 2>&1 || { echo -e "${RED}Error: genhtml not found. Install lcov.${NC}"; exit 1; }
+command -v bc >/dev/null 2>&1 || { echo -e "${RED}Error: bc not found. Install bc.${NC}"; exit 1; }
 echo -e "${GREEN}✓ All prerequisites satisfied${NC}"
 echo ""
 

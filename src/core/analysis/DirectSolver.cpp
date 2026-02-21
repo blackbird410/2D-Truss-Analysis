@@ -21,7 +21,9 @@ VectorXd DirectSolver::solve(const MatrixXd& A, const VectorXd& b) const {
         throw std::runtime_error("DirectSolver: Matrix dimensions incompatible with vector");
     }
 
-    // Check if matrix is symmetric (within tolerance)
+    // Check if matrix is symmetric within a relative tolerance.
+    // 1e-10 is chosen to handle floating-point assembly errors in stiffness
+    // matrices while still detecting genuinely non-symmetric matrices.
     bool isSymmetric = A.isApprox(A.transpose(), 1e-10);
     
     if (isSymmetric) {

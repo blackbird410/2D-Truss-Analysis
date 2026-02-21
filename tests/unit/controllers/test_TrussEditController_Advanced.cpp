@@ -164,13 +164,14 @@ TEST_F(TrussEditControllerAdvancedTest, ErrorRecoverySequence) {
     // Try second add (will succeed)
     controller->onNodeAddRequested(core::Point2D{1.0, 0.0});
     int afterSecond = nodeAddedSpy.count();
+    EXPECT_EQ(afterSecond, 1);
     
     // Try third add (will succeed)
     controller->onNodeAddRequested(core::Point2D{2.0, 0.0});
     int afterThird = nodeAddedSpy.count();
     
-    // Verify pattern: at least some nodes were added
-    EXPECT_GE(afterThird, afterSecond);
+    // Verify pattern: one failure followed by two successful additions
+    EXPECT_EQ(afterThird, 2);
 }
 
 // ============================================================================
