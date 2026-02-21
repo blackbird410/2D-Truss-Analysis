@@ -275,6 +275,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_exporter_factory.cpp
         tests/unit/infrastructure/export/test_export_advanced.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
+        tests/unit/infrastructure/logging/test_logger_advanced.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
         tests/unit/infrastructure/io/test_fileio_advanced.cpp
         tests/unit/infrastructure/test_console_output_adapter.cpp
