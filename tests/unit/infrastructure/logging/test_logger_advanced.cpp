@@ -84,7 +84,7 @@ TEST_F(LoggerAdvancedTest, ConcurrentFileLogging) {
     std::atomic<int> completedThreads{0};
     
     for (int i = 0; i < numThreads; ++i) {
-        threads.emplace_back([&logger, i, messagesPerThread, &completedThreads]() {
+        threads.emplace_back([&logger, i, &completedThreads]() {
             for (int j = 0; j < messagesPerThread; ++j) {
                 logger->info("Thread " + std::to_string(i) + " message " + std::to_string(j));
             }
