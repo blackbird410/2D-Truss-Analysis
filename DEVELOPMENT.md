@@ -358,9 +358,6 @@ make ci-full
 - `.editorconfig` - Universal baseline (200+ lines, 25+ file types)
 - `package.json` - NPM scripts for Prettier
 
-See [docs/CLANG_TIDY_GUIDE.md](docs/CLANG_TIDY_GUIDE.md), [docs/PRETTIER_FORMATTING.md](docs/PRETTIER_FORMATTING.md),
-and [docs/EDITORCONFIG_GUIDE.md](docs/EDITORCONFIG_GUIDE.md) for detailed documentation.
-
 ## Performance Considerations
 
 ### Optimization Flags
