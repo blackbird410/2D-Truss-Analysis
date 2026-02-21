@@ -357,6 +357,7 @@ Real AnalysisOrchestrator::findMaxStress(const std::vector<Real>& stresses) {
     return it != stresses.end() ? std::abs(*it) : 0.0;
 }
 
+// cppcheck-suppress constParameterReference
 void AnalysisOrchestrator::updateTrussResults(Truss& truss, const AnalysisResults& results) {
     const auto& members = truss.getMembers();
     const auto& nodes = truss.getNodes();
@@ -389,7 +390,6 @@ void AnalysisOrchestrator::updateTrussResults(Truss& truss, const AnalysisResult
             nodeResult.reaction.fx = 0.0;
             nodeResult.reaction.fy = 0.0;
 
-            std::vector<Index> constrainedDofs = m_bcHandler->getConstrainedDofs(truss);
             size_t reactionIndex = 0;
 
             for (const auto& node : nodes) {
