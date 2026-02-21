@@ -351,12 +351,10 @@ Real AnalysisOrchestrator::findMaxStress(const std::vector<Real>& stresses) {
         return 0.0;
     }
 
-    Real maxStress = 0.0;
-    for (Real stress : stresses) {
-        maxStress = std::max(maxStress, std::abs(stress));
-    }
-
-    return maxStress;
+    auto it = std::max_element(stresses.begin(), stresses.end(), [](Real a, Real b) {
+        return std::abs(a) < std::abs(b);
+    });
+    return it != stresses.end() ? std::abs(*it) : 0.0;
 }
 
 void AnalysisOrchestrator::updateTrussResults(Truss& truss, const AnalysisResults& results) {
