@@ -7,10 +7,12 @@
  */
 
 #include "fileio_factory.hpp"
+
 #include "json_truss_reader.hpp"
 #include "json_truss_writer.hpp"
 #include "xml_truss_reader.hpp"
 #include "xml_truss_writer.hpp"
+
 #include <stdexcept>
 
 namespace truss::infrastructure::io {
@@ -19,14 +21,14 @@ std::unique_ptr<ITrussReader> FileIOFactory::createReader(FileFormat format) {
     switch (format) {
         case FileFormat::JSON:
             return std::make_unique<JsonTrussReader>();
-        
+
         case FileFormat::XML:
             return std::make_unique<XmlTrussReader>();
-        
+
         case FileFormat::Auto:
             throw std::invalid_argument("Cannot create reader with Auto format. "
-                                       "Use createReader(filepath) for auto-detection.");
-        
+                                        "Use createReader(filepath) for auto-detection.");
+
         default:
             throw std::invalid_argument("Unsupported file format");
     }
@@ -34,12 +36,12 @@ std::unique_ptr<ITrussReader> FileIOFactory::createReader(FileFormat format) {
 
 std::unique_ptr<ITrussReader> FileIOFactory::createReader(const std::filesystem::path& filepath) {
     FileFormat format = detectFormat(filepath);
-    
+
     if (format == FileFormat::Auto) {
-        throw std::invalid_argument("Cannot detect file format from extension: " + 
-                                   filepath.extension().string());
+        throw std::invalid_argument("Cannot detect file format from extension: " +
+                                    filepath.extension().string());
     }
-    
+
     return createReader(format);
 }
 
@@ -47,14 +49,14 @@ std::unique_ptr<ITrussWriter> FileIOFactory::createWriter(FileFormat format) {
     switch (format) {
         case FileFormat::JSON:
             return std::make_unique<JsonTrussWriter>();
-        
+
         case FileFormat::XML:
             return std::make_unique<XmlTrussWriter>();
-        
+
         case FileFormat::Auto:
             throw std::invalid_argument("Cannot create writer with Auto format. "
-                                       "Use createWriter(filepath) for auto-detection.");
-        
+                                        "Use createWriter(filepath) for auto-detection.");
+
         default:
             throw std::invalid_argument("Unsupported file format");
     }
@@ -62,12 +64,12 @@ std::unique_ptr<ITrussWriter> FileIOFactory::createWriter(FileFormat format) {
 
 std::unique_ptr<ITrussWriter> FileIOFactory::createWriter(const std::filesystem::path& filepath) {
     FileFormat format = detectFormat(filepath);
-    
+
     if (format == FileFormat::Auto) {
-        throw std::invalid_argument("Cannot detect file format from extension: " + 
-                                   filepath.extension().string());
+        throw std::invalid_argument("Cannot detect file format from extension: " +
+                                    filepath.extension().string());
     }
-    
+
     return createWriter(format);
 }
 
@@ -89,4 +91,4 @@ std::string FileIOFactory::getFormatName(FileFormat format) {
     return io::getFormatName(format);
 }
 
-} // namespace truss::infrastructure::io
+}  // namespace truss::infrastructure::io

@@ -4,41 +4,42 @@
  */
 
 #include "ArgumentParser.hpp"
+
 #include <algorithm>
 
 namespace truss::cli {
 
 ParsedArgs ArgumentParser::parse(int argc, char* argv[]) const {
     ParsedArgs result;
-    
+
     // Skip program name (argv[0])
     for (int i = 1; i < argc; ++i) {
         std::string arg = argv[i];
-        
+
         // Check for help flag
         if (arg == "-h" || arg == "--help") {
             result.showHelp = true;
             result.commandName = "help";
             continue;
         }
-        
+
         // Check for verbose flag
         if (arg == "-v" || arg == "--verbose") {
             result.verbose = true;
             result.options["verbose"] = "true";
             continue;
         }
-        
+
         // Check for other options
         if (isOption(arg)) {
             std::string optionName = extractOptionName(arg);
             std::string optionValue = extractOptionValue(arg);
-            
+
             // If value not in same argument, check next argument
             if (optionValue.empty() && i + 1 < argc && !isOption(argv[i + 1])) {
                 optionValue = argv[++i];
             }
-            
+
             result.options[optionName] = optionValue.empty() ? "true" : optionValue;
         } else {
             // Positional argument - first one is command name
@@ -49,12 +50,12 @@ ParsedArgs ArgumentParser::parse(int argc, char* argv[]) const {
             }
         }
     }
-    
+
     // Default command if none specified
     if (result.commandName.empty() && !result.showHelp) {
         result.commandName = "help";  // Show help by default
     }
-    
+
     return result;
 }
 
@@ -93,25 +94,23 @@ std::string ArgumentParser::extractOptionValue(const std::string& arg) const {
     return "";
 }
 
-std::optional<std::string> ArgumentParser::getOption(
-    const ParsedArgs& args, 
-    const std::string& longForm, 
-    const std::string& shortForm
-) {
+std::optional<std::string> ArgumentParser::getOption(const ParsedArgs& args,
+                                                     const std::string& longForm,
+                                                     const std::string& shortForm) {
     // Try long form first
     auto it = args.options.find(longForm);
     if (it != args.options.end()) {
         return it->second;
     }
-    
+
     // Try short form if long form not found
     it = args.options.find(shortForm);
     if (it != args.options.end()) {
         return it->second;
     }
-    
+
     // Not found
     return std::nullopt;
 }
 
-} // namespace truss::cli
+}  // namespace truss::cli

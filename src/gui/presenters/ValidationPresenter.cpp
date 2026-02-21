@@ -1,42 +1,36 @@
 #include "ValidationPresenter.hpp"
+
 #include <QList>
+
 #include <sstream>
 
 namespace truss_presenters {
 
-ValidationPresenter::ValidationDisplay 
-ValidationPresenter::formatValidation(
-    const truss::core::validation::ValidationResult& result) const 
-{
+ValidationPresenter::ValidationDisplay ValidationPresenter::formatValidation(
+    const truss::core::validation::ValidationResult& result) const {
     ValidationDisplay display;
-    
+
     display.isValid = result.isValid();
     display.summaryMessage = generateSummary(result);
-    
+
     // Group issues by severity
     groupIssuesBySeverity(
-        result.getIssues(),
-        display.fatalErrors,
-        display.errors,
-        display.warnings,
-        display.infos
-    );
-    
+        result.getIssues(), display.fatalErrors, display.errors, display.warnings, display.infos);
+
     return display;
 }
 
 QString ValidationPresenter::generateSummary(
-    const truss::core::validation::ValidationResult& result) const 
-{
+    const truss::core::validation::ValidationResult& result) const {
     if (result.isValid()) {
         return "Validation passed: Structure is ready for analysis.";
     }
-    
+
     size_t fatalCount = 0;
     size_t errorCount = 0;
     size_t warningCount = 0;
     size_t infoCount = 0;
-    
+
     for (const auto& issue : result.getIssues()) {
         switch (issue.severity) {
             case truss::core::validation::ValidationSeverity::Fatal:
@@ -53,9 +47,9 @@ QString ValidationPresenter::generateSummary(
                 break;
         }
     }
-    
+
     QString summary = "Validation failed: ";
-    
+
     QStringList parts;
     if (fatalCount > 0) {
         parts << QString("%1 fatal error%2").arg(fatalCount).arg(fatalCount == 1 ? "" : "s");
@@ -69,23 +63,21 @@ QString ValidationPresenter::generateSummary(
     if (infoCount > 0) {
         parts << QString("%1 info").arg(infoCount);
     }
-    
+
     summary += parts.join(", ");
     return summary;
 }
 
-QString ValidationPresenter::formatIssue(
-    const truss::core::validation::ValidationIssue& issue) const 
-{
+QString
+ValidationPresenter::formatIssue(const truss::core::validation::ValidationIssue& issue) const {
     return QString("%1 [%2]: %3")
         .arg(getSeverityIcon(issue.severity))
         .arg(QString::fromStdString(issue.category))
         .arg(QString::fromStdString(issue.message));
 }
 
-QString ValidationPresenter::getSeverityIcon(
-    truss::core::validation::ValidationSeverity severity) const 
-{
+QString
+ValidationPresenter::getSeverityIcon(truss::core::validation::ValidationSeverity severity) const {
     switch (severity) {
         case truss::core::validation::ValidationSeverity::Fatal:
             return "❌";
@@ -105,11 +97,10 @@ void ValidationPresenter::groupIssuesBySeverity(
     std::vector<QString>& fatalErrors,
     std::vector<QString>& errors,
     std::vector<QString>& warnings,
-    std::vector<QString>& infos) const 
-{
+    std::vector<QString>& infos) const {
     for (const auto& issue : issues) {
         QString formatted = formatIssue(issue);
-        
+
         switch (issue.severity) {
             case truss::core::validation::ValidationSeverity::Fatal:
                 fatalErrors.push_back(formatted);

@@ -3,18 +3,20 @@
  * @brief Validation test for UI load viewport auto-zoom fix
  * @author Civil Engineering Software Solutions
  * @version 3.0.0
- * 
+ *
  * This test verifies that the viewport fix correctly auto-zooms
  * to fit loaded geometry, ensuring visibility after load.
  */
 
-#include <gtest/gtest.h>
-#include <QDir>
-#include <QFile>
-#include <QTextStream>
 #include "application/TrussApplicationService.hpp"
 #include "gui/controllers/ProjectController.hpp"
 #include "gui/presenters/TrussDataPresenter.hpp"
+
+#include <QDir>
+#include <QFile>
+#include <QTextStream>
+
+#include <gtest/gtest.h>
 
 using namespace truss;
 using namespace truss::application;
@@ -31,7 +33,7 @@ protected:
         presenter = std::make_unique<TrussDataPresenter>();
         projectController = std::make_unique<ProjectController>(trussService.get());
     }
-    
+
     std::unique_ptr<TrussApplicationService> trussService;
     std::unique_ptr<TrussDataPresenter> presenter;
     std::unique_ptr<ProjectController> projectController;
@@ -45,7 +47,7 @@ TEST_F(LoadViewportFixTest, LoadLargeScaleGeometry_AutoZooms) {
     QString filepath = QDir::temp().filePath("large_scale_truss.json");
     QFile tempFile(filepath);
     ASSERT_TRUE(tempFile.open(QIODevice::WriteOnly | QIODevice::Text));
-    
+
     QTextStream stream(&tempFile);
     stream << R"({
         "metadata": {"name": "LargeScaleTruss"},
@@ -62,21 +64,21 @@ TEST_F(LoadViewportFixTest, LoadLargeScaleGeometry_AutoZooms) {
     })";
     stream.flush();
     tempFile.close();
-    
+
     // Load project
     projectController->onOpenProject(filepath);
-    
+
     // Verify handle created
     TrussHandle handle = projectController->getCurrentTruss();
     ASSERT_NE(handle, 0);
-    
+
     // Verify geometry loaded
     const auto& view = trussService->getTrussView(handle);
     EXPECT_EQ(view.getNodeCount(), 3);
-    
+
     // NOTE: In actual GUI, DrawingCanvas::setTrussHandle() would be called
     // which now includes zoomToFit() automatically
-    
+
     // Cleanup
     QFile::remove(filepath);
 }
@@ -89,7 +91,7 @@ TEST_F(LoadViewportFixTest, LoadOffsetGeometry_AutoCenters) {
     QString filepath = QDir::temp().filePath("offset_truss.json");
     QFile tempFile(filepath);
     ASSERT_TRUE(tempFile.open(QIODevice::WriteOnly | QIODevice::Text));
-    
+
     QTextStream stream(&tempFile);
     stream << R"({
         "metadata": {"name": "OffsetTruss"},
@@ -103,23 +105,23 @@ TEST_F(LoadViewportFixTest, LoadOffsetGeometry_AutoCenters) {
     })";
     stream.flush();
     tempFile.close();
-    
+
     // Load project
     projectController->onOpenProject(filepath);
-    
+
     // Verify handle created
     TrussHandle handle = projectController->getCurrentTruss();
     ASSERT_NE(handle, 0);
-    
+
     // Verify geometry loaded at offset location
     const auto& view = trussService->getTrussView(handle);
     auto nodes = view.getNodeViews();
     ASSERT_EQ(nodes.size(), 2);
     EXPECT_DOUBLE_EQ(nodes[0].x, 500.0);
     EXPECT_DOUBLE_EQ(nodes[1].x, 510.0);
-    
+
     // NOTE: Canvas zoomToFit() will automatically center this in viewport
-    
+
     // Cleanup
     QFile::remove(filepath);
 }
@@ -132,7 +134,7 @@ TEST_F(LoadViewportFixTest, LoadSmallScaleGeometry_AutoZooms) {
     QString filepath = QDir::temp().filePath("small_scale_truss.json");
     QFile tempFile(filepath);
     ASSERT_TRUE(tempFile.open(QIODevice::WriteOnly | QIODevice::Text));
-    
+
     QTextStream stream(&tempFile);
     stream << R"({
         "metadata": {"name": "SmallScaleTruss"},
@@ -149,20 +151,20 @@ TEST_F(LoadViewportFixTest, LoadSmallScaleGeometry_AutoZooms) {
     })";
     stream.flush();
     tempFile.close();
-    
+
     // Load project
     projectController->onOpenProject(filepath);
-    
+
     // Verify handle created
     TrussHandle handle = projectController->getCurrentTruss();
     ASSERT_NE(handle, 0);
-    
+
     // Verify geometry loaded
     const auto& view = trussService->getTrussView(handle);
     EXPECT_EQ(view.getNodeCount(), 3);
-    
+
     // NOTE: Canvas zoomToFit() will automatically scale this to visible size
-    
+
     // Cleanup
     QFile::remove(filepath);
 }
@@ -188,11 +190,11 @@ TEST_F(LoadViewportFixTest, ConsecutiveLoads_UpdateViewportEachTime) {
     })";
     stream1.flush();
     file1.close();
-    
+
     projectController->onOpenProject(filepath1);
     TrussHandle handle1 = projectController->getCurrentTruss();
     ASSERT_NE(handle1, 0);
-    
+
     // Load second project (large scale)
     QString filepath2 = QDir::temp().filePath("truss2.json");
     QFile file2(filepath2);
@@ -210,21 +212,21 @@ TEST_F(LoadViewportFixTest, ConsecutiveLoads_UpdateViewportEachTime) {
     })";
     stream2.flush();
     file2.close();
-    
+
     projectController->onOpenProject(filepath2);
     TrussHandle handle2 = projectController->getCurrentTruss();
     ASSERT_NE(handle2, 0);
-    
+
     // Verify handle changed
     EXPECT_NE(handle1, handle2);
-    
+
     // Verify second geometry loaded
     const auto& view = trussService->getTrussView(handle2);
     auto nodes = view.getNodeViews();
     EXPECT_DOUBLE_EQ(nodes[1].x, 50.0);
-    
+
     // NOTE: Each setTrussHandle() call will auto-zoom to new geometry
-    
+
     // Cleanup
     QFile::remove(filepath1);
     QFile::remove(filepath2);

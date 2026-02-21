@@ -5,15 +5,16 @@
  * @version 3.0.0
  */
 
-#include <gtest/gtest.h>
-#include "infrastructure/export/exporter_factory.hpp"
 #include "infrastructure/export/csv_exporter.hpp"
-#include "infrastructure/export/json_exporter.hpp"
-#include "infrastructure/export/xml_exporter.hpp"
+#include "infrastructure/export/exporter_factory.hpp"
 #include "infrastructure/export/html_exporter.hpp"
+#include "infrastructure/export/json_exporter.hpp"
 #include "infrastructure/export/latex_exporter.hpp"
 #include "infrastructure/export/text_exporter.hpp"
+#include "infrastructure/export/xml_exporter.hpp"
+
 #include <filesystem>
+#include <gtest/gtest.h>
 #include <memory>
 
 using namespace truss::infrastructure::export_;
@@ -27,7 +28,7 @@ protected:
     void SetUp() override {
         // No setup required - factory is stateless
     }
-    
+
     void TearDown() override {
         // No cleanup required
     }
@@ -43,7 +44,7 @@ protected:
 TEST_F(ExporterFactoryTest, CreateCSVExporter) {
     auto exporter = ExporterFactory::create(ExportFormat::CSV);
     ASSERT_NE(exporter, nullptr);
-    
+
     // Verify it's actually a CSVExporter by checking type (via dynamic_cast)
     auto* csvExporter = dynamic_cast<CSVExporter*>(exporter.get());
     EXPECT_NE(csvExporter, nullptr) << "Created exporter should be CSVExporter";
@@ -55,7 +56,7 @@ TEST_F(ExporterFactoryTest, CreateCSVExporter) {
 TEST_F(ExporterFactoryTest, CreateTSVExporter) {
     auto exporter = ExporterFactory::create(ExportFormat::TSV);
     ASSERT_NE(exporter, nullptr);
-    
+
     // TSV format should also create CSVExporter (with different delimiter)
     auto* csvExporter = dynamic_cast<CSVExporter*>(exporter.get());
     EXPECT_NE(csvExporter, nullptr) << "TSV format should create CSVExporter";
@@ -67,7 +68,7 @@ TEST_F(ExporterFactoryTest, CreateTSVExporter) {
 TEST_F(ExporterFactoryTest, CreateJSONExporter) {
     auto exporter = ExporterFactory::create(ExportFormat::JSON);
     ASSERT_NE(exporter, nullptr);
-    
+
     auto* jsonExporter = dynamic_cast<JSONExporter*>(exporter.get());
     EXPECT_NE(jsonExporter, nullptr) << "Created exporter should be JSONExporter";
 }
@@ -78,7 +79,7 @@ TEST_F(ExporterFactoryTest, CreateJSONExporter) {
 TEST_F(ExporterFactoryTest, CreateXMLExporter) {
     auto exporter = ExporterFactory::create(ExportFormat::XML);
     ASSERT_NE(exporter, nullptr);
-    
+
     auto* xmlExporter = dynamic_cast<XMLExporter*>(exporter.get());
     EXPECT_NE(xmlExporter, nullptr) << "Created exporter should be XMLExporter";
 }
@@ -89,7 +90,7 @@ TEST_F(ExporterFactoryTest, CreateXMLExporter) {
 TEST_F(ExporterFactoryTest, CreateHTMLExporter) {
     auto exporter = ExporterFactory::create(ExportFormat::HTML);
     ASSERT_NE(exporter, nullptr);
-    
+
     auto* htmlExporter = dynamic_cast<HTMLExporter*>(exporter.get());
     EXPECT_NE(htmlExporter, nullptr) << "Created exporter should be HTMLExporter";
 }
@@ -100,7 +101,7 @@ TEST_F(ExporterFactoryTest, CreateHTMLExporter) {
 TEST_F(ExporterFactoryTest, CreateLaTeXExporter) {
     auto exporter = ExporterFactory::create(ExportFormat::LaTeX);
     ASSERT_NE(exporter, nullptr);
-    
+
     auto* latexExporter = dynamic_cast<LaTeXExporter*>(exporter.get());
     EXPECT_NE(latexExporter, nullptr) << "Created exporter should be LaTeXExporter";
 }
@@ -111,7 +112,7 @@ TEST_F(ExporterFactoryTest, CreateLaTeXExporter) {
 TEST_F(ExporterFactoryTest, CreateTextExporter) {
     auto exporter = ExporterFactory::create(ExportFormat::TXT);
     ASSERT_NE(exporter, nullptr);
-    
+
     auto* textExporter = dynamic_cast<TextExporter*>(exporter.get());
     EXPECT_NE(textExporter, nullptr) << "Created exporter should be TextExporter";
 }
@@ -122,34 +123,30 @@ TEST_F(ExporterFactoryTest, CreateTextExporter) {
 TEST_F(ExporterFactoryTest, UniquenessOfCreatedExporters) {
     auto exporter1 = ExporterFactory::create(ExportFormat::JSON);
     auto exporter2 = ExporterFactory::create(ExportFormat::JSON);
-    
-    EXPECT_NE(exporter1.get(), exporter2.get())
-        << "Factory should create independent instances";
+
+    EXPECT_NE(exporter1.get(), exporter2.get()) << "Factory should create independent instances";
 }
 
 /**
  * @brief Test all exporters implement IResultsExporter interface
  */
 TEST_F(ExporterFactoryTest, AllExportersImplementInterface) {
-    std::vector<ExportFormat> formats = {
-        ExportFormat::CSV,
-        ExportFormat::TSV,
-        ExportFormat::JSON,
-        ExportFormat::XML,
-        ExportFormat::HTML,
-        ExportFormat::LaTeX,
-        ExportFormat::TXT
-    };
-    
+    std::vector<ExportFormat> formats = {ExportFormat::CSV,
+                                         ExportFormat::TSV,
+                                         ExportFormat::JSON,
+                                         ExportFormat::XML,
+                                         ExportFormat::HTML,
+                                         ExportFormat::LaTeX,
+                                         ExportFormat::TXT};
+
     for (const auto& format : formats) {
         auto exporter = ExporterFactory::create(format);
-        ASSERT_NE(exporter, nullptr) 
+        ASSERT_NE(exporter, nullptr)
             << "Exporter for format " << static_cast<int>(format) << " should not be null";
-        
+
         // Verify it implements the interface (compile-time check via unique_ptr<IResultsExporter>)
         IResultsExporter* interface = exporter.get();
-        EXPECT_NE(interface, nullptr) 
-            << "Exporter should implement IResultsExporter interface";
+        EXPECT_NE(interface, nullptr) << "Exporter should implement IResultsExporter interface";
     }
 }
 
@@ -235,12 +232,10 @@ TEST_F(ExporterFactoryTest, DetectUnknownFormatDefaultsToCSV) {
  * @brief Test format detection with complex paths
  */
 TEST_F(ExporterFactoryTest, DetectFormatWithComplexPaths) {
-    EXPECT_EQ(ExporterFactory::detectFormat("/home/user/project.name/results.json"), 
+    EXPECT_EQ(ExporterFactory::detectFormat("/home/user/project.name/results.json"),
               ExportFormat::JSON);
-    EXPECT_EQ(ExporterFactory::detectFormat("../relative/path/to/results.xml"), 
-              ExportFormat::XML);
-    EXPECT_EQ(ExporterFactory::detectFormat("./results.html"), 
-              ExportFormat::HTML);
+    EXPECT_EQ(ExporterFactory::detectFormat("../relative/path/to/results.xml"), ExportFormat::XML);
+    EXPECT_EQ(ExporterFactory::detectFormat("./results.html"), ExportFormat::HTML);
 }
 
 /**
@@ -250,7 +245,7 @@ TEST_F(ExporterFactoryTest, DetectFormatWithPathObject) {
     fs::path csvPath = "results.csv";
     fs::path jsonPath = "results.json";
     fs::path xmlPath = "results.xml";
-    
+
     EXPECT_EQ(ExporterFactory::detectFormat(csvPath), ExportFormat::CSV);
     EXPECT_EQ(ExporterFactory::detectFormat(jsonPath), ExportFormat::JSON);
     EXPECT_EQ(ExporterFactory::detectFormat(xmlPath), ExportFormat::XML);
@@ -277,12 +272,14 @@ TEST_F(ExporterFactoryTest, GetExtensionForAllFormats) {
  * @brief Test extension strings start with dot
  */
 TEST_F(ExporterFactoryTest, ExtensionsStartWithDot) {
-    std::vector<ExportFormat> formats = {
-        ExportFormat::CSV, ExportFormat::TSV, ExportFormat::JSON,
-        ExportFormat::XML, ExportFormat::HTML, ExportFormat::LaTeX,
-        ExportFormat::TXT
-    };
-    
+    std::vector<ExportFormat> formats = {ExportFormat::CSV,
+                                         ExportFormat::TSV,
+                                         ExportFormat::JSON,
+                                         ExportFormat::XML,
+                                         ExportFormat::HTML,
+                                         ExportFormat::LaTeX,
+                                         ExportFormat::TXT};
+
     for (const auto& format : formats) {
         std::string ext = ExporterFactory::getExtension(format);
         EXPECT_FALSE(ext.empty()) << "Extension should not be empty";
@@ -298,37 +295,31 @@ TEST_F(ExporterFactoryTest, ExtensionsStartWithDot) {
  * @brief Test format name retrieval for all formats
  */
 TEST_F(ExporterFactoryTest, GetFormatNameForAllFormats) {
-    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::CSV), 
-              "Comma-Separated Values");
-    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::TSV), 
-              "Tab-Separated Values");
-    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::JSON), 
-              "JavaScript Object Notation");
-    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::XML), 
-              "Extensible Markup Language");
-    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::HTML), 
-              "HyperText Markup Language");
-    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::LaTeX), 
-              "LaTeX Document");
-    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::TXT), 
-              "Plain Text");
+    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::CSV), "Comma-Separated Values");
+    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::TSV), "Tab-Separated Values");
+    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::JSON), "JavaScript Object Notation");
+    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::XML), "Extensible Markup Language");
+    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::HTML), "HyperText Markup Language");
+    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::LaTeX), "LaTeX Document");
+    EXPECT_EQ(ExporterFactory::getFormatName(ExportFormat::TXT), "Plain Text");
 }
 
 /**
  * @brief Test format names are non-empty
  */
 TEST_F(ExporterFactoryTest, FormatNamesAreNonEmpty) {
-    std::vector<ExportFormat> formats = {
-        ExportFormat::CSV, ExportFormat::TSV, ExportFormat::JSON,
-        ExportFormat::XML, ExportFormat::HTML, ExportFormat::LaTeX,
-        ExportFormat::TXT
-    };
-    
+    std::vector<ExportFormat> formats = {ExportFormat::CSV,
+                                         ExportFormat::TSV,
+                                         ExportFormat::JSON,
+                                         ExportFormat::XML,
+                                         ExportFormat::HTML,
+                                         ExportFormat::LaTeX,
+                                         ExportFormat::TXT};
+
     for (const auto& format : formats) {
         std::string name = ExporterFactory::getFormatName(format);
-        EXPECT_FALSE(name.empty()) 
-            << "Format name should not be empty for format " 
-            << static_cast<int>(format);
+        EXPECT_FALSE(name.empty())
+            << "Format name should not be empty for format " << static_cast<int>(format);
     }
 }
 
@@ -344,12 +335,12 @@ TEST_F(ExporterFactoryTest, CompleteWorkflowDetectCreateVerify) {
     auto csvFormat = ExporterFactory::detectFormat("results.csv");
     auto csvExporter = ExporterFactory::create(csvFormat);
     EXPECT_NE(dynamic_cast<CSVExporter*>(csvExporter.get()), nullptr);
-    
+
     // Test JSON workflow
     auto jsonFormat = ExporterFactory::detectFormat("results.json");
     auto jsonExporter = ExporterFactory::create(jsonFormat);
     EXPECT_NE(dynamic_cast<JSONExporter*>(jsonExporter.get()), nullptr);
-    
+
     // Test XML workflow
     auto xmlFormat = ExporterFactory::detectFormat("results.xml");
     auto xmlExporter = ExporterFactory::create(xmlFormat);
@@ -360,22 +351,24 @@ TEST_F(ExporterFactoryTest, CompleteWorkflowDetectCreateVerify) {
  * @brief Test round-trip: format → extension → detect → format
  */
 TEST_F(ExporterFactoryTest, RoundTripFormatExtensionDetect) {
-    std::vector<ExportFormat> formats = {
-        ExportFormat::CSV, ExportFormat::TSV, ExportFormat::JSON,
-        ExportFormat::XML, ExportFormat::HTML, ExportFormat::LaTeX,
-        ExportFormat::TXT
-    };
-    
+    std::vector<ExportFormat> formats = {ExportFormat::CSV,
+                                         ExportFormat::TSV,
+                                         ExportFormat::JSON,
+                                         ExportFormat::XML,
+                                         ExportFormat::HTML,
+                                         ExportFormat::LaTeX,
+                                         ExportFormat::TXT};
+
     for (const auto& originalFormat : formats) {
         // Get extension
         std::string ext = ExporterFactory::getExtension(originalFormat);
-        
+
         // Create path with extension
         std::string path = "test" + ext;
-        
+
         // Detect format from path
         auto detectedFormat = ExporterFactory::detectFormat(path);
-        
+
         // Should match original
         EXPECT_EQ(detectedFormat, originalFormat)
             << "Round-trip failed for format " << static_cast<int>(originalFormat);
@@ -389,17 +382,19 @@ TEST_F(ExporterFactoryTest, FactoryProducesWorkingExporters) {
     // This is a smoke test - we just verify exporters can be created
     // and don't crash. Detailed functionality is tested in individual
     // exporter test suites.
-    
-    std::vector<ExportFormat> formats = {
-        ExportFormat::CSV, ExportFormat::JSON, ExportFormat::XML,
-        ExportFormat::HTML, ExportFormat::LaTeX, ExportFormat::TXT
-    };
-    
+
+    std::vector<ExportFormat> formats = {ExportFormat::CSV,
+                                         ExportFormat::JSON,
+                                         ExportFormat::XML,
+                                         ExportFormat::HTML,
+                                         ExportFormat::LaTeX,
+                                         ExportFormat::TXT};
+
     for (const auto& format : formats) {
         EXPECT_NO_THROW({
             auto exporter = ExporterFactory::create(format);
             EXPECT_NE(exporter, nullptr);
-        }) << "Factory should create exporter without throwing for format " 
+        }) << "Factory should create exporter without throwing for format "
            << static_cast<int>(format);
     }
 }
@@ -416,13 +411,13 @@ TEST_F(ExporterFactoryTest, DeterministicBehavior) {
     for (int i = 0; i < 10; ++i) {
         auto exporter1 = ExporterFactory::create(ExportFormat::JSON);
         auto exporter2 = ExporterFactory::create(ExportFormat::JSON);
-        
+
         // Should be same concrete type (both JSONExporter)
         // Store references to avoid evaluation in typeid operand
         const auto& exp1 = *exporter1;
         const auto& exp2 = *exporter2;
         EXPECT_EQ(typeid(exp1).hash_code(), typeid(exp2).hash_code());
-        
+
         // But different instances
         EXPECT_NE(exporter1.get(), exporter2.get());
     }
@@ -432,13 +427,11 @@ TEST_F(ExporterFactoryTest, DeterministicBehavior) {
  * @brief Test format detection is case-insensitive
  */
 TEST_F(ExporterFactoryTest, FormatDetectionCaseInsensitive) {
-    EXPECT_EQ(ExporterFactory::detectFormat("file.csv"), 
-              ExporterFactory::detectFormat("file.CSV"));
-    EXPECT_EQ(ExporterFactory::detectFormat("file.json"), 
+    EXPECT_EQ(ExporterFactory::detectFormat("file.csv"), ExporterFactory::detectFormat("file.CSV"));
+    EXPECT_EQ(ExporterFactory::detectFormat("file.json"),
               ExporterFactory::detectFormat("file.JSON"));
-    EXPECT_EQ(ExporterFactory::detectFormat("file.xml"), 
-              ExporterFactory::detectFormat("file.XML"));
-    EXPECT_EQ(ExporterFactory::detectFormat("file.html"), 
+    EXPECT_EQ(ExporterFactory::detectFormat("file.xml"), ExporterFactory::detectFormat("file.XML"));
+    EXPECT_EQ(ExporterFactory::detectFormat("file.html"),
               ExporterFactory::detectFormat("file.HTML"));
 }
 
@@ -452,7 +445,7 @@ TEST_F(ExporterFactoryTest, NoSideEffectsFromRepeatedCalls) {
         auto exporter = ExporterFactory::create(format);
         auto ext = ExporterFactory::getExtension(format);
         auto name = ExporterFactory::getFormatName(format);
-        
+
         // Results should be consistent
         EXPECT_EQ(format, ExportFormat::JSON);
         EXPECT_NE(exporter, nullptr);

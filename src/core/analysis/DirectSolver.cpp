@@ -6,8 +6,10 @@
  */
 
 #include "DirectSolver.hpp"
+
 #include <Eigen/Cholesky>
 #include <Eigen/LU>
+
 #include <stdexcept>
 
 namespace truss::core::analysis {
@@ -25,16 +27,17 @@ VectorXd DirectSolver::solve(const MatrixXd& A, const VectorXd& b) const {
     // 1e-10 is chosen to handle floating-point assembly errors in stiffness
     // matrices while still detecting genuinely non-symmetric matrices.
     bool isSymmetric = A.isApprox(A.transpose(), 1e-10);
-    
+
     if (isSymmetric) {
         // Use LDLT for symmetric positive definite matrices (more efficient)
         Eigen::LDLT<MatrixXd> ldlt(A);
-        
+
         // Check if decomposition was successful
         if (ldlt.info() != Eigen::Success) {
-            throw std::runtime_error("DirectSolver: LDLT decomposition failed - matrix may be singular or not positive definite");
+            throw std::runtime_error("DirectSolver: LDLT decomposition failed - matrix may be "
+                                     "singular or not positive definite");
         }
-        
+
         // Solve the system
         VectorXd x = ldlt.solve(b);
         return x;
@@ -42,16 +45,16 @@ VectorXd DirectSolver::solve(const MatrixXd& A, const VectorXd& b) const {
         // Use FullPivLU for general non-symmetric matrices
         // This is more robust for ill-conditioned and rank-deficient matrices
         Eigen::FullPivLU<MatrixXd> lu(A);
-        
+
         // Check if matrix is singular
         if (!lu.isInvertible()) {
             throw std::runtime_error("DirectSolver: Matrix is singular or rank-deficient");
         }
-        
+
         // Solve the system
         VectorXd x = lu.solve(b);
         return x;
     }
 }
 
-} // namespace truss::core::analysis
+}  // namespace truss::core::analysis

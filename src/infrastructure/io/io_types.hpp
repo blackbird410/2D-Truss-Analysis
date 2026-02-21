@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include <string>
 #include <stdexcept>
+#include <string>
 
 namespace truss::infrastructure::io {
 
@@ -17,21 +17,23 @@ namespace truss::infrastructure::io {
  * @brief File format options for truss file I/O
  */
 enum class FileFormat {
-    JSON,       ///< JSON format (default)
-    XML,        ///< XML format
-    Auto        ///< Auto-detect from file extension
+    JSON,  ///< JSON format (default)
+    XML,   ///< XML format
+    Auto   ///< Auto-detect from file extension
 };
 
 /**
  * @brief File I/O options for reading and writing
  */
 struct FileIOOptions {
-    bool prettyPrint{true};           ///< Pretty-print output (adds indentation/whitespace)
-    int indentSize{2};                ///< Number of spaces for indentation
-    bool includeMetadata{true};       ///< Include metadata (timestamp, version, etc.)
-    bool overwriteExisting{false};    ///< Allow overwriting existing files
-    bool validateOnWrite{false};      ///< Validate domain model before serialization (via TrussValidator)
-    bool validateOnRead{false};       ///< Validate domain model after deserialization (via TrussValidator)
+    bool prettyPrint{true};         ///< Pretty-print output (adds indentation/whitespace)
+    int indentSize{2};              ///< Number of spaces for indentation
+    bool includeMetadata{true};     ///< Include metadata (timestamp, version, etc.)
+    bool overwriteExisting{false};  ///< Allow overwriting existing files
+    bool validateOnWrite{
+        false};  ///< Validate domain model before serialization (via TrussValidator)
+    bool validateOnRead{
+        false};  ///< Validate domain model after deserialization (via TrussValidator)
 };
 
 /**
@@ -39,8 +41,7 @@ struct FileIOOptions {
  */
 class FileIOException : public std::runtime_error {
 public:
-    explicit FileIOException(const std::string& message)
-        : std::runtime_error(message) {}
+    explicit FileIOException(const std::string& message) : std::runtime_error(message) {}
 };
 
 class FileNotFoundException : public FileIOException {
@@ -78,10 +79,14 @@ public:
  */
 inline std::string getFileExtension(FileFormat format) {
     switch (format) {
-        case FileFormat::JSON: return ".json";
-        case FileFormat::XML:  return ".xml";
-        case FileFormat::Auto: return "";
-        default: return "";
+        case FileFormat::JSON:
+            return ".json";
+        case FileFormat::XML:
+            return ".xml";
+        case FileFormat::Auto:
+            return "";
+        default:
+            return "";
     }
 }
 
@@ -89,8 +94,10 @@ inline std::string getFileExtension(FileFormat format) {
  * @brief Detect file format from extension
  */
 inline FileFormat detectFileFormat(const std::string& filepath) {
-    if (filepath.ends_with(".json")) return FileFormat::JSON;
-    if (filepath.ends_with(".xml"))  return FileFormat::XML;
+    if (filepath.ends_with(".json"))
+        return FileFormat::JSON;
+    if (filepath.ends_with(".xml"))
+        return FileFormat::XML;
     return FileFormat::Auto;  // Unknown
 }
 
@@ -99,11 +106,15 @@ inline FileFormat detectFileFormat(const std::string& filepath) {
  */
 inline std::string getFormatName(FileFormat format) {
     switch (format) {
-        case FileFormat::JSON: return "JSON";
-        case FileFormat::XML:  return "XML";
-        case FileFormat::Auto: return "Auto";
-        default: return "Unknown";
+        case FileFormat::JSON:
+            return "JSON";
+        case FileFormat::XML:
+            return "XML";
+        case FileFormat::Auto:
+            return "Auto";
+        default:
+            return "Unknown";
     }
 }
 
-} // namespace truss::infrastructure::io
+}  // namespace truss::infrastructure::io

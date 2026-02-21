@@ -73,4 +73,4 @@ public:
     virtual void warn(const std::string& message) = 0;
 };
 
-} // namespace truss::application::interfaces
+}  // namespace truss::application::interfaces

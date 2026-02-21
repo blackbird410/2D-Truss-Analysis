@@ -3,7 +3,7 @@
  * @brief Google Test minimal integration test for basic analysis workflow
  * @author Civil Engineering Software Solutions
  * @version 3.0.0
- * 
+ *
  * Migration Notes:
  * - Converted from minimal console application to GTest format
  * - Preserved basic triangular truss workflow
@@ -11,10 +11,11 @@
  * - Tests absolute minimal successful analysis workflow
  */
 
-#include <gtest/gtest.h>
-#include "../../src/core/model/Truss.hpp"
 #include "../../src/core/analysis/AnalysisOrchestrator.hpp"
 #include "../../src/core/analysis/DirectSolver.hpp"
+#include "../../src/core/model/Truss.hpp"
+
+#include <gtest/gtest.h>
 
 using namespace truss::core;
 
@@ -24,29 +25,31 @@ using namespace truss::core;
 TEST(MinimalAnalysisTest, BasicTriangularTrussWorkflow) {
     // Create truss
     Truss truss("Minimal Test");
-    
+
     // Add a simple triangular truss
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
     auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);
-    
+
     truss.addMember(node1, node2);
     truss.addMember(node1, node3);
     truss.addMember(node2, node3);
-    
+
     truss.applyForce(node3->getId(), Force2D(0.0, -10000.0));
-    
+
     // Create analysis engine
-    truss::core::analysis::AnalysisOrchestrator orchestrator(std::make_unique<truss::core::analysis::DirectSolver>(), std::make_unique<truss::core::validation::TrussValidator>());
-    
+    truss::core::analysis::AnalysisOrchestrator orchestrator(
+        std::make_unique<truss::core::analysis::DirectSolver>(),
+        std::make_unique<truss::core::validation::TrussValidator>());
+
     // Perform analysis
     try {
         truss::core::analysis::AnalysisResults results = orchestrator.analyze(truss);
-        
+
         // Validate results
         EXPECT_TRUE(results.converged) << "Analysis should converge";
         EXPECT_GT(results.maxDisplacement, 0.0) << "Max displacement should be positive";
-        
+
     } catch (const std::exception& e) {
         FAIL() << "Analysis failed with exception: " << e.what();
     }

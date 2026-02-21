@@ -4,16 +4,14 @@
  */
 
 #include "HelpCommand.hpp"
+
 #include <sstream>
 
 namespace truss::cli::commands {
 
-HelpCommand::HelpCommand(
-    truss::cli::presenters::ConsolePresenter& presenter,
-    const std::vector<ICommand*>& commands
-) : m_presenter(presenter),
-    m_commands(commands)
-{}
+HelpCommand::HelpCommand(truss::cli::presenters::ConsolePresenter& presenter,
+                         const std::vector<ICommand*>& commands)
+    : m_presenter(presenter), m_commands(commands) {}
 
 int HelpCommand::execute() {
     displayUsage();
@@ -33,7 +31,7 @@ void HelpCommand::displayUsage() const {
 
 void HelpCommand::displayCommands() const {
     m_presenter.displayInfo("Available Commands:");
-    
+
     for (const auto* cmd : m_commands) {
         if (cmd) {
             std::ostringstream oss;
@@ -41,7 +39,7 @@ void HelpCommand::displayCommands() const {
             m_presenter.displayInfo(oss.str());
         }
     }
-    
+
     m_presenter.displayInfo("");
     m_presenter.displayInfo("Examples:");
     m_presenter.displayInfo("  TrussAnalysisCLI example        # Run example analysis");
@@ -50,4 +48,4 @@ void HelpCommand::displayCommands() const {
     m_presenter.displayInfo("");
 }
 
-} // namespace truss::cli::commands
+}  // namespace truss::cli::commands

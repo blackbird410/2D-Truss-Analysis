@@ -7,6 +7,7 @@
  */
 
 #include "console_logger.hpp"
+
 #include <chrono>
 #include <cstdio>
 #include <iomanip>
@@ -15,8 +16,7 @@
 namespace truss::infrastructure::logging {
 
 ConsoleLogger::ConsoleLogger(LogLevel minLevel, bool useColors)
-    : m_minLevel(minLevel), m_useColors(useColors) {
-}
+    : m_minLevel(minLevel), m_useColors(useColors) {}
 
 void ConsoleLogger::trace(const std::string& message) {
     log(LogLevel::Trace, message);
@@ -59,23 +59,20 @@ bool ConsoleLogger::isLevelEnabled(LogLevel level) const {
 
 void ConsoleLogger::log(LogLevel level, const std::string& message) {
     std::lock_guard<std::mutex> lock(m_mutex);
-    
+
     // Check level filter (duplicates isLevelEnabled logic to avoid deadlock,
     // since isLevelEnabled() also acquires m_mutex)
     if (static_cast<int>(level) < static_cast<int>(m_minLevel)) {
         return;
     }
-    
+
     // Build log line
     std::ostringstream oss;
-    oss << "[" << getCurrentTimestamp() << "] "
-        << getColorCode(level)
-        << getLevelString(level)
-        << getResetCode()
-        << " " << message;
-    
+    oss << "[" << getCurrentTimestamp() << "] " << getColorCode(level) << getLevelString(level)
+        << getResetCode() << " " << message;
+
     std::string logLine = oss.str();
-    
+
     // Output to appropriate stream
     std::FILE* stream = (level >= LogLevel::Error) ? stderr : stdout;
     std::fwrite(logLine.c_str(), 1, logLine.size(), stream);
@@ -86,11 +83,11 @@ void ConsoleLogger::log(LogLevel level, const std::string& message) {
 std::string ConsoleLogger::getCurrentTimestamp() const {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
-    
+
     // Use thread-safe time conversion
     std::tm timeInfo;
     localtime_r(&time, &timeInfo);
-    
+
     std::ostringstream oss;
     oss << std::put_time(&timeInfo, "%Y-%m-%d %H:%M:%S");
     return oss.str();
@@ -98,13 +95,20 @@ std::string ConsoleLogger::getCurrentTimestamp() const {
 
 std::string ConsoleLogger::getLevelString(LogLevel level) const {
     switch (level) {
-        case LogLevel::Trace:    return "[TRACE]";
-        case LogLevel::Debug:    return "[DEBUG]";
-        case LogLevel::Info:     return "[INFO ]";
-        case LogLevel::Warning:  return "[WARN ]";
-        case LogLevel::Error:    return "[ERROR]";
-        case LogLevel::Critical: return "[CRIT ]";
-        default:                 return "[UNKN ]";
+        case LogLevel::Trace:
+            return "[TRACE]";
+        case LogLevel::Debug:
+            return "[DEBUG]";
+        case LogLevel::Info:
+            return "[INFO ]";
+        case LogLevel::Warning:
+            return "[WARN ]";
+        case LogLevel::Error:
+            return "[ERROR]";
+        case LogLevel::Critical:
+            return "[CRIT ]";
+        default:
+            return "[UNKN ]";
     }
 }
 
@@ -112,15 +116,22 @@ std::string ConsoleLogger::getColorCode(LogLevel level) const {
     if (!m_useColors) {
         return "";
     }
-    
+
     switch (level) {
-        case LogLevel::Trace:    return "\033[37m";   // White
-        case LogLevel::Debug:    return "\033[36m";   // Cyan
-        case LogLevel::Info:     return "\033[32m";   // Green
-        case LogLevel::Warning:  return "\033[33m";   // Yellow
-        case LogLevel::Error:    return "\033[31m";   // Red
-        case LogLevel::Critical: return "\033[1;31m"; // Bold Red
-        default:                 return "";
+        case LogLevel::Trace:
+            return "\033[37m";  // White
+        case LogLevel::Debug:
+            return "\033[36m";  // Cyan
+        case LogLevel::Info:
+            return "\033[32m";  // Green
+        case LogLevel::Warning:
+            return "\033[33m";  // Yellow
+        case LogLevel::Error:
+            return "\033[31m";  // Red
+        case LogLevel::Critical:
+            return "\033[1;31m";  // Bold Red
+        default:
+            return "";
     }
 }
 
@@ -128,4 +139,4 @@ std::string ConsoleLogger::getResetCode() const {
     return m_useColors ? "\033[0m" : "";
 }
 
-} // namespace truss::infrastructure::logging
+}  // namespace truss::infrastructure::logging

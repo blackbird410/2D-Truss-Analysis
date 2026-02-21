@@ -5,15 +5,16 @@
 
 #pragma once
 
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QTableWidget>
 #include "application/TrussApplicationService.hpp"
+
+#include <QtWidgets/QTableWidget>
+#include <QtWidgets/QWidget>
 
 namespace truss::gui {
 
 /**
  * @brief Widget for displaying truss data in tabular format
- * 
+ *
  * This widget follows Clean Architecture principles:
  * - Uses dependency injection for services
  * - Does not own or directly access Domain entities
@@ -29,9 +30,8 @@ public:
      * @param trussService Application service for truss data
      * @param parent Qt parent widget
      */
-    explicit DataTableWidget(
-        application::TrussApplicationService& trussService,
-        QWidget *parent = nullptr);
+    explicit DataTableWidget(application::TrussApplicationService& trussService,
+                             QWidget* parent = nullptr);
 
 public slots:
     /**
@@ -39,7 +39,7 @@ public slots:
      * @param trussHandle Handle to the truss to display
      */
     void updateTables(application::TrussHandle trussHandle);
-    
+
     /**
      * @brief Clear all table data
      */
@@ -50,17 +50,17 @@ private:
     void updateNodesTable(application::TrussHandle trussHandle);
     void updateMembersTable(application::TrussHandle trussHandle);
     void updateLoadsTable(application::TrussHandle trussHandle);
-    
+
     // Service dependency (injected)
     application::TrussApplicationService& m_trussService;
-    
+
     // Current state
     application::TrussHandle m_currentTrussHandle;
-    
+
     // UI components
     QTableWidget* m_nodesTable;
     QTableWidget* m_membersTable;
     QTableWidget* m_loadsTable;
 };
 
-} // namespace truss::gui
+}  // namespace truss::gui

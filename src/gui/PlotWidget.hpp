@@ -5,16 +5,17 @@
 
 #pragma once
 
-#include <QtWidgets/QWidget>
-#include <QtGui/QPainter>
 #include "application/TrussApplicationService.hpp"
 #include "core/model/Types.hpp"
+
+#include <QtGui/QPainter>
+#include <QtWidgets/QWidget>
 
 namespace truss::gui {
 
 /**
  * @brief Widget for visualizing truss structure
- * 
+ *
  * This widget follows Clean Architecture principles:
  * - Uses dependency injection for services
  * - Does not own or directly access Domain entities
@@ -27,22 +28,21 @@ class PlotWidget : public QWidget {
 public:
     /**
      * @brief Construct PlotWidget with dependency injection
-     * 
+     *
      * @param trussService Application service for truss operations
      * @param parent Parent widget
      */
-    explicit PlotWidget(
-        truss::application::TrussApplicationService& trussService,
-        QWidget *parent = nullptr);
+    explicit PlotWidget(truss::application::TrussApplicationService& trussService,
+                        QWidget* parent = nullptr);
 
 public slots:
     /**
      * @brief Update plot from current truss
-     * 
+     *
      * @param trussHandle Handle to truss to render
      */
     void updatePlot(truss::application::TrussHandle trussHandle);
-    
+
     /**
      * @brief Clear plot display
      */
@@ -52,53 +52,53 @@ protected:
     /**
      * @brief Paint event handler
      */
-    void paintEvent(QPaintEvent *event) override;
+    void paintEvent(QPaintEvent* event) override;
 
 private:
     /**
      * @brief Draw complete truss structure
      */
-    void drawTruss(QPainter &painter);
-    
+    void drawTruss(QPainter& painter);
+
     /**
      * @brief Draw nodes
      */
-    void drawNodes(QPainter &painter);
-    
+    void drawNodes(QPainter& painter);
+
     /**
      * @brief Draw members
      */
-    void drawMembers(QPainter &painter);
-    
+    void drawMembers(QPainter& painter);
+
     /**
      * @brief Draw applied loads
      */
-    void drawLoads(QPainter &painter);
-    
+    void drawLoads(QPainter& painter);
+
     /**
      * @brief Draw support conditions
      */
-    void drawSupports(QPainter &painter);
-    
+    void drawSupports(QPainter& painter);
+
     /**
      * @brief Draw deformed shape (if enabled)
      */
-    void drawDeformedShape(QPainter &painter);
-    
+    void drawDeformedShape(QPainter& painter);
+
     /**
      * @brief Convert world coordinates to screen coordinates
      */
     QPoint worldToScreen(const truss::core::Point2D& point) const;
-    
+
     /**
      * @brief Calculate viewport bounds
      */
     void calculateViewport();
-    
+
     // Dependencies (Clean Architecture)
     truss::application::TrussApplicationService& m_trussService;
     truss::application::TrussHandle m_currentTrussHandle;
-    
+
     // Display state
     bool m_showDeformed;
     bool m_showForces;
@@ -108,4 +108,4 @@ private:
     truss::core::Point2D m_maxBounds;
 };
 
-} // namespace truss::gui
+}  // namespace truss::gui

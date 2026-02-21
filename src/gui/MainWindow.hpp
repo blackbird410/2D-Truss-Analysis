@@ -7,47 +7,48 @@
 
 #pragma once
 
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QWidget>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QTableWidget>
-#include <QtWidgets/QComboBox>
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QGroupBox>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QSplitter>
-#include <QtWidgets/QScrollArea>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QStatusBar>
-#include <QtGui/QAction>
-#include <QtCore/QTimer>
-#include <memory>
-
-#include "application/TrussApplicationService.hpp"
+#include "DataTableWidget.hpp"
+#include "DeformedTrussWidget.hpp"
+#include "InteractiveDrawingWidget.hpp"
+#include "LoadInputWidget.hpp"
+#include "MemberInputWidget.hpp"
+#include "NodeInputWidget.hpp"
+#include "PlotWidget.hpp"
+#include "ResultsWidget.hpp"
 #include "application/AnalysisApplicationService.hpp"
+#include "application/TrussApplicationService.hpp"
 #include "gui/controllers/AnalysisController.hpp"
 #include "gui/controllers/ProjectController.hpp"
 #include "gui/controllers/TrussEditController.hpp"
 #include "gui/presenters/AnalysisResultsPresenter.hpp"
 #include "gui/presenters/TrussDataPresenter.hpp"
 #include "gui/presenters/ValidationPresenter.hpp"
-#include "InteractiveDrawingWidget.hpp"
-#include "DeformedTrussWidget.hpp"
-#include "LoadInputWidget.hpp"
-#include "NodeInputWidget.hpp"
-#include "MemberInputWidget.hpp"
-#include "PlotWidget.hpp"
-#include "ResultsWidget.hpp"
-#include "DataTableWidget.hpp"
+
+#include <QtCore/QTimer>
+#include <QtGui/QAction>
+#include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QGroupBox>
+#include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QLineEdit>
+#include <QtWidgets/QMainWindow>
+#include <QtWidgets/QMenu>
+#include <QtWidgets/QMenuBar>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QScrollArea>
+#include <QtWidgets/QSplitter>
+#include <QtWidgets/QStatusBar>
+#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QTableWidget>
+#include <QtWidgets/QTextEdit>
+#include <QtWidgets/QToolBar>
+#include <QtWidgets/QVBoxLayout>
+#include <QtWidgets/QWidget>
+
+#include <memory>
 
 namespace truss::gui {
 
@@ -60,7 +61,7 @@ class MainWindow : public QMainWindow {
 public:
     /**
      * @brief Construct MainWindow with dependency injection
-     * 
+     *
      * @param trussService Application service for truss operations
      * @param analysisService Application service for analysis
      * @param analysisController Controller for analysis workflow
@@ -71,40 +72,39 @@ public:
      * @param validationPresenter Presenter for validation messages
      * @param parent Qt parent widget
      */
-    explicit MainWindow(
-        application::TrussApplicationService& trussService,
-        application::AnalysisApplicationService& analysisService,
-        truss_controllers::AnalysisController& analysisController,
-        truss_controllers::ProjectController& projectController,
-        truss_controllers::TrussEditController& trussEditController,
-        truss_presenters::AnalysisResultsPresenter& analysisPresenter,
-        truss_presenters::TrussDataPresenter& trussDataPresenter,
-        truss_presenters::ValidationPresenter& validationPresenter,
-        QWidget *parent = nullptr);
-    
+    explicit MainWindow(application::TrussApplicationService& trussService,
+                        application::AnalysisApplicationService& analysisService,
+                        truss_controllers::AnalysisController& analysisController,
+                        truss_controllers::ProjectController& projectController,
+                        truss_controllers::TrussEditController& trussEditController,
+                        truss_presenters::AnalysisResultsPresenter& analysisPresenter,
+                        truss_presenters::TrussDataPresenter& trussDataPresenter,
+                        truss_presenters::ValidationPresenter& validationPresenter,
+                        QWidget* parent = nullptr);
+
     ~MainWindow() override;
-    
+
 protected:
     void closeEvent(QCloseEvent* event) override;
-    
+
 public:
     /**
      * @brief Get current truss handle
-     * 
+     *
      * @return TrussHandle Handle to current truss
      */
     application::TrussHandle getCurrentTrussHandle() const;
-    
+
     /**
      * @brief Check if analysis results are available
-     * 
+     *
      * @return true if results exist
      */
     bool hasResults() const { return m_hasResults; }
-    
+
     /**
      * @brief Get last results handle
-     * 
+     *
      * @return ResultsHandle Handle to last analysis results
      */
     application::ResultsHandle getLastResultsHandle() const { return m_lastResultsHandle; }
@@ -112,7 +112,8 @@ public:
 private slots:
     void onAnalysisCompleted(size_t resultsHandle);
     void onAnalysisFailed(const QString& errorMessage);
-    void onValidationFailed(const truss_presenters::ValidationPresenter::ValidationDisplay& display);
+    void
+    onValidationFailed(const truss_presenters::ValidationPresenter::ValidationDisplay& display);
     void onProjectOpened(application::TrussHandle handle, const QString& filepath);
     void onProjectSaved(const QString& filepath);
     void onProjectClosed();
@@ -130,12 +131,12 @@ private:
     void setupWindowProperties();
     void initializeEmptyProject();  // Initialize application with empty project
     void connectSignals();
-    
+
     void updateResultsDisplay();
     void showErrorMessage(const QString& message);
     void showInfoMessage(const QString& message);
     void enableAnalysis(bool enable);
-    
+
     // Menu action handlers (delegate to controllers)
     void requestAnalyze();
     void requestClearAll();
@@ -148,24 +149,24 @@ private:
     // UI Components
     QWidget* m_centralWidget;
     QSplitter* m_mainSplitter;
-    
+
     // Interactive drawing widget
     InteractiveDrawingWidget* m_drawingWidget;
-    
+
     // Results display
     QTabWidget* m_resultsTabWidget;
     ResultsWidget* m_resultsWidget;
     DeformedTrussWidget* m_deformedTrussWidget;
     QTextEdit* m_logTextEdit;
-    
+
     // Control buttons
     QPushButton* m_analyzeButton;
     QPushButton* m_clearButton;
-    
+
     // Status display
     QLabel* m_statusLabel;
     QLabel* m_coordinateLabel;
-    
+
     // Injected dependencies (references, not owned)
     application::TrussApplicationService& m_trussService;
     application::AnalysisApplicationService& m_analysisService;
@@ -175,10 +176,10 @@ private:
     truss_presenters::AnalysisResultsPresenter& m_analysisPresenter;
     truss_presenters::TrussDataPresenter& m_trussDataPresenter;
     truss_presenters::ValidationPresenter& m_validationPresenter;
-    
+
     // State
     application::ResultsHandle m_lastResultsHandle;
     bool m_hasResults;
 };
 
-} // namespace truss::gui
+}  // namespace truss::gui

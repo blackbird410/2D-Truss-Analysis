@@ -9,14 +9,16 @@
 #pragma once
 
 #include "truss_reader.hpp"
+
 #include <tinyxml2.h>
+
 #include <unordered_set>
 
 namespace truss::infrastructure::io {
 
 /**
  * @brief Concrete implementation of ITrussReader for XML format
- * 
+ *
  * Reads truss structures from XML files with the following format:
  * <truss>
  *   <metadata name="..." />
@@ -38,74 +40,72 @@ class XmlTrussReader : public ITrussReader {
 public:
     XmlTrussReader() = default;
     ~XmlTrussReader() override = default;
-    
+
     /**
      * @brief Read truss from XML file
      */
-    core::interfaces::TrussDTO read(
-        const std::filesystem::path& filepath,
-        const FileIOOptions& options = FileIOOptions{}
-    ) override;
-    
-    bool supportsFormat(FileFormat format) const override {
-        return format == FileFormat::XML;
-    }
-    
-    FileFormat getFormat() const override {
-        return FileFormat::XML;
-    }
+    core::interfaces::TrussDTO read(const std::filesystem::path& filepath,
+                                    const FileIOOptions& options = FileIOOptions{}) override;
+
+    bool supportsFormat(FileFormat format) const override { return format == FileFormat::XML; }
+
+    FileFormat getFormat() const override { return FileFormat::XML; }
 
 private:
     /**
      * @brief Parse metadata section
      */
     void parseMetadata(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
-    
+
     /**
      * @brief Parse nodes section
      * @param element Nodes XML element
      * @param dto Target DTO
      * @return Set of parsed node IDs for validation
      */
-    std::unordered_set<core::NodeId> parseNodes(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
-    
+    std::unordered_set<core::NodeId> parseNodes(tinyxml2::XMLElement* element,
+                                                core::interfaces::TrussDTO& dto);
+
     /**
      * @brief Parse members section
      * @param element Members XML element
      * @param dto Target DTO
      * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseMembers(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto,
+    void parseMembers(tinyxml2::XMLElement* element,
+                      core::interfaces::TrussDTO& dto,
                       const std::unordered_set<core::NodeId>& validNodeIds);
-    
+
     /**
      * @brief Parse loads section
      * @param element Loads XML element
      * @param dto Target DTO
      * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseLoads(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto,
+    void parseLoads(tinyxml2::XMLElement* element,
+                    core::interfaces::TrussDTO& dto,
                     const std::unordered_set<core::NodeId>& validNodeIds);
-    
+
     /**
      * @brief Parse support type from string
      */
     core::SupportType parseSupportType(const std::string& str);
-    
+
     /**
      * @brief Get required attribute as double
      */
     core::Real getDoubleAttribute(tinyxml2::XMLElement* element, const char* name);
-    
+
     /**
      * @brief Get required attribute as int
      */
     int getIntAttribute(tinyxml2::XMLElement* element, const char* name);
-    
+
     /**
      * @brief Get optional attribute as double with default
      */
-    core::Real getDoubleAttribute(tinyxml2::XMLElement* element, const char* name, core::Real defaultValue);
+    core::Real
+    getDoubleAttribute(tinyxml2::XMLElement* element, const char* name, core::Real defaultValue);
 };
 
-} // namespace truss::infrastructure::io
+}  // namespace truss::infrastructure::io

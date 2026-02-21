@@ -6,33 +6,35 @@
 
 #pragma once
 
-#include <QWidget>
-#include <QPainter>
-#include <QMouseEvent>
-#include <QWheelEvent>
-#include <QSlider>
-#include <QLabel>
-#include <QVBoxLayout>
-#include <QHBoxLayout>
-#include <QCheckBox>
-#include <QGroupBox>
-#include <QComboBox>
-#include <memory>
 #include "application/AnalysisApplicationService.hpp"
-#include "core/interfaces/ITrussView.hpp"
 #include "core/interfaces/IAnalysisResultsView.hpp"
+#include "core/interfaces/ITrussView.hpp"
+
+#include <QCheckBox>
+#include <QComboBox>
+#include <QGroupBox>
+#include <QHBoxLayout>
+#include <QLabel>
+#include <QMouseEvent>
+#include <QPainter>
+#include <QSlider>
+#include <QVBoxLayout>
+#include <QWheelEvent>
+#include <QWidget>
+
+#include <memory>
 
 namespace truss::gui {
 
 using truss::application::ResultsHandle;
-using truss::core::interfaces::ITrussView;
 using truss::core::interfaces::IAnalysisResultsView;
-using truss::core::interfaces::NodeView;
+using truss::core::interfaces::ITrussView;
 using truss::core::interfaces::MemberView;
+using truss::core::interfaces::NodeView;
 
 /**
  * @brief Widget for displaying the deformed shape of a truss structure
- * 
+ *
  * This widget provides visualization of:
  * - Original structure (undeformed)
  * - Deformed structure with displacements
@@ -215,7 +217,7 @@ private:
     std::vector<MemberView> m_memberViews;
     ResultsHandle m_resultsHandle;
     bool m_hasResults;
-    
+
     // Analysis result data (cached from IAnalysisResultsView)
     std::vector<truss::core::Real> m_displacements;
     std::vector<truss::core::Real> m_reactions;
@@ -234,7 +236,7 @@ private:
     bool m_showMemberForces;
     bool m_showDisplacements;
     bool m_showReactions;
-    int m_forceVisualizationMode; // 0: Color, 1: Thickness, 2: Both
+    int m_forceVisualizationMode;  // 0: Color, 1: Thickness, 2: Both
 
     // Bounds
     QRectF m_structureBounds;
@@ -260,4 +262,4 @@ private:
     static constexpr int LEGEND_HEIGHT = 150;
 };
 
-} // namespace truss::gui
+}  // namespace truss::gui

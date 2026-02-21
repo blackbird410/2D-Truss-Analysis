@@ -3,7 +3,7 @@
  * @brief Minimal test to validate Google Test integration
  * @author Civil Engineering Software Solutions
  * @version 3.0.0
- * 
+ *
  * Purpose: Verify that Google Test framework is properly integrated
  * into the build system before migrating production tests.
  */

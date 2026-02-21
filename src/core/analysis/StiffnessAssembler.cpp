@@ -13,29 +13,29 @@ MatrixXd StiffnessAssembler::assemble(const Truss& truss) const {
     // Initialize zero matrix
     size_t totalDofs = truss.getTotalDofs();
     MatrixXd K = MatrixXd::Zero(totalDofs, totalDofs);
-    
+
     // Assemble contributions from all members
     const auto& members = truss.getMembers();
     for (const auto& member : members) {
         addMemberContribution(*member, K);
     }
-    
+
     return K;
 }
 
 std::vector<std::vector<Real>> StiffnessAssembler::assembleAsVector(const Truss& truss) const {
     MatrixXd K = assemble(truss);
-    
+
     size_t rows = K.rows();
     size_t cols = K.cols();
-    
+
     std::vector<std::vector<Real>> result(rows, std::vector<Real>(cols));
     for (size_t i = 0; i < rows; ++i) {
         for (size_t j = 0; j < cols; ++j) {
             result[i][j] = K(i, j);
         }
     }
-    
+
     return result;
 }
 
@@ -43,7 +43,7 @@ void StiffnessAssembler::addMemberContribution(const Member& member, MatrixXd& g
     // Get member's global stiffness matrix and DOF indices
     auto dofIndices = member.getGlobalDofIndices();
     MatrixXd memberK = member.getGlobalStiffnessMatrix();
-    
+
     // Add member stiffness to global matrix
     // Member has 4 DOFs: [u1, v1, u2, v2] corresponding to start and end nodes
     for (size_t i = 0; i < dofIndices.size(); ++i) {
@@ -53,4 +53,4 @@ void StiffnessAssembler::addMemberContribution(const Member& member, MatrixXd& g
     }
 }
 
-} // namespace truss::core::analysis
+}  // namespace truss::core::analysis

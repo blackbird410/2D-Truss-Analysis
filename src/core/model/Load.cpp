@@ -17,8 +17,7 @@ Load::Load(LoadId id, NodeId nodeId, const Force2D& force, const std::string& la
 }
 
 Load::Load(LoadId id, NodeId nodeId, Real fx, Real fy, const std::string& label)
-    : Load(id, nodeId, Force2D(fx, fy), label) {
-}
+    : Load(id, nodeId, Force2D(fx, fy), label) {}
 
 bool Load::isZero(Real tolerance) const {
     return Utils::isZero(m_force.fx, tolerance) && Utils::isZero(m_force.fy, tolerance);
@@ -33,8 +32,7 @@ bool Load::isVertical(Real tolerance) const {
 }
 
 bool Load::operator==(const Load& other) const {
-    return m_id == other.m_id && 
-           m_nodeId == other.m_nodeId &&
+    return m_id == other.m_id && m_nodeId == other.m_nodeId &&
            Utils::isEqual(m_force.fx, other.m_force.fx) &&
            Utils::isEqual(m_force.fy, other.m_force.fy);
 }
@@ -43,4 +41,4 @@ bool Load::operator!=(const Load& other) const {
     return !(*this == other);
 }
 
-} // namespace truss::core
+}  // namespace truss::core

@@ -8,9 +8,10 @@
 #pragma once
 
 #include <Eigen/Dense>
-#include <vector>
-#include <memory>
+
 #include <cstdint>
+#include <memory>
+#include <vector>
 
 namespace truss::core {
 
@@ -34,31 +35,23 @@ using VectorXd = Eigen::VectorXd;
 struct Point2D {
     Real x{0.0};
     Real y{0.0};
-    
+
     Point2D() = default;
     Point2D(Real x_val, Real y_val) : x(x_val), y(y_val) {}
-    
-    Point2D operator+(const Point2D& other) const {
-        return Point2D(x + other.x, y + other.y);
-    }
-    
-    Point2D operator-(const Point2D& other) const {
-        return Point2D(x - other.x, y - other.y);
-    }
-    
-    Point2D operator*(Real scalar) const {
-        return Point2D(x * scalar, y * scalar);
-    }
-    
+
+    Point2D operator+(const Point2D& other) const { return Point2D(x + other.x, y + other.y); }
+
+    Point2D operator-(const Point2D& other) const { return Point2D(x - other.x, y - other.y); }
+
+    Point2D operator*(Real scalar) const { return Point2D(x * scalar, y * scalar); }
+
     Real distance(const Point2D& other) const {
         Real dx = x - other.x;
         Real dy = y - other.y;
         return std::sqrt(dx * dx + dy * dy);
     }
-    
-    Vector2d toEigen() const {
-        return Vector2d(x, y);
-    }
+
+    Vector2d toEigen() const { return Vector2d(x, y); }
 };
 
 /**
@@ -67,43 +60,33 @@ struct Point2D {
 struct Force2D {
     Real fx{0.0};  ///< Force component in X direction
     Real fy{0.0};  ///< Force component in Y direction
-    
+
     Force2D() = default;
     Force2D(Real fx_val, Real fy_val) : fx(fx_val), fy(fy_val) {}
-    
-    Force2D operator+(const Force2D& other) const {
-        return Force2D(fx + other.fx, fy + other.fy);
-    }
-    
-    Force2D operator-(const Force2D& other) const {
-        return Force2D(fx - other.fx, fy - other.fy);
-    }
-    
-    Force2D operator*(Real scalar) const {
-        return Force2D(fx * scalar, fy * scalar);
-    }
-    
-    Real magnitude() const {
-        return std::sqrt(fx * fx + fy * fy);
-    }
-    
-    Vector2d toEigen() const {
-        return Vector2d(fx, fy);
-    }
+
+    Force2D operator+(const Force2D& other) const { return Force2D(fx + other.fx, fy + other.fy); }
+
+    Force2D operator-(const Force2D& other) const { return Force2D(fx - other.fx, fy - other.fy); }
+
+    Force2D operator*(Real scalar) const { return Force2D(fx * scalar, fy * scalar); }
+
+    Real magnitude() const { return std::sqrt(fx * fx + fy * fy); }
+
+    Vector2d toEigen() const { return Vector2d(fx, fy); }
 };
 
 /**
  * @brief Support constraint types
- * 
+ *
  * IMPORTANT: In 2D structural mechanics, a pinned support restrains BOTH translational DOFs.
  * Directional constraints are represented by roller supports.
  * Do NOT introduce directional pinning (e.g., PinnedX, PinnedY) - this is mechanically invalid.
  */
 enum class SupportType {
-    Free,           ///< No constraint (2 DOFs free)
-    Pinned,         ///< Pin support: Fixed in both X and Y directions (0 DOFs free, 2 reactions)
-    RollerX,        ///< Roller allowing movement in X direction (1 DOF free: X, 1 reaction: Y)
-    RollerY         ///< Roller allowing movement in Y direction (1 DOF free: Y, 1 reaction: X)
+    Free,     ///< No constraint (2 DOFs free)
+    Pinned,   ///< Pin support: Fixed in both X and Y directions (0 DOFs free, 2 reactions)
+    RollerX,  ///< Roller allowing movement in X direction (1 DOF free: X, 1 reaction: Y)
+    RollerY   ///< Roller allowing movement in Y direction (1 DOF free: Y, 1 reaction: X)
 };
 
 /**
@@ -115,21 +98,22 @@ struct MaterialProperties {
     Real yieldStrength{250e6};     ///< Yield strength (Pa)
     Real ultimateStrength{400e6};  ///< Ultimate tensile strength (Pa)
     std::string name{"Steel"};     ///< Material name
-    
+
     MaterialProperties() = default;
     MaterialProperties(Real E, Real rho, Real fy, Real fu, const std::string& materialName)
-        : youngModulus(E), density(rho), yieldStrength(fy), ultimateStrength(fu), name(materialName) {}
+        : youngModulus(E), density(rho), yieldStrength(fy), ultimateStrength(fu),
+          name(materialName) {}
 };
 
 /**
  * @brief Cross-sectional properties for structural members
  */
 struct SectionProperties {
-    Real area{1e-4};               ///< Cross-sectional area (m²)
-    Real momentOfInertia{1e-8};    ///< Second moment of area (m⁴)
-    Real shearArea{1e-4};          ///< Effective shear area (m²)
-    std::string designation{"Default"}; ///< Section designation
-    
+    Real area{1e-4};                     ///< Cross-sectional area (m²)
+    Real momentOfInertia{1e-8};          ///< Second moment of area (m⁴)
+    Real shearArea{1e-4};                ///< Effective shear area (m²)
+    std::string designation{"Default"};  ///< Section designation
+
     SectionProperties() = default;
     SectionProperties(Real A, Real I, Real As, const std::string& desig)
         : area(A), momentOfInertia(I), shearArea(As), designation(desig) {}
@@ -139,12 +123,12 @@ struct SectionProperties {
  * @brief Analysis results for a single member
  */
 struct MemberResults {
-    Real axialForce{0.0};          ///< Axial force (positive = tension)
-    Real axialStress{0.0};         ///< Axial stress
-    Real utilizationRatio{0.0};    ///< Stress/yield stress ratio
-    bool inTension{false};         ///< True if member is in tension
-    bool yielded{false};           ///< True if member has yielded
-    
+    Real axialForce{0.0};        ///< Axial force (positive = tension)
+    Real axialStress{0.0};       ///< Axial stress
+    Real utilizationRatio{0.0};  ///< Stress/yield stress ratio
+    bool inTension{false};       ///< True if member is in tension
+    bool yielded{false};         ///< True if member has yielded
+
     MemberResults() = default;
 };
 
@@ -154,7 +138,7 @@ struct MemberResults {
 struct NodeResults {
     Point2D displacement{0.0, 0.0};  ///< Nodal displacement
     Force2D reaction{0.0, 0.0};      ///< Support reaction forces
-    
+
     NodeResults() = default;
 };
 
@@ -162,53 +146,53 @@ struct NodeResults {
  * @brief Constants and tolerances for numerical analysis
  */
 namespace Constants {
-    constexpr Real ZERO_TOLERANCE = 1e-12;
-    constexpr Real GEOMETRY_TOLERANCE = 1e-9;
-    constexpr Real FORCE_TOLERANCE = 1e-6;
-    constexpr Real DISPLACEMENT_TOLERANCE = 1e-9;
-    constexpr Real DEFAULT_YOUNG_MODULUS = 200e9;  // Steel (Pa)
-    constexpr Real DEFAULT_AREA = 1e-4;            // 1 cm² (m²)
-}
+constexpr Real ZERO_TOLERANCE = 1e-12;
+constexpr Real GEOMETRY_TOLERANCE = 1e-9;
+constexpr Real FORCE_TOLERANCE = 1e-6;
+constexpr Real DISPLACEMENT_TOLERANCE = 1e-9;
+constexpr Real DEFAULT_YOUNG_MODULUS = 200e9;  // Steel (Pa)
+constexpr Real DEFAULT_AREA = 1e-4;            // 1 cm² (m²)
+}  // namespace Constants
 
 /**
  * @brief Utility functions for numerical operations
  */
 namespace Utils {
-    
-    /**
-     * @brief Check if a value is essentially zero
-     */
-    inline bool isZero(Real value, Real tolerance = Constants::ZERO_TOLERANCE) {
-        return std::abs(value) < tolerance;
-    }
-    
-    /**
-     * @brief Check if two values are approximately equal
-     */
-    inline bool isEqual(Real a, Real b, Real tolerance = Constants::ZERO_TOLERANCE) {
-        return std::abs(a - b) < tolerance;
-    }
-    
-    /**
-     * @brief Clamp a value between min and max
-     */
-    inline Real clamp(Real value, Real min_val, Real max_val) {
-        return std::max(min_val, std::min(value, max_val));
-    }
-    
-    /**
-     * @brief Convert degrees to radians
-     */
-    inline Real degreesToRadians(Real degrees) {
-        return degrees * M_PI / 180.0;
-    }
-    
-    /**
-     * @brief Convert radians to degrees
-     */
-    inline Real radiansToDegrees(Real radians) {
-        return radians * 180.0 / M_PI;
-    }
+
+/**
+ * @brief Check if a value is essentially zero
+ */
+inline bool isZero(Real value, Real tolerance = Constants::ZERO_TOLERANCE) {
+    return std::abs(value) < tolerance;
 }
 
-} // namespace truss::core
+/**
+ * @brief Check if two values are approximately equal
+ */
+inline bool isEqual(Real a, Real b, Real tolerance = Constants::ZERO_TOLERANCE) {
+    return std::abs(a - b) < tolerance;
+}
+
+/**
+ * @brief Clamp a value between min and max
+ */
+inline Real clamp(Real value, Real min_val, Real max_val) {
+    return std::max(min_val, std::min(value, max_val));
+}
+
+/**
+ * @brief Convert degrees to radians
+ */
+inline Real degreesToRadians(Real degrees) {
+    return degrees * M_PI / 180.0;
+}
+
+/**
+ * @brief Convert radians to degrees
+ */
+inline Real radiansToDegrees(Real radians) {
+    return radians * 180.0 / M_PI;
+}
+}  // namespace Utils
+
+}  // namespace truss::core
