@@ -63,8 +63,8 @@ AnalysisResults AnalysisOrchestrator::analyze(Truss& truss) {
     
     // 7. Check for matrix singularity (if stability checking enabled)
     if (m_options.checkStability) {
-        Real det = checkMatrixSingularity(Kff);
-        if (std::abs(det) < 1e-10) {
+        Real minEigenvalue = checkMatrixSingularity(Kff);
+        if (minEigenvalue <= 1e-10) {
             throw std::runtime_error(
                 "Singular stiffness matrix detected. "
                 "Structure is geometrically unstable or has insufficient constraints. "

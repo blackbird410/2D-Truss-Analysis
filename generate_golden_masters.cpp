@@ -31,7 +31,7 @@ Truss createSimpleTriangleTruss() {
     // Create a simple triangle truss (statically determinate)
     // 3 nodes, 3 members, 3 constraints = 2*3 = 6 equations
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);    // Left support (Fx=0, Fy=0)
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerY);   // Right support (Fy=0)
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);   // Right support (Fx=0)
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);      // Top node (free)
 
     // Add members to form a triangle
@@ -81,7 +81,7 @@ int main(int argc, char* argv[]) {
             logger->info(oss.str());
         }
         logger->info("Applied loads: 1 (15 kN downward at top node)");
-        logger->info("Supports: Pinned (left) + RollerY (right)");
+        logger->info("Supports: Pinned (left) + RollerX (right)");
 
         // Perform analysis
         logger->info("Step 2: Running structural analysis...");

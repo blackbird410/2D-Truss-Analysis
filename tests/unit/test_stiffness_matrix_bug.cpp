@@ -6,8 +6,8 @@
  */
 
 #include <gtest/gtest.h>
-#include "../src/core/model/Member.hpp"
-#include "../src/core/model/Node.hpp"
+#include "../../src/core/model/Member.hpp"
+#include "../../src/core/model/Node.hpp"
 #include <Eigen/Dense>
 #include <cmath>
 

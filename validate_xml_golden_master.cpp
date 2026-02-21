@@ -29,7 +29,7 @@ std::unique_ptr<Truss> createSimpleTriangleTruss() {
     
     // Create nodes (same as golden master)
     auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);
     
     // Create members
