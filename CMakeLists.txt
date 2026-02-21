@@ -353,6 +353,7 @@ if(BUILD_TESTING)
         tests/integration/test_ui_load_diagnosis.cpp
         tests/integration/test_load_viewport_fix.cpp
         tests/integration/test_gui_file_load.cpp
+        tests/integration/test_e2e_workflows.cpp
         # GUI controllers needed for GUI lifecycle tests
         src/gui/controllers/TrussEditController.cpp
         src/gui/controllers/ProjectController.cpp
