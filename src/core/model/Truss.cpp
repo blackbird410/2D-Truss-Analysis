@@ -8,6 +8,8 @@
 #include "Truss.hpp"
 
 #include <algorithm>
+#include <iterator>
+#include <numeric>
 #include <stdexcept>
 
 namespace truss::core {
@@ -88,21 +90,17 @@ MemberPtr Truss::addMember(MemberPtr member) {
 }
 
 NodePtr Truss::getNode(NodeId nodeId) const {
-    for (const auto& node : m_nodes) {
-        if (node->getId() == nodeId) {
-            return node;
-        }
-    }
-    return nullptr;
+    auto it = std::find_if(m_nodes.begin(), m_nodes.end(), [nodeId](const auto& node) {
+        return node->getId() == nodeId;
+    });
+    return it != m_nodes.end() ? *it : nullptr;
 }
 
 MemberPtr Truss::getMember(MemberId memberId) const {
-    for (const auto& member : m_members) {
-        if (member->getId() == memberId) {
-            return member;
-        }
-    }
-    return nullptr;
+    auto it = std::find_if(m_members.begin(), m_members.end(), [memberId](const auto& member) {
+        return member->getId() == memberId;
+    });
+    return it != m_members.end() ? *it : nullptr;
 }
 
 std::vector<MemberPtr> Truss::getMembersConnectedTo(NodeId nodeId) const {
