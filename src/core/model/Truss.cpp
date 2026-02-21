@@ -218,13 +218,9 @@ bool Truss::isValid() const {
     }
 
     // Check that all members have valid nodes
-    for (const auto& member : m_members) {
-        if (!member || !member->isValid()) {
-            return false;
-        }
-    }
-
-    return true;
+    return std::all_of(m_members.begin(), m_members.end(), [](const auto& member) {
+        return member && member->isValid();
+    });
 }
 
 void Truss::assignDofNumbers() {
