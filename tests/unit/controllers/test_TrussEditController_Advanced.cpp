@@ -243,7 +243,7 @@ TEST_F(TrussEditControllerAdvancedTest, OperationWithoutValidHandle) {
     // 1. Emit error signal, or
     // 2. Not call service at all
     // (exact behavior depends on implementation)
-    EXPECT_TRUE(failureSpy.count() >= 0);  // No crash
+    EXPECT_GT(failureSpy.count(), 0);  // Error signal should be emitted
 }
 
 // ============================================================================
