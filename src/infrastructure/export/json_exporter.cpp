@@ -31,10 +31,13 @@ bool JSONExporter::exportResults(const ITrussView& truss,
     try {
         file << "{\n";
         
-        // Project metadata (always included)
-        writeProjectSection(file, truss, options);
+        // Project metadata
+        file << "  \"project\": {\n";
+        file << "    \"name\": \"" << escapeString(truss.getName()) << "\",\n";
+        file << "    \"exportTime\": \"" << formatTimestamp() << "\",\n";
+        file << "    \"version\": \"3.0.0\"\n";
+        file << "  }";
         
-        // Track if we need commas between sections
         bool needsComma = true;
         
         // Conditional sections
@@ -112,9 +115,12 @@ std::string JSONExporter::escapeString(const std::string& str) const {
             default:
                 if (static_cast<unsigned char>(c) < 0x20) {
                     // Control characters
-                    char buf[7];
-                    snprintf(buf, sizeof(buf), "\\u%04x", static_cast<unsigned char>(c));
-                    result += buf;
+                    std::ostringstream oss;
+                    oss << "\\u"
+                        << std::setw(4) << std::setfill('0') << std::hex
+                        << std::nouppercase
+                        << static_cast<int>(static_cast<unsigned char>(c));
+                    result += oss.str();
                 } else {
                     result += c;
                 }
@@ -122,15 +128,6 @@ std::string JSONExporter::escapeString(const std::string& str) const {
     }
     
     return result;
-}
-
-void JSONExporter::writeProjectSection(std::ostream& os, const ITrussView& truss,
-                                       const ExportOptions& options) {
-    os << "  \"project\": {\n";
-    os << "    \"name\": \"" << escapeString(truss.getName()) << "\",\n";
-    os << "    \"exportTime\": \"" << formatTimestamp() << "\",\n";
-    os << "    \"version\": \"2.2.0\"\n";
-    os << "  }";
 }
 
 void JSONExporter::writeGeometrySection(std::ostream& os, const ITrussView& truss,

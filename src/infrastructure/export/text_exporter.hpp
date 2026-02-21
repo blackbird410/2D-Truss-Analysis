@@ -98,14 +98,6 @@ private:
     void writeHeader(std::ostream& os, const ITrussView& truss);
     
     /**
-     * @brief Write project metadata section (Section 1)
-     * @param os Output stream
-     * @param truss Truss structure
-     * @param options Export options
-     */
-    void writeProjectSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
-    
-    /**
      * @brief Write geometry section with nodes and members (Section 2)
      * @param os Output stream
      * @param truss Truss structure

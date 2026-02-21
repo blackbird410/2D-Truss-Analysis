@@ -17,12 +17,21 @@
 #include <QSplashScreen>
 #include <QPixmap>
 #include <QTimer>
+#include <filesystem>
 #include <memory>
 
 #include "gui/MainWindow.hpp"
+#include "application/TrussApplicationService.hpp"
+#include "application/AnalysisApplicationService.hpp"
+#include "gui/controllers/AnalysisController.hpp"
+#include "gui/controllers/ProjectController.hpp"
+#include "gui/controllers/TrussEditController.hpp"
+#include "gui/presenters/AnalysisResultsPresenter.hpp"
+#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/presenters/ValidationPresenter.hpp"
 #include "core/Application.hpp"
-#include "core/Logger.hpp"
 #include "database/DatabaseManager.hpp"
+#include "infrastructure/logging/logger_factory.hpp"
 
 /**
  * @brief Configure application settings and directories
@@ -65,21 +74,22 @@ void applyModernStyle(QApplication& app) {
     app.setPalette(darkPalette);
 }
 
+truss::infrastructure::logging::LoggerPtr createAppLogger() {
+    QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(appDataPath);
+    std::filesystem::path logPath = std::filesystem::path(appDataPath.toStdString()) / "TrussAnalysis2D.log";
+    return truss::infrastructure::logging::LoggerFactory::createDefaultLogger(logPath);
+}
+
 /**
  * @brief Initialize application components
  */
-bool initializeApplication() {
+bool initializeApplication(truss::infrastructure::logging::ILogger& logger) {
     try {
-        // Initialize logging system
-        if (!truss::core::Logger::initialize()) {
-            QMessageBox::critical(nullptr, "Error", 
-                "Failed to initialize logging system");
-            return false;
-        }
-        
         // Initialize database
         auto& dbManager = truss::database::DatabaseManager::getInstance();
         if (!dbManager.initialize()) {
+            logger.error("Failed to initialize database system");
             QMessageBox::critical(nullptr, "Database Error", 
                 "Failed to initialize database system");
             return false;
@@ -88,6 +98,7 @@ bool initializeApplication() {
         // Initialize core application
         auto& coreApp = truss::core::Application::getInstance();
         if (!coreApp.initialize()) {
+            logger.error("Failed to initialize core application");
             QMessageBox::critical(nullptr, "Application Error", 
                 "Failed to initialize core application");
             return false;
@@ -95,6 +106,7 @@ bool initializeApplication() {
         
         return true;
     } catch (const std::exception& e) {
+        logger.error(std::string("Application initialization failed: ") + e.what());
         QMessageBox::critical(nullptr, "Initialization Error", 
             QString("Application initialization failed: %1").arg(e.what()));
         return false;
@@ -113,6 +125,8 @@ int main(int argc, char *argv[]) {
     
     // Setup application configuration
     setupApplication();
+
+    auto logger = createAppLogger();
     
     // Apply modern styling
     applyModernStyle(app);
@@ -133,7 +147,7 @@ int main(int argc, char *argv[]) {
                       Qt::AlignCenter | Qt::AlignBottom, Qt::white);
     app.processEvents();
     
-    if (!initializeApplication()) {
+    if (!initializeApplication(*logger)) {
         return -1;
     }
     
@@ -143,7 +157,42 @@ int main(int argc, char *argv[]) {
     app.processEvents();
     
     try {
-        auto mainWindow = std::make_unique<truss::gui::MainWindow>();
+        // Create Application Services (no Qt dependencies)
+        truss::application::TrussApplicationService trussService;
+        truss::application::AnalysisApplicationService analysisService;
+        
+        // Create Presenters (formatting layer)
+        truss_presenters::AnalysisResultsPresenter analysisPresenter;
+        truss_presenters::TrussDataPresenter trussDataPresenter;
+        truss_presenters::ValidationPresenter validationPresenter;
+        
+        // Create Controllers (orchestration layer)
+        truss_controllers::AnalysisController analysisController(
+            &trussService,
+            &analysisService,
+            analysisPresenter,
+            validationPresenter
+        );
+        
+        truss_controllers::ProjectController projectController(&trussService);
+        
+        truss_controllers::TrussEditController trussEditController(
+            &trussService,
+            trussDataPresenter
+        );
+        
+        // Create MainWindow with dependency injection
+        auto mainWindow = std::make_unique<truss::gui::MainWindow>(
+            trussService,
+            analysisService,
+            analysisController,
+            projectController,
+            trussEditController,
+            analysisPresenter,
+            trussDataPresenter,
+            validationPresenter
+        );
+        
         mainWindow->show();
         
         // Close splash screen after a brief delay
@@ -154,12 +203,10 @@ int main(int argc, char *argv[]) {
         // Start event loop
         int result = app.exec();
         
-        // Cleanup
-        truss::core::Logger::shutdown();
-        
         return result;
         
     } catch (const std::exception& e) {
+        logger->error(std::string("Failed to start application: ") + e.what());
         QMessageBox::critical(nullptr, "Application Error", 
             QString("Failed to start application: %1").arg(e.what()));
         return -1;

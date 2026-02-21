@@ -20,14 +20,16 @@ std::vector<Index> BoundaryConditionHandler::getFreeDofs(const Truss& truss) con
         SupportType support = node->getSupportType();
         
         // Add free DOFs based on support type
+        // Pinned: Both DOFs constrained (neither free)
+        // RollerX: X free, Y constrained
+        // RollerY: Y free, X constrained
+        // Free: Both DOFs free
         if (support == SupportType::Free || 
-            support == SupportType::PinnedY || 
             support == SupportType::RollerX) {
             freeDofs.push_back(dofX); // X DOF is free
         }
         
         if (support == SupportType::Free || 
-            support == SupportType::PinnedX || 
             support == SupportType::RollerY) {
             freeDofs.push_back(dofY); // Y DOF is free
         }
@@ -49,14 +51,15 @@ std::vector<Index> BoundaryConditionHandler::getConstrainedDofs(const Truss& tru
         SupportType support = node->getSupportType();
         
         // Add constrained DOFs based on support type
+        // Pinned: Both X and Y constrained (2 reactions)
+        // RollerX: Only Y constrained (1 reaction)
+        // RollerY: Only X constrained (1 reaction)
         if (support == SupportType::Pinned || 
-            support == SupportType::PinnedX || 
             support == SupportType::RollerY) {
             constrainedDofs.push_back(dofX); // X DOF is constrained
         }
         
         if (support == SupportType::Pinned || 
-            support == SupportType::PinnedY || 
             support == SupportType::RollerX) {
             constrainedDofs.push_back(dofY); // Y DOF is constrained
         }

@@ -29,7 +29,7 @@ TEST(WorkingIntegrationTest, MemorySafeTriangularTrussAnalysis) {
     
     // Add nodes
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);
     
     // Add members
@@ -80,7 +80,7 @@ TEST(WorkingIntegrationTest, MemorySafeBridgeTrussAnalysis) {
     
     // Add nodes - create a proper triangulated truss
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss.addNode(2.0, 0.0, SupportType::Free);
     auto node4 = truss.addNode(1.0, 2.0, SupportType::Free);
     auto node5 = truss.addNode(3.0, 2.0, SupportType::Free);

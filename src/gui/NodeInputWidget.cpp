@@ -3,15 +3,23 @@
  * @brief Implementation of the node input widget
  */
 
-#include "MainWindow.hpp"
+#include "NodeInputWidget.hpp"
+#include "controllers/TrussEditController.hpp"
 #include <QtWidgets/QFormLayout>
+#include <QtWidgets/QMessageBox>
+#include <QtWidgets/QHBoxLayout>
 #include <QtGui/QDoubleValidator>
 #include <QtCore/QRegularExpression>
 
 namespace truss::gui {
 
-NodeInputWidget::NodeInputWidget(QWidget *parent)
+NodeInputWidget::NodeInputWidget(
+    truss::application::TrussApplicationService& trussService,
+    truss_controllers::TrussEditController& editController,
+    QWidget *parent)
     : QWidget(parent),
+      m_trussService(trussService),
+      m_editController(editController),
       m_xCoordEdit(new QLineEdit(this)),
       m_yCoordEdit(new QLineEdit(this)),
       m_supportTypeCombo(new QComboBox(this)),
@@ -20,8 +28,15 @@ NodeInputWidget::NodeInputWidget(QWidget *parent)
     
     setupUI();
     
+    // Connect UI signals
     connect(m_addButton, &QPushButton::clicked, this, &NodeInputWidget::addNode);
     connect(m_clearButton, &QPushButton::clicked, this, &NodeInputWidget::clearInputs);
+    
+    // Connect controller signals
+    connect(&m_editController, &truss_controllers::TrussEditController::nodeAdded,
+            this, &NodeInputWidget::onNodeAdded);
+    connect(&m_editController, &truss_controllers::TrussEditController::operationFailed,
+            this, &NodeInputWidget::onOperationFailed);
 }
 
 void NodeInputWidget::setupUI() {
@@ -36,8 +51,6 @@ void NodeInputWidget::setupUI() {
     // Set up support type combo box
     m_supportTypeCombo->addItem("Free", static_cast<int>(truss::core::SupportType::Free));
     m_supportTypeCombo->addItem("Pinned", static_cast<int>(truss::core::SupportType::Pinned));
-    m_supportTypeCombo->addItem("Pinned X", static_cast<int>(truss::core::SupportType::PinnedX));
-    m_supportTypeCombo->addItem("Pinned Y", static_cast<int>(truss::core::SupportType::PinnedY));
     m_supportTypeCombo->addItem("Roller X", static_cast<int>(truss::core::SupportType::RollerX));
     m_supportTypeCombo->addItem("Roller Y", static_cast<int>(truss::core::SupportType::RollerY));
     
@@ -72,28 +85,9 @@ void NodeInputWidget::addNode() {
     auto supportType = static_cast<truss::core::SupportType>(
         m_supportTypeCombo->currentData().toInt());
     
-    // Get the main window to access the truss object
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (mainWindow && mainWindow->getTruss()) {
-        try {
-            auto nodePtr = mainWindow->getTruss()->addNode(
-                truss::core::Point2D{x, y}, supportType);
-            size_t nodeId = nodePtr->getId();
-            
-            emit nodeAdded();
-            
-            // Update member and load input widgets with new node
-            // Note: This will be handled through the main window's connectSignals() method
-            
-            QMessageBox::information(this, "Success", 
-                QString("Node %1 added at (%2, %3)")
-                .arg(nodeId).arg(x).arg(y));
-                
-        } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Error", 
-                QString("Failed to add node: %1").arg(e.what()));
-        }
-    }
+    // Delegate to controller (Clean Architecture)
+    truss::core::Point2D position{x, y};
+    m_editController.onNodeAddRequested(position, supportType);
 }
 
 void NodeInputWidget::clearInputs() {
@@ -101,6 +95,22 @@ void NodeInputWidget::clearInputs() {
     m_yCoordEdit->setText("0.0");
     m_supportTypeCombo->setCurrentIndex(0);
     m_xCoordEdit->setFocus();
+}
+
+void NodeInputWidget::onNodeAdded(truss::core::NodeId nodeId) {
+    emit nodeAdded();
+    
+    double x = m_xCoordEdit->text().toDouble();
+    double y = m_yCoordEdit->text().toDouble();
+    
+    QMessageBox::information(this, "Success", 
+        QString("Node %1 added at (%2, %3)")
+        .arg(nodeId).arg(x, 0, 'f', 2).arg(y, 0, 'f', 2));
+}
+
+void NodeInputWidget::onOperationFailed(const QString& errorMessage) {
+    QMessageBox::critical(this, "Error", 
+        QString("Failed to add node: %1").arg(errorMessage));
 }
 
 } // namespace truss::gui

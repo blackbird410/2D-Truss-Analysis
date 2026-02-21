@@ -8,7 +8,7 @@
 
 \title{2D Truss Analysis Results\\Golden Master Test Truss}
 \author{Civil Engineering Software Solutions}
-\date{2026-02-14 02:32:26}
+\date{2026-02-20 19:06:48}
 
 \begin{document}
 
@@ -18,7 +18,7 @@
 
 \begin{itemize}
   \item \textbf{Project Name:} Golden Master Test Truss
-  \item \textbf{Generated:} 2026-02-14 02:32:26
+  \item \textbf{Generated:} 2026-02-20 19:06:48
   \item \textbf{Software:} 2D Truss Analysis v3.0.0
   \item \textbf{Nodes:} 3
   \item \textbf{Members:} 3
@@ -47,8 +47,8 @@ Node ID & X (m) & Y (m) & Support Type \\
 \bottomrule
 \endlastfoot
 
-1 & 0.000000 & 0.000000 & 3 \\
-2 & 4.000000 & 0.000000 & 5 \\
+1 & 0.000000 & 0.000000 & 1 \\
+2 & 4.000000 & 0.000000 & 2 \\
 3 & 2.000000 & 3.000000 & 0 \\
 \end{longtable}
 
@@ -80,20 +80,20 @@ Member ID & Start Node & End Node & Length (m) \\
 
 \section{Material and Section Properties}
 
-\begin{longtable}{cccccc}
+\begin{longtable}{ccccc}
 \toprule
-Member ID & Material & E (Pa) & Density (kg/m³) & Area (m²) & Section \\
+Member ID & E (Pa) & Yield Strength (Pa) & Density (kg/m³) & Area (m²) \\
 \midrule
 \endfirsthead
 
-\multicolumn{6}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\multicolumn{5}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
 \toprule
-Member ID & Material & E (Pa) & Density (kg/m³) & Area (m²) & Section \\
+Member ID & E (Pa) & Yield Strength (Pa) & Density (kg/m³) & Area (m²) \\
 \midrule
 \endhead
 
 \midrule
-\multicolumn{6}{r}{{Continued on next page}} \\
+\multicolumn{5}{r}{{Continued on next page}} \\
 \endfoot
 
 \bottomrule
@@ -151,13 +151,13 @@ DOF & Displacement (m) \\
 
 0 & 0.000000 \\
 1 & 0.000000 \\
-2 & 0.000000 \\
-3 & 28633115306666.671875 \\
-4 & -21474836480000.003906 \\
-5 & 14316557653333.333984 \\
+2 & 0.001000 \\
+3 & 0.000000 \\
+4 & 0.000500 \\
+5 & -0.002286 \\
 \end{longtable}
 
-\textbf{Maximum Displacement:} 28633115306666.671875 m
+\textbf{Maximum Displacement:} 0.002340 m
 
 \section{Member Forces}
 
@@ -180,9 +180,9 @@ Member ID & Axial Force (N) & Type \\
 \bottomrule
 \endlastfoot
 
-1 & 0.000000 & Compression \\
-2 & -13161.877963 & Compression \\
-3 & -8506.098452 & Compression \\
+1 & 5000.000000 & Tension \\
+2 & -9013.878189 & Compression \\
+3 & -9013.878189 & Compression \\
 \end{longtable}
 
 \section{Support Reactions}
@@ -206,9 +206,9 @@ DOF & Reaction Force (N) \\
 \bottomrule
 \endlastfoot
 
-0 & 3730.565917 \\
-1 & 14310.515542 \\
-2 & -3730.565917 \\
+0 & -0.000000 \\
+1 & 7500.000000 \\
+2 & 7500.000000 \\
 \end{longtable}
 
 \section{Analysis Metadata}
@@ -221,8 +221,8 @@ Converged & Yes \\
 Iterations & 0 \\
 Total DOFs & 6 \\
 Free DOFs & 3 \\
-Max Displacement & 28633115306666.671875 m \\
-Max Stress & 131618779.629931 Pa \\
+Max Displacement & 0.002340 m \\
+Max Stress & 90138781.886600 Pa \\
 \bottomrule
 \end{tabular}
 

@@ -33,8 +33,12 @@ bool XMLExporter::exportResults(const ITrussView& truss,
         file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n";
         file << "<TrussAnalysisResults>\n";
         
-        // Project metadata (always included)
-        writeProjectSection(file, truss, options);
+        // Project metadata
+        file << "  <Project>\n";
+        file << "    <Name>" << escapeString(truss.getName()) << "</Name>\n";
+        file << "    <ExportTime>" << formatTimestamp() << "</ExportTime>\n";
+        file << "    <Version>3.0.0</Version>\n";
+        file << "  </Project>\n";
         
         // Geometry section (conditional)
         if (options.includeGeometry) {
@@ -124,15 +128,6 @@ std::string XMLExporter::escapeString(const std::string& str) const {
         }
     }
     return result;
-}
-
-void XMLExporter::writeProjectSection(std::ostream& os, const ITrussView& truss,
-                                       const ExportOptions& options) {
-    os << "  <Project>\n";
-    os << "    <Name>" << escapeString(truss.getName()) << "</Name>\n";
-    os << "    <ExportTime>" << formatTimestamp() << "</ExportTime>\n";
-    os << "    <Version>2.2.0</Version>\n";
-    os << "  </Project>\n";
 }
 
 void XMLExporter::writeGeometrySection(std::ostream& os, const ITrussView& truss,

@@ -45,7 +45,7 @@ protected:
         
         // Create nodes
         auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);   // Left support
-        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);  // Right support
+        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);  // Right support (Y constrained)
         auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);     // Top node
         
         // Create members
@@ -151,8 +151,8 @@ TEST_F(CSVExporterTest, GeometrySection) {
     EXPECT_TRUE(fileContains(outputPath, "Member ID,Start Node,End Node,Length"));
     
     // Check node data
-    EXPECT_TRUE(fileContains(outputPath, "1,0.000000,0.000000,3"));  // Node 1: Pinned (type 3)
-    EXPECT_TRUE(fileContains(outputPath, "2,4.000000,0.000000,5"));  // Node 2: RollerY (type 5)
+    EXPECT_TRUE(fileContains(outputPath, "1,0.000000,0.000000,1"));  // Node 1: Pinned (type 1)
+    EXPECT_TRUE(fileContains(outputPath, "2,4.000000,0.000000,2"));  // Node 2: RollerX (type 2)
     EXPECT_TRUE(fileContains(outputPath, "3,2.000000,3.000000,0"));  // Node 3: Free (type 0)
     
     // Check member data

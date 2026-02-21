@@ -1,16 +1,25 @@
 /**
  * @file LoadInputWidget.cpp
  * @brief Implementation of the load input widget
+ * @version 3.0.0
  */
 
-#include "MainWindow.hpp"
+#include "LoadInputWidget.hpp"
+#include "controllers/TrussEditController.hpp"
 #include <QtWidgets/QFormLayout>
 #include <QtGui/QDoubleValidator>
+#include <cmath>
 
 namespace truss::gui {
 
-LoadInputWidget::LoadInputWidget(QWidget *parent)
+LoadInputWidget::LoadInputWidget(
+    application::TrussApplicationService& trussService,
+    truss_controllers::TrussEditController& editController,
+    QWidget *parent)
     : QWidget(parent),
+      m_trussService(trussService),
+      m_editController(editController),
+      m_currentTrussHandle(0),
       m_nodeCombo(new QComboBox(this)),
       m_fxEdit(new QLineEdit(this)),
       m_fyEdit(new QLineEdit(this)),
@@ -21,6 +30,12 @@ LoadInputWidget::LoadInputWidget(QWidget *parent)
     
     connect(m_addButton, &QPushButton::clicked, this, &LoadInputWidget::addLoad);
     connect(m_clearButton, &QPushButton::clicked, this, &LoadInputWidget::clearInputs);
+    
+    // Connect to controller signals
+    connect(&m_editController, &truss_controllers::TrussEditController::loadApplied,
+            this, &LoadInputWidget::onLoadApplied);
+    connect(&m_editController, &truss_controllers::TrussEditController::operationFailed,
+            this, &LoadInputWidget::onOperationFailed);
 }
 
 void LoadInputWidget::setupUI() {
@@ -78,27 +93,9 @@ void LoadInputWidget::addLoad() {
     // Get node ID from combo box data
     size_t nodeId = m_nodeCombo->currentData().toULongLong();
     
-    // Get the main window to access the truss object
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (mainWindow && mainWindow->getTruss()) {
-        try {
-            truss::core::Force2D force{fx, fy};
-            mainWindow->getTruss()->applyForce(nodeId, force);
-            
-            emit loadAdded();
-            
-            double magnitude = std::sqrt(fx*fx + fy*fy);
-            QMessageBox::information(this, "Success", 
-                QString("Load added to node %1\nForce: (%2, %3) N\nMagnitude: %4 N")
-                .arg(nodeId)
-                .arg(fx, 0, 'f', 2).arg(fy, 0, 'f', 2)
-                .arg(magnitude, 0, 'f', 2));
-                
-        } catch (const std::exception& e) {
-            QMessageBox::critical(this, "Error", 
-                QString("Failed to add load: %1").arg(e.what()));
-        }
-    }
+    // Create Force2D and use controller to apply load (Clean Architecture)
+    truss::core::Force2D force{fx, fy};
+    m_editController.onLoadApplied(nodeId, force);
 }
 
 void LoadInputWidget::clearInputs() {
@@ -107,23 +104,43 @@ void LoadInputWidget::clearInputs() {
     m_fyEdit->setText("0.0");
 }
 
-void LoadInputWidget::updateNodeList() {
+void LoadInputWidget::updateNodeList(application::TrussHandle trussHandle) {
+    m_currentTrussHandle = trussHandle;
+    
     m_nodeCombo->clear();
     
-    MainWindow* mainWindow = qobject_cast<MainWindow*>(window());
-    if (mainWindow && mainWindow->getTruss()) {
-        const auto& nodes = mainWindow->getTruss()->getNodes();
-        for (size_t i = 0; i < nodes.size(); ++i) {
-            const auto& node = nodes[i];
-            size_t nodeId = node->getId();
-            QString nodeText = QString("Node %1 (%2, %3)")
-                .arg(nodeId)
-                .arg(node->getPosition().x, 0, 'f', 2)
-                .arg(node->getPosition().y, 0, 'f', 2);
-            
-            m_nodeCombo->addItem(nodeText, static_cast<qulonglong>(nodeId));
-        }
+    if (m_currentTrussHandle == 0) {
+        return;
     }
+    
+    // Use ITrussView interface for read-only access (Clean Architecture)
+    const auto& trussView = m_trussService.getTrussView(m_currentTrussHandle);
+    auto nodeViews = trussView.getNodeViews();
+    
+    for (const auto& nodeView : nodeViews) {
+        QString nodeText = QString("Node %1 (%2, %3)")
+            .arg(nodeView.id)
+            .arg(nodeView.x, 0, 'f', 2)
+            .arg(nodeView.y, 0, 'f', 2);
+        
+        m_nodeCombo->addItem(nodeText, static_cast<qulonglong>(nodeView.id));
+    }
+}
+
+void LoadInputWidget::onLoadApplied(size_t nodeId, double fx, double fy) {
+    emit loadAdded();
+    
+    double magnitude = std::sqrt(fx*fx + fy*fy);
+    QMessageBox::information(this, "Success", 
+        QString("Load added to node %1\nForce: (%2, %3) N\nMagnitude: %4 N")
+        .arg(nodeId)
+        .arg(fx, 0, 'f', 2).arg(fy, 0, 'f', 2)
+        .arg(magnitude, 0, 'f', 2));
+}
+
+void LoadInputWidget::onOperationFailed(const QString& errorMessage) {
+    QMessageBox::critical(this, "Error", 
+        QString("Failed to add load: %1").arg(errorMessage));
 }
 
 } // namespace truss::gui

@@ -5,9 +5,9 @@
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
-[![Tests](https://img.shields.io/badge/tests-458%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-602%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Phase 5 (CLI Layer) complete! The project now features a professional CLI with Command Pattern architecture, comprehensive argument parsing with dual-form option support, analyze/validate/export commands, and enhanced console output formatting. Test coverage: 458/459 tests passing (99.8% pass rate). See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev.
+> **✅ REFACTORING STATUS**: Phase 6 (GUI Layer) complete! The project now features MVP (Model-View-Presenter) architecture with dependency injection, testable controllers, and complete GUI-domain decoupling. Professional CLI with Command Pattern, comprehensive testing framework with 602/603 tests passing (99.8% pass rate). See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details. Current version: v3.0.0-dev.
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface, robust computational engine, and clean layered architecture following SOLID principles and industry best practices.
 
@@ -84,6 +84,51 @@ The Stiffness Method necessitates breaking down the structure into discrete fini
 
 Once the stiffness matrix is defined, we can ascertain the unknown displacements of the nodes under any given load applied to the structure. With knowledge of these displacements, we can subsequently compute both the external and internal forces within the structure by leveraging the force-displacement relations for each individual member.
 
+## Architecture Overview
+
+The application follows **Clean Architecture** principles with strict layer separation and dependency inversion:
+
+```
+┌─────────────────────────────────────────────────────────┐
+│                    Presentation Layer                   │
+│  (GUI: Qt6 Widgets, Controllers, Presenters, Views)     │
+└────────────────────┬────────────────────────────────────┘
+                     │ DTOs, Interfaces
+┌────────────────────▼────────────────────────────────────┐
+│                   Application Layer                     │
+│     (Services, Facades, Use Cases, DTOs, Results)       │
+└────────────────────┬────────────────────────────────────┘
+                     │ Domain Models
+┌────────────────────▼────────────────────────────────────┐
+│                     Domain Layer                        │
+│  (Entities: Truss, Node, Member; Analysis; Validation)  │
+└────────────────────┬────────────────────────────────────┘
+                     │ Interfaces
+┌────────────────────▼────────────────────────────────────┐
+│                 Infrastructure Layer                    │
+│        (File I/O, Export, Logging, Persistence)         │
+└─────────────────────────────────────────────────────────┘
+```
+
+**MVP Pattern in GUI Layer:**
+
+- **Model**: Domain entities accessed via Application Services
+- **View**: Qt6 widgets displaying data (MainWindow, NodeInputWidget, etc.)
+- **Presenter**: Formats domain data for display (TrussDataPresenter, AnalysisResultsPresenter)
+- **Controller**: Coordinates user actions (TrussEditController, AnalysisController, ProjectController)
+
+**Dependency Injection:**
+
+- Controllers depend on service interfaces (`ITrussService`, `IAnalysisService`)
+- Enables unit testing with mock services
+- Production code uses concrete implementations
+
+**Data Transfer Objects (DTOs):**
+
+- GUI receives `NodeView`, `MemberView` DTOs, not domain entities
+- Complete decoupling between GUI and domain layers
+- Stable API contract independent of domain model changes
+
 ## Key Features
 
 **Interactive Drawing Canvas**
@@ -92,15 +137,18 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 - Real-time visual feedback during design
 - Snap-to-grid functionality for precision
 - Zoom and pan capabilities
+- Auto-zoom viewport to fit geometry on file load
 
 **Advanced Analysis Engine**
 
-- Layered architecture (Interface → Application → Domain → Infrastructure)
+- Clean Architecture with MVP pattern and dependency injection
+- Testable controllers via interface-based dependencies
 - Application facades for simplified API (TrussApplicationService, AnalysisApplicationService)
 - Direct stiffness method implementation
 - Support for various load types and boundary conditions
 - Automated calculation of displacements, forces, and reactions
 - Material and section property management
+- Structural stability validation (static determinacy checks)
 
 **Professional Results Display**
 
@@ -112,10 +160,12 @@ Once the stiffness matrix is defined, we can ascertain the unknown displacements
 **Modern Technology Stack**
 
 - **Language**: C++20 with modern standards
-- **GUI Framework**: Qt6 (Core, Widgets, GUI)
+- **GUI Framework**: Qt6 (Core, Widgets, GUI) with MVP pattern
 - **Linear Algebra**: Eigen3 library
+- **Testing**: Google Test (GTest) + GoogleMock for unit/integration tests
 - **Build System**: CMake 3.20+
 - **Platform**: Linux (Ubuntu 22.04+, Fedora, Arch)
+- **Architecture**: Clean Architecture with SOLID principles
 
 ## Requirements
 
@@ -243,11 +293,79 @@ The CLI version supports comprehensive structural analysis workflows with multip
 - **Output**: JSON, XML, CSV, TSV, TXT, HTML, LaTeX
 - **Export**: All output formats plus automatic format detection from file extensions
 
+## For Developers
+
+**Extending the GUI:**
+
+The GUI layer follows MVP pattern with dependency injection. To add new features:
+
+1. **Create a Controller** (handles user actions):
+
+   ```cpp
+   class NewFeatureController : public QObject {
+       ITrussService* m_service;
+   public:
+       NewFeatureController(ITrussService* service, QObject* parent);
+       void handleUserAction();
+   };
+   ```
+
+2. **Create a Presenter** (formats data for display):
+
+   ```cpp
+   class NewFeaturePresenter {
+   public:
+       QString formatData(const DomainData& data);
+   };
+   ```
+
+3. **Create or Update Widget** (displays UI):
+
+   ```cpp
+   class NewWidget : public QWidget {
+       NewFeatureController* m_controller;
+       NewFeaturePresenter* m_presenter;
+   public:
+       NewWidget(NewFeatureController* ctrl, NewFeaturePresenter* pres);
+   };
+   ```
+
+4. **Write Unit Tests** using mock services:
+   ```cpp
+   TEST(NewFeatureControllerTest, HandlesAction) {
+       MockTrussApplicationService mockService;
+       NewFeatureController controller(&mockService);
+       controller.handleUserAction();
+       EXPECT_EQ(mockService.callCount, 1);
+   }
+   ```
+
+**Testing:**
+
+```bash
+# Run all tests
+cd build && ctest
+
+# Run specific test suite
+./unit_tests --gtest_filter="ControllerTests.*"
+
+# Run with verbose output
+ctest --verbose
+```
+
+**Architecture Principles:**
+
+- **Dependency Inversion**: Controllers depend on interfaces, not concrete classes
+- **Single Responsibility**: Each component has one clear purpose
+- **DTO Pattern**: Use Data Transfer Objects to decouple GUI from domain
+- **Testability**: All controllers unit-testable via mocking
+
 ## Documentation
 
 - **[Installation Guide](INSTALL_LINUX.md)**: Complete Linux installation instructions
 - **[Refactoring Progress](REFACTORING_PROGRESS.md)**: Track v3.0.0 refactoring status
 - **[Refactoring Documentation](docs/refactoring/)**: Detailed refactoring plans and architecture
+- **[Work Logs](docs/work-logs/)**: Detailed records of major refactoring milestones
 
 ## Contributing
 

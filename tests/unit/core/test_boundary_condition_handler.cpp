@@ -93,8 +93,8 @@ TEST_F(BoundaryConditionHandlerTest, AllSupportTypes) {
     
     // Each support type on separate node
     auto n0 = truss.addNode(0.0, 0.0, SupportType::Free);      // DOFs 0,1 - both free
-    auto n1 = truss.addNode(1.0, 0.0, SupportType::PinnedX);   // DOF 2 constrained, 3 free
-    auto n2 = truss.addNode(2.0, 0.0, SupportType::PinnedY);   // DOF 4 free, 5 constrained
+    auto n1 = truss.addNode(1.0, 0.0, SupportType::RollerY);   // DOF 2 constrained, 3 free
+    auto n2 = truss.addNode(2.0, 0.0, SupportType::RollerX);   // DOF 4 free, 5 constrained
     auto n3 = truss.addNode(3.0, 0.0, SupportType::Pinned);    // DOFs 6,7 - both constrained
     auto n4 = truss.addNode(4.0, 0.0, SupportType::RollerX);   // DOF 8 free, 9 constrained
     auto n5 = truss.addNode(5.0, 0.0, SupportType::RollerY);   // DOF 10 constrained, 11 free
@@ -374,7 +374,7 @@ TEST_F(BoundaryConditionHandlerTest, DofListsDisjointAndComplete) {
     auto n0 = truss.addNode(0.0, 0.0, SupportType::Pinned);
     auto n1 = truss.addNode(1.0, 0.0, SupportType::Free);
     auto n2 = truss.addNode(2.0, 0.0, SupportType::RollerY);
-    auto n3 = truss.addNode(1.0, 1.0, SupportType::PinnedX);
+    auto n3 = truss.addNode(1.0, 1.0, SupportType::RollerY);
     
     truss.addMember(n0, n1);
     truss.addMember(n1, n2);

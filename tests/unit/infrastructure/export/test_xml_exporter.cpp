@@ -46,7 +46,7 @@ protected:
         
         // Create nodes
         auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);   // Left support
-        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);  // Right support
+        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);  // Right support (Y constrained)
         auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);     // Top node
         
         // Create members
@@ -220,7 +220,7 @@ TEST_F(XMLExporterTest, ProjectSection) {
     EXPECT_TRUE(fileContains(outputPath, "<Name>Test Triangle Truss</Name>"));
     EXPECT_TRUE(fileContains(outputPath, "<ExportTime>"));
     EXPECT_TRUE(fileContains(outputPath, "</ExportTime>"));
-    EXPECT_TRUE(fileContains(outputPath, "<Version>2.2.0</Version>"));
+    EXPECT_TRUE(fileContains(outputPath, "<Version>3.0.0</Version>"));
 }
 
 /**
@@ -517,7 +517,7 @@ TEST_F(XMLExporterTest, StringEscaping) {
     
     // Create stable triangle structure
     auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);
     
     truss->addMember(node1, node2);
@@ -622,7 +622,7 @@ TEST_F(XMLExporterTest, GoldenMasterEquivalence) {
     auto truss = std::make_unique<Truss>("Golden Master Test Truss");
     
     auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);
     
     truss->addMember(node1, node2);

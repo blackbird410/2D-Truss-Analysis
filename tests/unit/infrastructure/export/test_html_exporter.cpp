@@ -46,7 +46,7 @@ protected:
         
         // Create nodes
         auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);   // Left support
-        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);  // Right support
+        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);  // Right support (Y constrained)
         auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);     // Top node
         
         // Create members
@@ -183,7 +183,7 @@ TEST_F(HTMLExporterTest, ProjectSection) {
     EXPECT_TRUE(fileContains(outputPath, "<strong>Project Name:</strong>"));
     EXPECT_TRUE(fileContains(outputPath, "<strong>Export Date:</strong>"));
     EXPECT_TRUE(fileContains(outputPath, "<strong>Version:</strong>"));
-    EXPECT_TRUE(fileContains(outputPath, "2.2.0"));
+    EXPECT_TRUE(fileContains(outputPath, "3.0.0"));
 }
 
 /**
@@ -492,7 +492,7 @@ TEST_F(HTMLExporterTest, CSSStylesIncluded) {
 TEST_F(HTMLExporterTest, HTMLEscaping) {
     auto truss = std::make_unique<Truss>("Test <Tag> & \"Quotes\"");
     auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);
     
     // Add members to make valid truss (stable triangle)

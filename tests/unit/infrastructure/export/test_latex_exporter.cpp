@@ -49,7 +49,7 @@ protected:
         
         // Create nodes
         auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);   // Left support
-        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);  // Right support
+        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);  // Right support (Y constrained)
         auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);     // Top node
         
         // Create members
@@ -403,7 +403,7 @@ TEST_F(LaTeXExporterTest, LatexEscaping) {
     
     // Create stable triangle structure (same as other tests)
     auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);   // Left support
-    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerY);  // Right support (changed from Pinned)
+    auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);  // Right support (Y constrained)
     auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);     // Top node
     
     truss->addMember(node1, node2);  // Bottom horizontal

@@ -78,8 +78,6 @@ private:
     std::string escapeString(const std::string& str) const;
     
     // Section writers
-    void writeProjectSection(std::ostream& os, const ITrussView& truss,
-                            const ExportOptions& options);
     void writeGeometrySection(std::ostream& os, const ITrussView& truss,
                              const ExportOptions& options, bool& needsComma);
     void writePropertiesSection(std::ostream& os, const ITrussView& truss,

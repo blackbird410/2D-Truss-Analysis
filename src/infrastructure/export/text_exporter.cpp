@@ -32,9 +32,6 @@ bool TextExporter::exportResults(const ITrussView& truss,
         // Document header
         writeHeader(file, truss);
         
-        // Project metadata (always included)
-        writeProjectSection(file, truss, options);
-        
         // ALL 8 sections MUST be represented (placeholder if not implemented)
         if (options.includeGeometry) {
             writeGeometrySection(file, truss, options);
@@ -116,13 +113,10 @@ void TextExporter::writeHeader(std::ostream& os, const ITrussView& truss) {
     os << "Generated: " << formatTimestamp() << "\n";
     os << "Version: 3.0.0\n";
     writeSeparator(os);
-}
-
-void TextExporter::writeProjectSection(std::ostream& os, 
-                                      const ITrussView& truss,
-                                      const ExportOptions& /*options*/) {
-    writeSectionHeader(os, "PROJECT METADATA");
+    os << "\n";
     
+    // Project metadata
+    writeSectionHeader(os, "PROJECT METADATA");
     os << "  Project Name:    " << truss.getName() << "\n";
     os << "  Generated:       " << formatTimestamp() << "\n";
     os << "  Software:        2D Truss Analysis v3.0.0\n";
@@ -148,8 +142,6 @@ void TextExporter::writeGeometrySection(std::ostream& os,
         switch (node.support) {
             case core::SupportType::Free: supportType = "Free"; break;
             case core::SupportType::Pinned: supportType = "Pinned"; break;
-            case core::SupportType::PinnedX: supportType = "Pinned-X"; break;
-            case core::SupportType::PinnedY: supportType = "Pinned-Y"; break;
             case core::SupportType::RollerX: supportType = "Roller-X"; break;
             case core::SupportType::RollerY: supportType = "Roller-Y"; break;
             default: supportType = "Unknown"; break;

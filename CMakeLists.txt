@@ -32,7 +32,7 @@ endif()
 
 # Find required packages
 find_package(Eigen3 REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test)
 find_package(nlohmann_json REQUIRED)
 
 # Find tinyxml2 (note: package name in CMake is lowercase)
@@ -177,6 +177,8 @@ add_library(TrussApplication STATIC
     src/application/TrussApplicationService.hpp
     src/application/AnalysisApplicationService.cpp
     src/application/AnalysisApplicationService.hpp
+    src/application/MaterialLibraryService.cpp
+    src/application/MaterialLibraryService.hpp
 )
 
 target_include_directories(TrussApplication PUBLIC
@@ -221,6 +223,12 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
     TrussCore
 )
 
+# Utility: Generate corrected golden masters
+add_executable(generate_corrected_golden_masters
+    generate_corrected_golden_masters.cpp
+)
+target_link_libraries(generate_corrected_golden_masters PRIVATE TrussCore)
+
 # ============================================================================
 # UNIT TESTS CONFIGURATION
 # ============================================================================
@@ -253,6 +261,9 @@ if(BUILD_TESTING)
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
         tests/unit/core/test_analysis_orchestrator.cpp
+        tests/unit/test_stiffness_matrix_bug.cpp
+        tests/unit/test_displacement_sign_check.cpp
+        tests/unit/test_warren_displacement.cpp
         # Infrastructure layer tests
         tests/unit/infrastructure/export/test_csv_exporter.cpp
         tests/unit/infrastructure/export/test_html_exporter.cpp
@@ -266,6 +277,8 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
+        tests/unit/application/test_truss_application_service_gui_methods.cpp
+        tests/unit/application/test_material_library_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
         # CLI layer tests (Phase 5A & 5B & Phase 6)
         tests/unit/cli/test_console_presenter.cpp
@@ -274,6 +287,21 @@ if(BUILD_TESTING)
         tests/unit/cli/test_analyze_command.cpp
         tests/unit/cli/test_validate_command.cpp
         tests/unit/cli/test_export_command.cpp
+        # GUI layer tests (Controller API Stabilization)
+        tests/unit/controllers/test_TrussEditController.cpp
+        tests/unit/controllers/test_ProjectController.cpp
+        tests/unit/controllers/test_AnalysisController.cpp
+        tests/unit/presenters/test_TrussDataPresenter.cpp
+        # Mock compatibility tests (Phase 6: Dependency Inversion validation)
+        tests/unit/test_mock_compatibility.cpp
+        tests/unit/test_mock_analysis_compatibility.cpp
+        # GUI source files needed for GUI tests
+        src/gui/presenters/TrussDataPresenter.cpp
+        src/gui/presenters/AnalysisResultsPresenter.cpp
+        src/gui/presenters/ValidationPresenter.cpp
+        src/gui/controllers/TrussEditController.cpp
+        src/gui/controllers/AnalysisController.cpp
+        src/gui/controllers/ProjectController.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
@@ -284,6 +312,9 @@ if(BUILD_TESTING)
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
+        Qt6::Core
+        Qt6::Widgets
+        Qt6::Test
     )
     
     target_include_directories(unit_tests PRIVATE
@@ -293,6 +324,8 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
         ${CMAKE_SOURCE_DIR}/src/infrastructure/io
+        ${CMAKE_SOURCE_DIR}/src/gui
+        ${CMAKE_SOURCE_DIR}/tests  # For mocks directory
     )
     
     add_test(NAME UnitTests COMMAND unit_tests)
@@ -309,12 +342,25 @@ if(BUILD_TESTING)
         tests/integration/test_working_integration.cpp
         tests/integration/test_minimal_analysis.cpp
         tests/integration/test_cli_workflows.cpp
+        tests/integration/test_lifecycle_integration.cpp
+        tests/integration/test_load_workflow.cpp
+        tests/integration/test_gui_lifecycle.cpp
+        tests/integration/test_ui_load_diagnosis.cpp
+        tests/integration/test_load_viewport_fix.cpp
+        tests/integration/test_gui_file_load.cpp
+        # GUI controllers needed for GUI lifecycle tests
+        src/gui/controllers/TrussEditController.cpp
+        src/gui/controllers/ProjectController.cpp
+        src/gui/presenters/TrussDataPresenter.cpp
         ${CLI_SOURCES}
     )
     
     target_link_libraries(integration_tests PRIVATE
         TrussCore
         TrussApplication
+        Qt6::Core
+        Qt6::Widgets
+        Qt6::Test
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
@@ -331,6 +377,38 @@ if(BUILD_TESTING)
     set_tests_properties(IntegrationTests PROPERTIES
         TIMEOUT 60
         LABELS "integration;gtest"
+    )
+    
+    # GUI Integration Tests (Qt Test framework)
+    add_executable(gui_integration_test
+        tests/integration/test_gui_integration.cpp
+        # GUI source files needed for integration tests
+        src/gui/presenters/TrussDataPresenter.cpp
+        src/gui/presenters/AnalysisResultsPresenter.cpp
+        src/gui/presenters/ValidationPresenter.cpp
+        src/gui/controllers/TrussEditController.cpp
+        src/gui/controllers/AnalysisController.cpp
+        src/gui/controllers/ProjectController.cpp
+    )
+    
+    target_link_libraries(gui_integration_test PRIVATE
+        TrussApplication
+        TrussCore
+        Qt6::Test
+        Qt6::Widgets
+        Qt6::Core
+    )
+    
+    target_include_directories(gui_integration_test PRIVATE
+        ${CMAKE_SOURCE_DIR}/src
+        ${CMAKE_SOURCE_DIR}/src/gui
+        ${CMAKE_SOURCE_DIR}/src/application
+    )
+    
+    add_test(NAME GUIIntegrationTests COMMAND gui_integration_test)
+    set_tests_properties(GUIIntegrationTests PROPERTIES
+        TIMEOUT 120
+        LABELS "gui;integration;qt"
     )
     
     # Convenience target to build all new GTest-based tests
@@ -352,15 +430,31 @@ set_target_properties(TrussAnalysisCLI PROPERTIES
 add_executable(TrussAnalysisGUI
     src/gui/main.cpp
     src/gui/MainWindow.cpp
+    src/gui/MainWindow.hpp
     src/gui/NodeInputWidget.cpp
+    src/gui/NodeInputWidget.hpp
     src/gui/MemberInputWidget.cpp
+    src/gui/MemberInputWidget.hpp
     src/gui/LoadInputWidget.cpp
+    src/gui/LoadInputWidget.hpp
     src/gui/DataTableWidget.cpp
+    src/gui/DataTableWidget.hpp
     src/gui/ResultsWidget.cpp
+    src/gui/ResultsWidget.hpp
     src/gui/PlotWidget.cpp
+    src/gui/PlotWidget.hpp
     src/gui/InteractiveDrawingWidget.cpp
-    src/gui/ProjectFileManager.cpp
+    src/gui/InteractiveDrawingWidget.hpp
     src/gui/DeformedTrussWidget.cpp
+    src/gui/DeformedTrussWidget.hpp
+    # Phase 3A - Presenters
+    src/gui/presenters/AnalysisResultsPresenter.cpp
+    src/gui/presenters/TrussDataPresenter.cpp
+    src/gui/presenters/ValidationPresenter.cpp
+    # Phase 3A - Controllers
+    src/gui/controllers/TrussEditController.cpp
+    src/gui/controllers/AnalysisController.cpp
+    src/gui/controllers/ProjectController.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE

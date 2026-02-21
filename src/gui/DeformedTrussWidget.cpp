@@ -13,7 +13,7 @@ namespace truss::gui {
 
 DeformedTrussWidget::DeformedTrussWidget(QWidget* parent)
     : QWidget(parent),
-      m_truss(nullptr),
+      m_resultsHandle(0),
       m_hasResults(false),
       m_viewCenter(0, 0),
       m_viewScale(1.0),
@@ -209,31 +209,38 @@ void DeformedTrussWidget::setupControls() {
     m_controlPanel->raise(); // Ensure it's on top
 }
 
-void DeformedTrussWidget::setTruss(truss::core::Truss* truss) {
-    m_truss = truss;
-    calculateBounds();
-    update();
-}
-
-void DeformedTrussWidget::setAnalysisResults(const truss::core::analysis::AnalysisResults& results) {
-    m_results = results;
+void DeformedTrussWidget::setData(
+    const ITrussView& trussView,
+    const IAnalysisResultsView& resultsView,
+    ResultsHandle resultsHandle)
+{
+    m_resultsHandle = resultsHandle;
     m_hasResults = true;
+    
+    // Cache node views
+    m_nodeViews = trussView.getNodeViews();
+    
+    // Cache member views
+    m_memberViews = trussView.getMemberViews();
+    
+    // Cache analysis result data
+    m_displacements = resultsView.getDisplacements();
+    m_reactions = resultsView.getReactions();
+    m_memberForces = resultsView.getMemberForces();
     
     // Calculate maximum displacement and force for scaling
     m_maxDisplacement = 0.0;
     m_maxForce = 0.0;
     
-    if (m_truss) {
-        for (const auto& node : m_truss->getNodes()) {
-            auto displacement = node->getResults().displacement;
-            double totalDisp = std::sqrt(displacement.x * displacement.x + displacement.y * displacement.y);
-            m_maxDisplacement = std::max(m_maxDisplacement, totalDisp);
-        }
-        
-        for (const auto& member : m_truss->getMembers()) {
-            double force = std::abs(member->getResults().axialForce);
-            m_maxForce = std::max(m_maxForce, force);
-        }
+    // Calculate max displacement from node views
+    for (const auto& nodeView : m_nodeViews) {
+        double totalDisp = std::sqrt(nodeView.dx * nodeView.dx + nodeView.dy * nodeView.dy);
+        m_maxDisplacement = std::max(m_maxDisplacement, totalDisp);
+    }
+    
+    // Calculate max force from member views
+    for (const auto& memberView : m_memberViews) {
+        m_maxForce = std::max(m_maxForce, std::abs(memberView.axialForce));
     }
     
     calculateBounds();
@@ -242,7 +249,12 @@ void DeformedTrussWidget::setAnalysisResults(const truss::core::analysis::Analys
 }
 
 void DeformedTrussWidget::clear() {
-    m_truss = nullptr;
+    m_nodeViews.clear();
+    m_memberViews.clear();
+    m_displacements.clear();
+    m_reactions.clear();
+    m_memberForces.clear();
+    m_resultsHandle = 0;
     m_hasResults = false;
     m_maxDisplacement = 0.0;
     m_maxForce = 0.0;
@@ -250,7 +262,7 @@ void DeformedTrussWidget::clear() {
 }
 
 void DeformedTrussWidget::resetView() {
-    if (!m_truss || m_truss->getNodes().empty()) {
+    if (m_nodeViews.empty()) {
         return;
     }
     
@@ -315,7 +327,7 @@ void DeformedTrussWidget::paintEvent(QPaintEvent* event) {
     // Clear background
     painter.fillRect(rect(), Qt::white);
     
-    if (!m_truss || !m_hasResults) {
+    if (m_nodeViews.empty() || !m_hasResults) {
         painter.setPen(Qt::gray);
         painter.drawText(rect(), Qt::AlignCenter, "No analysis results to display.\nRun analysis first.");
         return;
@@ -381,19 +393,27 @@ void DeformedTrussWidget::drawGrid(QPainter& painter) {
 void DeformedTrussWidget::drawOriginalTruss(QPainter& painter) {
     painter.setPen(QPen(QColor(150, 150, 150), 2, Qt::DashLine));
     
-    // Draw members
-    for (const auto& member : m_truss->getMembers()) {
-        QPointF start = worldToScreen(QPointF(member->getStartNode()->getX(), member->getStartNode()->getY()));
-        QPointF end = worldToScreen(QPointF(member->getEndNode()->getX(), member->getEndNode()->getY()));
-        painter.drawLine(start, end);
+    // Draw members using cached member views
+    for (const auto& memberView : m_memberViews) {
+        // Find start and end nodes by ID
+        auto startNodeIt = std::find_if(m_nodeViews.begin(), m_nodeViews.end(),
+            [&](const NodeView& nv) { return nv.id == memberView.startNodeId; });
+        auto endNodeIt = std::find_if(m_nodeViews.begin(), m_nodeViews.end(),
+            [&](const NodeView& nv) { return nv.id == memberView.endNodeId; });
+        
+        if (startNodeIt != m_nodeViews.end() && endNodeIt != m_nodeViews.end()) {
+            QPointF start = worldToScreen(QPointF(startNodeIt->x, startNodeIt->y));
+            QPointF end = worldToScreen(QPointF(endNodeIt->x, endNodeIt->y));
+            painter.drawLine(start, end);
+        }
     }
     
-    // Draw nodes
+    // Draw nodes using cached node views
     painter.setPen(QPen(Qt::gray, 2));
     painter.setBrush(Qt::white);
     
-    for (const auto& node : m_truss->getNodes()) {
-        QPointF pos = worldToScreen(QPointF(node->getX(), node->getY()));
+    for (const auto& nodeView : m_nodeViews) {
+        QPointF pos = worldToScreen(QPointF(nodeView.x, nodeView.y));
         painter.drawEllipse(pos, 4, 4);
     }
 }
@@ -402,18 +422,26 @@ void DeformedTrussWidget::drawDeformedTruss(QPainter& painter) {
     painter.setPen(QPen(Qt::black, 3));
     
     // Draw deformed members
-    for (const auto& member : m_truss->getMembers()) {
-        QPointF start = getDeformedPosition(member->getStartNode().get());
-        QPointF end = getDeformedPosition(member->getEndNode().get());
-        painter.drawLine(worldToScreen(start), worldToScreen(end));
+    for (const auto& memberView : m_memberViews) {
+        // Find start and end nodes by ID
+        auto startNodeIt = std::find_if(m_nodeViews.begin(), m_nodeViews.end(),
+            [&](const NodeView& nv) { return nv.id == memberView.startNodeId; });
+        auto endNodeIt = std::find_if(m_nodeViews.begin(), m_nodeViews.end(),
+            [&](const NodeView& nv) { return nv.id == memberView.endNodeId; });
+        
+        if (startNodeIt != m_nodeViews.end() && endNodeIt != m_nodeViews.end()) {
+            QPointF start = getDeformedPosition(*startNodeIt);
+            QPointF end = getDeformedPosition(*endNodeIt);
+            painter.drawLine(worldToScreen(start), worldToScreen(end));
+        }
     }
     
     // Draw deformed nodes
     painter.setPen(QPen(Qt::black, 2));
     painter.setBrush(Qt::red);
     
-    for (const auto& node : m_truss->getNodes()) {
-        QPointF pos = worldToScreen(getDeformedPosition(node.get()));
+    for (const auto& nodeView : m_nodeViews) {
+        QPointF pos = worldToScreen(getDeformedPosition(nodeView));
         painter.drawEllipse(pos, 5, 5);
     }
 }
@@ -421,9 +449,8 @@ void DeformedTrussWidget::drawDeformedTruss(QPainter& painter) {
 void DeformedTrussWidget::drawMemberForces(QPainter& painter) {
     if (m_maxForce <= 0) return;
     
-    for (const auto& member : m_truss->getMembers()) {
-        
-        double force = member->getResults().axialForce;
+    for (const auto& memberView : m_memberViews) {
+        double force = memberView.axialForce;
         QColor color = getMemberForceColor(force, m_maxForce);
         
         // Determine line width based on visualization mode
@@ -439,9 +466,17 @@ void DeformedTrussWidget::drawMemberForces(QPainter& painter) {
             painter.setPen(QPen(Qt::black, lineWidth));
         }
         
-        QPointF start = getDeformedPosition(member->getStartNode().get());
-        QPointF end = getDeformedPosition(member->getEndNode().get());
-        painter.drawLine(worldToScreen(start), worldToScreen(end));
+        // Find start and end nodes by ID
+        auto startNodeIt = std::find_if(m_nodeViews.begin(), m_nodeViews.end(),
+            [&](const NodeView& nv) { return nv.id == memberView.startNodeId; });
+        auto endNodeIt = std::find_if(m_nodeViews.begin(), m_nodeViews.end(),
+            [&](const NodeView& nv) { return nv.id == memberView.endNodeId; });
+        
+        if (startNodeIt != m_nodeViews.end() && endNodeIt != m_nodeViews.end()) {
+            QPointF start = getDeformedPosition(*startNodeIt);
+            QPointF end = getDeformedPosition(*endNodeIt);
+            painter.drawLine(worldToScreen(start), worldToScreen(end));
+        }
     }
 }
 
@@ -451,12 +486,11 @@ void DeformedTrussWidget::drawDisplacementVectors(QPainter& painter) {
     painter.setPen(QPen(Qt::blue, 2));
     painter.setBrush(Qt::blue);
     
-    for (const auto& node : m_truss->getNodes()) {
-        auto displacement = node->getResults().displacement;
-        if (std::abs(displacement.x) < 1e-10 && std::abs(displacement.y) < 1e-10) continue;
+    for (const auto& nodeView : m_nodeViews) {
+        if (std::abs(nodeView.dx) < 1e-10 && std::abs(nodeView.dy) < 1e-10) continue;
         
-        QPointF original(node->getX(), node->getY());
-        QPointF displaced = getDeformedPosition(node.get());
+        QPointF original(nodeView.x, nodeView.y);
+        QPointF displaced = getDeformedPosition(nodeView);
         
         QPointF start = worldToScreen(original);
         QPointF end = worldToScreen(displaced);
@@ -485,21 +519,20 @@ void DeformedTrussWidget::drawSupportReactions(QPainter& painter) {
     painter.setPen(QPen(Qt::magenta, 3));
     painter.setBrush(Qt::magenta);
     
-    for (const auto& node : m_truss->getNodes()) {
-        if (node->getSupportType() == truss::core::SupportType::Free) continue;
+    for (const auto& nodeView : m_nodeViews) {
+        if (nodeView.support == truss::core::SupportType::Free) continue;
         
-        auto reactions = node->getReaction();
-        QPointF pos = worldToScreen(getDeformedPosition(node.get()));
+        QPointF pos = worldToScreen(getDeformedPosition(nodeView));
         
         // Draw reaction forces as arrows
         double scale = 50.0; // Pixel scale for reaction display
         
-        if (std::abs(reactions.fx) > 1e-6) {
-            QPointF end = pos + QPointF(reactions.fx > 0 ? scale : -scale, 0);
+        if (std::abs(nodeView.rx) > 1e-6) {
+            QPointF end = pos + QPointF(nodeView.rx > 0 ? scale : -scale, 0);
             painter.drawLine(pos, end);
             // Arrow head for X reaction
             QPolygonF arrow;
-            if (reactions.fx > 0) {
+            if (nodeView.rx > 0) {
                 arrow << end << (end + QPointF(-8, 4)) << (end + QPointF(-8, -4));
             } else {
                 arrow << end << (end + QPointF(8, 4)) << (end + QPointF(8, -4));
@@ -507,12 +540,12 @@ void DeformedTrussWidget::drawSupportReactions(QPainter& painter) {
             painter.drawPolygon(arrow);
         }
         
-        if (std::abs(reactions.fy) > 1e-6) {
-            QPointF end = pos + QPointF(0, reactions.fy > 0 ? -scale : scale); // Y is inverted in screen coordinates
+        if (std::abs(nodeView.ry) > 1e-6) {
+            QPointF end = pos + QPointF(0, nodeView.ry > 0 ? -scale : scale); // Y is inverted in screen coordinates
             painter.drawLine(pos, end);
             // Arrow head for Y reaction
             QPolygonF arrow;
-            if (reactions.fy > 0) {
+            if (nodeView.ry > 0) {
                 arrow << end << (end + QPointF(4, 8)) << (end + QPointF(-4, 8));
             } else {
                 arrow << end << (end + QPointF(4, -8)) << (end + QPointF(-4, -8));
@@ -565,14 +598,12 @@ void DeformedTrussWidget::drawLegend(QPainter& painter) {
     }
 }
 
-QPointF DeformedTrussWidget::getDeformedPosition(const truss::core::Node* node) const {
-    QPointF original(node->getX(), node->getY());
+QPointF DeformedTrussWidget::getDeformedPosition(const NodeView& nodeView) const {
+    QPointF original(nodeView.x, nodeView.y);
     
     if (m_maxDisplacement <= 0) {
         return original;
     }
-    
-    auto displacement = node->getResults().displacement;
     
     // Scale displacement for visualization
     double scaleFactor = m_deformationScale;
@@ -582,8 +613,8 @@ QPointF DeformedTrussWidget::getDeformedPosition(const truss::core::Node* node) 
         scaleFactor *= std::min(structureSize * 0.1 / m_maxDisplacement, 100.0);
     }
     
-    return QPointF(original.x() + displacement.x * scaleFactor,
-                   original.y() + displacement.y * scaleFactor);
+    return QPointF(original.x() + nodeView.dx * scaleFactor,
+                   original.y() + nodeView.dy * scaleFactor);
 }
 
 QColor DeformedTrussWidget::getMemberForceColor(double force, double maxForce) const {
@@ -603,7 +634,7 @@ QColor DeformedTrussWidget::getMemberForceColor(double force, double maxForce) c
 }
 
 void DeformedTrussWidget::calculateBounds() {
-    if (!m_truss || m_truss->getNodes().empty()) {
+    if (m_nodeViews.empty()) {
         m_structureBounds = QRectF(-1, -1, 2, 2);
         return;
     }
@@ -614,16 +645,16 @@ void DeformedTrussWidget::calculateBounds() {
     double maxY = std::numeric_limits<double>::lowest();
     
     // Consider both original and deformed positions
-    for (const auto& node : m_truss->getNodes()) {
+    for (const auto& nodeView : m_nodeViews) {
         // Original position
-        minX = std::min(minX, node->getX());
-        maxX = std::max(maxX, node->getX());
-        minY = std::min(minY, node->getY());
-        maxY = std::max(maxY, node->getY());
+        minX = std::min(minX, nodeView.x);
+        maxX = std::max(maxX, nodeView.x);
+        minY = std::min(minY, nodeView.y);
+        maxY = std::max(maxY, nodeView.y);
         
         // Deformed position
         if (m_hasResults) {
-            QPointF deformed = getDeformedPosition(node.get());
+            QPointF deformed = getDeformedPosition(nodeView);
             minX = std::min(minX, deformed.x());
             maxX = std::max(maxX, deformed.x());
             minY = std::min(minY, deformed.y());

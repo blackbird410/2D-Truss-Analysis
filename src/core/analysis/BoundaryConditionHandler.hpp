@@ -26,13 +26,13 @@ using Eigen::VectorXd;
  * - Expanding solution vectors to include constrained DOFs (zero displacements)
  * 
  * The boundary condition handler supports all standard 2D truss support types:
- * - Free: Both DOFs unconstrained
- * - PinnedX: X DOF constrained, Y DOF free
- * - PinnedY: Y DOF constrained, X DOF free  
- * - Pinned: Both DOFs constrained
- * - RollerX: Y DOF constrained, X DOF free
- * - RollerY: X DOF constrained, Y DOF free
+ * - Free: Both DOFs unconstrained (2 DOFs free)
+ * - Pinned: Both DOFs constrained (0 DOFs free, 2 reactions)
+ * - RollerX: Y DOF constrained, X DOF free (1 DOF free, 1 reaction in Y)
+ * - RollerY: X DOF constrained, Y DOF free (1 DOF free, 1 reaction in X)
  * 
+ * @note In 2D structural mechanics, a pinned support ALWAYS restrains both translations.
+ *       Directional constraints are modeled as roller supports.
  * @note All methods are const and stateless - this is a pure utility class
  * 
  * @see AnalysisEngine Original implementation location

@@ -18,10 +18,17 @@
 #include <QGroupBox>
 #include <QComboBox>
 #include <memory>
-#include "../core/model/Truss.hpp"
-#include "../core/analysis/AnalysisOrchestrator.hpp"
+#include "application/AnalysisApplicationService.hpp"
+#include "core/interfaces/ITrussView.hpp"
+#include "core/interfaces/IAnalysisResultsView.hpp"
 
 namespace truss::gui {
+
+using truss::application::ResultsHandle;
+using truss::core::interfaces::ITrussView;
+using truss::core::interfaces::IAnalysisResultsView;
+using truss::core::interfaces::NodeView;
+using truss::core::interfaces::MemberView;
 
 /**
  * @brief Widget for displaying the deformed shape of a truss structure
@@ -40,16 +47,14 @@ public:
     explicit DeformedTrussWidget(QWidget* parent = nullptr);
 
     /**
-     * @brief Set the truss to display
-     * @param truss Pointer to the analyzed truss
+     * @brief Set the truss and analysis results for display
+     * @param trussView Read-only view of truss geometry
+     * @param resultsView Read-only view of analysis results
+     * @param resultsHandle Handle to results (for future operations)
      */
-    void setTruss(truss::core::Truss* truss);
-
-    /**
-     * @brief Set the analysis results
-     * @param results The analysis results containing displacements and forces
-     */
-    void setAnalysisResults(const truss::core::analysis::AnalysisResults& results);
+    void setData(const ITrussView& trussView,
+                 const IAnalysisResultsView& resultsView,
+                 ResultsHandle resultsHandle);
 
     /**
      * @brief Clear the display
@@ -182,10 +187,10 @@ private:
 
     /**
      * @brief Get deformed position of a node
-     * @param node Pointer to the node
+     * @param nodeView Node view data
      * @return Deformed position
      */
-    QPointF getDeformedPosition(const truss::core::Node* node) const;
+    QPointF getDeformedPosition(const NodeView& nodeView) const;
 
     /**
      * @brief Get color for member force visualization
@@ -205,10 +210,16 @@ private:
      */
     void updateViewTransform();
 
-    // Data members
-    truss::core::Truss* m_truss;
-    truss::core::analysis::AnalysisResults m_results;
+    // Data members (cached views from interfaces)
+    std::vector<NodeView> m_nodeViews;
+    std::vector<MemberView> m_memberViews;
+    ResultsHandle m_resultsHandle;
     bool m_hasResults;
+    
+    // Analysis result data (cached from IAnalysisResultsView)
+    std::vector<truss::core::Real> m_displacements;
+    std::vector<truss::core::Real> m_reactions;
+    std::vector<truss::core::Real> m_memberForces;
 
     // View transformation
     QPointF m_viewCenter;

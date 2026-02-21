@@ -33,8 +33,16 @@ bool LaTeXExporter::exportResults(const ITrussView& truss,
         writePreamble(file, truss);
         file << "\n\\begin{document}\n\n";
         
-        // Title and project metadata (always included)
-        writeProjectSection(file, truss, options);
+        // Title and project metadata
+        file << "\\maketitle\n\n";
+        file << "\\section{Project Metadata}\n\n";
+        file << "\\begin{itemize}\n";
+        file << "  \\item \\textbf{Project Name:} " << escapeLatex(truss.getName()) << "\n";
+        file << "  \\item \\textbf{Generated:} " << formatTimestamp() << "\n";
+        file << "  \\item \\textbf{Software:} 2D Truss Analysis v3.0.0\n";
+        file << "  \\item \\textbf{Nodes:} " << truss.getNodeViews().size() << "\n";
+        file << "  \\item \\textbf{Members:} " << truss.getMemberViews().size() << "\n";
+        file << "\\end{itemize}\n\n";
         
         // Conditional sections (following ExportOptions)
         // ALL 8 sections MUST be represented (placeholder if not implemented)
@@ -135,20 +143,6 @@ void LaTeXExporter::writePreamble(std::ostream& os, const ITrussView& truss) {
 
 void LaTeXExporter::writeClosing(std::ostream& os) {
     os << "\\end{document}\n";
-}
-
-void LaTeXExporter::writeProjectSection(std::ostream& os, 
-                                       const ITrussView& truss, 
-                                       const ExportOptions& /*options*/) {
-    os << "\\maketitle\n\n";
-    os << "\\section{Project Metadata}\n\n";
-    os << "\\begin{itemize}\n";
-    os << "  \\item \\textbf{Project Name:} " << escapeLatex(truss.getName()) << "\n";
-    os << "  \\item \\textbf{Generated:} " << formatTimestamp() << "\n";
-    os << "  \\item \\textbf{Software:} 2D Truss Analysis v3.0.0\n";
-    os << "  \\item \\textbf{Nodes:} " << truss.getNodeViews().size() << "\n";
-    os << "  \\item \\textbf{Members:} " << truss.getMemberViews().size() << "\n";
-    os << "\\end{itemize}\n\n";
 }
 
 void LaTeXExporter::writeGeometrySection(std::ostream& os,

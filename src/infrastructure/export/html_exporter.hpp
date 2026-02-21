@@ -98,8 +98,6 @@ private:
     void writeFooter(std::ostream& os);
     
     // Section writers (MUST implement all 8 sections)
-    void writeProjectSection(std::ostream& os, const ITrussView& truss,
-                            const ExportOptions& options);
     void writeGeometrySection(std::ostream& os, const ITrussView& truss,
                              const ExportOptions& options);
     void writePropertiesSection(std::ostream& os, const ITrussView& truss,

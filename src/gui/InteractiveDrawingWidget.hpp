@@ -34,8 +34,10 @@
 #include <memory>
 #include <vector>
 
-#include "../core/model/Truss.hpp"
-#include "../core/analysis/AnalysisOrchestrator.hpp"
+#include "application/TrussApplicationService.hpp"
+#include "application/TrussEditDTOs.hpp"
+#include "core/interfaces/ITrussView.hpp"
+#include "core/model/Types.hpp"
 
 namespace truss::gui {
 
@@ -82,7 +84,13 @@ class DrawingCanvas : public QWidget {
     Q_OBJECT
 
 public:
-    explicit DrawingCanvas(QWidget* parent = nullptr);
+    /**
+     * @brief Construct DrawingCanvas with dependency injection
+     * @param trussService Application service for truss operations
+     * @param parent Qt parent widget
+     */
+    explicit DrawingCanvas(application::TrussApplicationService& trussService,
+                          QWidget* parent = nullptr);
     ~DrawingCanvas() override = default;
 
     // Drawing mode management
@@ -104,10 +112,13 @@ public:
     void setCurrentMaterial(const MaterialPreset& material);
     void setCurrentSection(const SectionPreset& section);
     
-    // Truss access
-    truss::core::Truss* getTruss() const { return m_truss.get(); }
-    void setTruss(std::unique_ptr<truss::core::Truss> truss);
+    // Truss handle management
+    void setTrussHandle(application::TrussHandle handle);
+    application::TrussHandle getTrussHandle() const { return m_trussHandle; }
     void clearTruss();
+    
+    // Service accessor for PropertyPanel
+    application::TrussApplicationService& getTrussService() { return m_trussService; }
     
     // Coordinate conversion
     truss::core::Point2D screenToWorld(const QPoint& screenPoint) const;
@@ -119,6 +130,17 @@ public:
     const std::vector<size_t>& getSelectedMembers() const { return m_selectedMembers; }
 
 signals:
+    // Mutation request signals (emit intent, not perform action)
+    void nodeAddRequested(const truss::core::Point2D& position, truss::core::SupportType support);
+    void memberAddRequested(truss::core::NodeId startNode, truss::core::NodeId endNode,
+                           const truss::application::MaterialSpec& material,
+                           const truss::application::SectionSpec& section);
+    void nodeRemoveRequested(truss::core::NodeId nodeId);
+    void memberRemoveRequested(truss::core::MemberId memberId);
+    void loadApplyRequested(truss::core::NodeId nodeId, const truss::core::Force2D& force);
+    void supportSetRequested(truss::core::NodeId nodeId, truss::core::SupportType support);
+    
+    // Status signals
     void trussModified();
     void nodeSelected(size_t nodeId);
     void memberSelected(size_t memberId);
@@ -164,9 +186,12 @@ private:
     void setSupportType(size_t nodeId, truss::core::SupportType supportType);
     void deleteSelectedElements();
     
+    // Injected dependencies
+    application::TrussApplicationService& m_trussService;
+    
     // State variables
     DrawingMode m_drawingMode;
-    std::unique_ptr<truss::core::Truss> m_truss;
+    application::TrussHandle m_trussHandle;
     
     // View transformation
     double m_scale;
@@ -284,16 +309,22 @@ class InteractiveDrawingWidget : public QWidget {
     Q_OBJECT
 
 public:
-    explicit InteractiveDrawingWidget(QWidget* parent = nullptr);
+    /**
+     * @brief Construct InteractiveDrawingWidget with dependency injection
+     * @param trussService Application service for truss operations
+     * @param parent Qt parent widget
+     */
+    explicit InteractiveDrawingWidget(application::TrussApplicationService& trussService,
+                                     QWidget* parent = nullptr);
     ~InteractiveDrawingWidget() override = default;
     
     // Access to components
     DrawingCanvas* getCanvas() const { return m_canvas; }
     PropertyPanel* getPropertyPanel() const { return m_propertyPanel; }
     
-    // Truss access
-    truss::core::Truss* getTruss() const { return m_canvas->getTruss(); }
-    void setTruss(std::unique_ptr<truss::core::Truss> truss);
+    // Truss handle management
+    void setTrussHandle(application::TrussHandle handle);
+    application::TrussHandle getTrussHandle() const;
     void clearTruss();
 
 signals:
@@ -315,6 +346,9 @@ private:
     QSplitter* m_mainSplitter;
     DrawingCanvas* m_canvas;
     PropertyPanel* m_propertyPanel;
+    
+    // Dependency
+    application::TrussApplicationService& m_trussService;
     
     // Toolbar
     QToolBar* m_toolbar;

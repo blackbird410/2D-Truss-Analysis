@@ -100,13 +100,6 @@ private:
     void writeClosing(std::ostream& os);
     
     /**
-     * @brief Write project metadata section
-     */
-    void writeProjectSection(std::ostream& os, 
-                            const ITrussView& truss, 
-                            const ExportOptions& options);
-    
-    /**
      * @brief Write geometry section (nodes + members)
      */
     void writeGeometrySection(std::ostream& os,

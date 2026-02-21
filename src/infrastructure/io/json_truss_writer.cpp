@@ -145,8 +145,6 @@ std::string JsonTrussWriter::supportTypeToString(core::SupportType type) {
     switch (type) {
         case core::SupportType::Free:    return "free";
         case core::SupportType::Pinned:  return "pinned";
-        case core::SupportType::PinnedX: return "pinned_x";
-        case core::SupportType::PinnedY: return "pinned_y";
         case core::SupportType::RollerX: return "roller_x";
         case core::SupportType::RollerY: return "roller_y";
         default: return "free";

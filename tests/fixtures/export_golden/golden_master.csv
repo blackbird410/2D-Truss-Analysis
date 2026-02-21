@@ -1,12 +1,12 @@
 # 2D Truss Analysis Results Export
-# Generated: 2026-02-14 02:32:26
+# Generated: 2026-02-20 19:06:48
 # Project: Golden Master Test Truss
 #
 
 # GEOMETRY
 Node ID,X,Y,Support Type
-1,0.000000,0.000000,3
-2,4.000000,0.000000,5
+1,0.000000,0.000000,1
+2,4.000000,0.000000,2
 3,2.000000,3.000000,0
 
 Member ID,Start Node,End Node,Length
@@ -28,22 +28,22 @@ Node ID,Fx (N),Fy (N)
 DOF,Displacement
 0,0.000000
 1,0.000000
-2,0.000000
-3,28633115306666.671875
-4,-21474836480000.003906
-5,14316557653333.333984
+2,0.001000
+3,0.000000
+4,0.000500
+5,-0.002286
 
 # MEMBER FORCES
 Member ID,Axial Force,Type
-1,0.000000,Compression
-2,-13161.877963,Compression
-3,-8506.098452,Compression
+1,5000.000000,Tension
+2,-9013.878189,Compression
+3,-9013.878189,Compression
 
 # SUPPORT REACTIONS
 DOF,Reaction Force
-0,3730.565917
-1,14310.515542
-2,-3730.565917
+0,-0.000000
+1,7500.000000
+2,7500.000000
 
 # ANALYSIS METADATA
 Property,Value
@@ -51,5 +51,5 @@ Converged,Yes
 Iterations,0
 Total DOFs,6
 Free DOFs,3
-Max Displacement,28633115306666.671875
-Max Stress,131618779.629931
+Max Displacement,0.002340
+Max Stress,90138781.886600

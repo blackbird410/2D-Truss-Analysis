@@ -7,9 +7,28 @@
 #include <QtCore/QDir>
 #include <QtCore/QStandardPaths>
 #include <QtCore/QLoggingCategory>
-#include <iostream>
+#include <filesystem>
+#include <memory>
 
 #include "MainWindow.hpp"
+#include "application/TrussApplicationService.hpp"
+#include "application/AnalysisApplicationService.hpp"
+#include "controllers/AnalysisController.hpp"
+#include "controllers/ProjectController.hpp"
+#include "controllers/TrussEditController.hpp"
+#include "presenters/AnalysisResultsPresenter.hpp"
+#include "presenters/TrussDataPresenter.hpp"
+#include "presenters/ValidationPresenter.hpp"
+#include "infrastructure/logging/logger_factory.hpp"
+
+namespace {
+truss::infrastructure::logging::LoggerPtr createGuiLogger() {
+    QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
+    QDir().mkpath(appDataPath);
+    std::filesystem::path logPath = std::filesystem::path(appDataPath.toStdString()) / "TrussAnalysis2D.log";
+    return truss::infrastructure::logging::LoggerFactory::createDefaultLogger(logPath);
+}
+} // namespace
 
 int main(int argc, char *argv[]) {
     // Note: High-DPI support is enabled by default in Qt6
@@ -32,19 +51,55 @@ int main(int argc, char *argv[]) {
     // Set application icon if available
     // app.setWindowIcon(QIcon(":/icons/app-icon.png"));
     
+    auto logger = createGuiLogger();
+
     try {
-        // Create and show the main window
-        truss::gui::MainWindow mainWindow;
-        mainWindow.show();
+        // Create Application Services (no Qt dependencies)
+        truss::application::TrussApplicationService trussService;
+        truss::application::AnalysisApplicationService analysisService;
+        
+        // Create Presenters (formatting layer)
+        truss_presenters::AnalysisResultsPresenter analysisPresenter;
+        truss_presenters::TrussDataPresenter trussDataPresenter;
+        truss_presenters::ValidationPresenter validationPresenter;
+        
+        // Create Controllers (orchestration layer)
+        truss_controllers::AnalysisController analysisController(
+            &trussService,
+            &analysisService,
+            analysisPresenter,
+            validationPresenter
+        );
+        
+        truss_controllers::ProjectController projectController(&trussService);
+        
+        truss_controllers::TrussEditController trussEditController(
+            &trussService,
+            trussDataPresenter
+        );
+        
+        // Create and show the main window with dependency injection
+        auto mainWindow = std::make_unique<truss::gui::MainWindow>(
+            trussService,
+            analysisService,
+            analysisController,
+            projectController,
+            trussEditController,
+            analysisPresenter,
+            trussDataPresenter,
+            validationPresenter
+        );
+        
+        mainWindow->show();
         
         // Start the event loop
         return app.exec();
         
     } catch (const std::exception& e) {
-        std::cerr << "Application error: " << e.what() << std::endl;
+        logger->error(std::string("Application error: ") + e.what());
         return 1;
     } catch (...) {
-        std::cerr << "Unknown application error occurred" << std::endl;
+        logger->critical("Unknown application error occurred");
         return 1;
     }
 }
