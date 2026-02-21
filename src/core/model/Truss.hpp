@@ -45,7 +45,7 @@ public:
     Truss& operator=(Truss&& other) noexcept = default;
 
     // Destructor
-    ~Truss() = default;
+    ~Truss() override = default;
 
     // ITrussView interface implementation (for Infrastructure layer access)
     const std::string& getName() const noexcept override { return m_name; }
