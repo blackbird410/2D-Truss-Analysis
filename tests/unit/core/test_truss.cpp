@@ -346,5 +346,48 @@ TEST(TrussTest, AggregateRootBehavior) {
     EXPECT_EQ(allMembers.size(), 2);
 }
 
+// Phase 7 Task 7.4: Domain Layer Enhancement - Edge Case Tests
+
+TEST(TrussTest, EmptyTrussQueries) {
+    Truss emptyTruss;
+
+    // Query on empty truss should return empty results
+    auto members = emptyTruss.getMembersAtNode(1);
+    EXPECT_EQ(members.size(), 0);
+
+    auto constrained = emptyTruss.getConstrainedNodes();
+    EXPECT_EQ(constrained.size(), 0);
+
+    auto loaded = emptyTruss.getLoadedNodes();
+    EXPECT_EQ(loaded.size(), 0);
+}
+
+TEST(TrussTest, SingularNodeCollection) {
+    Truss truss;
+    auto node = truss.addNode(0.0, 0.0, SupportType::Pinned);
+
+    // Query with single node
+    auto members = truss.getMembersAtNode(node->getId());
+    EXPECT_EQ(members.size(), 0);  // No members connected
+
+    auto constrained = truss.getConstrainedNodes();
+    EXPECT_EQ(constrained.size(), 1);  // Single pinned node
+    EXPECT_EQ(constrained[0]->getId(), 1);
+}
+
+TEST(TrussTest, LargeCoordinateRangeTruss) {
+    Truss truss;
+
+    // Nodes spanning from micron to meter scale
+    auto n1 = truss.addNode(1e-6, 1e-6, SupportType::Pinned);
+    auto n2 = truss.addNode(Point2D(100.0, 100.0), SupportType::Free);
+    auto n3 = truss.addNode(1000.0, 1000.0, SupportType::Free);
+
+    // Verify coordinate retrieval accuracy
+    auto nodes = truss.getNodes();
+    EXPECT_NEAR(nodes[0]->getX(), 1e-6, 1e-12);
+    EXPECT_NEAR(nodes[2]->getX(), 1000.0, 1e-10);
+}
+
 // GTest provides main() automatically via GTest::gtest_main
 // No manual main() needed
