@@ -169,3 +169,40 @@ TEST(NodeTest, GlobalDOFRetrieval) {
     EXPECT_EQ(rollerYDofs[0], 41);  // Only Y DOF
 }
 
+// Phase 7 Task 7.4: Domain Layer Enhancement - Edge Case Tests
+
+TEST(NodeTest, ExtremeCoordinateValues) {
+    // Very large coordinates
+    Node largeNode(100, Point2D(1e6, 1e6), SupportType::Free);
+    EXPECT_NEAR(largeNode.getX(), 1e6, 1e-6);
+    EXPECT_NEAR(largeNode.getY(), 1e6, 1e-6);
+
+    // Very small coordinates
+    Node smallNode(101, Point2D(1e-8, 1e-8), SupportType::Free);
+    EXPECT_NEAR(smallNode.getX(), 1e-8, 1e-14);
+    EXPECT_NEAR(smallNode.getY(), 1e-8, 1e-14);
+}
+
+TEST(NodeTest, ZeroCoordinateEdgeCases) {
+    // X=0, Y!=0
+    Node node1(102, Point2D(0.0, 5.0), SupportType::Free);
+    EXPECT_NEAR(node1.getX(), 0.0, 1e-10);
+    EXPECT_NEAR(node1.getY(), 5.0, 1e-10);
+
+    // X!=0, Y=0
+    Node node2(103, Point2D(5.0, 0.0), SupportType::Free);
+    EXPECT_NEAR(node2.getX(), 5.0, 1e-10);
+    EXPECT_NEAR(node2.getY(), 0.0, 1e-10);
+
+    // Both zero (origin)
+    Node origin(104, Point2D(0.0, 0.0), SupportType::Pinned);
+    EXPECT_NEAR(origin.getX(), 0.0, 1e-10);
+    EXPECT_NEAR(origin.getY(), 0.0, 1e-10);
+}
+
+TEST(NodeTest, NegativeCoordinateHandling) {
+    Node negNode(105, Point2D(-100.5, -200.3), SupportType::Free);
+    EXPECT_NEAR(negNode.getX(), -100.5, 1e-10);
+    EXPECT_NEAR(negNode.getY(), -200.3, 1e-10);
+}
+
