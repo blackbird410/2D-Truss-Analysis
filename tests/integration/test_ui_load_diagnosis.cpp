@@ -13,7 +13,6 @@
 #include <QDir>
 #include <QFile>
 #include <QTextStream>
-#include <iostream>
 #include "application/TrussApplicationService.hpp"
 #include "gui/controllers/TrussEditController.hpp"
 #include "gui/controllers/ProjectController.hpp"
@@ -45,19 +44,10 @@ protected:
         
         // Simulate MainWindow signal connections
         QObject::connect(projectController.get(), &ProjectController::projectOpened,
-                        [this](TrussHandle handle, const QString& filepath) {
-            std::cout << "[SIGNAL] projectOpened emitted: handle=" << handle 
-                      << " filepath=" << filepath.toStdString() << std::endl;
-            
+                        [this](TrussHandle handle, const QString&) {
             // Simulate MainWindow behavior
             editController->setCurrentTruss(handle);
             simulatedCanvasHandle = handle;
-            
-            // Log handle propagation
-            std::cout << "[STATE] After projectOpened:" << std::endl;
-            std::cout << "  - ProjectController handle: " << projectController->getCurrentTruss() << std::endl;
-            std::cout << "  - EditController handle: " << editController->getCurrentTruss() << std::endl;
-            std::cout << "  - Simulated canvas handle: " << simulatedCanvasHandle << std::endl;
         });
     }
     
@@ -73,8 +63,6 @@ protected:
  * @brief Test exact UI load path with diagnostic logging
  */
 TEST_F(UILoadDiagnosisTest, UI_LoadPath_HandlePropagation) {
-    std::cout << "\n=== DIAGNOSTIC TEST: UI Load Path ===" << std::endl;
-    
     // Create test file (simulates user selecting file)
     QString filepath = QDir::temp().filePath("ui_load_diagnosis.json");
     QFile tempFile(filepath);
@@ -97,14 +85,6 @@ TEST_F(UILoadDiagnosisTest, UI_LoadPath_HandlePropagation) {
     stream.flush();
     tempFile.close();
     
-    std::cout << "[SETUP] Test file created: " << filepath.toStdString() << std::endl;
-    
-    // Initial state
-    std::cout << "\n[STATE] Before load:" << std::endl;
-    std::cout << "  - ProjectController handle: " << projectController->getCurrentTruss() << std::endl;
-    std::cout << "  - EditController handle: " << editController->getCurrentTruss() << std::endl;
-    std::cout << "  - Simulated canvas handle: " << simulatedCanvasHandle << std::endl;
-    
     // Setup signal spy
     QSignalSpy projectOpenedSpy(projectController.get(), 
                                 &ProjectController::projectOpened);
@@ -112,13 +92,11 @@ TEST_F(UILoadDiagnosisTest, UI_LoadPath_HandlePropagation) {
                                   &ProjectController::operationFailed);
     
     // *** SIMULATE UI ACTION: User clicks File → Open → Selects file ***
-    std::cout << "\n[ACTION] Simulating UI: File → Open → " << filepath.toStdString() << std::endl;
     projectController->onOpenProject(filepath);
     
     // Check for errors
     if (operationFailedSpy.count() > 0) {
         QString error = operationFailedSpy.takeFirst().at(0).toString();
-        std::cerr << "[ERROR] Load failed: " << error.toStdString() << std::endl;
         FAIL() << "Load operation failed: " << error.toStdString();
     }
     
@@ -129,11 +107,6 @@ TEST_F(UILoadDiagnosisTest, UI_LoadPath_HandlePropagation) {
     TrussHandle projectHandle = projectController->getCurrentTruss();
     TrussHandle editHandle = editController->getCurrentTruss();
     
-    std::cout << "\n[VERIFICATION] Handle propagation:" << std::endl;
-    std::cout << "  - ProjectController handle: " << projectHandle << std::endl;
-    std::cout << "  - EditController handle: " << editHandle << std::endl;
-    std::cout << "  - Simulated canvas handle: " << simulatedCanvasHandle << std::endl;
-    
     EXPECT_NE(projectHandle, 0) << "ProjectController must have valid handle";
     EXPECT_NE(editHandle, 0) << "EditController must have valid handle";
     EXPECT_NE(simulatedCanvasHandle, 0) << "Canvas must have valid handle";
@@ -143,30 +116,16 @@ TEST_F(UILoadDiagnosisTest, UI_LoadPath_HandlePropagation) {
     
     // Verify geometry available
     const auto& view = trussService->getTrussView(projectHandle);
-    std::cout << "\n[GEOMETRY] Loaded truss:" << std::endl;
-    std::cout << "  - Node count: " << view.getNodeCount() << std::endl;
-    std::cout << "  - Member count: " << view.getMemberCount() << std::endl;
-    
     EXPECT_EQ(view.getNodeCount(), 3);
     EXPECT_EQ(view.getMemberCount(), 3);
     
     // Simulate canvas paint
-    std::cout << "\n[CANVAS] Simulating paintEvent():" << std::endl;
     if (simulatedCanvasHandle != 0) {
         const auto& canvasView = trussService->getTrussView(simulatedCanvasHandle);
         auto nodeViews = canvasView.getNodeViews();
-        
-        std::cout << "  - Canvas would draw " << nodeViews.size() << " nodes:" << std::endl;
-        for (const auto& node : nodeViews) {
-            std::cout << "    Node " << node.id << " at (" << node.x << ", " << node.y << ")" << std::endl;
-        }
     } else {
-        std::cout << "  - Canvas has invalid handle - NOTHING WOULD BE DRAWN!" << std::endl;
         FAIL() << "Canvas handle is invalid after load";
     }
-    
-    std::cout << "\n=== TEST COMPLETE ===" << std::endl;
-    
     // Cleanup
     QFile::remove(filepath);
 }
@@ -203,7 +162,6 @@ TEST_F(UILoadDiagnosisTest, DrawingCanvas_ReceivesHandleUpdate) {
                     [&canvasSlotCalled, &receivedHandle](TrussHandle handle, const QString&) {
         canvasSlotCalled = true;
         receivedHandle = handle;
-        std::cout << "[CANVAS SLOT] setTrussHandle(" << handle << ") called" << std::endl;
     });
     
     // Trigger load

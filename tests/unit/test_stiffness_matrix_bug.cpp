@@ -44,19 +44,6 @@ TEST(StiffnessMatrixBugTest, HorizontalMember_CheckTransformation) {
     Real L = 5.0;
     Real k = EA / L;  // 40e6
     
-    std::cout << "\n=== HORIZONTAL MEMBER TEST ===" << std::endl;
-    std::cout << "E*A/L = " << k << std::endl;
-    std::cout << "Unit vector: c=" << member.getUnitVector().x() 
-              << ", s=" << member.getUnitVector().y() << std::endl;
-    std::cout << "\nGlobal stiffness matrix:" << std::endl;
-    std::cout << K << std::endl;
-    
-    std::cout << "\nExpected:" << std::endl;
-    std::cout << " " << k << "   0  " << -k << "   0" << std::endl;
-    std::cout << " 0   0   0   0" << std::endl;
-    std::cout << " " << -k << "   0   " << k << "   0" << std::endl;
-    std::cout << " 0   0   0   0" << std::endl;
-    
     // Verify diagonal elements
     EXPECT_NEAR(K(0,0), k, k * 1e-10);
     EXPECT_NEAR(K(2,2), k, k * 1e-10);
@@ -98,19 +85,6 @@ TEST(StiffnessMatrixBugTest, VerticalMember_CheckTransformation) {
     Real k = EA / L;
     
     MatrixXd K = member.getGlobalStiffnessMatrix();
-    
-    std::cout << "\n=== VERTICAL MEMBER TEST ===" << std::endl;
-    std::cout << "E*A/L = " << k << std::endl;
-    std::cout << "Unit vector: c=" << member.getUnitVector().x() 
-              << ", s=" << member.getUnitVector().y() << std::endl;
-    std::cout << "\nGlobal stiffness matrix:" << std::endl;
-    std::cout << K << std::endl;
-    
-    std::cout << "\nExpected:" << std::endl;
-    std::cout << " 0   0   0   0" << std::endl;
-    std::cout << " 0  " << k << "   0  " << -k << std::endl;
-    std::cout << " 0   0   0   0" << std::endl;
-    std::cout << " 0  " << -k << "   0   " << k << std::endl;
     
     // X DOFs should be zero
     EXPECT_NEAR(K(0,0), 0.0, 1e-10);
@@ -157,23 +131,10 @@ TEST(StiffnessMatrixBugTest, DiagonalMember_CheckTransformation) {
     Real c = member.getUnitVector().x();
     Real s = member.getUnitVector().y();
     
-    std::cout << "\n=== DIAGONAL MEMBER TEST ===" << std::endl;
-    std::cout << "E*A/L = " << k << std::endl;
-    std::cout << "Unit vector: c=" << c << ", s=" << s << std::endl;
-    std::cout << "Expected c=s=" << std::sqrt(2.0)/2.0 << std::endl;
-    std::cout << "\nGlobal stiffness matrix:" << std::endl;
-    std::cout << K << std::endl;
-    
     // Expected values
     Real c2 = c * c;
     Real s2 = s * s;
     Real cs = c * s;
-    
-    std::cout << "\nExpected (k=" << k << "):" << std::endl;
-    std::cout << " " << k*c2 << "  " << k*cs << "  " << -k*c2 << "  " << -k*cs << std::endl;
-    std::cout << " " << k*cs << "  " << k*s2 << "  " << -k*cs << "  " << -k*s2 << std::endl;
-    std::cout << " " << -k*c2 << "  " << -k*cs << "  " << k*c2 << "  " << k*cs << std::endl;
-    std::cout << " " << -k*cs << "  " << -k*s2 << "  " << k*cs << "  " << k*s2 << std::endl;
     
     // Verify all elements match the analytical formula
     EXPECT_NEAR(K(0,0), k*c2, k * 1e-10);
@@ -206,28 +167,7 @@ TEST(StiffnessMatrixBugTest, CheckTransformationMatrixFormula) {
     Real c = member.getUnitVector().x();
     Real s = member.getUnitVector().y();
     
-    std::cout << "\n=== TRANSFORMATION MATRIX CHECK ===" << std::endl;
-    std::cout << "Member from (0,0) to (3,4)" << std::endl;
-    std::cout << "Length = " << member.getLength() << std::endl;
-    std::cout << "c = " << c << ", s = " << s << std::endl;
-    std::cout << "Expected: c=0.6, s=0.8" << std::endl;
-    
     EXPECT_NEAR(c, 0.6, 1e-10);
     EXPECT_NEAR(s, 0.8, 1e-10);
     
-    // The current transformation in Member.cpp
-    std::cout << "\nCurrent transformation matrix in code:" << std::endl;
-    std::cout << "T = [c   s  0  0]" << std::endl;
-    std::cout << "    [-s  c  0  0]" << std::endl;
-    std::cout << "    [0   0  c  s]" << std::endl;
-    std::cout << "    [0   0 -s  c]" << std::endl;
-    
-    std::cout << "\nCorrect 2D truss transformation should be:" << std::endl;
-    std::cout << "T = [c   s  0  0]" << std::endl;
-    std::cout << "    [-s  c  0  0]" << std::endl;
-    std::cout << "    [0   0  c  s]" << std::endl;
-    std::cout << "    [0   0 -s  c]" << std::endl;
-    std::cout << "\n** Wait - this is correct for rotation!" << std::endl;
-    std::cout << "\nBUT local stiffness matrix is wrong!" << std::endl;
-    std::cout << "It only includes axial terms, missing proper structure" << std::endl;
 }

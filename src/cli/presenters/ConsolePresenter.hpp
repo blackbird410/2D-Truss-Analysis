@@ -8,7 +8,7 @@
  * Does not contain business logic or orchestration.
  * 
  * Phase 5A.2: Refactored to use IApplicationOutput abstraction.
- * Eliminates direct I/O coupling (std::cout/cerr).
+ * Eliminates direct console I/O coupling.
  */
 
 #pragma once

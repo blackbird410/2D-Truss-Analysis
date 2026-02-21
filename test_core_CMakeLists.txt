@@ -23,8 +23,6 @@ find_package(Eigen3 REQUIRED)
 
 # Create library for core functionality
 add_library(TrussCore STATIC
-    src/core/Logger.cpp
-    src/core/Logger.hpp
     src/core/Types.hpp
     src/core/Node.cpp
     src/core/Node.hpp
