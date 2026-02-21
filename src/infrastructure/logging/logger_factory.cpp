@@ -41,7 +41,7 @@ LoggerPtr LoggerFactory::createDefaultLogger(const std::filesystem::path& filePa
     return std::make_shared<CompositeLogger>(std::move(loggers));
 }
 
-LoggerPtr LoggerFactory::createNullLogger() {
+[[maybe_unused]] LoggerPtr LoggerFactory::createNullLogger() {
     return std::make_shared<NullLogger>();
 }
 

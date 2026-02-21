@@ -64,17 +64,19 @@ public:
     bool hasFatal() const { return countBySeverity(ValidationSeverity::Fatal) > 0; }
     bool hasWarnings() const { return countBySeverity(ValidationSeverity::Warning) > 0; }
 
-    size_t getIssueCount() const { return m_issues.size(); }
+    [[maybe_unused]] size_t getIssueCount() const { return m_issues.size(); }
     const std::vector<ValidationIssue>& getIssues() const { return m_issues; }
 
-    std::vector<ValidationIssue> getIssuesBySeverity(ValidationSeverity severity) const;
-    std::vector<ValidationIssue> getIssuesByCategory(const std::string& category) const;
+    [[maybe_unused]] std::vector<ValidationIssue> getIssuesBySeverity(
+        ValidationSeverity severity) const;
+    [[maybe_unused]] std::vector<ValidationIssue> getIssuesByCategory(
+        const std::string& category) const;
 
     size_t countBySeverity(ValidationSeverity severity) const;
 
     std::string getSummary() const;
     std::vector<std::string> getErrorMessages() const;
-    std::vector<std::string> getWarningMessages() const;
+    [[maybe_unused]] std::vector<std::string> getWarningMessages() const;
 
 private:
     std::vector<ValidationIssue> m_issues;
@@ -164,16 +166,16 @@ private:
     // Helper methods for specific checks
     bool checkMinimumConstraints(const Truss& truss) const;
     bool checkRigidBodyStability(const Truss& truss) const;
-    bool hasCoincidentNodes(const Truss& truss,
-                            Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
-    bool hasDuplicateMembers(const Truss& truss) const;
-    bool hasZeroLengthMembers(const Truss& truss,
-                              Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     std::vector<std::pair<NodeId, NodeId>> findCoincidentNodePairs(const Truss& truss,
                                                                    Real tolerance) const;
     std::vector<MemberId> findZeroLengthMembers(const Truss& truss, Real tolerance) const;
     std::vector<std::pair<MemberId, MemberId>> findDuplicateMembers(const Truss& truss) const;
+    [[maybe_unused]] static bool hasCoincidentNodes(
+        const Truss& truss, Real tolerance = Constants::GEOMETRY_TOLERANCE);
+    [[maybe_unused]] static bool hasDuplicateMembers(const Truss& truss);
+    [[maybe_unused]] static bool hasZeroLengthMembers(
+        const Truss& truss, Real tolerance = Constants::GEOMETRY_TOLERANCE);
 };
 
 }  // namespace truss::core::validation

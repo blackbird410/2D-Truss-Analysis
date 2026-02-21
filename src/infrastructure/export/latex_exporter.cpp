@@ -162,7 +162,7 @@ void LaTeXExporter::writePreamble(std::ostream& os, const ITrussView& truss) {
     os << "\\date{" << formatTimestamp() << "}\n";
 }
 
-void LaTeXExporter::writeClosing(std::ostream& os) {
+[[maybe_unused]] void LaTeXExporter::writeClosing(std::ostream& os) {
     os << "\\end{document}\n";
 }
 

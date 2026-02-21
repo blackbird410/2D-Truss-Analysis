@@ -63,8 +63,8 @@ TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView
         .arg(loadCount);
 }
 
-QString
-TrussDataPresenter::formatNodeInfo(const truss::core::interfaces::NodeView& nodeView) const {
+[[maybe_unused]] QString TrussDataPresenter::formatNodeInfo(
+    const truss::core::interfaces::NodeView& nodeView) {
     truss::core::Point2D pos{nodeView.x, nodeView.y};
     QString info = QString("Node %1: %2").arg(nodeView.id).arg(formatCoordinate(pos));
 
@@ -82,8 +82,8 @@ TrussDataPresenter::formatNodeInfo(const truss::core::interfaces::NodeView& node
     return info;
 }
 
-QString
-TrussDataPresenter::formatMemberInfo(const truss::core::interfaces::MemberView& memberView) const {
+[[maybe_unused]] QString TrussDataPresenter::formatMemberInfo(
+    const truss::core::interfaces::MemberView& memberView) {
     return QString("Member %1: Nodes [%2 - %3], Length: %4")
         .arg(memberView.id)
         .arg(memberView.startNodeId)

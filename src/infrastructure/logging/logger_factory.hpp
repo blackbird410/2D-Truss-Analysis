@@ -92,7 +92,7 @@ public:
      *
      * @return Shared pointer to null logger
      */
-    static LoggerPtr createNullLogger();
+    [[maybe_unused]] static LoggerPtr createNullLogger();
 
 private:
     // Factory is a utility class, no instantiation

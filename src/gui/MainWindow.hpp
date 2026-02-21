@@ -100,14 +100,16 @@ public:
      *
      * @return true if results exist
      */
-    bool hasResults() const { return m_hasResults; }
+    [[maybe_unused]] bool hasResults() const { return m_hasResults; }
 
     /**
      * @brief Get last results handle
      *
      * @return ResultsHandle Handle to last analysis results
      */
-    application::ResultsHandle getLastResultsHandle() const { return m_lastResultsHandle; }
+    [[maybe_unused]] application::ResultsHandle getLastResultsHandle() const {
+        return m_lastResultsHandle;
+    }
 
 private slots:
     void onAnalysisCompleted(size_t resultsHandle);

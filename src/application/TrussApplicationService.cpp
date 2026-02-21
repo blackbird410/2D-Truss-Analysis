@@ -336,7 +336,7 @@ Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId n
     }
 }
 
-bool TrussApplicationService::hasUnsavedChanges(TrussHandle handle) const {
+[[maybe_unused]] bool TrussApplicationService::hasUnsavedChanges(TrussHandle handle) const {
     if (!isValidHandle(handle)) {
         return false;
     }

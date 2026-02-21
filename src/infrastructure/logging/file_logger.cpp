@@ -98,7 +98,7 @@ void FileLogger::flush() {
     }
 }
 
-bool FileLogger::isOpen() const {
+[[maybe_unused]] bool FileLogger::isOpen() const {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_file.is_open();
 }

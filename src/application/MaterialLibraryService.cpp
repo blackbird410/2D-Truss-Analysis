@@ -69,19 +69,19 @@ void MaterialLibraryService::addCustomSection(const std::string& name,
     m_sections[name] = preset;
 }
 
-bool MaterialLibraryService::removeCustomMaterial(const std::string& name) {
+[[maybe_unused]] bool MaterialLibraryService::removeCustomMaterial(const std::string& name) {
     return m_materials.erase(name) > 0;
 }
 
-bool MaterialLibraryService::removeCustomSection(const std::string& name) {
+[[maybe_unused]] bool MaterialLibraryService::removeCustomSection(const std::string& name) {
     return m_sections.erase(name) > 0;
 }
 
-bool MaterialLibraryService::hasMaterial(const std::string& name) const {
+[[maybe_unused]] bool MaterialLibraryService::hasMaterial(const std::string& name) const {
     return m_materials.find(name) != m_materials.end();
 }
 
-bool MaterialLibraryService::hasSection(const std::string& name) const {
+[[maybe_unused]] bool MaterialLibraryService::hasSection(const std::string& name) const {
     return m_sections.find(name) != m_sections.end();
 }
 

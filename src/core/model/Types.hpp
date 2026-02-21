@@ -183,7 +183,7 @@ inline Real clamp(Real value, Real min_val, Real max_val) {
 /**
  * @brief Convert degrees to radians
  */
-inline Real degreesToRadians(Real degrees) {
+[[maybe_unused]] inline Real degreesToRadians(Real degrees) {
     return degrees * M_PI / 180.0;
 }
 

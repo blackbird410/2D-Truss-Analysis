@@ -74,7 +74,7 @@ ExportFormat ExporterFactory::detectFormat(const std::filesystem::path& filePath
     }
 }
 
-std::string ExporterFactory::getExtension(ExportFormat format) {
+[[maybe_unused]] std::string ExporterFactory::getExtension(ExportFormat format) {
     switch (format) {
         case ExportFormat::CSV:
             return ".csv";

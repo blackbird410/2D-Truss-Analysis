@@ -114,12 +114,12 @@ public:
     /**
      * @brief Get maximum number of iterations
      */
-    int getMaxIterations() const noexcept { return m_maxIterations; }
+    [[maybe_unused]] int getMaxIterations() const noexcept { return m_maxIterations; }
 
     /**
      * @brief Get convergence tolerance
      */
-    double getTolerance() const noexcept { return m_tolerance; }
+    [[maybe_unused]] double getTolerance() const noexcept { return m_tolerance; }
 
 private:
     int m_maxIterations;  ///< Maximum number of CG iterations

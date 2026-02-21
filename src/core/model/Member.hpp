@@ -61,13 +61,13 @@ public:
     // Geometric properties
     Real getLength() const;
     Real getAngle() const;           ///< Angle with respect to X-axis (radians)
-    Real getAngleDegrees() const;    ///< Angle with respect to X-axis (degrees)
+    [[maybe_unused]] Real getAngleDegrees() const;  ///< Angle with respect to X-axis (degrees)
     Vector2d getUnitVector() const;  ///< Unit vector from start to end node
     Vector2d getDirection() const;   ///< Direction vector (not normalized)
 
     // Structural properties
     Real getStiffness() const;       ///< Axial stiffness (EA/L)
-    Real getAxialStiffness() const;  ///< Axial rigidity (EA)
+    [[maybe_unused]] Real getAxialStiffness() const;  ///< Axial rigidity (EA)
     Real getWeight() const;          ///< Self-weight of the member
 
     // Analysis results
@@ -80,38 +80,43 @@ public:
 
     // Setters
     void setId(MemberId id) { m_id = id; }
-    void setMaterial(const MaterialProperties& material) { m_material = material; }
-    void setSection(const SectionProperties& section) { m_section = section; }
+    [[maybe_unused]] void setMaterial(const MaterialProperties& material) {
+        m_material = material;
+    }
+    [[maybe_unused]] void setSection(const SectionProperties& section) { m_section = section; }
     void setLabel(const std::string& label) { m_label = label; }
 
     // Results setters (used during analysis)
     void setResults(const MemberResults& results) { m_results = results; }
-    void setAxialForce(Real force);
-    void setAxialStress(Real stress) { m_results.axialStress = stress; }
-    void setUtilizationRatio(Real ratio) { m_results.utilizationRatio = ratio; }
+    [[maybe_unused]] void setAxialForce(Real force);
+    [[maybe_unused]] void setAxialStress(Real stress) { m_results.axialStress = stress; }
+    [[maybe_unused]] void setUtilizationRatio(Real ratio) {
+        m_results.utilizationRatio = ratio;
+    }
 
     // Node connectivity
     bool isConnectedTo(const Node& node) const;
     bool isConnectedTo(NodeId nodeId) const;
     bool hasNode(NodeId nodeId) const;  ///< Check if member has specific node (by ID)
-    bool connectsNodes(NodeId id1,
-                       NodeId id2) const;  ///< Check if member connects two specific nodes
-    std::shared_ptr<Node> getOtherNode(const Node& node) const;
+    [[maybe_unused]] bool connectsNodes(NodeId id1,
+                                        NodeId id2) const;  ///< Check if member connects two specific nodes
+    [[maybe_unused]] std::shared_ptr<Node> getOtherNode(const Node& node) const;
     std::shared_ptr<Node> getOtherNode(NodeId nodeId) const;
 
     // Geometric checks
     bool isVertical(Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
     bool isHorizontal(Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
-    bool isParallelTo(const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
-    bool isPerpendicularTo(const Member& other,
-                           Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool isParallelTo(
+        const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool isPerpendicularTo(
+        const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     // Validation
     bool isValid() const;
     bool hasZeroLength(Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     // Local to global transformation
-    Matrix2d getTransformationMatrix() const;
+    [[maybe_unused]] Matrix2d getTransformationMatrix() const;
     MatrixXd getLocalStiffnessMatrix() const;
     MatrixXd getGlobalStiffnessMatrix() const;
 
@@ -119,8 +124,8 @@ public:
     std::vector<Index> getGlobalDofIndices() const;
 
     // Utility methods
-    Point2D getMidpoint() const;
-    Real getSlope() const;  ///< Slope (dy/dx), returns infinity for vertical members
+    [[maybe_unused]] Point2D getMidpoint() const;
+    [[maybe_unused]] Real getSlope() const;  ///< Slope (dy/dx), returns infinity for vertical members
 
     /**
      * @brief Check if this member intersects with another member
@@ -128,14 +133,15 @@ public:
      * @param tolerance Geometric tolerance for intersection check
      * @return true if members intersect (excluding endpoints)
      */
-    bool intersectsWith(const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool intersectsWith(
+        const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     /**
      * @brief Get the intersection point with another member
      * @param other The other member
      * @return Intersection point (only valid if intersectsWith returns true)
      */
-    Point2D getIntersectionPoint(const Member& other) const;
+    [[maybe_unused]] Point2D getIntersectionPoint(const Member& other) const;
 
     // Comparison operators
     bool operator==(const Member& other) const;

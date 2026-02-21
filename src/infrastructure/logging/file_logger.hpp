@@ -71,7 +71,7 @@ public:
      * @brief Check if log file is open
      * @return true if file is writable
      */
-    bool isOpen() const;
+    [[maybe_unused]] bool isOpen() const;
 
 private:
     /**

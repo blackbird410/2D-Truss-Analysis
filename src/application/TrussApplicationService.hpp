@@ -163,7 +163,7 @@ public:
      * @brief Get count of active truss models
      * @return Number of trusses currently managed
      */
-    size_t getTrussCount() const { return m_trusses.size(); }
+    [[maybe_unused]] size_t getTrussCount() const { return m_trusses.size(); }
 
     // ============================================================
     // NEW GUI-FACING METHODS (Phase 3B)
@@ -248,7 +248,7 @@ public:
      * @param handle Truss handle
      * @return true if modified since last save
      */
-    bool hasUnsavedChanges(TrussHandle handle) const;
+    [[maybe_unused]] bool hasUnsavedChanges(TrussHandle handle) const;
 
     /**
      * @brief Mark truss as saved (clear modification flag)

@@ -71,7 +71,7 @@ public:
      * This method is useful for exporting or displaying the matrix,
      * as it converts from Eigen format to standard containers.
      */
-    std::vector<std::vector<Real>> assembleAsVector(const Truss& truss) const;
+    [[maybe_unused]] std::vector<std::vector<Real>> assembleAsVector(const Truss& truss) const;
 
 private:
     /**

@@ -25,13 +25,13 @@ PlotWidget::PlotWidget(truss::application::TrussApplicationService& trussService
     setAutoFillBackground(true);
 }
 
-void PlotWidget::updatePlot(truss::application::TrussHandle trussHandle) {
+[[maybe_unused]] void PlotWidget::updatePlot(truss::application::TrussHandle trussHandle) {
     m_currentTrussHandle = trussHandle;
     calculateViewport();
     update();  // Triggers paintEvent
 }
 
-void PlotWidget::clearPlot() {
+[[maybe_unused]] void PlotWidget::clearPlot() {
     m_currentTrussHandle = 0;
     m_minBounds = truss::core::Point2D{0.0, 0.0};
     m_maxBounds = truss::core::Point2D{1.0, 1.0};

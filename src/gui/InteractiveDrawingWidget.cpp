@@ -812,7 +812,7 @@ void DrawingCanvas::resizeEvent(QResizeEvent* event) {
     }
 }
 
-void DrawingCanvas::updateCursorPosition(const QPoint& pos) {
+[[maybe_unused]] void DrawingCanvas::updateCursorPosition(const QPoint& pos) {
     m_currentMouseWorld = screenToWorld(pos);
     emit coordinatesChanged(m_currentMouseWorld.x, m_currentMouseWorld.y);
 }
@@ -1664,7 +1664,8 @@ void InteractiveDrawingWidget::onDrawingModeChanged() {
     }
 }
 
-void InteractiveDrawingWidget::onViewChanged() {
+// cppcheck-suppress functionStatic
+[[maybe_unused]] void InteractiveDrawingWidget::onViewChanged() {
     // This can be used for any view-related updates
 }
 

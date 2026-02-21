@@ -104,7 +104,7 @@ void LoadInputWidget::clearInputs() {
     m_fyEdit->setText("0.0");
 }
 
-void LoadInputWidget::updateNodeList(application::TrussHandle trussHandle) {
+[[maybe_unused]] void LoadInputWidget::updateNodeList(application::TrussHandle trussHandle) {
     m_currentTrussHandle = trussHandle;
 
     m_nodeCombo->clear();

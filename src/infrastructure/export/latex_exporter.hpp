@@ -98,7 +98,7 @@ private:
     /**
      * @brief Write document closing
      */
-    void writeClosing(std::ostream& os);
+    [[maybe_unused]] static void writeClosing(std::ostream& os);
 
     /**
      * @brief Write geometry section (nodes + members)

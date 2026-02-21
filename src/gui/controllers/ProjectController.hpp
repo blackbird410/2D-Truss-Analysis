@@ -54,7 +54,7 @@ public:
      *
      * @return QString Current filepath (empty if unsaved new project)
      */
-    QString getCurrentFilepath() const { return m_currentFilepath; }
+    [[maybe_unused]] QString getCurrentFilepath() const { return m_currentFilepath; }
 
     /**
      * @brief Get current truss handle

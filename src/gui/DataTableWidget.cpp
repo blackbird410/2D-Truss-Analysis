@@ -65,14 +65,14 @@ void DataTableWidget::setupUI() {
     layout->addWidget(tabWidget);
 }
 
-void DataTableWidget::updateTables(application::TrussHandle trussHandle) {
+[[maybe_unused]] void DataTableWidget::updateTables(application::TrussHandle trussHandle) {
     m_currentTrussHandle = trussHandle;
     updateNodesTable(trussHandle);
     updateMembersTable(trussHandle);
     updateLoadsTable(trussHandle);
 }
 
-void DataTableWidget::clearTables() {
+[[maybe_unused]] void DataTableWidget::clearTables() {
     m_currentTrussHandle = 0;
     m_nodesTable->setRowCount(0);
     m_membersTable->setRowCount(0);

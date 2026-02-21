@@ -133,7 +133,9 @@ public:
      * @brief Get the last analysis results
      * @return Last analysis results
      */
-    const AnalysisResults& getLastResults() const noexcept { return m_lastResults; }
+    [[maybe_unused]] const AnalysisResults& getLastResults() const noexcept {
+        return m_lastResults;
+    }
 
 private:
     // Components (dependency injection)

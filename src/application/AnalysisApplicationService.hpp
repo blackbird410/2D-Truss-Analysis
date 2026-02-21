@@ -160,7 +160,7 @@ public:
      * @brief Get count of stored results
      * @return Number of result sets currently managed
      */
-    size_t getResultsCount() const { return m_results.size(); }
+    [[maybe_unused]] size_t getResultsCount() const { return m_results.size(); }
 
 private:
     std::unordered_map<ResultsHandle, std::shared_ptr<core::analysis::AnalysisResults>> m_results;

@@ -23,7 +23,8 @@ MatrixXd StiffnessAssembler::assemble(const Truss& truss) const {
     return K;
 }
 
-std::vector<std::vector<Real>> StiffnessAssembler::assembleAsVector(const Truss& truss) const {
+[[maybe_unused]] std::vector<std::vector<Real>>
+StiffnessAssembler::assembleAsVector(const Truss& truss) const {
     MatrixXd K = assemble(truss);
 
     size_t rows = K.rows();

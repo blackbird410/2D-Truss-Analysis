@@ -128,7 +128,7 @@ void TrussEditController::onLoadApplied(truss::core::NodeId nodeId,
     }
 }
 
-void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {
+[[maybe_unused]] void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {
     if (!validateCurrentHandle()) {
         return;
     }
@@ -143,7 +143,7 @@ void TrussEditController::onLoadCleared(truss::core::NodeId nodeId) {
     }
 }
 
-void TrussEditController::onClearTrussRequested() {
+[[maybe_unused]] void TrussEditController::onClearTrussRequested() {
     if (!validateCurrentHandle()) {
         return;
     }

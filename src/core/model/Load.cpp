@@ -23,11 +23,11 @@ bool Load::isZero(Real tolerance) const {
     return Utils::isZero(m_force.fx, tolerance) && Utils::isZero(m_force.fy, tolerance);
 }
 
-bool Load::isHorizontal(Real tolerance) const {
+[[maybe_unused]] bool Load::isHorizontal(Real tolerance) const {
     return Utils::isZero(m_force.fy, tolerance) && !Utils::isZero(m_force.fx, tolerance);
 }
 
-bool Load::isVertical(Real tolerance) const {
+[[maybe_unused]] bool Load::isVertical(Real tolerance) const {
     return Utils::isZero(m_force.fx, tolerance) && !Utils::isZero(m_force.fy, tolerance);
 }
 

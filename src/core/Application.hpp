@@ -41,13 +41,13 @@ public:
      * @brief Check if application is initialized
      * @return true if initialized, false otherwise
      */
-    bool isInitialized() const noexcept { return m_initialized; }
+    [[maybe_unused]] bool isInitialized() const noexcept { return m_initialized; }
 
     /**
      * @brief Get application version
      * @return Version string
      */
-    const std::string& getVersion() const noexcept { return m_version; }
+    [[maybe_unused]] const std::string& getVersion() const noexcept { return m_version; }
 
     /**
      * @brief Get application name

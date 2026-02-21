@@ -9,7 +9,7 @@
 
 namespace truss::core::analysis {
 
-std::unique_ptr<ILinearSolver> SolverFactory::createSolver(SolverType type) {
+[[maybe_unused]] std::unique_ptr<ILinearSolver> SolverFactory::createSolver(SolverType type) {
     switch (type) {
         case SolverType::Direct:
             return std::make_unique<DirectSolver>();
@@ -22,12 +22,12 @@ std::unique_ptr<ILinearSolver> SolverFactory::createSolver(SolverType type) {
     }
 }
 
-std::unique_ptr<ILinearSolver> SolverFactory::createDirectSolver() {
+[[maybe_unused]] std::unique_ptr<ILinearSolver> SolverFactory::createDirectSolver() {
     return std::make_unique<DirectSolver>();
 }
 
-std::unique_ptr<ILinearSolver> SolverFactory::createIterativeSolver(int maxIterations,
-                                                                    double tolerance) {
+[[maybe_unused]] std::unique_ptr<ILinearSolver> SolverFactory::createIterativeSolver(
+    int maxIterations, double tolerance) {
     return std::make_unique<IterativeSolver>(maxIterations, tolerance);
 }
 

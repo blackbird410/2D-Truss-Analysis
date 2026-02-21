@@ -16,7 +16,7 @@ namespace truss::core::validation {
 
 // ========== ValidationResult Implementation ==========
 
-std::vector<ValidationIssue>
+[[maybe_unused]] std::vector<ValidationIssue>
 ValidationResult::getIssuesBySeverity(ValidationSeverity severity) const {
     std::vector<ValidationIssue> filtered;
     for (const auto& issue : m_issues) {
@@ -27,7 +27,7 @@ ValidationResult::getIssuesBySeverity(ValidationSeverity severity) const {
     return filtered;
 }
 
-std::vector<ValidationIssue>
+[[maybe_unused]] std::vector<ValidationIssue>
 ValidationResult::getIssuesByCategory(const std::string& category) const {
     std::vector<ValidationIssue> filtered;
     for (const auto& issue : m_issues) {
@@ -73,7 +73,7 @@ std::vector<std::string> ValidationResult::getErrorMessages() const {
     return messages;
 }
 
-std::vector<std::string> ValidationResult::getWarningMessages() const {
+[[maybe_unused]] std::vector<std::string> ValidationResult::getWarningMessages() const {
     std::vector<std::string> messages;
     for (const auto& issue : m_issues) {
         if (issue.severity == ValidationSeverity::Warning) {
@@ -599,15 +599,15 @@ bool TrussValidator::checkRigidBodyStability(const Truss& truss) const {
     return true;
 }
 
-bool TrussValidator::hasCoincidentNodes(const Truss& truss, Real tolerance) const {
+[[maybe_unused]] bool TrussValidator::hasCoincidentNodes(const Truss& truss, Real tolerance) {
     return !findCoincidentNodePairs(truss, tolerance).empty();
 }
 
-bool TrussValidator::hasDuplicateMembers(const Truss& truss) const {
+[[maybe_unused]] bool TrussValidator::hasDuplicateMembers(const Truss& truss) {
     return !findDuplicateMembers(truss).empty();
 }
 
-bool TrussValidator::hasZeroLengthMembers(const Truss& truss, Real tolerance) const {
+[[maybe_unused]] bool TrussValidator::hasZeroLengthMembers(const Truss& truss, Real tolerance) {
     return !findZeroLengthMembers(truss, tolerance).empty();
 }
 

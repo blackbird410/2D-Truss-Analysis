@@ -63,7 +63,7 @@ public:
      *
      * @return size_t Current results handle (0 if invalid)
      */
-    size_t getCurrentResults() const { return m_currentResultsHandle; }
+    [[maybe_unused]] size_t getCurrentResults() const { return m_currentResultsHandle; }
 
 public slots:
     /**
