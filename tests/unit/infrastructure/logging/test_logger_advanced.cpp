@@ -34,7 +34,8 @@ protected:
             "test_concurrent.txt", "test_very_long.txt", "test_special_chars.txt",
             "test_unicode.txt", "test_rapid_fire.txt", "test_level_change.txt",
             "test_empty_msg.txt", "test_multiline.txt", "test_large_file.txt",
-            "test_readonly.txt", "test_nested_dir/test.txt"
+            "test_readonly.txt", "test_nested_dir/test.txt",
+            "stress_test.txt", "repeated_test.txt", "shared_file.txt", "default_test.txt"
         };
         
         for (const auto& file : testFiles) {
@@ -484,8 +485,18 @@ TEST_F(LoggerAdvancedTest, AlternatingLoggersStressTest) {
     
     auto logger = LoggerFactory::createFileLogger(testFile, LogLevel::Trace, false);
     
+    constexpr LogLevel kLevels[] = {
+        LogLevel::Trace,
+        LogLevel::Debug,
+        LogLevel::Info,
+        LogLevel::Warning,
+        LogLevel::Error,
+        LogLevel::Critical
+    };
+    constexpr auto kLevelCount = sizeof(kLevels) / sizeof(kLevels[0]);
+
     for (int cycle = 0; cycle < 100; ++cycle) {
-        logger->setLevel(static_cast<LogLevel>(cycle % 6));
+        logger->setLevel(kLevels[cycle % kLevelCount]);
         
         logger->trace("Cycle " + std::to_string(cycle));
         logger->debug("Cycle " + std::to_string(cycle));

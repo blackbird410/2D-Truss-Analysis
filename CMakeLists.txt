@@ -521,7 +521,7 @@ if(ENABLE_COVERAGE)
     if(LCOV AND GENHTML)
         add_custom_target(coverage
             COMMAND ${CMAKE_COMMAND} -E echo "Running tests to generate coverage data..."
-            COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure || true
+            COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
             COMMAND ${CMAKE_COMMAND} -E echo "Capturing coverage data..."
             COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
             COMMAND ${CMAKE_COMMAND} -E echo "Filtering coverage data..."

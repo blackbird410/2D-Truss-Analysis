@@ -533,7 +533,7 @@ TEST_F(AnalysisOrchestratorTest, SingleNodeUnsupportedSystem) {
         FAIL() << "Expected exception for under-constrained system";
     } catch (const std::runtime_error& e) {
         // Expected - system is unstable
-        EXPECT_TRUE(true);
+        SUCCEED() << "Correctly threw runtime_error for under-constrained system";
     }
 }
 
@@ -552,14 +552,13 @@ TEST_F(AnalysisOrchestratorTest, ZeroLoadAnalysis) {
     AnalysisOrchestrator orchestrator(std::move(solver), std::move(validator));
     
     // Zero load case should be handled gracefully
-    try {
-        orchestrator.analyze(truss);
-        // Zero load is a valid case - analysis should complete
-        EXPECT_TRUE(true);
-    } catch (const std::runtime_error& e) {
-        // Some implementations may reject zero load - that's acceptable
-        EXPECT_TRUE(true);
-    }
+    EXPECT_NO_THROW({
+        try {
+            orchestrator.analyze(truss);
+        } catch (const std::runtime_error&) {
+            // Some implementations may reject zero load - that's acceptable
+        }
+    });
 }
 
 TEST_F(AnalysisOrchestratorTest, ExtremeCoordinateSystem) {
@@ -575,13 +574,13 @@ TEST_F(AnalysisOrchestratorTest, ExtremeCoordinateSystem) {
     AnalysisOrchestrator orchestrator(std::move(solver), std::move(validator));
     
     // Large coordinate range should be handled
-    try {
-        orchestrator.analyze(truss);
-        EXPECT_TRUE(true);  // Should complete without numerical issues
-    } catch (const std::exception& e) {
-        // Numerical issues are acceptable for extreme ranges
-        EXPECT_TRUE(true);
-    }
+    EXPECT_NO_THROW({
+        try {
+            orchestrator.analyze(truss);
+        } catch (const std::exception&) {
+            // Numerical issues are acceptable for extreme ranges
+        }
+    });
 }
 
 TEST_F(AnalysisOrchestratorTest, MultipleIdenticalMembers) {
@@ -601,12 +600,13 @@ TEST_F(AnalysisOrchestratorTest, MultipleIdenticalMembers) {
     AnalysisOrchestrator orchestrator(std::move(solver), std::move(validator));
     
     // Should handle redundant members correctly
-    try {
-        orchestrator.analyze(truss);
-        EXPECT_TRUE(true);  // Stiffness should be doubled
-    } catch (const std::exception& e) {
-        EXPECT_TRUE(true);  // Some implementations may reject
-    }
+    EXPECT_NO_THROW({
+        try {
+            orchestrator.analyze(truss);
+        } catch (const std::exception&) {
+            // Some implementations may reject identical members
+        }
+    });
 }
 
 TEST_F(AnalysisOrchestratorTest, SmallForceMagnitudes) {
@@ -628,12 +628,13 @@ TEST_F(AnalysisOrchestratorTest, SmallForceMagnitudes) {
     AnalysisOrchestrator orchestrator(std::move(solver), std::move(validator));
     
     // Small forces should be handled
-    try {
-        orchestrator.analyze(truss);
-        EXPECT_TRUE(true);  // Should complete without numerical issues
-    } catch (const std::exception& e) {
-        EXPECT_TRUE(true);  // Acceptable if precision loss detected
-    }
+    EXPECT_NO_THROW({
+        try {
+            orchestrator.analyze(truss);
+        } catch (const std::exception&) {
+            // Acceptable if precision loss detected
+        }
+    });
 }
 
 TEST_F(AnalysisOrchestratorTest, LargeForceMagnitudes) {
@@ -655,12 +656,13 @@ TEST_F(AnalysisOrchestratorTest, LargeForceMagnitudes) {
     AnalysisOrchestrator orchestrator(std::move(solver), std::move(validator));
     
     // Large forces should be handled
-    try {
-        orchestrator.analyze(truss);
-        EXPECT_TRUE(true);  // Should complete
-    } catch (const std::exception& e) {
-        EXPECT_TRUE(true);  // Acceptable to fail on extreme loads
-    }
+    EXPECT_NO_THROW({
+        try {
+            orchestrator.analyze(truss);
+        } catch (const std::exception&) {
+            // Acceptable to fail on extreme loads
+        }
+    });
 }
 
 // ============================================================================

@@ -24,6 +24,14 @@ using namespace truss::infrastructure::export_;
 
 class E2EWorkflowTest : public ::testing::Test {
 protected:
+    std::filesystem::path tmpDir;
+
+    void SetUp() override {
+        tmpDir = std::filesystem::temp_directory_path() / "truss_e2e_tests";
+        std::filesystem::create_directories(tmpDir);
+        cleanupTestFiles();  // Ensure clean state before each test
+    }
+
     void TearDown() override {
         cleanupTestFiles();
     }
@@ -31,12 +39,13 @@ protected:
     void cleanupTestFiles() {
         const std::vector<std::string> testFiles = {
             "e2e_test.json", "e2e_roundtrip.json", "e2e_export.csv",
-            "e2e_export.xml", "e2e_complex.json"
+            "e2e_export.xml", "e2e_complex.json", "e2e_complex.csv"
         };
         
         for (const auto& file : testFiles) {
-            if (std::filesystem::exists(file)) {
-                std::filesystem::remove(file);
+            auto fullPath = tmpDir / file;
+            if (std::filesystem::exists(fullPath)) {
+                std::filesystem::remove(fullPath);
             }
         }
     }
@@ -82,7 +91,7 @@ TEST_F(E2EWorkflowTest, CompleteDomainCRUDWorkflow) {
 // ============================================================================
 
 TEST_F(E2EWorkflowTest, SaveLoadAnalyzeWorkflow) {
-    std::filesystem::path testFile = "e2e_test.json";
+    std::filesystem::path testFile = tmpDir / "e2e_test.json";
     
     // SAVE: Create and persist truss
     {
@@ -177,7 +186,7 @@ TEST_F(E2EWorkflowTest, AnalysisAndExportWorkflow) {
     
     // Export to CSV
     {
-        std::filesystem::path csvFile = "e2e_export.csv";
+        std::filesystem::path csvFile = tmpDir / "e2e_export.csv";
         auto exportResult = analysisService.exportResults(
             analysisResult.value,
             ExportFormat::CSV,
@@ -190,7 +199,7 @@ TEST_F(E2EWorkflowTest, AnalysisAndExportWorkflow) {
     
     // Export to XML
     {
-        std::filesystem::path xmlFile = "e2e_export.xml";
+        std::filesystem::path xmlFile = tmpDir / "e2e_export.xml";
         auto exportResult = analysisService.exportResults(
             analysisResult.value,
             ExportFormat::XML,
@@ -207,7 +216,7 @@ TEST_F(E2EWorkflowTest, AnalysisAndExportWorkflow) {
 // ============================================================================
 
 TEST_F(E2EWorkflowTest, RoundTripPersistenceWorkflow) {
-    std::filesystem::path testFile = "e2e_roundtrip.json";
+    std::filesystem::path testFile = tmpDir / "e2e_roundtrip.json";
     
     std::string originalName = "Round Trip Test";
     
@@ -321,7 +330,7 @@ TEST_F(E2EWorkflowTest, ValidationAnalysisIntegration) {
 // ============================================================================
 
 TEST_F(E2EWorkflowTest, ComplexMultiStepWorkflow) {
-    std::filesystem::path saveFile = "e2e_complex.json";
+    std::filesystem::path saveFile = tmpDir / "e2e_complex.json";
     
     // STEP 1: Create truss
     Truss truss("Complex Workflow");
@@ -358,7 +367,7 @@ TEST_F(E2EWorkflowTest, ComplexMultiStepWorkflow) {
     EXPECT_TRUE(std::filesystem::exists(saveFile));
     
     // STEP 5: Export analysis results
-    std::filesystem::path csvFile = "e2e_complex.csv";
+    std::filesystem::path csvFile = tmpDir / "e2e_complex.csv";
     auto exportResult = analysisService.exportResults(
         analysisResult.value,
         ExportFormat::CSV,

@@ -512,13 +512,8 @@ TEST_F(LinearSolverTest, NonConvergentSystem) {
     
     // Test with iterative solver with limited iterations
     IterativeSolver iterSolver(2, 1e-9);  // Very limited iterations
-    // This may throw or return approximate solution
-    try {
-        VectorXd x_iter = iterSolver.solve(A, b);
-        EXPECT_EQ(x_iter.size(), 3);
-    } catch (const std::runtime_error&) {
-        // Non-convergence is expected with such tight constraints
-    }
+    // Non-convergence with these tight constraints is expected
+    EXPECT_THROW(iterSolver.solve(A, b), std::runtime_error);
 }
 
 TEST_F(LinearSolverTest, IllConditionedMatrix) {
