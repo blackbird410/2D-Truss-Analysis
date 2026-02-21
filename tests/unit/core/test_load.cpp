@@ -140,3 +140,17 @@ TEST(LoadTest, CopyAndMove) {
     moveAssigned = std::move(moved);
     EXPECT_EQ(moveAssigned, original);
 }
+
+// Phase 7 Task 7.4: Domain Layer Enhancement - Edge Case Tests
+
+TEST(LoadTest, ExtremeMagnitudeLoads) {
+    // Very large load (GN-scale)
+    Load largeLoad(1, 1, 1e10, 1e10);
+    EXPECT_NEAR(largeLoad.getFx(), 1e10, 1e5);
+    EXPECT_NEAR(largeLoad.getFy(), 1e10, 1e5);
+
+    // Very small load (μN-scale)
+    Load smallLoad(2, 1, 1e-6, 1e-6);
+    EXPECT_NEAR(smallLoad.getFx(), 1e-6, 1e-12);
+    EXPECT_NEAR(smallLoad.getFy(), 1e-6, 1e-12);
+}
