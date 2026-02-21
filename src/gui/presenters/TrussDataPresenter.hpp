@@ -48,7 +48,7 @@ public:
      * @param truss Truss view (read-only)
      * @return StatusData Formatted status information
      */
-    StatusData formatStatus(const truss::core::interfaces::ITrussView& truss) const;
+    static StatusData formatStatus(const truss::core::interfaces::ITrussView& truss);
 
     /**
      * @brief Format coordinate point
@@ -57,7 +57,8 @@ public:
      * @param unit Unit string (default: "m")
      * @return QString Formatted coordinate (e.g., "(1.500, 2.000) m")
      */
-    QString formatCoordinate(const truss::core::Point2D& point, const QString& unit = "m") const;
+    static QString formatCoordinate(const truss::core::Point2D& point,
+                                    const QString& unit = "m");
 
     /**
      * @brief Format node count
@@ -65,7 +66,7 @@ public:
      * @param count Number of nodes
      * @return QString Formatted string (e.g., "12 nodes")
      */
-    QString formatNodeCount(size_t count) const;
+    static QString formatNodeCount(size_t count);
 
     /**
      * @brief Format member count
@@ -73,7 +74,7 @@ public:
      * @param count Number of members
      * @return QString Formatted string (e.g., "18 members")
      */
-    QString formatMemberCount(size_t count) const;
+    static QString formatMemberCount(size_t count);
 
     /**
      * @brief Generate statistics text
@@ -81,7 +82,7 @@ public:
      * @param truss Truss view
      * @return QString Detailed statistics text
      */
-    QString generateStatistics(const truss::core::interfaces::ITrussView& truss) const;
+    static QString generateStatistics(const truss::core::interfaces::ITrussView& truss);
 
     /**
      * @brief Format node information
@@ -89,7 +90,7 @@ public:
      * @param nodeView Node view struct
      * @return QString Formatted node info (ID, position, support, loads)
      */
-    QString formatNodeInfo(const truss::core::interfaces::NodeView& nodeView) const;
+    static QString formatNodeInfo(const truss::core::interfaces::NodeView& nodeView);
 
     /**
      * @brief Format member information
@@ -97,7 +98,7 @@ public:
      * @param memberView Member view struct
      * @return QString Formatted member info (ID, nodes, length, properties)
      */
-    QString formatMemberInfo(const truss::core::interfaces::MemberView& memberView) const;
+    static QString formatMemberInfo(const truss::core::interfaces::MemberView& memberView);
 
     /**
      * @brief Format support type
@@ -105,7 +106,7 @@ public:
      * @param supportType Support type enum
      * @return QString Human-readable support type
      */
-    QString formatSupportType(truss::core::SupportType supportType) const;
+    static QString formatSupportType(truss::core::SupportType supportType);
 
     /**
      * @brief Format length value
@@ -113,7 +114,7 @@ public:
      * @param lengthMeters Length in meters
      * @return QString Formatted length (e.g., "2.500 m")
      */
-    QString formatLength(double lengthMeters) const;
+    static QString formatLength(double lengthMeters);
 
     /**
      * @brief Format support change message for status bar
@@ -122,8 +123,8 @@ public:
      * @param supportType New support type
      * @return QString User-friendly status message
      */
-    QString formatSupportChangeMessage(truss::core::NodeId nodeId,
-                                       truss::core::SupportType supportType) const;
+    static QString formatSupportChangeMessage(truss::core::NodeId nodeId,
+                                              truss::core::SupportType supportType);
 
     /**
      * @brief Format node added message for status bar
@@ -132,8 +133,8 @@ public:
      * @param position Node position
      * @return QString User-friendly status message
      */
-    QString formatNodeAddedMessage(truss::core::NodeId nodeId,
-                                   const truss::core::Point2D& position) const;
+    static QString formatNodeAddedMessage(truss::core::NodeId nodeId,
+                                          const truss::core::Point2D& position);
 
     /**
      * @brief Format member added message for status bar
@@ -143,9 +144,9 @@ public:
      * @param endNodeId End node
      * @return QString User-friendly status message
      */
-    QString formatMemberAddedMessage(truss::core::MemberId memberId,
-                                     truss::core::NodeId startNodeId,
-                                     truss::core::NodeId endNodeId) const;
+    static QString formatMemberAddedMessage(truss::core::MemberId memberId,
+                                            truss::core::NodeId startNodeId,
+                                            truss::core::NodeId endNodeId);
 
     /**
      * @brief Format load applied message for status bar
@@ -154,8 +155,8 @@ public:
      * @param force Force vector
      * @return QString User-friendly status message
      */
-    QString formatLoadAppliedMessage(truss::core::NodeId nodeId,
-                                     const truss::core::Force2D& force) const;
+    static QString formatLoadAppliedMessage(truss::core::NodeId nodeId,
+                                            const truss::core::Force2D& force);
 
 private:
     static constexpr int COORDINATE_PRECISION = 3;

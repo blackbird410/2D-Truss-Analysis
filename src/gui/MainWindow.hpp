@@ -128,7 +128,7 @@ private slots:
 private:
     void setupUI();
     void setupMenuBar();
-    void setupToolBar();
+    static void setupToolBar();
     void setupStatusBar();
     void setupWindowProperties();
     void initializeEmptyProject();  // Initialize application with empty project

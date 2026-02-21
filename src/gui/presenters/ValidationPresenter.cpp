@@ -7,7 +7,7 @@
 namespace truss_presenters {
 
 ValidationPresenter::ValidationDisplay ValidationPresenter::formatValidation(
-    const truss::core::validation::ValidationResult& result) const {
+    const truss::core::validation::ValidationResult& result) {
     ValidationDisplay display;
 
     display.isValid = result.isValid();
@@ -21,7 +21,7 @@ ValidationPresenter::ValidationDisplay ValidationPresenter::formatValidation(
 }
 
 QString ValidationPresenter::generateSummary(
-    const truss::core::validation::ValidationResult& result) const {
+    const truss::core::validation::ValidationResult& result) {
     if (result.isValid()) {
         return "Validation passed: Structure is ready for analysis.";
     }
@@ -69,7 +69,7 @@ QString ValidationPresenter::generateSummary(
 }
 
 QString
-ValidationPresenter::formatIssue(const truss::core::validation::ValidationIssue& issue) const {
+ValidationPresenter::formatIssue(const truss::core::validation::ValidationIssue& issue) {
     return QString("%1 [%2]: %3")
         .arg(getSeverityIcon(issue.severity))
         .arg(QString::fromStdString(issue.category))
@@ -77,7 +77,7 @@ ValidationPresenter::formatIssue(const truss::core::validation::ValidationIssue&
 }
 
 QString
-ValidationPresenter::getSeverityIcon(truss::core::validation::ValidationSeverity severity) const {
+ValidationPresenter::getSeverityIcon(truss::core::validation::ValidationSeverity severity) {
     switch (severity) {
         case truss::core::validation::ValidationSeverity::Fatal:
             return "❌";
@@ -97,7 +97,7 @@ void ValidationPresenter::groupIssuesBySeverity(
     std::vector<QString>& fatalErrors,
     std::vector<QString>& errors,
     std::vector<QString>& warnings,
-    std::vector<QString>& infos) const {
+    std::vector<QString>& infos) {
     for (const auto& issue : issues) {
         QString formatted = formatIssue(issue);
 

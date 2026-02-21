@@ -59,17 +59,17 @@ AnalysisResultsPresenter::DisplayData AnalysisResultsPresenter::formatResults(
     return data;
 }
 
-QString AnalysisResultsPresenter::formatDisplacement(double displacementMeters) const {
+QString AnalysisResultsPresenter::formatDisplacement(double displacementMeters) {
     double displacementMm = displacementMeters * METERS_TO_MM;
     return QString("%1 mm").arg(displacementMm, 0, 'f', DISPLACEMENT_PRECISION);
 }
 
-QString AnalysisResultsPresenter::formatStress(double stressPascals) const {
+QString AnalysisResultsPresenter::formatStress(double stressPascals) {
     double stressMPa = stressPascals * PASCALS_TO_MPA;
     return QString("%1 MPa").arg(stressMPa, 0, 'f', STRESS_PRECISION);
 }
 
-QString AnalysisResultsPresenter::formatForce(double forceNewtons) const {
+QString AnalysisResultsPresenter::formatForce(double forceNewtons) {
     // Use kN for large forces
     if (std::abs(forceNewtons) >= 1000.0) {
         double forceKN = forceNewtons * NEWTONS_TO_KN;
@@ -79,7 +79,7 @@ QString AnalysisResultsPresenter::formatForce(double forceNewtons) const {
     }
 }
 
-QString AnalysisResultsPresenter::formatVector2D(double x, double y, const QString& unit) const {
+QString AnalysisResultsPresenter::formatVector2D(double x, double y, const QString& unit) {
     return QString("(%1, %2) %3")
         .arg(x, 0, 'f', DISPLACEMENT_PRECISION)
         .arg(y, 0, 'f', DISPLACEMENT_PRECISION)
@@ -89,7 +89,7 @@ QString AnalysisResultsPresenter::formatVector2D(double x, double y, const QStri
 QString AnalysisResultsPresenter::generateSuccessMessage(size_t nodeCount,
                                                          size_t memberCount,
                                                          double maxDisplacement,
-                                                         double maxStress) const {
+                                                         double maxStress) {
     return QString("Analysis completed successfully!\n"
                    "Nodes: %1, Members: %2\n"
                    "Max displacement: %3\n"

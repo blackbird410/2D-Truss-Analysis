@@ -172,7 +172,7 @@ private:
     void drawMembers(QPainter& painter);
     void drawLoads(QPainter& painter);
     void drawSupports(QPainter& painter);
-    void drawSelection(QPainter& painter);
+    static void drawSelection(QPainter& painter);
     void drawCurrentOperation(QPainter& painter);
     void drawCoordinateSystem(QPainter& painter);
     void drawStatusOverlay(QPainter& painter);
