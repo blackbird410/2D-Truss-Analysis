@@ -66,7 +66,7 @@ protected:
         Truss truss("Test Truss");
         
         auto node1 = std::make_shared<Node>(1, Point2D{0.0, 0.0}, SupportType::Pinned);
-        auto node2 = std::make_shared<Node>(2, Point2D{4.0, 0.0}, SupportType::RollerY);
+        auto node2 = std::make_shared<Node>(2, Point2D{4.0, 0.0}, SupportType::RollerX);
         auto node3 = std::make_shared<Node>(3, Point2D{2.0, 3.0}, SupportType::Free);
         
         node3->setAppliedForce(Force2D{0.0, -10000.0});  // 10 kN downward
@@ -132,7 +132,7 @@ TEST_F(AnalysisApplicationServiceTest, Analyze_ValidTruss_Succeeds) {
     
     auto result = analysisService.analyze(truss);
     
-    ASSERT_TRUE(result.success);
+    ASSERT_TRUE(result.success) << "Analysis failed with error: " << result.errorMessage;
     EXPECT_GT(result.value, 0);  // Valid handle
     EXPECT_TRUE(result.errorMessage.empty());
 }
@@ -576,7 +576,7 @@ TEST_F(AnalysisApplicationServiceTest, Analyze_NoLoads_SucceedsWithZeroResults) 
     Truss truss("No Loads");
     
     auto node1 = std::make_shared<Node>(1, Point2D{0.0, 0.0}, SupportType::Pinned);
-    auto node2 = std::make_shared<Node>(2, Point2D{4.0, 0.0}, SupportType::RollerY);
+    auto node2 = std::make_shared<Node>(2, Point2D{4.0, 0.0}, SupportType::RollerX);
     auto node3 = std::make_shared<Node>(3, Point2D{2.0, 3.0}, SupportType::Free);
     
     // No loads applied

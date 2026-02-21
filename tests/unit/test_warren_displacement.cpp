@@ -1,5 +1,5 @@
 /**
- * @file test_warren_truss_displacement_sign.cpp
+ * @file test_warren_displacement.cpp
  * @brief Simple test to verify displacement signs in Warren truss
  */
 
