@@ -6,6 +6,7 @@
  */
 
 #include "Node.hpp"
+
 #include <cmath>
 
 namespace truss::core {
@@ -14,7 +15,7 @@ Node::Node() : m_id(0), m_position(0.0, 0.0), m_supportType(SupportType::Free) {
     m_label = "Node_" + std::to_string(m_id);
 }
 
-Node::Node(NodeId id, Real x, Real y) 
+Node::Node(NodeId id, Real x, Real y)
     : m_id(id), m_position(x, y), m_supportType(SupportType::Free) {
     m_label = "Node_" + std::to_string(m_id);
 }
@@ -25,13 +26,11 @@ Node::Node(NodeId id, const Point2D& position, SupportType support)
 }
 
 bool Node::isConstrainedX() const noexcept {
-    return m_supportType == SupportType::Pinned ||
-           m_supportType == SupportType::RollerY;
+    return m_supportType == SupportType::Pinned || m_supportType == SupportType::RollerY;
 }
 
 bool Node::isConstrainedY() const noexcept {
-    return m_supportType == SupportType::Pinned ||
-           m_supportType == SupportType::RollerX;
+    return m_supportType == SupportType::Pinned || m_supportType == SupportType::RollerX;
 }
 
 bool Node::isFree() const noexcept {
@@ -43,8 +42,7 @@ bool Node::isPinned() const noexcept {
 }
 
 bool Node::isRoller() const noexcept {
-    return m_supportType == SupportType::RollerX || 
-           m_supportType == SupportType::RollerY;
+    return m_supportType == SupportType::RollerX || m_supportType == SupportType::RollerY;
 }
 
 bool Node::isConstrained() const noexcept {
@@ -58,17 +56,17 @@ int Node::getDegreesOfFreedom() const noexcept {
 std::vector<Index> Node::getGlobalDOFs() const {
     std::vector<Index> dofs;
     dofs.reserve(2);
-    
+
     // Add X DOF if not constrained in X
     if (!isConstrainedX()) {
         dofs.push_back(m_dofX);
     }
-    
+
     // Add Y DOF if not constrained in Y
     if (!isConstrainedY()) {
         dofs.push_back(m_dofY);
     }
-    
+
     return dofs;
 }
 
@@ -114,4 +112,4 @@ bool Node::operator!=(const Node& other) const {
     return !(*this == other);
 }
 
-} // namespace truss::core
+}  // namespace truss::core

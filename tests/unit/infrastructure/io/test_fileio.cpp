@@ -6,17 +6,18 @@
  * @date 2026-02-13
  */
 
-#include <gtest/gtest.h>
+#include "core/assembly/TrussAssembler.hpp"
+#include "core/model/Truss.hpp"
 #include "infrastructure/io/fileio_factory.hpp"
 #include "infrastructure/io/json_truss_reader.hpp"
 #include "infrastructure/io/json_truss_writer.hpp"
 #include "infrastructure/io/xml_truss_reader.hpp"
 #include "infrastructure/io/xml_truss_writer.hpp"
-#include "core/model/Truss.hpp"
-#include "core/assembly/TrussAssembler.hpp"
+
+#include <chrono>
 #include <filesystem>
 #include <fstream>
-#include <chrono>
+#include <gtest/gtest.h>
 #include <sstream>
 #include <thread>  // for std::this_thread::get_id()
 
@@ -30,47 +31,47 @@ protected:
         // Create unique temporary test directory per test instance
         // Use thread ID and timestamp to avoid collisions in concurrent test runs
         std::ostringstream dirName;
-        dirName << "truss_fileio_test_" 
-                << std::chrono::system_clock::now().time_since_epoch().count()
-                << "_" << std::this_thread::get_id();
+        dirName << "truss_fileio_test_"
+                << std::chrono::system_clock::now().time_since_epoch().count() << "_"
+                << std::this_thread::get_id();
         testDir = std::filesystem::temp_directory_path() / dirName.str();
         std::filesystem::create_directories(testDir);
     }
-    
+
     void TearDown() override {
         // Clean up test files
         if (std::filesystem::exists(testDir)) {
             std::filesystem::remove_all(testDir);
         }
     }
-    
+
     // Helper: Create a simple test truss
     std::shared_ptr<Truss> createSimpleTruss() {
         auto truss = std::make_shared<Truss>("Simple Test Truss");
-        
+
         // Add nodes
-        truss->addNode(0.0, 0.0, SupportType::Pinned);  // Node 1
-        truss->addNode(4.0, 0.0, SupportType::RollerY); // Node 2
-        truss->addNode(2.0, 3.0, SupportType::Free);    // Node 3
-        
+        truss->addNode(0.0, 0.0, SupportType::Pinned);   // Node 1
+        truss->addNode(4.0, 0.0, SupportType::RollerY);  // Node 2
+        truss->addNode(2.0, 3.0, SupportType::Free);     // Node 3
+
         // Add members with correct constructors
         MaterialProperties material{200e9, 7850.0, 250e6, 400e6, "Steel"};
         SectionProperties section{0.01, 1e-8, 0.01, "Default"};
         truss->addMember(1, 3, material, section);
         truss->addMember(2, 3, material, section);
-        
+
         // Add load
         truss->applyForce(3, 0.0, -10000.0);
-        
+
         return truss;
     }
-    
+
     // Helper: Verify two trusses are equivalent
     void verifyTrussEquivalence(const Truss& t1, const Truss& t2) {
         EXPECT_EQ(t1.getName(), t2.getName());
         EXPECT_EQ(t1.getNodeCount(), t2.getNodeCount());
         EXPECT_EQ(t1.getMemberCount(), t2.getMemberCount());
-        
+
         // Verify nodes
         const auto& nodes1 = t1.getNodes();
         const auto& nodes2 = t2.getNodes();
@@ -79,22 +80,20 @@ protected:
             EXPECT_NEAR(nodes1[i]->getY(), nodes2[i]->getY(), 1e-9);
             EXPECT_EQ(nodes1[i]->getSupportType(), nodes2[i]->getSupportType());
         }
-        
+
         // Verify members
         const auto& members1 = t1.getMembers();
         const auto& members2 = t2.getMembers();
         for (size_t i = 0; i < members1.size(); ++i) {
-            EXPECT_EQ(members1[i]->getStartNode()->getId(), 
-                     members2[i]->getStartNode()->getId());
-            EXPECT_EQ(members1[i]->getEndNode()->getId(), 
-                     members2[i]->getEndNode()->getId());
+            EXPECT_EQ(members1[i]->getStartNode()->getId(), members2[i]->getStartNode()->getId());
+            EXPECT_EQ(members1[i]->getEndNode()->getId(), members2[i]->getEndNode()->getId());
             EXPECT_NEAR(members1[i]->getMaterial().youngModulus,
-                       members2[i]->getMaterial().youngModulus, 1e-6);
-            EXPECT_NEAR(members1[i]->getSection().area,
-                       members2[i]->getSection().area, 1e-9);
+                        members2[i]->getMaterial().youngModulus,
+                        1e-6);
+            EXPECT_NEAR(members1[i]->getSection().area, members2[i]->getSection().area, 1e-9);
         }
     }
-    
+
     std::filesystem::path testDir;
 };
 
@@ -139,7 +138,7 @@ TEST_F(FileIOTest, FactoryDetectsFormatFromExtension) {
 TEST_F(FileIOTest, FactoryCreatesReaderFromPath) {
     auto jsonReader = FileIOFactory::createReader(testDir / "test.json");
     EXPECT_EQ(jsonReader->getFormat(), FileFormat::JSON);
-    
+
     auto xmlReader = FileIOFactory::createReader(testDir / "test.xml");
     EXPECT_EQ(xmlReader->getFormat(), FileFormat::XML);
 }
@@ -161,12 +160,12 @@ TEST_F(FileIOTest, FactoryThrowsOnUnknownExtension) {
 TEST_F(FileIOTest, JsonWriterCreatesValidFile) {
     auto truss = createSimpleTruss();
     auto writer = FileIOFactory::createWriter(FileFormat::JSON);
-    
+
     auto filepath = testDir / "test.json";
     FileIOOptions options;
     options.validateOnWrite = false;
     options.overwriteExisting = true;
-    
+
     // Convert Truss to DTO for writing
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     EXPECT_TRUE(writer->write(dto, filepath, options));
@@ -176,16 +175,16 @@ TEST_F(FileIOTest, JsonWriterCreatesValidFile) {
 TEST_F(FileIOTest, JsonWriterThrowsOnExistingFileWithoutOverwrite) {
     auto truss = createSimpleTruss();
     auto writer = FileIOFactory::createWriter(FileFormat::JSON);
-    
+
     auto filepath = testDir / "test.json";
-    
+
     // First write
     FileIOOptions options1;
     options1.overwriteExisting = true;
     options1.validateOnWrite = false;
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     writer->write(dto, filepath, options1);
-    
+
     // Second write without overwrite should throw
     FileIOOptions options2;
     options2.overwriteExisting = false;
@@ -196,20 +195,19 @@ TEST_F(FileIOTest, JsonWriterThrowsOnExistingFileWithoutOverwrite) {
 TEST_F(FileIOTest, JsonWriterIncludesMetadata) {
     auto truss = createSimpleTruss();
     auto writer = FileIOFactory::createWriter(FileFormat::JSON);
-    
+
     auto filepath = testDir / "test.json";
     FileIOOptions options;
     options.includeMetadata = true;
     options.overwriteExisting = true;
     options.validateOnWrite = false;
-    
+
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     writer->write(dto, filepath, options);
-    
+
     // Read file and verify metadata exists
     std::ifstream file(filepath);
-    std::string content((std::istreambuf_iterator<char>(file)),
-                        std::istreambuf_iterator<char>());
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     EXPECT_TRUE(content.find("metadata") != std::string::npos);
     EXPECT_TRUE(content.find("Simple Test Truss") != std::string::npos);
 }
@@ -221,30 +219,30 @@ TEST_F(FileIOTest, JsonWriterIncludesMetadata) {
 TEST_F(FileIOTest, JsonReaderThrowsOnNonexistentFile) {
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     auto filepath = testDir / "nonexistent.json";
-    
+
     EXPECT_THROW(reader->read(filepath), FileNotFoundException);
 }
 
 TEST_F(FileIOTest, JsonReaderThrowsOnInvalidJson) {
     auto filepath = testDir / "invalid.json";
-    
+
     // Create invalid JSON file
     std::ofstream file(filepath);
     file << "{ invalid json content";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     EXPECT_THROW(reader->read(filepath), ParseException);
 }
 
 TEST_F(FileIOTest, JsonReaderThrowsOnMissingNodes) {
     auto filepath = testDir / "missing_nodes.json";
-    
+
     // Create JSON without nodes section
     std::ofstream file(filepath);
     file << R"({"metadata": {"name": "Test"}, "members": []})";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     EXPECT_THROW(reader->read(filepath), ParseException);
 }
@@ -256,7 +254,7 @@ TEST_F(FileIOTest, JsonReaderThrowsOnMissingNodes) {
 TEST_F(FileIOTest, JsonRoundTripPreservesData) {
     auto originalTruss = createSimpleTruss();
     auto filepath = testDir / "roundtrip.json";
-    
+
     // Write
     auto writer = FileIOFactory::createWriter(FileFormat::JSON);
     FileIOOptions writeOptions;
@@ -264,14 +262,14 @@ TEST_F(FileIOTest, JsonRoundTripPreservesData) {
     writeOptions.overwriteExisting = true;
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*originalTruss);
     writer->write(dto, filepath, writeOptions);
-    
+
     // Read
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions readOptions;
     readOptions.validateOnRead = false;
     auto loadedDTO = reader->read(filepath, readOptions);
     auto loadedTruss = truss::core::assembly::TrussAssembler::assembleTruss(loadedDTO);
-    
+
     // Verify equivalence
     verifyTrussEquivalence(*originalTruss, *loadedTruss);
 }
@@ -279,7 +277,7 @@ TEST_F(FileIOTest, JsonRoundTripPreservesData) {
 TEST_F(FileIOTest, JsonRoundTripWithPrettyPrint) {
     auto truss = createSimpleTruss();
     auto filepath = testDir / "pretty.json";
-    
+
     // Write with pretty print
     auto writer = FileIOFactory::createWriter(FileFormat::JSON);
     FileIOOptions options;
@@ -289,11 +287,10 @@ TEST_F(FileIOTest, JsonRoundTripWithPrettyPrint) {
     options.validateOnWrite = false;
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     writer->write(dto, filepath, options);
-    
+
     // Verify file contains newlines (pretty-printed)
     std::ifstream file(filepath);
-    std::string content((std::istreambuf_iterator<char>(file)),
-                        std::istreambuf_iterator<char>());
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
     EXPECT_TRUE(content.find('\n') != std::string::npos);
 }
 
@@ -304,12 +301,12 @@ TEST_F(FileIOTest, JsonRoundTripWithPrettyPrint) {
 TEST_F(FileIOTest, XmlWriterCreatesValidFile) {
     auto truss = createSimpleTruss();
     auto writer = FileIOFactory::createWriter(FileFormat::XML);
-    
+
     auto filepath = testDir / "test.xml";
     FileIOOptions options;
     options.validateOnWrite = false;
     options.overwriteExisting = true;
-    
+
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     EXPECT_TRUE(writer->write(dto, filepath, options));
     EXPECT_TRUE(std::filesystem::exists(filepath));
@@ -318,16 +315,16 @@ TEST_F(FileIOTest, XmlWriterCreatesValidFile) {
 TEST_F(FileIOTest, XmlWriterThrowsOnExistingFileWithoutOverwrite) {
     auto truss = createSimpleTruss();
     auto writer = FileIOFactory::createWriter(FileFormat::XML);
-    
+
     auto filepath = testDir / "test.xml";
-    
+
     // First write
     FileIOOptions options1;
     options1.overwriteExisting = true;
     options1.validateOnWrite = false;
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     writer->write(dto, filepath, options1);
-    
+
     // Second write without overwrite should throw
     FileIOOptions options2;
     options2.overwriteExisting = false;
@@ -342,30 +339,30 @@ TEST_F(FileIOTest, XmlWriterThrowsOnExistingFileWithoutOverwrite) {
 TEST_F(FileIOTest, XmlReaderThrowsOnNonexistentFile) {
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     auto filepath = testDir / "nonexistent.xml";
-    
+
     EXPECT_THROW(reader->read(filepath), FileNotFoundException);
 }
 
 TEST_F(FileIOTest, XmlReaderThrowsOnInvalidXml) {
     auto filepath = testDir / "invalid.xml";
-    
+
     // Create invalid XML file
     std::ofstream file(filepath);
     file << "<truss><unclosed>";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     EXPECT_THROW(reader->read(filepath), ParseException);
 }
 
 TEST_F(FileIOTest, XmlReaderThrowsOnMissingNodes) {
     auto filepath = testDir / "missing_nodes.xml";
-    
+
     // Create XML without nodes section
     std::ofstream file(filepath);
     file << R"(<?xml version="1.0"?><truss><metadata name="Test"/></truss>)";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     EXPECT_THROW(reader->read(filepath), ParseException);
 }
@@ -377,7 +374,7 @@ TEST_F(FileIOTest, XmlReaderThrowsOnMissingNodes) {
 TEST_F(FileIOTest, XmlRoundTripPreservesData) {
     auto originalTruss = createSimpleTruss();
     auto filepath = testDir / "roundtrip.xml";
-    
+
     // Write
     auto writer = FileIOFactory::createWriter(FileFormat::XML);
     FileIOOptions writeOptions;
@@ -385,14 +382,14 @@ TEST_F(FileIOTest, XmlRoundTripPreservesData) {
     writeOptions.overwriteExisting = true;
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*originalTruss);
     writer->write(dto, filepath, writeOptions);
-    
+
     // Read
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     FileIOOptions readOptions;
     readOptions.validateOnRead = false;
     auto loadedDTO = reader->read(filepath, readOptions);
     auto loadedTruss = truss::core::assembly::TrussAssembler::assembleTruss(loadedDTO);
-    
+
     // Verify equivalence
     verifyTrussEquivalence(*originalTruss, *loadedTruss);
 }
@@ -403,7 +400,7 @@ TEST_F(FileIOTest, XmlRoundTripPreservesData) {
 
 TEST_F(FileIOTest, ReaderValidationDetectsInvalidTruss) {
     auto filepath = testDir / "invalid_truss.json";
-    
+
     // Create JSON with invalid truss (member with invalid node IDs)
     std::ofstream file(filepath);
     file << R"({
@@ -411,11 +408,11 @@ TEST_F(FileIOTest, ReaderValidationDetectsInvalidTruss) {
         "members": [{"startNode": 1, "endNode": 999}]
     })";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnRead = true;
-    
+
     // Should throw parse exception (member references non-existent node)
     EXPECT_THROW(reader->read(filepath, options), ParseException);
 }
@@ -427,36 +424,36 @@ TEST_F(FileIOTest, ReaderValidationDetectsInvalidTruss) {
 TEST_F(FileIOTest, HandlesEmptyTruss) {
     auto truss = std::make_shared<Truss>("Empty Truss");
     truss->addNode(0.0, 0.0, SupportType::Pinned);
-    
+
     auto filepath = testDir / "empty.json";
-    
+
     auto writer = FileIOFactory::createWriter(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnWrite = false;
     options.overwriteExisting = true;
-    
+
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     EXPECT_NO_THROW(writer->write(dto, filepath, options));
 }
 
 TEST_F(FileIOTest, HandlesLargeTruss) {
     auto truss = std::make_shared<Truss>("Large Truss");
-    
+
     // Create 100 nodes
     for (int i = 1; i <= 100; ++i) {
         truss->addNode(static_cast<Real>(i), 0.0, SupportType::Free);
     }
-    
+
     auto filepath = testDir / "large.json";
-    
+
     auto writer = FileIOFactory::createWriter(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnWrite = false;
     options.overwriteExisting = true;
-    
+
     auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
     EXPECT_NO_THROW(writer->write(dto, filepath, options));
-    
+
     // Verify file size is reasonable
     auto fileSize = std::filesystem::file_size(filepath);
     EXPECT_GT(fileSize, 1000);  // Should be more than 1KB for 100 nodes
@@ -468,7 +465,7 @@ TEST_F(FileIOTest, HandlesLargeTruss) {
 
 TEST_F(FileIOTest, JsonReaderDetectsDuplicateNodeIDs) {
     auto filepath = testDir / "duplicate_nodes.json";
-    
+
     // Create JSON with duplicate node IDs
     std::ofstream file(filepath);
     file << R"({
@@ -479,11 +476,11 @@ TEST_F(FileIOTest, JsonReaderDetectsDuplicateNodeIDs) {
         ]
     })";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnRead = false;  // Disable domain validation
-    
+
     // Should throw ParseException with clear error message
     try {
         reader->read(filepath, options);
@@ -497,7 +494,7 @@ TEST_F(FileIOTest, JsonReaderDetectsDuplicateNodeIDs) {
 
 TEST_F(FileIOTest, XmlReaderDetectsDuplicateNodeIDs) {
     auto filepath = testDir / "duplicate_nodes.xml";
-    
+
     // Create XML with duplicate node IDs
     std::ofstream file(filepath);
     file << R"(<?xml version="1.0"?>
@@ -510,11 +507,11 @@ TEST_F(FileIOTest, XmlReaderDetectsDuplicateNodeIDs) {
 </truss>
 )";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException
     try {
         reader->read(filepath, options);
@@ -528,7 +525,7 @@ TEST_F(FileIOTest, XmlReaderDetectsDuplicateNodeIDs) {
 
 TEST_F(FileIOTest, JsonReaderDetectsUnknownStartNodeInMember) {
     auto filepath = testDir / "unknown_start_node.json";
-    
+
     // Create JSON where member references non-existent start node
     std::ofstream file(filepath);
     file << R"({
@@ -541,11 +538,11 @@ TEST_F(FileIOTest, JsonReaderDetectsUnknownStartNodeInMember) {
         ]
     })";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException
     try {
         reader->read(filepath, options);
@@ -559,7 +556,7 @@ TEST_F(FileIOTest, JsonReaderDetectsUnknownStartNodeInMember) {
 
 TEST_F(FileIOTest, JsonReaderDetectsUnknownEndNodeInMember) {
     auto filepath = testDir / "unknown_end_node.json";
-    
+
     // Create JSON where member references non-existent end node
     std::ofstream file(filepath);
     file << R"({
@@ -572,11 +569,11 @@ TEST_F(FileIOTest, JsonReaderDetectsUnknownEndNodeInMember) {
         ]
     })";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException
     try {
         reader->read(filepath, options);
@@ -590,7 +587,7 @@ TEST_F(FileIOTest, JsonReaderDetectsUnknownEndNodeInMember) {
 
 TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInMember) {
     auto filepath = testDir / "unknown_node.xml";
-    
+
     // Create XML where member references non-existent nodes
     std::ofstream file(filepath);
     file << R"(<?xml version="1.0"?>
@@ -605,11 +602,11 @@ TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInMember) {
 </truss>
 )";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException
     try {
         reader->read(filepath, options);
@@ -623,7 +620,7 @@ TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInMember) {
 
 TEST_F(FileIOTest, JsonReaderDetectsUnknownNodeInLoad) {
     auto filepath = testDir / "unknown_load_node.json";
-    
+
     // Create JSON where load references non-existent node
     std::ofstream file(filepath);
     file << R"({
@@ -636,11 +633,11 @@ TEST_F(FileIOTest, JsonReaderDetectsUnknownNodeInLoad) {
         ]
     })";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException
     try {
         reader->read(filepath, options);
@@ -654,7 +651,7 @@ TEST_F(FileIOTest, JsonReaderDetectsUnknownNodeInLoad) {
 
 TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInLoad) {
     auto filepath = testDir / "unknown_load_node.xml";
-    
+
     // Create XML where load references non-existent node
     std::ofstream file(filepath);
     file << R"(<?xml version="1.0"?>
@@ -669,11 +666,11 @@ TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInLoad) {
 </truss>
 )";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException
     try {
         reader->read(filepath, options);
@@ -687,7 +684,7 @@ TEST_F(FileIOTest, XmlReaderDetectsUnknownNodeInLoad) {
 
 TEST_F(FileIOTest, JsonReaderRequiresExplicitNodeIDs) {
     auto filepath = testDir / "missing_node_id.json";
-    
+
     // Create JSON with node missing ID field
     std::ofstream file(filepath);
     file << R"({
@@ -696,18 +693,18 @@ TEST_F(FileIOTest, JsonReaderRequiresExplicitNodeIDs) {
         ]
     })";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException - node ID is mandatory
     EXPECT_THROW(reader->read(filepath, options), ParseException);
 }
 
 TEST_F(FileIOTest, XmlReaderRequiresExplicitNodeIDs) {
     auto filepath = testDir / "missing_node_id.xml";
-    
+
     // Create XML with node missing ID attribute
     std::ofstream file(filepath);
     file << R"(<?xml version="1.0"?>
@@ -718,18 +715,18 @@ TEST_F(FileIOTest, XmlReaderRequiresExplicitNodeIDs) {
 </truss>
 )";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::XML);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should throw ParseException - ID attribute is mandatory
     EXPECT_THROW(reader->read(filepath, options), ParseException);
 }
 
 TEST_F(FileIOTest, JsonValidFileWithNonSequentialIDsSucceeds) {
     auto filepath = testDir / "non_sequential.json";
-    
+
     // Create JSON with non-sequential node IDs (100, 200, 300)
     std::ofstream file(filepath);
     file << R"({
@@ -747,11 +744,11 @@ TEST_F(FileIOTest, JsonValidFileWithNonSequentialIDsSucceeds) {
         ]
     })";
     file.close();
-    
+
     auto reader = FileIOFactory::createReader(FileFormat::JSON);
     FileIOOptions options;
     options.validateOnRead = false;
-    
+
     // Should succeed - non-sequential IDs are valid
     auto dto = reader->read(filepath, options);
     auto truss = truss::core::assembly::TrussAssembler::assembleTruss(dto);
@@ -759,4 +756,3 @@ TEST_F(FileIOTest, JsonValidFileWithNonSequentialIDsSucceeds) {
     EXPECT_EQ(truss->getNodeCount(), 3);
     EXPECT_EQ(truss->getMemberCount(), 2);
 }
-

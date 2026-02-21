@@ -143,6 +143,7 @@ The refactored architecture follows these core principles:
   ```
 
 - **AnalysisApplicationService** (IMPLEMENTED ✅)
+
   ```cpp
   class AnalysisApplicationService {
   public:

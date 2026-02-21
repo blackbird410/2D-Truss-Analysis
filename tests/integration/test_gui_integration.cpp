@@ -3,25 +3,26 @@
  * @brief Qt Test framework integration tests for GUI components
  * @author Civil Engineering Software Solutions
  * @version 3.0.0
- * 
+ *
  * @details
  * Comprehensive GUI integration tests using Qt Test framework.
  * Tests the integration between Controllers, Presenters, and Application Service.
- * 
+ *
  * Architecture: Integration Tests (GUI Layer)
  * Purpose: Verify full workflow from UI → Controller → Application → Domain
  */
 
-#include <QtTest/QtTest>
-#include <QSignalSpy>
 #include "application/TrussApplicationService.hpp"
 #include "application/TrussEditDTOs.hpp"
-#include "gui/controllers/TrussEditController.hpp"
+#include "core/model/Types.hpp"
 #include "gui/controllers/AnalysisController.hpp"
 #include "gui/controllers/ProjectController.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/controllers/TrussEditController.hpp"
 #include "gui/presenters/AnalysisResultsPresenter.hpp"
-#include "core/model/Types.hpp"
+#include "gui/presenters/TrussDataPresenter.hpp"
+
+#include <QSignalSpy>
+#include <QtTest/QtTest>
 
 using namespace truss;
 using namespace truss::application;
@@ -50,7 +51,7 @@ private slots:
     void init() {
         // Create fresh controller and truss for each test
         controller = new TrussEditController(service, *presenter);
-        
+
         auto result = service->createTruss("Integration Test Truss");
         QVERIFY(result.success);
         testHandle = result.value;
@@ -121,8 +122,10 @@ private slots:
      */
     void testMemberAdditionWithDTOs() {
         // GIVEN: Two nodes exist
-        auto nodeResult1 = service->addNode(testHandle, core::Point2D{0, 0}, core::SupportType::Pinned);
-        auto nodeResult2 = service->addNode(testHandle, core::Point2D{3, 0}, core::SupportType::Free);
+        auto nodeResult1 = service->addNode(
+            testHandle, core::Point2D{0, 0}, core::SupportType::Pinned);
+        auto nodeResult2 = service->addNode(
+            testHandle, core::Point2D{3, 0}, core::SupportType::Free);
         QVERIFY(nodeResult1.success);
         QVERIFY(nodeResult2.success);
 
@@ -137,7 +140,7 @@ private slots:
 
         // THEN: No errors
         QCOMPARE(errorSpy.count(), 0);
-        
+
         // AND: Member added successfully
         QCOMPARE(memberAddedSpy.count(), 1);
 
@@ -167,9 +170,10 @@ private slots:
         QString statusMsg = statusSpy.at(0).at(0).toString();
         QVERIFY(statusMsg.contains("Node 0"));
         QVERIFY(statusMsg.contains("Pinned"));
-        
+
         // Verify NO switch statement in Controller (formatting delegated)
-        // This is architectural compliance - message comes from Presenter.formatSupportChangeMessage()
+        // This is architectural compliance - message comes from
+        // Presenter.formatSupportChangeMessage()
     }
 
     /**
@@ -201,9 +205,10 @@ private slots:
      */
     void testNodeRemoval() {
         // GIVEN: Node exists
-        auto nodeResult = service->addNode(testHandle, core::Point2D{0, 0}, core::SupportType::Free);
+        auto nodeResult = service->addNode(
+            testHandle, core::Point2D{0, 0}, core::SupportType::Free);
         QVERIFY(nodeResult.success);
-        
+
         QSignalSpy trussModifiedSpy(controller, &TrussEditController::trussModified);
         QSignalSpy errorSpy(controller, &TrussEditController::operationFailed);
 
@@ -212,7 +217,7 @@ private slots:
 
         // THEN: No errors
         QCOMPARE(errorSpy.count(), 0);
-        
+
         // AND: Node removed
         QCOMPARE(trussModifiedSpy.count(), 1);
 
@@ -225,14 +230,17 @@ private slots:
      */
     void testMemberRemoval() {
         // GIVEN: Member exists
-        auto nodeResult1 = service->addNode(testHandle, core::Point2D{0, 0}, core::SupportType::Pinned);
-        auto nodeResult2 = service->addNode(testHandle, core::Point2D{3, 0}, core::SupportType::Free);
+        auto nodeResult1 = service->addNode(
+            testHandle, core::Point2D{0, 0}, core::SupportType::Pinned);
+        auto nodeResult2 = service->addNode(
+            testHandle, core::Point2D{3, 0}, core::SupportType::Free);
         QVERIFY(nodeResult1.success);
         QVERIFY(nodeResult2.success);
-        
+
         MaterialSpec material{200e9, "Steel"};
         SectionSpec section{0.01, "Square"};
-        auto memberResult = service->addMember(testHandle, nodeResult1.value, nodeResult2.value, material, section);
+        auto memberResult = service->addMember(
+            testHandle, nodeResult1.value, nodeResult2.value, material, section);
         QVERIFY(memberResult.success);
 
         // WHEN: Remove member
@@ -241,7 +249,7 @@ private slots:
         // THEN: Member removed
         const auto& trussView = service->getTrussView(testHandle);
         QCOMPARE(trussView.getMemberCount(), static_cast<size_t>(0));
-        QCOMPARE(trussView.getNodeCount(), static_cast<size_t>(2)); // Nodes remain
+        QCOMPARE(trussView.getNodeCount(), static_cast<size_t>(2));  // Nodes remain
     }
 
     /**
@@ -304,9 +312,7 @@ private slots:
         testHandle = result.value;
     }
 
-    void cleanup() {
-        service->clearTruss(testHandle);
-    }
+    void cleanup() { service->clearTruss(testHandle); }
 
     void cleanupTestCase() {
         service->clearAll();
@@ -440,7 +446,7 @@ private slots:
 
         // Now has unsaved changes
         QVERIFY(controller->hasUnsavedChanges());
-        
+
         // Mark as saved
         controller->markAsSaved();
         QVERIFY(!controller->hasUnsavedChanges());

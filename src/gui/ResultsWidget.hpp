@@ -5,23 +5,24 @@
 
 #pragma once
 
-#include <QtWidgets/QWidget>
+#include "application/AnalysisApplicationService.hpp"
+#include "application/TrussApplicationService.hpp"
+
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QTextEdit>
-#include "application/TrussApplicationService.hpp"
-#include "application/AnalysisApplicationService.hpp"
+#include <QtWidgets/QWidget>
 
 namespace truss::gui {
 
 /**
  * @brief Widget for visualizing analysis results
- * 
+ *
  * This widget follows Clean Architecture principles:
  * - Uses dependency injection for services
  * - Does not own or directly access Domain entities
  * - Accesses data through interface abstractions (ITrussView, IAnalysisResultsView)
  * - All rendering is read-only
- * 
+ *
  * Architecture:
  * - Depends on: TrussApplicationService, AnalysisApplicationService (injected)
  * - Uses: ITrussView, IAnalysisResultsView interfaces for data access
@@ -37,10 +38,9 @@ public:
      * @param analysisService Application service for analysis results
      * @param parent Qt parent widget
      */
-    explicit ResultsWidget(
-        application::TrussApplicationService& trussService,
-        application::AnalysisApplicationService& analysisService,
-        QWidget *parent = nullptr);
+    explicit ResultsWidget(application::TrussApplicationService& trussService,
+                           application::AnalysisApplicationService& analysisService,
+                           QWidget* parent = nullptr);
 
 public slots:
     /**
@@ -48,7 +48,7 @@ public slots:
      * @param trussHandle Handle to the truss to display (with embedded results)
      */
     void updateResults(application::TrussHandle trussHandle);
-    
+
     /**
      * @brief Clear all results displays
      */
@@ -61,14 +61,14 @@ private:
     void updateReactionsTable(application::TrussHandle trussHandle);
     void updateStiffnessTable(application::TrussHandle trussHandle);
     void updateSummary(application::TrussHandle trussHandle);
-    
+
     // Service dependencies (injected)
     application::TrussApplicationService& m_trussService;
     application::AnalysisApplicationService& m_analysisService;
-    
+
     // Current state
     application::TrussHandle m_currentTrussHandle;
-    
+
     // UI components
     QTableWidget* m_displacementsTable;
     QTableWidget* m_forcesTable;
@@ -77,4 +77,4 @@ private:
     QTextEdit* m_summaryText;
 };
 
-} // namespace truss::gui
+}  // namespace truss::gui

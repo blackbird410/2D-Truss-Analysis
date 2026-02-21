@@ -15,18 +15,19 @@
  * - No direct I/O operations (all delegated)
  */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include "../../../src/cli/presenters/ConsolePresenter.hpp"
 #include "../../../src/application/interfaces/IApplicationOutput.hpp"
+#include "../../../src/cli/presenters/ConsolePresenter.hpp"
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace truss::cli::presenters;
 using namespace truss::application::interfaces;
 using ::testing::_;
-using ::testing::HasSubstr;
-using ::testing::Not;
 using ::testing::AllOf;
 using ::testing::AtLeast;
+using ::testing::HasSubstr;
+using ::testing::Not;
 
 /**
  * @brief Mock IApplicationOutput for testing presenter delegation
@@ -49,16 +50,15 @@ protected:
 
 /**
  * @test Verify displayInfo() passes message without "INFO:" prefix
- * 
+ *
  * Rationale: Logger already adds [INFO] tag, adding "INFO:" creates
  * redundant output like "[INFO] INFO: message"
  */
 TEST_F(ConsolePresenterTest, DisplayInfo_NoRedundantPrefix) {
     ConsolePresenter presenter(mockOutput);
-    
-    EXPECT_CALL(mockOutput, info("Test message"))
-        .Times(1);
-    
+
+    EXPECT_CALL(mockOutput, info("Test message")).Times(1);
+
     presenter.displayInfo("Test message");
 }
 
@@ -67,11 +67,10 @@ TEST_F(ConsolePresenterTest, DisplayInfo_NoRedundantPrefix) {
  */
 TEST_F(ConsolePresenterTest, DisplayInfo_MessagePassedVerbatim) {
     ConsolePresenter presenter(mockOutput);
-    
+
     // Verify message does NOT contain "INFO:" prefix
-    EXPECT_CALL(mockOutput, info(Not(HasSubstr("INFO:"))))
-        .Times(1);
-    
+    EXPECT_CALL(mockOutput, info(Not(HasSubstr("INFO:")))).Times(1);
+
     presenter.displayInfo("Usage:");
 }
 
@@ -80,10 +79,9 @@ TEST_F(ConsolePresenterTest, DisplayInfo_MessagePassedVerbatim) {
  */
 TEST_F(ConsolePresenterTest, DisplayError_NoRedundantPrefix) {
     ConsolePresenter presenter(mockOutput);
-    
-    EXPECT_CALL(mockOutput, error("Invalid input"))
-        .Times(1);
-    
+
+    EXPECT_CALL(mockOutput, error("Invalid input")).Times(1);
+
     presenter.displayError("Invalid input");
 }
 
@@ -92,11 +90,10 @@ TEST_F(ConsolePresenterTest, DisplayError_NoRedundantPrefix) {
  */
 TEST_F(ConsolePresenterTest, DisplayError_MessagePassedVerbatim) {
     ConsolePresenter presenter(mockOutput);
-    
+
     // Verify message does NOT contain "ERROR:" prefix
-    EXPECT_CALL(mockOutput, error(Not(HasSubstr("ERROR:"))))
-        .Times(1);
-    
+    EXPECT_CALL(mockOutput, error(Not(HasSubstr("ERROR:")))).Times(1);
+
     presenter.displayError("Command failed");
 }
 
@@ -105,10 +102,9 @@ TEST_F(ConsolePresenterTest, DisplayError_MessagePassedVerbatim) {
  */
 TEST_F(ConsolePresenterTest, DisplaySuccess_NoRedundantPrefix) {
     ConsolePresenter presenter(mockOutput);
-    
-    EXPECT_CALL(mockOutput, success("Analysis complete"))
-        .Times(1);
-    
+
+    EXPECT_CALL(mockOutput, success("Analysis complete")).Times(1);
+
     presenter.displaySuccess("Analysis complete");
 }
 
@@ -117,11 +113,10 @@ TEST_F(ConsolePresenterTest, DisplaySuccess_NoRedundantPrefix) {
  */
 TEST_F(ConsolePresenterTest, DisplaySuccess_MessagePassedVerbatim) {
     ConsolePresenter presenter(mockOutput);
-    
+
     // Verify message does NOT contain "SUCCESS:" prefix
-    EXPECT_CALL(mockOutput, success(Not(HasSubstr("SUCCESS:"))))
-        .Times(1);
-    
+    EXPECT_CALL(mockOutput, success(Not(HasSubstr("SUCCESS:")))).Times(1);
+
     presenter.displaySuccess("Operation succeeded");
 }
 
@@ -130,18 +125,15 @@ TEST_F(ConsolePresenterTest, DisplaySuccess_MessagePassedVerbatim) {
  */
 TEST_F(ConsolePresenterTest, DisplayHeader_FormatsCorrectly) {
     ConsolePresenter presenter(mockOutput);
-    
+
     // Verify each line is called separately with expected content
     // Note: The separator line appears twice (top and bottom)
     EXPECT_CALL(mockOutput, info("================================================="))
         .Times(2);  // Called twice - top and bottom separator
-    EXPECT_CALL(mockOutput, info("       2D Truss Analysis Software v3.0.0       "))
-        .Times(1);
-    EXPECT_CALL(mockOutput, info("   Civil Engineering Software Solutions         "))
-        .Times(1);
-    EXPECT_CALL(mockOutput, info(""))
-        .Times(1);
-    
+    EXPECT_CALL(mockOutput, info("       2D Truss Analysis Software v3.0.0       ")).Times(1);
+    EXPECT_CALL(mockOutput, info("   Civil Engineering Software Solutions         ")).Times(1);
+    EXPECT_CALL(mockOutput, info("")).Times(1);
+
     presenter.displayHeader();
 }
 
@@ -150,11 +142,10 @@ TEST_F(ConsolePresenterTest, DisplayHeader_FormatsCorrectly) {
  */
 TEST_F(ConsolePresenterTest, DisplayHeader_MultipleLinesCalls) {
     ConsolePresenter presenter(mockOutput);
-    
+
     // Should make 5 separate calls to info() - one for each header line plus empty line
-    EXPECT_CALL(mockOutput, info(_))
-        .Times(5);
-    
+    EXPECT_CALL(mockOutput, info(_)).Times(5);
+
     presenter.displayHeader();
 }
 
@@ -163,10 +154,9 @@ TEST_F(ConsolePresenterTest, DisplayHeader_MultipleLinesCalls) {
  */
 TEST_F(ConsolePresenterTest, DisplayInfo_EmptyMessageHandled) {
     ConsolePresenter presenter(mockOutput);
-    
-    EXPECT_CALL(mockOutput, info(""))
-        .Times(1);
-    
+
+    EXPECT_CALL(mockOutput, info("")).Times(1);
+
     presenter.displayInfo("");
 }
 
@@ -175,11 +165,10 @@ TEST_F(ConsolePresenterTest, DisplayInfo_EmptyMessageHandled) {
  */
 TEST_F(ConsolePresenterTest, DisplayInfo_SpecialCharactersPreserved) {
     ConsolePresenter presenter(mockOutput);
-    
+
     const std::string specialMsg = "Test: 100% complete! (✓)";
-    EXPECT_CALL(mockOutput, info(specialMsg))
-        .Times(1);
-    
+    EXPECT_CALL(mockOutput, info(specialMsg)).Times(1);
+
     presenter.displayInfo(specialMsg);
 }
 
@@ -188,11 +177,11 @@ TEST_F(ConsolePresenterTest, DisplayInfo_SpecialCharactersPreserved) {
  */
 TEST_F(ConsolePresenterTest, MultipleDisplayInfoCalls_AllDelegated) {
     ConsolePresenter presenter(mockOutput);
-    
+
     EXPECT_CALL(mockOutput, info("Line 1")).Times(1);
     EXPECT_CALL(mockOutput, info("Line 2")).Times(1);
     EXPECT_CALL(mockOutput, info("Line 3")).Times(1);
-    
+
     presenter.displayInfo("Line 1");
     presenter.displayInfo("Line 2");
     presenter.displayInfo("Line 3");

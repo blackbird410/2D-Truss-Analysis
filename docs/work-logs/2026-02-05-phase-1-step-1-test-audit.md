@@ -381,7 +381,7 @@ int main() {
 
 - Replace `TestFramework.hpp` include with `<gtest/gtest.h>`
 - Convert test functions to `TEST()` or `TEST_F()` macros
-- Convert assertion macros (ASSERT*\* → EXPECT*_ or ASSERT\__)
+- Convert assertion macros (ASSERT*\* → EXPECT*\_ or ASSERT\_\_)
 - Remove manual test registration (GTest discovers automatically)
 - Remove `main()` function (GTest provides)
 - Preserve test intent and numerical tolerances

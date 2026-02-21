@@ -7,9 +7,11 @@
 
 #pragma once
 
-#include "../model/Types.hpp"
 #include "../model/Truss.hpp"
+#include "../model/Types.hpp"
+
 #include <Eigen/Dense>
+
 #include <vector>
 
 namespace truss::core::analysis {
@@ -19,22 +21,22 @@ using Eigen::VectorXd;
 
 /**
  * @brief Manages boundary condition application for finite element analysis
- * 
+ *
  * This class encapsulates the logic for:
  * - Identifying free and constrained degrees of freedom based on support types
  * - Extracting the reduced system (free DOFs only) from global matrices
  * - Expanding solution vectors to include constrained DOFs (zero displacements)
- * 
+ *
  * The boundary condition handler supports all standard 2D truss support types:
  * - Free: Both DOFs unconstrained (2 DOFs free)
  * - Pinned: Both DOFs constrained (0 DOFs free, 2 reactions)
  * - RollerX: Y DOF constrained, X DOF free (1 DOF free, 1 reaction in Y)
  * - RollerY: X DOF constrained, Y DOF free (1 DOF free, 1 reaction in X)
- * 
+ *
  * @note In 2D structural mechanics, a pinned support ALWAYS restrains both translations.
  *       Directional constraints are modeled as roller supports.
  * @note All methods are const and stateless - this is a pure utility class
- * 
+ *
  * @see AnalysisEngine Original implementation location
  * @see SupportType Enumeration of support constraint types
  */
@@ -47,17 +49,17 @@ public:
 
     /**
      * @brief Get indices of free (unconstrained) degrees of freedom
-     * 
+     *
      * Examines each node's support type to determine which DOFs are free to
      * displace. The returned indices correspond to the global DOF numbering
      * assigned by Truss::assignDofNumbers().
-     * 
+     *
      * @param truss The truss structure with assigned DOF numbers
      * @return Sorted vector of free DOF indices
-     * 
+     *
      * @note Requires truss.assignDofNumbers() to be called first
      * @note Returned indices are sorted in ascending order
-     * 
+     *
      * Example:
      * @code
      * BoundaryConditionHandler handler;
@@ -69,17 +71,17 @@ public:
 
     /**
      * @brief Get indices of constrained (fixed) degrees of freedom
-     * 
+     *
      * Examines each node's support type to determine which DOFs are constrained
      * (zero displacement). The returned indices correspond to the global DOF
      * numbering assigned by Truss::assignDofNumbers().
-     * 
+     *
      * @param truss The truss structure with assigned DOF numbers
      * @return Sorted vector of constrained DOF indices
-     * 
+     *
      * @note Requires truss.assignDofNumbers() to be called first
      * @note Returned indices are sorted in ascending order
-     * 
+     *
      * Example:
      * @code
      * BoundaryConditionHandler handler;
@@ -91,24 +93,24 @@ public:
 
     /**
      * @brief Apply boundary conditions to global stiffness matrix
-     * 
+     *
      * Extracts the reduced stiffness matrix containing only the rows and columns
      * corresponding to free DOFs. This produces the system Kff that can be solved.
-     * 
+     *
      * Mathematical Operation:
      * @code
      * Given: K (n×n global stiffness), freeDofs (m indices where m < n)
      * Returns: Kff (m×m reduced stiffness)
      * where Kff(i,j) = K(freeDofs[i], freeDofs[j])
      * @endcode
-     * 
+     *
      * @param K Global stiffness matrix (totalDofs × totalDofs)
      * @param freeDofs Indices of free DOFs
      * @return Reduced stiffness matrix (freeDofs.size() × freeDofs.size())
-     * 
+     *
      * @note Matrix K must be square with dimensions matching total DOFs
      * @note freeDofs indices must be within bounds [0, K.rows())
-     * 
+     *
      * Example:
      * @code
      * MatrixXd K = assembler.assemble(truss); // 10×10 matrix
@@ -120,24 +122,24 @@ public:
 
     /**
      * @brief Apply boundary conditions to global load vector
-     * 
+     *
      * Extracts the reduced load vector containing only the entries corresponding
      * to free DOFs. This produces the system Ff that can be solved.
-     * 
+     *
      * Mathematical Operation:
      * @code
      * Given: F (n×1 global load), freeDofs (m indices where m < n)
      * Returns: Ff (m×1 reduced load)
      * where Ff(i) = F(freeDofs[i])
      * @endcode
-     * 
+     *
      * @param F Global load vector (totalDofs × 1)
      * @param freeDofs Indices of free DOFs
      * @return Reduced load vector (freeDofs.size() × 1)
-     * 
+     *
      * @note Vector F must have dimensions matching total DOFs
      * @note freeDofs indices must be within bounds [0, F.rows())
-     * 
+     *
      * Example:
      * @code
      * VectorXd F = assembler.assembleLoads(truss); // 10×1 vector
@@ -149,11 +151,11 @@ public:
 
     /**
      * @brief Expand free DOF displacements to full displacement vector
-     * 
+     *
      * Creates the full displacement vector by placing the solved free DOF
      * displacements at their correct global positions and setting constrained
      * DOFs to zero.
-     * 
+     *
      * Mathematical Operation:
      * @code
      * Given: Uf (m×1 free displacements), freeDofs (m indices), totalDofs (n)
@@ -162,15 +164,15 @@ public:
      *   U(freeDofs[i]) = Uf(i)  for all i
      *   U(j) = 0                for all constrained DOFs j
      * @endcode
-     * 
+     *
      * @param freeSolution Displacements for free DOFs only (solution from solver)
      * @param freeDofs Indices of free DOFs
      * @param totalDofs Total number of DOFs in the system
      * @return Full displacement vector (totalDofs × 1) with zeros for constrained DOFs
-     * 
+     *
      * @note freeSolution.size() must equal freeDofs.size()
      * @note All indices in freeDofs must be < totalDofs
-     * 
+     *
      * Example:
      * @code
      * VectorXd Uf(6); // Solved displacements for 6 free DOFs
@@ -180,8 +182,8 @@ public:
      * @endcode
      */
     VectorXd expandDisplacements(const VectorXd& freeSolution,
-                                  const std::vector<Index>& freeDofs,
-                                  size_t totalDofs) const;
+                                 const std::vector<Index>& freeDofs,
+                                 size_t totalDofs) const;
 };
 
-} // namespace truss::core::analysis
+}  // namespace truss::core::analysis

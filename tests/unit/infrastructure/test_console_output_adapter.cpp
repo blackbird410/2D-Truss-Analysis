@@ -17,10 +17,11 @@
  * Tests verify the adapter correctly bridges Application to Infrastructure layer.
  */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
 #include "../../../src/infrastructure/adapters/ConsoleOutputAdapter.hpp"
 #include "../../../src/infrastructure/logging/logger.hpp"
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace truss::infrastructure::adapters;
 using namespace truss::infrastructure::logging;
@@ -81,8 +82,7 @@ protected:
  */
 TEST_F(ConsoleOutputAdapterTest, InfoDelegatesToLoggerInfo) {
     // Arrange: Set expectation for logger.info() to be called exactly once
-    EXPECT_CALL(*mockLogger, info("test message"))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, info("test message")).Times(1);
 
     // Act: Call adapter.info()
     adapter->info("test message");
@@ -102,8 +102,7 @@ TEST_F(ConsoleOutputAdapterTest, InfoDelegatesToLoggerInfo) {
  */
 TEST_F(ConsoleOutputAdapterTest, SuccessDelegatesToLoggerInfo) {
     // Arrange: Set expectation for logger.info() to be called exactly once
-    EXPECT_CALL(*mockLogger, info("success message"))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, info("success message")).Times(1);
 
     // Act: Call adapter.success()
     adapter->success("success message");
@@ -123,8 +122,7 @@ TEST_F(ConsoleOutputAdapterTest, SuccessDelegatesToLoggerInfo) {
  */
 TEST_F(ConsoleOutputAdapterTest, ErrorDelegatesToLoggerError) {
     // Arrange: Set expectation for logger.error() to be called exactly once
-    EXPECT_CALL(*mockLogger, error("error message"))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, error("error message")).Times(1);
 
     // Act: Call adapter.error()
     adapter->error("error message");
@@ -144,8 +142,7 @@ TEST_F(ConsoleOutputAdapterTest, ErrorDelegatesToLoggerError) {
  */
 TEST_F(ConsoleOutputAdapterTest, WarnDelegatesToLoggerWarn) {
     // Arrange: Set expectation for logger.warn() to be called exactly once
-    EXPECT_CALL(*mockLogger, warn("warning message"))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, warn("warning message")).Times(1);
 
     // Act: Call adapter.warn()
     adapter->warn("warning message");
@@ -167,14 +164,10 @@ TEST_F(ConsoleOutputAdapterTest, WarnDelegatesToLoggerWarn) {
  */
 TEST_F(ConsoleOutputAdapterTest, MultipleMessagesDelegatedCorrectly) {
     // Arrange: Set expectations for multiple logger calls
-    EXPECT_CALL(*mockLogger, info("first info"))
-        .Times(1);
-    EXPECT_CALL(*mockLogger, error("first error"))
-        .Times(1);
-    EXPECT_CALL(*mockLogger, warn("first warning"))
-        .Times(1);
-    EXPECT_CALL(*mockLogger, info("second success"))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, info("first info")).Times(1);
+    EXPECT_CALL(*mockLogger, error("first error")).Times(1);
+    EXPECT_CALL(*mockLogger, warn("first warning")).Times(1);
+    EXPECT_CALL(*mockLogger, info("second success")).Times(1);
 
     // Act: Call adapter methods in sequence
     adapter->info("first info");
@@ -197,8 +190,7 @@ TEST_F(ConsoleOutputAdapterTest, MultipleMessagesDelegatedCorrectly) {
  */
 TEST_F(ConsoleOutputAdapterTest, EmptyMessagesHandledCorrectly) {
     // Arrange: Set expectation for logger.info() with empty string
-    EXPECT_CALL(*mockLogger, info(""))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, info("")).Times(1);
 
     // Act: Call adapter.info() with empty string
     adapter->info("");
@@ -219,8 +211,7 @@ TEST_F(ConsoleOutputAdapterTest, EmptyMessagesHandledCorrectly) {
 TEST_F(ConsoleOutputAdapterTest, SpecialCharactersPassedThrough) {
     // Arrange: Message with special characters
     const std::string specialMessage = "Line 1\nLine 2\tTabbed\n\"Quoted\"";
-    EXPECT_CALL(*mockLogger, info(specialMessage))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, info(specialMessage)).Times(1);
 
     // Act: Call adapter.info() with special characters
     adapter->info(specialMessage);
@@ -241,8 +232,7 @@ TEST_F(ConsoleOutputAdapterTest, SpecialCharactersPassedThrough) {
 TEST_F(ConsoleOutputAdapterTest, LargeMessagesHandledCorrectly) {
     // Arrange: Large message (1000 characters)
     const std::string largeMessage(1000, 'x');
-    EXPECT_CALL(*mockLogger, info(largeMessage))
-        .Times(1);
+    EXPECT_CALL(*mockLogger, info(largeMessage)).Times(1);
 
     // Act: Call adapter.info() with large message
     adapter->info(largeMessage);
@@ -266,8 +256,7 @@ TEST_F(ConsoleOutputAdapterTest, ConstructorStoresLoggerReference) {
     ConsoleOutputAdapter testAdapter(testLogger);
 
     // Set expectation on the specific logger instance
-    EXPECT_CALL(testLogger, info("test"))
-        .Times(1);
+    EXPECT_CALL(testLogger, info("test")).Times(1);
 
     // Act: Call adapter method
     testAdapter.info("test");

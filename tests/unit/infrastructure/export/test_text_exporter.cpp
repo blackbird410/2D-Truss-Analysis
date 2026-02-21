@@ -3,18 +3,19 @@
  * @brief Unit tests for Text exporter
  * @author Civil Engineering Software Solutions
  * @version 3.0.0
- * 
+ *
  * CRITICAL: These tests enforce the 8-section export contract.
  * Text exporter MUST emit semantically equivalent data to CSV, JSON, XML, HTML, LaTeX.
  */
 
-#include <gtest/gtest.h>
-#include "infrastructure/export/text_exporter.hpp"
-#include "core/model/Truss.hpp"
 #include "core/analysis/AnalysisOrchestrator.hpp"
 #include "core/analysis/SolverFactory.hpp"
-#include <fstream>
+#include "core/model/Truss.hpp"
+#include "infrastructure/export/text_exporter.hpp"
+
 #include <filesystem>
+#include <fstream>
+#include <gtest/gtest.h>
 #include <regex>
 
 using namespace truss::infrastructure::export_;
@@ -33,45 +34,47 @@ protected:
         testOutputDir = "test_output_text";
         fs::create_directories(testOutputDir);
     }
-    
+
     void TearDown() override {
         // Clean up test output files
         if (fs::exists(testOutputDir)) {
             fs::remove_all(testOutputDir);
         }
     }
-    
+
     /**
      * @brief Create a simple triangle truss for testing
      */
     std::unique_ptr<Truss> createSimpleTriangleTruss() {
         auto truss = std::make_unique<Truss>("Test Triangle Truss");
-        
+
         // Create nodes
-        auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);   // Left support
-        auto node2 = truss->addNode(4.0, 0.0, SupportType::RollerX);  // Right support (Y constrained)
-        auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);     // Top node
-        
+        auto node1 = truss->addNode(0.0, 0.0, SupportType::Pinned);  // Left support
+        auto node2 = truss->addNode(
+            4.0, 0.0, SupportType::RollerX);                       // Right support (Y constrained)
+        auto node3 = truss->addNode(2.0, 3.0, SupportType::Free);  // Top node
+
         // Create members
         truss->addMember(node1, node2);  // Bottom horizontal
         truss->addMember(node1, node3);  // Left diagonal
         truss->addMember(node2, node3);  // Right diagonal
-        
+
         // Apply load at top node (15 kN downward)
         node3->setAppliedForce(0.0, -15000.0);
-        
+
         return truss;
     }
-    
+
     /**
      * @brief Run analysis on truss
      */
     AnalysisResults analyzeAndGetResults(Truss& truss) {
         auto solver = SolverFactory::createDirectSolver();
-        AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
+        AnalysisOrchestrator orchestrator(std::move(solver),
+                                          std::make_unique<validation::TrussValidator>());
         return orchestrator.analyze(truss);
     }
-    
+
     /**
      * @brief Read file contents
      */
@@ -84,7 +87,7 @@ protected:
         buffer << file.rdbuf();
         return buffer.str();
     }
-    
+
     /**
      * @brief Check if file contains text
      */
@@ -92,27 +95,35 @@ protected:
         std::string content = readFile(path);
         return content.find(text) != std::string::npos;
     }
-    
+
     /**
      * @brief Count occurrences of the 8 mandatory section headers
      */
     int countSections(const std::string& path) {
         std::string content = readFile(path);
         int count = 0;
-        
+
         // Count each specific section header
-        if (content.find("PROJECT METADATA") != std::string::npos) count++;
-        if (content.find("GEOMETRY") != std::string::npos) count++;
-        if (content.find("MATERIAL AND SECTION PROPERTIES") != std::string::npos) count++;
-        if (content.find("APPLIED LOADS") != std::string::npos) count++;
-        if (content.find("NODAL DISPLACEMENTS") != std::string::npos) count++;
-        if (content.find("MEMBER FORCES") != std::string::npos) count++;
-        if (content.find("SUPPORT REACTIONS") != std::string::npos) count++;
-        if (content.find("ANALYSIS METADATA") != std::string::npos) count++;
-        
+        if (content.find("PROJECT METADATA") != std::string::npos)
+            count++;
+        if (content.find("GEOMETRY") != std::string::npos)
+            count++;
+        if (content.find("MATERIAL AND SECTION PROPERTIES") != std::string::npos)
+            count++;
+        if (content.find("APPLIED LOADS") != std::string::npos)
+            count++;
+        if (content.find("NODAL DISPLACEMENTS") != std::string::npos)
+            count++;
+        if (content.find("MEMBER FORCES") != std::string::npos)
+            count++;
+        if (content.find("SUPPORT REACTIONS") != std::string::npos)
+            count++;
+        if (content.find("ANALYSIS METADATA") != std::string::npos)
+            count++;
+
         return count;
     }
-    
+
     std::unique_ptr<TextExporter> exporter;
     std::string testOutputDir;
 };
@@ -123,25 +134,26 @@ protected:
 
 /**
  * @brief PRIMARY TEST: Verify all 8 sections are present
- * 
+ *
  * This test is the primary enforcement of the 8-section export contract.
  * If this test fails, the exporter is non-compliant.
  */
 TEST_F(TextExporterTest, AllEightSectionsPresent) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/all_sections.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     // Count sections in output
     int sectionCount = countSections(outputPath);
     EXPECT_EQ(sectionCount, 8) << "Should have 8 sections";
-    
+
     // Explicitly verify each mandatory section by name
     EXPECT_TRUE(fileContains(outputPath, "PROJECT METADATA")) << "Missing PROJECT METADATA section";
     EXPECT_TRUE(fileContains(outputPath, "GEOMETRY")) << "Missing GEOMETRY section";
-    EXPECT_TRUE(fileContains(outputPath, "MATERIAL AND SECTION PROPERTIES")) << "Missing PROPERTIES section";
+    EXPECT_TRUE(fileContains(outputPath, "MATERIAL AND SECTION PROPERTIES"))
+        << "Missing PROPERTIES section";
     EXPECT_TRUE(fileContains(outputPath, "APPLIED LOADS")) << "Missing LOADS section";
     EXPECT_TRUE(fileContains(outputPath, "NODAL DISPLACEMENTS")) << "Missing DISPLACEMENTS section";
     EXPECT_TRUE(fileContains(outputPath, "MEMBER FORCES")) << "Missing FORCES section";
@@ -155,10 +167,10 @@ TEST_F(TextExporterTest, AllEightSectionsPresent) {
 TEST_F(TextExporterTest, PropertiesSection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/properties.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "MATERIAL AND SECTION PROPERTIES"));
     EXPECT_TRUE(fileContains(outputPath, "Member ID"));
     EXPECT_TRUE(fileContains(outputPath, "Material"));
@@ -172,10 +184,10 @@ TEST_F(TextExporterTest, PropertiesSection) {
 TEST_F(TextExporterTest, LoadsSection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/loads.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "APPLIED LOADS"));
     EXPECT_TRUE(fileContains(outputPath, "Node ID"));
     EXPECT_TRUE(fileContains(outputPath, "Fx (N)"));
@@ -188,10 +200,10 @@ TEST_F(TextExporterTest, LoadsSection) {
 TEST_F(TextExporterTest, ReactionsSection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/reactions.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "SUPPORT REACTIONS"));
     EXPECT_TRUE(fileContains(outputPath, "DOF"));
     EXPECT_TRUE(fileContains(outputPath, "Reaction Force"));
@@ -207,13 +219,13 @@ TEST_F(TextExporterTest, ReactionsSection) {
 TEST_F(TextExporterTest, BasicExport) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/basic_export.txt";
     EXPECT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     // Verify file was created
     EXPECT_TRUE(fs::exists(outputPath));
-    
+
     // Verify file is not empty
     EXPECT_GT(fs::file_size(outputPath), 0);
 }
@@ -224,10 +236,10 @@ TEST_F(TextExporterTest, BasicExport) {
 TEST_F(TextExporterTest, ProjectMetadata) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/project.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "Test Triangle Truss"));
     EXPECT_TRUE(fileContains(outputPath, "PROJECT METADATA"));
     EXPECT_TRUE(fileContains(outputPath, "Number of Nodes"));
@@ -240,10 +252,10 @@ TEST_F(TextExporterTest, ProjectMetadata) {
 TEST_F(TextExporterTest, GeometrySection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/geometry.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "GEOMETRY"));
     EXPECT_TRUE(fileContains(outputPath, "Nodes:"));
     EXPECT_TRUE(fileContains(outputPath, "Members:"));
@@ -258,10 +270,10 @@ TEST_F(TextExporterTest, GeometrySection) {
 TEST_F(TextExporterTest, DisplacementsSection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/displacements.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "NODAL DISPLACEMENTS"));
     EXPECT_TRUE(fileContains(outputPath, "DOF"));
     EXPECT_TRUE(fileContains(outputPath, "Displacement"));
@@ -274,16 +286,16 @@ TEST_F(TextExporterTest, DisplacementsSection) {
 TEST_F(TextExporterTest, MemberForcesSection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/forces.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "MEMBER FORCES"));
     EXPECT_TRUE(fileContains(outputPath, "Axial Force"));
     EXPECT_TRUE(fileContains(outputPath, "Type"));
     // Should have both tension and compression
     std::string content = readFile(outputPath);
-    EXPECT_TRUE(content.find("Tension") != std::string::npos || 
+    EXPECT_TRUE(content.find("Tension") != std::string::npos ||
                 content.find("Compression") != std::string::npos);
 }
 
@@ -293,10 +305,10 @@ TEST_F(TextExporterTest, MemberForcesSection) {
 TEST_F(TextExporterTest, MetadataSection) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/metadata.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     EXPECT_TRUE(fileContains(outputPath, "ANALYSIS METADATA"));
     EXPECT_TRUE(fileContains(outputPath, "Converged"));
     EXPECT_TRUE(fileContains(outputPath, "Iterations"));
@@ -309,13 +321,13 @@ TEST_F(TextExporterTest, MetadataSection) {
 TEST_F(TextExporterTest, NumberFormatting) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     ExportOptions options;
     options.precision = 3;
-    
+
     std::string outputPath = testOutputDir + "/precision.txt";
     EXPECT_TRUE(exporter->exportResults(*truss, results, outputPath, options));
-    
+
     // Just verify file was created successfully with custom precision
     EXPECT_TRUE(fs::exists(outputPath));
 }
@@ -337,7 +349,7 @@ TEST_F(TextExporterTest, FormatIdentification) {
 TEST_F(TextExporterTest, InvalidFilePath) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string invalidPath = "/nonexistent/directory/output.txt";
     EXPECT_FALSE(exporter->exportResults(*truss, results, invalidPath));
     EXPECT_FALSE(exporter->getLastError().empty());
@@ -349,7 +361,7 @@ TEST_F(TextExporterTest, InvalidFilePath) {
 TEST_F(TextExporterTest, EmptyTruss) {
     auto truss = std::make_unique<Truss>("Empty Truss");
     AnalysisResults results;
-    
+
     std::string outputPath = testOutputDir + "/empty.txt";
     // Should still export successfully with empty sections
     EXPECT_TRUE(exporter->exportResults(*truss, results, outputPath));
@@ -361,20 +373,19 @@ TEST_F(TextExporterTest, EmptyTruss) {
 TEST_F(TextExporterTest, DocumentStructure) {
     auto truss = createSimpleTriangleTruss();
     auto results = analyzeAndGetResults(*truss);
-    
+
     std::string outputPath = testOutputDir + "/structure.txt";
     ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath));
-    
+
     std::string content = readFile(outputPath);
-    
+
     // Check for document header
     EXPECT_TRUE(content.find("2D TRUSS ANALYSIS RESULTS") != std::string::npos);
     EXPECT_TRUE(content.find("Generated:") != std::string::npos);
-    
+
     // Check for separators (===)
     EXPECT_TRUE(content.find("===") != std::string::npos);
-    
+
     // Check for document footer
     EXPECT_TRUE(content.find("End of Report") != std::string::npos);
 }
-

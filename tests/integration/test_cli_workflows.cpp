@@ -17,16 +17,17 @@
  * and real Infrastructure components to verify the complete dependency chain.
  */
 
-#include <gtest/gtest.h>
-#include <sstream>
+#include "../../src/application/AnalysisApplicationService.hpp"
+#include "../../src/application/TrussApplicationService.hpp"
 #include "../../src/cli/ArgumentParser.hpp"
 #include "../../src/cli/commands/ExampleCommand.hpp"
 #include "../../src/cli/commands/HelpCommand.hpp"
 #include "../../src/cli/presenters/ConsolePresenter.hpp"
-#include "../../src/application/TrussApplicationService.hpp"
-#include "../../src/application/AnalysisApplicationService.hpp"
 #include "../../src/infrastructure/adapters/ConsoleOutputAdapter.hpp"
 #include "../../src/infrastructure/logging/logger_factory.hpp"
+
+#include <gtest/gtest.h>
+#include <sstream>
 
 using namespace truss::cli;
 using namespace truss::cli::commands;
@@ -45,14 +46,15 @@ class CLIIntegrationTest : public ::testing::Test {
 protected:
     void SetUp() override {
         // Create real Infrastructure dependencies
-        logger = LoggerFactory::createConsoleLogger(LogLevel::Info, false); // No colors for testing
-        
+        logger = LoggerFactory::createConsoleLogger(LogLevel::Info,
+                                                    false);  // No colors for testing
+
         // Create real Application output adapter
         outputAdapter = std::make_unique<ConsoleOutputAdapter>(*logger);
-        
+
         // Create real CLI presenter
         presenter = std::make_unique<ConsolePresenter>(*outputAdapter);
-        
+
         // Create real Application services
         trussService = std::make_unique<TrussApplicationService>();
         analysisService = std::make_unique<AnalysisApplicationService>();
@@ -88,11 +90,10 @@ protected:
  */
 TEST_F(CLIIntegrationTest, ExampleCommandProducesOutput) {
     // Arrange: Create real ExampleCommand with real dependencies
-    ExampleCommand cmd(
-        *trussService,
-        *analysisService,
-        *presenter,
-        false  // verbose = false
+    ExampleCommand cmd(*trussService,
+                       *analysisService,
+                       *presenter,
+                       false  // verbose = false
     );
 
     // Act: Execute command
@@ -100,7 +101,7 @@ TEST_F(CLIIntegrationTest, ExampleCommandProducesOutput) {
 
     // Assert: Command succeeds
     EXPECT_EQ(exitCode, 0);
-    
+
     // Note: Output is logged to console via real logger
     // We verify success via exit code; output format is tested in unit tests
 }
@@ -118,11 +119,10 @@ TEST_F(CLIIntegrationTest, ExampleCommandProducesOutput) {
  */
 TEST_F(CLIIntegrationTest, ExampleCommandVerboseModeWorks) {
     // Arrange: Create ExampleCommand with verbose enabled
-    ExampleCommand cmd(
-        *trussService,
-        *analysisService,
-        *presenter,
-        true  // verbose = true
+    ExampleCommand cmd(*trussService,
+                       *analysisService,
+                       *presenter,
+                       true  // verbose = true
     );
 
     // Act: Execute command
@@ -154,7 +154,7 @@ TEST_F(CLIIntegrationTest, HelpCommandProducesOutput) {
 
     // Assert: Command succeeds
     EXPECT_EQ(exitCode, 0);
-    
+
     // Note: Output is logged to console via real logger
     // Help text format is tested in unit tests
 }
@@ -173,10 +173,10 @@ TEST_F(CLIIntegrationTest, HelpCommandProducesOutput) {
 TEST_F(CLIIntegrationTest, HelpCommandDisplaysMultipleCommands) {
     // Arrange: Create commands for help display
     ExampleCommand exampleCmd(*trussService, *analysisService, *presenter, false);
-    
+
     std::vector<ICommand*> commands;
     commands.push_back(&exampleCmd);
-    
+
     HelpCommand cmd(*presenter, commands);
 
     // Act: Execute command
@@ -199,12 +199,7 @@ TEST_F(CLIIntegrationTest, HelpCommandDisplaysMultipleCommands) {
  */
 TEST_F(CLIIntegrationTest, CompleteDependencyChainWorks) {
     // Arrange: Create ExampleCommand (most complex command)
-    ExampleCommand cmd(
-        *trussService,
-        *analysisService,
-        *presenter,
-        false
-    );
+    ExampleCommand cmd(*trussService, *analysisService, *presenter, false);
 
     // Act & Assert: Execution completes without throwing
     EXPECT_NO_THROW({
@@ -226,12 +221,7 @@ TEST_F(CLIIntegrationTest, CompleteDependencyChainWorks) {
  */
 TEST_F(CLIIntegrationTest, ErrorHandlingWorksCorrectly) {
     // Arrange: Create command
-    ExampleCommand cmd(
-        *trussService,
-        *analysisService,
-        *presenter,
-        false
-    );
+    ExampleCommand cmd(*trussService, *analysisService, *presenter, false);
 
     // Act: Execute (example command should succeed, but we test error handling exists)
     int exitCode = cmd.execute();
@@ -256,7 +246,7 @@ TEST_F(CLIIntegrationTest, ArgumentParserIntegration) {
     const char* argv_help[] = {"TrussAnalysisCLI", "--help"};
     const char* argv_verbose[] = {"TrussAnalysisCLI", "--verbose", "example"};
     const char* argv_command[] = {"TrussAnalysisCLI", "example"};
-    
+
     ArgumentParser parser;
 
     // Act & Assert: Parse help flag
@@ -291,7 +281,7 @@ TEST_F(CLIIntegrationTest, FullCLIWorkflowSimulation) {
     const char* argv[] = {"TrussAnalysisCLI", "example"};
     ArgumentParser parser;
     auto args = parser.parse(2, const_cast<char**>(argv));
-    
+
     // Create command registry (simplified)
     std::map<std::string, ICommand*> commands;
     ExampleCommand exampleCmd(*trussService, *analysisService, *presenter, args.verbose);
@@ -300,7 +290,7 @@ TEST_F(CLIIntegrationTest, FullCLIWorkflowSimulation) {
     // Act: Find and execute command
     auto it = commands.find(args.commandName);
     ASSERT_NE(it, commands.end()) << "Command should be found in registry";
-    
+
     int exitCode = it->second->execute();
 
     // Assert: Workflow completes successfully
@@ -323,7 +313,7 @@ TEST_F(CLIIntegrationTest, UnknownCommandDetected) {
     const char* argv[] = {"TrussAnalysisCLI", "unknown"};
     ArgumentParser parser;
     auto args = parser.parse(2, const_cast<char**>(argv));
-    
+
     // Create command registry (empty)
     std::map<std::string, ICommand*> commands;
 
@@ -332,7 +322,7 @@ TEST_F(CLIIntegrationTest, UnknownCommandDetected) {
 
     // Assert: Command not found
     EXPECT_EQ(it, commands.end());
-    
+
     // Note: Error display is handled in main_app.cpp executeCommand()
     // This test verifies the detection mechanism works
 }

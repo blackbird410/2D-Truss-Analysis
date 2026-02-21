@@ -7,32 +7,33 @@
 
 #pragma once
 
-#include "exporter.hpp"
 #include "export_types.hpp"
-#include <sstream>
-#include <iomanip>
+#include "exporter.hpp"
+
 #include <chrono>
 #include <filesystem>
+#include <iomanip>
+#include <sstream>
 
 namespace truss::infrastructure::export_ {
 
 // Import types from core namespace
 using core::Real;
-using core::interfaces::ITrussView;
 using core::interfaces::IAnalysisResultsView;
+using core::interfaces::ITrussView;
 
 /**
  * @brief HTML format exporter
- * 
+ *
  * Exports analysis results to HTML format with embedded CSS styling.
  * Produces a complete, self-contained HTML document suitable for viewing
  * in web browsers.
- * 
+ *
  * CRITICAL: This implementation follows the corrected 8-section export contract.
  * ALL 8 sections MUST be included to maintain semantic equivalence with
  * CSV, JSON, and XML exporters. Legacy HTML behavior (incomplete sections)
  * has been intentionally replaced.
- * 
+ *
  * 8-Section Contract (MANDATORY):
  * 1. Project metadata
  * 2. Geometry (nodes + members)
@@ -49,12 +50,12 @@ public:
      * @brief Construct an HTML exporter
      */
     HTMLExporter() = default;
-    
+
     /**
      * @brief Virtual destructor
      */
     ~HTMLExporter() override = default;
-    
+
     /**
      * @brief Export analysis results to HTML file
      * @param truss The analyzed truss structure
@@ -64,58 +65,53 @@ public:
      * @return true if export successful, false otherwise
      */
     bool exportResults(const ITrussView& truss,
-                      const IAnalysisResultsView& results,
-                      const std::filesystem::path& filePath,
-                      const ExportOptions& options = ExportOptions{}) override;
-    
+                       const IAnalysisResultsView& results,
+                       const std::filesystem::path& filePath,
+                       const ExportOptions& options = ExportOptions{}) override;
+
     /**
      * @brief Get the last error message
      * @return Error message string
      */
-    std::string getLastError() const override {
-        return m_lastError;
-    }
-    
+    std::string getLastError() const override { return m_lastError; }
+
     /**
      * @brief Get the export format
      * @return ExportFormat::HTML
      */
-    ExportFormat getFormat() const noexcept override {
-        return ExportFormat::HTML;
-    }
+    ExportFormat getFormat() const noexcept override { return ExportFormat::HTML; }
 
 private:
-    std::string m_lastError; ///< Last error message
-    
+    std::string m_lastError;  ///< Last error message
+
     // Helper methods
     std::string formatNumber(Real value, const ExportOptions& options) const;
     std::string formatTimestamp() const;
     std::string escapeHtml(const std::string& text) const;
-    
+
     // Document structure methods
     void writeHeader(std::ostream& os, const ITrussView& truss);
     void writeStyles(std::ostream& os);
     void writeFooter(std::ostream& os);
-    
+
     // Section writers (MUST implement all 8 sections)
-    void writeGeometrySection(std::ostream& os, const ITrussView& truss,
-                             const ExportOptions& options);
-    void writePropertiesSection(std::ostream& os, const ITrussView& truss,
-                               const ExportOptions& options);
-    void writeLoadsSection(std::ostream& os, const ITrussView& truss,
-                          const ExportOptions& options);
+    void
+    writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    void
+    writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
     void writeDisplacementsSection(std::ostream& os,
+                                   const IAnalysisResultsView& results,
+                                   const ExportOptions& options);
+    void writeMemberForcesSection(std::ostream& os,
                                   const IAnalysisResultsView& results,
                                   const ExportOptions& options);
-    void writeMemberForcesSection(std::ostream& os,
-                                 const IAnalysisResultsView& results,
-                                 const ExportOptions& options);
     void writeReactionsSection(std::ostream& os,
+                               const IAnalysisResultsView& results,
+                               const ExportOptions& options);
+    void writeMetadataSection(std::ostream& os,
                               const IAnalysisResultsView& results,
                               const ExportOptions& options);
-    void writeMetadataSection(std::ostream& os,
-                             const IAnalysisResultsView& results,
-                             const ExportOptions& options);
 };
 
-} // namespace truss::infrastructure::export_
+}  // namespace truss::infrastructure::export_

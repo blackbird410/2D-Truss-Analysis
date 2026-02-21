@@ -16,24 +16,20 @@ LoggerPtr LoggerFactory::createConsoleLogger(LogLevel minLevel, bool useColors) 
     return std::make_shared<ConsoleLogger>(minLevel, useColors);
 }
 
-LoggerPtr LoggerFactory::createFileLogger(
-    const std::filesystem::path& filePath,
-    LogLevel minLevel,
-    bool append
-) {
+LoggerPtr LoggerFactory::createFileLogger(const std::filesystem::path& filePath,
+                                          LogLevel minLevel,
+                                          bool append) {
     return std::make_shared<FileLogger>(filePath, minLevel, append);
 }
 
-LoggerPtr LoggerFactory::createDefaultLogger(
-    const std::filesystem::path& filePath,
-    LogLevel minLevel,
-    bool useColors
-) {
+LoggerPtr LoggerFactory::createDefaultLogger(const std::filesystem::path& filePath,
+                                             LogLevel minLevel,
+                                             bool useColors) {
     std::vector<LoggerPtr> loggers;
-    
+
     // Add console logger
     loggers.push_back(createConsoleLogger(minLevel, useColors));
-    
+
     // Add file logger (catch exceptions to avoid breaking app if file fails)
     try {
         loggers.push_back(createFileLogger(filePath, minLevel, true));
@@ -41,7 +37,7 @@ LoggerPtr LoggerFactory::createDefaultLogger(
         // Log error to console logger only
         loggers[0]->error("Failed to create file logger: " + std::string(e.what()));
     }
-    
+
     return std::make_shared<CompositeLogger>(std::move(loggers));
 }
 
@@ -53,7 +49,6 @@ LoggerPtr LoggerFactory::createNullLogger() {
 
 LoggerFactory::CompositeLogger::CompositeLogger(std::vector<LoggerPtr> loggers)
     : m_loggers(std::move(loggers)), m_minLevel(LogLevel::Critical) {
-    
     // Set minimum level to the most permissive (lowest enum value) among child loggers
     for (const auto& logger : m_loggers) {
         if (static_cast<int>(logger->getLevel()) < static_cast<int>(m_minLevel)) {
@@ -116,4 +111,4 @@ bool LoggerFactory::CompositeLogger::isLevelEnabled(LogLevel level) const {
     return static_cast<int>(level) >= static_cast<int>(m_minLevel);
 }
 
-} // namespace truss::infrastructure::logging
+}  // namespace truss::infrastructure::logging

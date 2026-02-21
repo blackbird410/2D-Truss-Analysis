@@ -1,0 +1,80 @@
+# ==============================================================================
+# Prettier Configuration - 2D Truss Analysis Project
+# ==============================================================================
+#
+# Purpose:
+#   Automatic formatting for Markdown documentation and YAML configuration files.
+#   Complements clang-format (C++ code) and EditorConfig (baseline rules).
+#
+# Usage:
+#   make format-docs    # Format all Markdown files
+#   make format-yaml    # Format YAML configuration files
+#   make format-all     # Format documentation and YAML files
+#
+# Integration:
+#   - Works alongside .editorconfig for baseline formatting rules
+#   - Does NOT format C++ code (handled by clang-format)
+#   - Respects .prettierignore for exclusions
+#
+# References:
+#   - Prettier Documentation: https://prettier.io/docs/en/options.html
+#   - Project Standards: docs/MAKEFILE_DESIGN.md
+#
+# ==============================================================================
+
+# Global Settings
+# ------------------------------------------------------------------------------
+
+# Line length (matches clang-format and project standards)
+printWidth: 100
+
+# Indentation (matches EditorConfig)
+tabWidth: 2
+useTabs: false
+
+# Line endings (enforce LF per EditorConfig)
+endOfLine: "lf"
+
+# Quotes and semicolons
+singleQuote: false
+trailingComma: "none"
+
+# Prose wrapping
+proseWrap: "preserve" # Preserve line breaks in documentation
+
+# File-Specific Overrides
+# ------------------------------------------------------------------------------
+
+overrides:
+  # Markdown Documentation
+  - files: "*.md"
+    options:
+      # Preserve manual line breaks for technical documentation
+      proseWrap: "preserve"
+      printWidth: 100
+
+      # Maintain consistent heading and list formatting
+      # (Prettier defaults are appropriate)
+
+  # YAML Configuration Files
+  - files: ["*.yaml", "*.yml"]
+    options:
+      printWidth: 100
+      tabWidth: 2
+
+      # Ensure YAML anchors and references remain readable
+      bracketSpacing: true
+
+  # GitHub Actions Workflows
+  - files: ".github/workflows/*.yml"
+    options:
+      printWidth: 100
+      tabWidth: 2
+      # Preserve GitHub Actions-specific formatting
+
+  # JSON Configuration Files (if needed in future)
+  - files: ["*.json", ".prettierrc"]
+    options:
+      printWidth: 100
+      tabWidth: 2
+      trailingComma: "none"

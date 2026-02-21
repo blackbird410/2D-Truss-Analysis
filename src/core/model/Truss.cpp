@@ -6,19 +6,18 @@
  */
 
 #include "Truss.hpp"
+
 #include <algorithm>
 #include <stdexcept>
 
 namespace truss::core {
 
-Truss::Truss(const std::string& name) : m_name(name) {
-}
+Truss::Truss(const std::string& name) : m_name(name) {}
 
-Truss::Truss(const Truss& other) 
+Truss::Truss(const Truss& other)
     : m_name(other.m_name), m_nodes(other.m_nodes), m_members(other.m_members),
       m_nodeIndexMap(other.m_nodeIndexMap), m_memberIndexMap(other.m_memberIndexMap),
-      m_nextNodeId(other.m_nextNodeId), m_nextMemberId(other.m_nextMemberId) {
-}
+      m_nextNodeId(other.m_nextNodeId), m_nextMemberId(other.m_nextMemberId) {}
 
 Truss& Truss::operator=(const Truss& other) {
     if (this != &other) {
@@ -53,9 +52,10 @@ NodePtr Truss::addNode(NodePtr node) {
     return node;
 }
 
-MemberPtr Truss::addMember(NodeId startNodeId, NodeId endNodeId,
-                          const MaterialProperties& material,
-                          const SectionProperties& section) {
+MemberPtr Truss::addMember(NodeId startNodeId,
+                           NodeId endNodeId,
+                           const MaterialProperties& material,
+                           const SectionProperties& section) {
     auto startNode = getNode(startNodeId);
     auto endNode = getNode(endNodeId);
     if (!startNode || !endNode) {
@@ -64,13 +64,14 @@ MemberPtr Truss::addMember(NodeId startNodeId, NodeId endNodeId,
     return addMember(startNode, endNode, material, section);
 }
 
-MemberPtr Truss::addMember(const NodePtr& startNode, const NodePtr& endNode,
-                          const MaterialProperties& material,
-                          const SectionProperties& section) {
+MemberPtr Truss::addMember(const NodePtr& startNode,
+                           const NodePtr& endNode,
+                           const MaterialProperties& material,
+                           const SectionProperties& section) {
     if (!startNode || !endNode) {
         throw std::invalid_argument("Invalid nodes for member");
     }
-    
+
     auto member = std::make_shared<Member>(m_nextMemberId++, startNode, endNode, material, section);
     m_members.push_back(member);
     updateMemberIndexMap();
@@ -155,13 +156,13 @@ std::vector<NodePtr> Truss::getFreeNodes() const {
     return result;
 }
 
-std::vector<NodePtr> Truss::getNodesInRegion(const Point2D& bottomLeft, const Point2D& topRight) const {
+std::vector<NodePtr> Truss::getNodesInRegion(const Point2D& bottomLeft,
+                                             const Point2D& topRight) const {
     std::vector<NodePtr> result;
     for (const auto& node : m_nodes) {
         Real x = node->getX();
         Real y = node->getY();
-        if (x >= bottomLeft.x && x <= topRight.x && 
-            y >= bottomLeft.y && y <= topRight.y) {
+        if (x >= bottomLeft.x && x <= topRight.x && y >= bottomLeft.y && y <= topRight.y) {
             result.push_back(node);
         }
     }
@@ -169,23 +170,21 @@ std::vector<NodePtr> Truss::getNodesInRegion(const Point2D& bottomLeft, const Po
 }
 
 size_t Truss::getTotalDofs() const {
-    return m_nodes.size() * 2; // 2 DOFs per node (X and Y)
+    return m_nodes.size() * 2;  // 2 DOFs per node (X and Y)
 }
 
 size_t Truss::getFreeDofs() const {
     size_t freeDofs = 0;
     for (const auto& node : m_nodes) {
         SupportType support = node->getSupportType();
-        
+
         // Count free X DOF
-        if (support == SupportType::Free || 
-            support == SupportType::RollerX) {
+        if (support == SupportType::Free || support == SupportType::RollerX) {
             freeDofs++;
         }
-        
+
         // Count free Y DOF
-        if (support == SupportType::Free || 
-            support == SupportType::RollerY) {
+        if (support == SupportType::Free || support == SupportType::RollerY) {
             freeDofs++;
         }
     }
@@ -221,20 +220,20 @@ bool Truss::isValid() const {
     if (m_nodes.size() < 2 || m_members.size() < 1) {
         return false;
     }
-    
+
     // Check that all members have valid nodes
     for (const auto& member : m_members) {
         if (!member || !member->isValid()) {
             return false;
         }
     }
-    
+
     return true;
 }
 
 void Truss::assignDofNumbers() {
     size_t dofIndex = 0;
-    
+
     // Assign DOF numbers to all nodes
     for (auto& node : m_nodes) {
         node->setDofX(dofIndex++);
@@ -277,8 +276,9 @@ void Truss::updateMemberIndexMap() {
 // Additional missing methods that might be needed
 
 bool Truss::removeNode(NodeId nodeId) {
-    auto it = std::find_if(m_nodes.begin(), m_nodes.end(),
-                          [nodeId](const NodePtr& node) { return node->getId() == nodeId; });
+    auto it = std::find_if(m_nodes.begin(), m_nodes.end(), [nodeId](const NodePtr& node) {
+        return node->getId() == nodeId;
+    });
     if (it != m_nodes.end()) {
         m_nodes.erase(it);
         updateNodeIndexMap();
@@ -288,13 +288,15 @@ bool Truss::removeNode(NodeId nodeId) {
 }
 
 bool Truss::removeNode(const NodePtr& node) {
-    if (!node) return false;
+    if (!node)
+        return false;
     return removeNode(node->getId());
 }
 
 bool Truss::removeMember(MemberId memberId) {
-    auto it = std::find_if(m_members.begin(), m_members.end(),
-                          [memberId](const MemberPtr& member) { return member->getId() == memberId; });
+    auto it = std::find_if(m_members.begin(), m_members.end(), [memberId](const MemberPtr& member) {
+        return member->getId() == memberId;
+    });
     if (it != m_members.end()) {
         m_members.erase(it);
         updateMemberIndexMap();
@@ -304,21 +306,22 @@ bool Truss::removeMember(MemberId memberId) {
 }
 
 bool Truss::removeMember(const MemberPtr& member) {
-    if (!member) return false;
+    if (!member)
+        return false;
     return removeMember(member->getId());
 }
 
 std::vector<std::string> Truss::getValidationErrors() const {
     std::vector<std::string> errors;
-    
+
     if (m_nodes.size() < 2) {
         errors.push_back("Truss must have at least 2 nodes");
     }
-    
+
     if (m_members.size() < 1) {
         errors.push_back("Truss must have at least 1 member");
     }
-    
+
     // Static determinacy: 2n = m + r (where n = nodes, m = members, r = reactions)
     size_t n = m_nodes.size();
     size_t m = m_members.size();
@@ -326,52 +329,55 @@ std::vector<std::string> Truss::getValidationErrors() const {
     if (2 * n != m + r) {
         errors.push_back("Truss is not statically determinate");
     }
-    
+
     // Kinematic stability: minimum 3 constraints to prevent rigid body motion
     if (getConstrainedDofs() < 3) {
         errors.push_back("Truss is not kinematically stable");
     }
-    
+
     return errors;
 }
 
 Point2D Truss::getBoundingBoxMin() const {
-    if (m_nodes.empty()) return Point2D(0, 0);
-    
+    if (m_nodes.empty())
+        return Point2D(0, 0);
+
     Real minX = m_nodes[0]->getX();
     Real minY = m_nodes[0]->getY();
-    
+
     for (const auto& node : m_nodes) {
         minX = std::min(minX, node->getX());
         minY = std::min(minY, node->getY());
     }
-    
+
     return Point2D(minX, minY);
 }
 
 Point2D Truss::getBoundingBoxMax() const {
-    if (m_nodes.empty()) return Point2D(0, 0);
-    
+    if (m_nodes.empty())
+        return Point2D(0, 0);
+
     Real maxX = m_nodes[0]->getX();
     Real maxY = m_nodes[0]->getY();
-    
+
     for (const auto& node : m_nodes) {
         maxX = std::max(maxX, node->getX());
         maxY = std::max(maxY, node->getY());
     }
-    
+
     return Point2D(maxX, maxY);
 }
 
 Point2D Truss::getCentroid() const {
-    if (m_nodes.empty()) return Point2D(0, 0);
-    
+    if (m_nodes.empty())
+        return Point2D(0, 0);
+
     Real sumX = 0, sumY = 0;
     for (const auto& node : m_nodes) {
         sumX += node->getX();
         sumY += node->getY();
     }
-    
+
     return Point2D(sumX / m_nodes.size(), sumY / m_nodes.size());
 }
 
@@ -398,26 +404,26 @@ Truss::TrussStatistics Truss::getStatistics() const {
     stats.totalWeight = getTotalWeight();
     stats.boundingBoxMin = getBoundingBoxMin();
     stats.boundingBoxMax = getBoundingBoxMax();
-    
+
     // Count applied forces
     for (const auto& node : m_nodes) {
         if (node->hasAppliedForce()) {
             stats.appliedForces++;
         }
     }
-    
+
     // Calculate total length
     for (const auto& member : m_members) {
         stats.totalLength += member->getLength();
     }
-    
+
     return stats;
 }
 
 std::vector<interfaces::NodeView> Truss::getNodeViews() const {
     std::vector<interfaces::NodeView> views;
     views.reserve(m_nodes.size());
-    
+
     for (const auto& node : m_nodes) {
         interfaces::NodeView view;
         view.id = node->getId();
@@ -432,14 +438,14 @@ std::vector<interfaces::NodeView> Truss::getNodeViews() const {
         view.ry = node->getReaction().fy;
         views.push_back(view);
     }
-    
+
     return views;
 }
 
 std::vector<interfaces::MemberView> Truss::getMemberViews() const {
     std::vector<interfaces::MemberView> views;
     views.reserve(m_members.size());
-    
+
     for (const auto& member : m_members) {
         interfaces::MemberView view;
         view.id = member->getId();
@@ -459,8 +465,8 @@ std::vector<interfaces::MemberView> Truss::getMemberViews() const {
         view.yielded = member->hasYielded();
         views.push_back(view);
     }
-    
+
     return views;
 }
 
-} // namespace truss::core
+}  // namespace truss::core

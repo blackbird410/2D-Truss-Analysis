@@ -23,6 +23,7 @@
 
 #include "../../application/interfaces/IApplicationOutput.hpp"
 #include "../logging/logger.hpp"
+
 #include <string>
 
 namespace truss::infrastructure::adapters {
@@ -57,4 +58,4 @@ private:
     logging::ILogger& m_logger;
 };
 
-} // namespace truss::infrastructure::adapters
+}  // namespace truss::infrastructure::adapters

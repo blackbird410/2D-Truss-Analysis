@@ -6,15 +6,15 @@
  */
 
 #include "IterativeSolver.hpp"
+
 #include <Eigen/IterativeLinearSolvers>
+
 #include <stdexcept>
 
 namespace truss::core::analysis {
 
 IterativeSolver::IterativeSolver(int maxIterations, double tolerance)
-    : m_maxIterations(maxIterations)
-    , m_tolerance(tolerance) {
-    
+    : m_maxIterations(maxIterations), m_tolerance(tolerance) {
     if (maxIterations <= 0) {
         throw std::invalid_argument("IterativeSolver: maxIterations must be positive");
     }
@@ -36,24 +36,25 @@ VectorXd IterativeSolver::solve(const MatrixXd& A, const VectorXd& b) const {
     Eigen::ConjugateGradient<MatrixXd> cg;
     cg.setMaxIterations(m_maxIterations);
     cg.setTolerance(m_tolerance);
-    
+
     // Compute matrix decomposition
     cg.compute(A);
-    
+
     if (cg.info() != Eigen::Success) {
-        throw std::runtime_error("IterativeSolver: Failed to compute matrix - may not be positive definite");
+        throw std::runtime_error(
+            "IterativeSolver: Failed to compute matrix - may not be positive definite");
     }
-    
+
     // Solve the system
     VectorXd x = cg.solve(b);
-    
+
     // Check convergence
     if (cg.info() != Eigen::Success) {
-        throw std::runtime_error("IterativeSolver: Failed to converge within " + 
+        throw std::runtime_error("IterativeSolver: Failed to converge within " +
                                  std::to_string(m_maxIterations) + " iterations");
     }
-    
+
     return x;
 }
 
-} // namespace truss::core::analysis
+}  // namespace truss::core::analysis

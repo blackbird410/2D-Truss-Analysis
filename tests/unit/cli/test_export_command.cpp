@@ -16,19 +16,20 @@
  * Target: 80%+ line coverage with focused test scenarios
  */
 
-#include <gtest/gtest.h>
+#include "../../../src/application/AnalysisApplicationService.hpp"
+#include "../../../src/application/TrussApplicationService.hpp"
 #include "../../../src/cli/commands/ExportCommand.hpp"
 #include "../../../src/cli/presenters/ConsolePresenter.hpp"
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/application/AnalysisApplicationService.hpp"
-#include <fstream>
+
 #include <filesystem>
+#include <fstream>
+#include <gtest/gtest.h>
 
 using namespace truss::cli::commands;
 
 /**
  * @brief Test fixture for ExportCommand tests
- * 
+ *
  * Provides:
  * - Valid truss and results file creation for testing
  * - Test file cleanup management
@@ -39,12 +40,12 @@ class ExportCommandTest : public ::testing::Test {
 protected:
     truss::application::TrussApplicationService trussService;
     truss::application::AnalysisApplicationService analysisService;
-    
+
     void SetUp() override {
         createSimpleTrussFile("test_truss.json");
         createSimpleResultsFile("test_results.json");
     }
-    
+
     void TearDown() override {
         std::filesystem::remove("test_truss.json");
         std::filesystem::remove("test_results.json");
@@ -53,16 +54,16 @@ protected:
         std::filesystem::remove("export_output.csv");
         std::filesystem::remove("export_output.html");
     }
-    
+
     /**
      * @brief Create a valid truss file for testing
-     * 
+     *
      * Creates a simple 3-node, 3-member truss with:
      * - Fixed support at node 0
      * - Roller support at node 1
      * - 10kN downward load at node 2
      * - Complete material and section properties
-     * 
+     *
      * @param filename Output file path
      */
     void createSimpleTrussFile(const std::string& filename) {
@@ -100,13 +101,13 @@ protected:
         })";
         file.close();
     }
-    
+
     /**
      * @brief Create a simple results file for testing
-     * 
+     *
      * Creates a minimal JSON results file for export testing.
      * Contains placeholder data to enable export format validation.
-     * 
+     *
      * @param filename Output file path
      */
     void createSimpleResultsFile(const std::string& filename) {
@@ -120,7 +121,7 @@ protected:
 
 /**
  * @test Verify command getName() returns correct name
- * 
+ *
  * Tests the command identification system by verifying that
  * ExportCommand correctly reports its name as "export".
  * This ensures proper command registration and routing.
@@ -133,18 +134,22 @@ TEST_F(ExportCommandTest, GetName_ReturnsExport) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "test_results.json", "output.json");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "test_results.json",
+                      "output.json");
     EXPECT_EQ(cmd.getName(), "export");
 }
 
 /**
  * @test Verify command getDescription() returns non-empty description
- * 
+ *
  * Tests that the command provides meaningful help text for users.
  * The description should contain relevant keywords like "export"
  * to help users understand the command's purpose.
@@ -157,21 +162,25 @@ TEST_F(ExportCommandTest, GetDescription_ReturnsNonEmptyDescription) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "test_results.json", "output.json");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "test_results.json",
+                      "output.json");
     std::string desc = cmd.getDescription();
     EXPECT_FALSE(desc.empty());
-    EXPECT_TRUE(desc.find("export") != std::string::npos || 
+    EXPECT_TRUE(desc.find("export") != std::string::npos ||
                 desc.find("Export") != std::string::npos);
 }
 
 /**
  * @test Verify execute() with non-existent truss file returns error
- * 
+ *
  * Tests error handling for invalid truss file paths. The command should:
  * - Return exit code 1 (error)
  * - Provide helpful error message about truss file not existing
@@ -185,20 +194,24 @@ TEST_F(ExportCommandTest, Execute_TrussFileNotFound_ReturnsError) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "non_existent_truss.json", "test_results.json", "output.json");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "non_existent_truss.json",
+                      "test_results.json",
+                      "output.json");
     int exitCode = cmd.execute();
-    
+
     EXPECT_EQ(exitCode, 1);
 }
 
 /**
  * @test Verify execute() with non-existent results file returns error
- * 
+ *
  * Tests error handling for invalid results file paths. The command should:
  * - Return exit code 1 (error)
  * - Provide helpful error message about results file not existing
@@ -212,20 +225,24 @@ TEST_F(ExportCommandTest, Execute_ResultsFileNotFound_ReturnsError) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "non_existent_results.json", "output.json");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "non_existent_results.json",
+                      "output.json");
     int exitCode = cmd.execute();
-    
+
     EXPECT_EQ(exitCode, 1);
 }
 
 /**
  * @test Verify verbose mode can be enabled
- * 
+ *
  * Tests that the command accepts verbose flag and executes without crashing.
  * Verbose mode should provide detailed export progress information including
  * file paths, format details, and processing status.
@@ -238,21 +255,26 @@ TEST_F(ExportCommandTest, Execute_VerboseMode_DoesNotCrash) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "test_results.json", "output.json",
-                     std::nullopt, true);
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "test_results.json",
+                      "output.json",
+                      std::nullopt,
+                      true);
     int exitCode = cmd.execute();
-    
+
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
 }
 
 /**
  * @test Verify format parsing is case-insensitive
- * 
+ *
  * Tests export format parsing flexibility by verifying that:
  * - Both lowercase "json" and uppercase "JSON" are accepted
  * - Format parsing is case-insensitive throughout
@@ -266,29 +288,39 @@ TEST_F(ExportCommandTest, Execute_FormatParsing_CaseInsensitive) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
+
     // Test lowercase
-    ExportCommand cmd1(trussService, analysisService, presenter,
-                      "test_truss.json", "test_results.json", "output1.json", "json");
+    ExportCommand cmd1(trussService,
+                       analysisService,
+                       presenter,
+                       "test_truss.json",
+                       "test_results.json",
+                       "output1.json",
+                       "json");
     int code1 = cmd1.execute();
     EXPECT_TRUE(code1 == 0 || code1 == 1);
-    
+
     // Test uppercase
-    ExportCommand cmd2(trussService, analysisService, presenter,
-                      "test_truss.json", "test_results.json", "output2.json", "JSON");
+    ExportCommand cmd2(trussService,
+                       analysisService,
+                       presenter,
+                       "test_truss.json",
+                       "test_results.json",
+                       "output2.json",
+                       "JSON");
     int code2 = cmd2.execute();
     EXPECT_TRUE(code2 == 0 || code2 == 1);
-    
+
     std::filesystem::remove("output1.json");
     std::filesystem::remove("output2.json");
 }
 
 /**
  * @test Verify invalid export format returns error
- * 
+ *
  * Tests validation of export format specifications. The command should:
  * - Reject unrecognized format strings
  * - Return exit code 1 for invalid formats
@@ -302,20 +334,25 @@ TEST_F(ExportCommandTest, Execute_InvalidExportFormat_ReturnsError) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "test_results.json", "output.xyz", "INVALID");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "test_results.json",
+                      "output.xyz",
+                      "INVALID");
     int exitCode = cmd.execute();
-    
+
     EXPECT_EQ(exitCode, 1);
 }
 
 /**
  * @test Verify JSON default format from extension
- * 
+ *
  * Tests automatic format detection from file extensions. When no explicit
  * format is specified, the command should intelligently detect JSON format
  * from the .json output file extension.
@@ -328,20 +365,24 @@ TEST_F(ExportCommandTest, Execute_DefaultFormatFromExtension_JSON) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "test_results.json", "export_output.json");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "test_results.json",
+                      "export_output.json");
     int exitCode = cmd.execute();
-    
+
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
 }
 
 /**
  * @test Verify HTML default format from extension
- * 
+ *
  * Tests automatic format detection from file extensions. When no explicit
  * format is specified, the command should intelligently detect HTML format
  * from the .html output file extension.
@@ -354,20 +395,24 @@ TEST_F(ExportCommandTest, Execute_DefaultFormatFromExtension_HTML) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "test_results.json", "export_output.html");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "test_results.json",
+                      "export_output.html");
     int exitCode = cmd.execute();
-    
+
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
 }
 
 /**
  * @test Verify LaTeX alias (TEX) works
- * 
+ *
  * Tests that the "TEX" alias is properly mapped to LaTeX format.
  * This ensures backward compatibility and user convenience by
  * supporting common file extension-based format names.
@@ -380,21 +425,26 @@ TEST_F(ExportCommandTest, Execute_LaTeXAlias_TEX_Works) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
-    ExportCommand cmd(trussService, analysisService, presenter,
-                     "test_truss.json", "test_results.json", "export_output.tex", "TEX");
+
+    ExportCommand cmd(trussService,
+                      analysisService,
+                      presenter,
+                      "test_truss.json",
+                      "test_results.json",
+                      "export_output.tex",
+                      "TEX");
     int exitCode = cmd.execute();
-    
+
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
     std::filesystem::remove("export_output.tex");
 }
 
 /**
  * @test Verify all supported formats are recognized
- * 
+ *
  * Tests comprehensive format support by verifying that all documented
  * export formats (JSON, XML, CSV, TSV, TXT, LaTeX, HTML) are properly
  * recognized and processed by the command without errors.
@@ -407,17 +457,22 @@ TEST_F(ExportCommandTest, Execute_AllExportFormats_Recognized) {
         void error(const std::string&) override {}
         void warn(const std::string&) override {}
     };
-    
+
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
-    
+
     std::vector<std::string> formats = {"JSON", "XML", "CSV", "TSV", "TXT", "LaTeX", "HTML"};
     std::vector<std::string> extensions = {"json", "xml", "csv", "tsv", "txt", "tex", "html"};
-    
+
     for (size_t i = 0; i < formats.size(); ++i) {
         std::string outputFile = "test_out." + extensions[i];
-        ExportCommand cmd(trussService, analysisService, presenter,
-                         "test_truss.json", "test_results.json", outputFile, formats[i]);
+        ExportCommand cmd(trussService,
+                          analysisService,
+                          presenter,
+                          "test_truss.json",
+                          "test_results.json",
+                          outputFile,
+                          formats[i]);
         int code = cmd.execute();
         EXPECT_TRUE(code == 0 || code == 1) << "Format " << formats[i] << " failed unexpectedly";
         std::filesystem::remove(outputFile);

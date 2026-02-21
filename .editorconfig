@@ -1,0 +1,232 @@
+# ==============================================================================
+# EditorConfig Configuration - 2D Truss Analysis Project
+# ==============================================================================
+#
+# Purpose:
+#   Defines baseline formatting conventions for all editors and IDEs.
+#   Automatically applied by most modern editors (VS Code, Vim, IntelliJ, etc.)
+#
+# Scope:
+#   - Universal rules: Character encoding, line endings, trailing whitespace
+#   - Language-specific rules: Indentation style and size per file type
+#   - Build system rules: Makefile tabs, CMake spaces
+#
+# Integration:
+#   - Works alongside clang-format (C++ code)
+#   - Complements Prettier (Markdown, YAML)
+#   - Provides baseline for all other formatters
+#
+# References:
+#   - EditorConfig Documentation: https://editorconfig.org
+#   - Project Standards: docs/MAKEFILE_DESIGN.md
+#   - Prettier Config: .prettierrc.yaml
+#
+# ==============================================================================
+
+# Mark this as the root EditorConfig file (stops searching in parent directories)
+root = true
+
+# ==============================================================================
+# Universal Rules (All Files)
+# ==============================================================================
+
+[*]
+# Character encoding
+charset = utf-8
+
+# Line endings (Unix-style - LF)
+end_of_line = lf
+
+# File endings
+insert_final_newline = true
+trim_trailing_whitespace = true
+
+# Maximum line length (advisory - enforced by formatters)
+max_line_length = 100
+
+# ==============================================================================
+# C/C++ Source Files
+# ==============================================================================
+
+[*.{c,cpp,cc,cxx,h,hpp,hxx}]
+# Indentation (4 spaces - matches clang-format)
+indent_style = space
+indent_size = 4
+
+# Line length enforced by clang-format
+max_line_length = 100
+
+# ==============================================================================
+# CMake Build System
+# ==============================================================================
+
+[{CMakeLists.txt,*.cmake}]
+# Indentation (4 spaces - CMake convention)
+indent_style = space
+indent_size = 4
+
+# ==============================================================================
+# Makefiles (Tabs Required by Make Syntax)
+# ==============================================================================
+
+[{Makefile,*.mk,GNUmakefile,makefile}]
+# Makefiles MUST use tabs (not spaces)
+indent_style = tab
+indent_size = 4
+
+# Preserve trailing whitespace in recipes (sometimes needed)
+trim_trailing_whitespace = false
+
+# ==============================================================================
+# Shell Scripts
+# ==============================================================================
+
+[*.{sh,bash,zsh}]
+# Indentation (4 spaces)
+indent_style = space
+indent_size = 4
+
+# Shell scripts should be executable
+# (Note: EditorConfig doesn't set permissions, but documents intent)
+
+# ==============================================================================
+# Documentation Files
+# ==============================================================================
+
+# Markdown Documentation
+[*.md]
+# Indentation (2 spaces - matches Prettier)
+indent_style = space
+indent_size = 2
+
+# Preserve trailing whitespace (Markdown line breaks)
+trim_trailing_whitespace = false
+
+# Line length managed by Prettier
+max_line_length = 100
+
+# reStructuredText Documentation
+[*.rst]
+indent_style = space
+indent_size = 3
+
+# ==============================================================================
+# Configuration Files
+# ==============================================================================
+
+# YAML Configuration Files
+[*.{yaml,yml}]
+# Indentation (2 spaces - YAML standard, matches Prettier)
+indent_style = space
+indent_size = 2
+
+# JSON Configuration Files
+[*.json]
+# Indentation (2 spaces - JSON standard)
+indent_style = space
+indent_size = 2
+
+# TOML Configuration Files
+[*.toml]
+indent_style = space
+indent_size = 2
+
+# INI Configuration Files
+[*.ini]
+indent_style = space
+indent_size = 4
+
+# XML Configuration Files
+[*.{xml,svg}]
+indent_style = space
+indent_size = 2
+
+# ==============================================================================
+# Web Technologies (if needed for documentation)
+# ==============================================================================
+
+[*.{html,htm}]
+indent_style = space
+indent_size = 2
+
+[*.{css,scss,sass,less}]
+indent_style = space
+indent_size = 2
+
+[*.{js,jsx,ts,tsx}]
+indent_style = space
+indent_size = 2
+
+# ==============================================================================
+# Qt Project Files
+# ==============================================================================
+
+[*.{ui,qrc,pro,pri}]
+# Qt Designer/qmake files (2 spaces)
+indent_style = space
+indent_size = 2
+
+# ==============================================================================
+# Python (if used in scripts)
+# ==============================================================================
+
+[*.{py,pyw}]
+# PEP 8 style
+indent_style = space
+indent_size = 4
+max_line_length = 88  # Black formatter default
+
+# ==============================================================================
+# Version Control
+# ==============================================================================
+
+[{.gitignore,.gitattributes,.gitmodules}]
+indent_style = space
+indent_size = 2
+
+[.git*]
+indent_style = space
+indent_size = 2
+
+# ==============================================================================
+# CI/CD Configuration
+# ==============================================================================
+
+# GitHub Actions Workflows
+[.github/workflows/*.{yml,yaml}]
+indent_style = space
+indent_size = 2
+
+# Docker Files
+[{Dockerfile,*.dockerfile,docker-compose*.yml}]
+indent_style = space
+indent_size = 2
+
+# ==============================================================================
+# Package Management
+# ==============================================================================
+
+[{package.json,package-lock.json,.npmrc}]
+indent_style = space
+indent_size = 2
+
+[vcpkg.json]
+indent_style = space
+indent_size = 2
+
+# ==============================================================================
+# Generated Files (Documentation Only - Not Enforced)
+# ==============================================================================
+
+# Note: These files are typically generated and shouldn't be manually edited
+# Listed here for completeness and to document expected formatting
+
+# Qt MOC/UIC Generated Files
+[{moc_*.cpp,ui_*.h,qrc_*.cpp}]
+# Generated by Qt - do not manually edit
+indent_style = space
+indent_size = 4
+
+# CMake Generated Files
+[{CMakeCache.txt,**/CMakeFiles/**}]
+# Generated by CMake - do not manually edit

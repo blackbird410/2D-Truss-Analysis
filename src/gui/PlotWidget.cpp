@@ -4,28 +4,22 @@
  */
 
 #include "PlotWidget.hpp"
+
 #include "core/interfaces/ITrussView.hpp"
+
+#include <QtCore/QTimer>
+#include <QtGui/QBrush>
 #include <QtGui/QPainter>
 #include <QtGui/QPen>
-#include <QtGui/QBrush>
-#include <map>
-#include <QtCore/QTimer>
+
 #include <cmath>
+#include <map>
 
 namespace truss::gui {
 
-PlotWidget::PlotWidget(
-    truss::application::TrussApplicationService& trussService,
-    QWidget *parent)
-    : QWidget(parent),
-      m_trussService(trussService),
-      m_currentTrussHandle(0),
-      m_showDeformed(false),
-      m_showForces(false),
-      m_scaleFactor(1.0),
-      m_minBounds(0.0, 0.0),
-      m_maxBounds(1.0, 1.0) {
-    
+PlotWidget::PlotWidget(truss::application::TrussApplicationService& trussService, QWidget* parent)
+    : QWidget(parent), m_trussService(trussService), m_currentTrussHandle(0), m_showDeformed(false),
+      m_showForces(false), m_scaleFactor(1.0), m_minBounds(0.0, 0.0), m_maxBounds(1.0, 1.0) {
     setMinimumSize(400, 300);
     setBackgroundRole(QPalette::Base);
     setAutoFillBackground(true);
@@ -34,7 +28,7 @@ PlotWidget::PlotWidget(
 void PlotWidget::updatePlot(truss::application::TrussHandle trussHandle) {
     m_currentTrussHandle = trussHandle;
     calculateViewport();
-    update(); // Triggers paintEvent
+    update();  // Triggers paintEvent
 }
 
 void PlotWidget::clearPlot() {
@@ -45,51 +39,52 @@ void PlotWidget::clearPlot() {
     update();
 }
 
-void PlotWidget::paintEvent(QPaintEvent *) {
+void PlotWidget::paintEvent(QPaintEvent*) {
     QPainter painter(this);
     painter.setRenderHint(QPainter::Antialiasing);
-    
+
     // Fill background
     painter.fillRect(rect(), QBrush(Qt::white));
-    
+
     if (m_currentTrussHandle == 0) {
         // Draw empty state message
         painter.setPen(QPen(Qt::gray));
         painter.drawText(rect(), Qt::AlignCenter, "No truss data to display");
         return;
     }
-    
+
     calculateViewport();
     drawTruss(painter);
 }
 
-void PlotWidget::drawTruss(QPainter &painter) {
+void PlotWidget::drawTruss(QPainter& painter) {
     drawMembers(painter);
     drawNodes(painter);
     drawSupports(painter);
     drawLoads(painter);
-    
+
     if (m_showDeformed) {
         drawDeformedShape(painter);
     }
 }
 
-void PlotWidget::drawNodes(QPainter &painter) {
-    if (m_currentTrussHandle == 0) return;
-    
+void PlotWidget::drawNodes(QPainter& painter) {
+    if (m_currentTrussHandle == 0)
+        return;
+
     // Use ITrussView interface (Clean Architecture)
     const auto& trussView = m_trussService.getTrussView(m_currentTrussHandle);
     auto nodeViews = trussView.getNodeViews();
-    
+
     painter.setPen(QPen(Qt::blue, 2));
     painter.setBrush(QBrush(Qt::blue));
-    
+
     for (const auto& nodeView : nodeViews) {
         QPoint screenPos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
-        
+
         // Draw node as circle
         painter.drawEllipse(screenPos, 4, 4);
-        
+
         // Draw node ID
         painter.setPen(QPen(Qt::black));
         painter.drawText(screenPos + QPoint(8, -8), QString::number(nodeView.id));
@@ -97,29 +92,30 @@ void PlotWidget::drawNodes(QPainter &painter) {
     }
 }
 
-void PlotWidget::drawMembers(QPainter &painter) {
-    if (m_currentTrussHandle == 0) return;
-    
+void PlotWidget::drawMembers(QPainter& painter) {
+    if (m_currentTrussHandle == 0)
+        return;
+
     // Use ITrussView interface (Clean Architecture)
     const auto& trussView = m_trussService.getTrussView(m_currentTrussHandle);
     auto memberViews = trussView.getMemberViews();
     auto nodeViews = trussView.getNodeViews();
-    
+
     // Create a lookup map for node positions
     std::map<truss::core::NodeId, truss::core::Point2D> nodePositions;
     for (const auto& nodeView : nodeViews) {
         nodePositions[nodeView.id] = truss::core::Point2D{nodeView.x, nodeView.y};
     }
-    
+
     painter.setPen(QPen(Qt::black, 2));
-    
+
     for (const auto& memberView : memberViews) {
         // Get start and end node positions from the lookup map
         QPoint startPos = worldToScreen(nodePositions[memberView.startNodeId]);
         QPoint endPos = worldToScreen(nodePositions[memberView.endNodeId]);
-        
+
         painter.drawLine(startPos, endPos);
-        
+
         // Draw member ID at midpoint
         QPoint midPoint = (startPos + endPos) / 2;
         painter.setPen(QPen(Qt::darkGray));
@@ -128,92 +124,93 @@ void PlotWidget::drawMembers(QPainter &painter) {
     }
 }
 
-void PlotWidget::drawLoads(QPainter &painter) {
-    if (m_currentTrussHandle == 0) return;
-    
+void PlotWidget::drawLoads(QPainter& painter) {
+    if (m_currentTrussHandle == 0)
+        return;
+
     // Use ITrussView interface (Clean Architecture)
     const auto& trussView = m_trussService.getTrussView(m_currentTrussHandle);
     auto nodeViews = trussView.getNodeViews();
-    
+
     painter.setPen(QPen(Qt::red, 2));
-    
+
     for (const auto& nodeView : nodeViews) {
-        if (nodeView.fx == 0.0 && nodeView.fy == 0.0) continue;
-        
+        if (nodeView.fx == 0.0 && nodeView.fy == 0.0)
+            continue;
+
         QPoint nodePos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
-        
+
         // Calculate force vector for display (scaled)
-        double forceScale = 50.0; // Pixels per unit force (adjust as needed)
-        double magnitude = std::sqrt(nodeView.fx*nodeView.fx + nodeView.fy*nodeView.fy);
-        
+        double forceScale = 50.0;  // Pixels per unit force (adjust as needed)
+        double magnitude = std::sqrt(nodeView.fx * nodeView.fx + nodeView.fy * nodeView.fy);
+
         if (magnitude > 0) {
             QPoint forceVec(
                 static_cast<int>(nodeView.fx * forceScale / magnitude * std::min(50.0, magnitude)),
-                static_cast<int>(-nodeView.fy * forceScale / magnitude * std::min(50.0, magnitude)) // Negative Y for screen coords
+                static_cast<int>(-nodeView.fy * forceScale / magnitude *
+                                 std::min(50.0, magnitude))  // Negative Y for screen coords
             );
-            
+
             QPoint arrowEnd = nodePos + forceVec;
-            
+
             // Draw force vector
             painter.drawLine(nodePos, arrowEnd);
-            
+
             // Draw arrowhead
             QPoint arrowHead1 = arrowEnd + QPoint(-5, -3);
             QPoint arrowHead2 = arrowEnd + QPoint(-5, 3);
             painter.drawLine(arrowEnd, arrowHead1);
             painter.drawLine(arrowEnd, arrowHead2);
-            
+
             // Draw force magnitude
             painter.setPen(QPen(Qt::red));
-            painter.drawText(arrowEnd + QPoint(5, 5), 
-                QString("F=%1N").arg(magnitude, 0, 'f', 1));
+            painter.drawText(arrowEnd + QPoint(5, 5), QString("F=%1N").arg(magnitude, 0, 'f', 1));
             painter.setPen(QPen(Qt::red, 2));
         }
     }
 }
 
-void PlotWidget::drawSupports(QPainter &painter) {
-    if (m_currentTrussHandle == 0) return;
-    
+void PlotWidget::drawSupports(QPainter& painter) {
+    if (m_currentTrussHandle == 0)
+        return;
+
     // Use ITrussView interface (Clean Architecture)
     const auto& trussView = m_trussService.getTrussView(m_currentTrussHandle);
     auto nodeViews = trussView.getNodeViews();
-    
+
     painter.setPen(QPen(Qt::darkGreen, 2));
     painter.setBrush(QBrush(Qt::darkGreen));
-    
+
     for (const auto& nodeView : nodeViews) {
-        if (nodeView.support == truss::core::SupportType::Free) continue;
-        
+        if (nodeView.support == truss::core::SupportType::Free)
+            continue;
+
         QPoint nodePos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
-        
+
         switch (nodeView.support) {
             case truss::core::SupportType::Pinned:
                 // Draw triangle below node
-                painter.drawPolygon(QPolygon({
-                    nodePos + QPoint(-8, 8),
-                    nodePos + QPoint(8, 8),
-                    nodePos + QPoint(0, 0)
-                }));
+                painter.drawPolygon(QPolygon(
+                    {nodePos + QPoint(-8, 8), nodePos + QPoint(8, 8), nodePos + QPoint(0, 0)}));
                 break;
-                
+
             case truss::core::SupportType::RollerX:
                 // Draw circle below node
                 painter.drawEllipse(nodePos + QPoint(-6, 2), 12, 12);
                 break;
-                
+
             case truss::core::SupportType::RollerY:
                 // Draw circle to the left of node
                 painter.drawEllipse(nodePos + QPoint(-14, -6), 12, 12);
                 break;
-                
+
             default:
                 break;
         }
     }
 }
 
-void PlotWidget::drawDeformedShape(QPainter &painter) {
+void PlotWidget::drawDeformedShape(QPainter& painter) {
     // This would draw the deformed shape if analysis results are available
     // For now, just draw a placeholder message
     painter.setPen(QPen(Qt::magenta));
@@ -224,27 +221,30 @@ QPoint PlotWidget::worldToScreen(const truss::core::Point2D& point) const {
     if (m_plotArea.isEmpty()) {
         return QPoint(static_cast<int>(point.x), static_cast<int>(point.y));
     }
-    
+
     double rangeX = m_maxBounds.x - m_minBounds.x;
     double rangeY = m_maxBounds.y - m_minBounds.y;
-    
-    if (rangeX <= 0) rangeX = 1.0;
-    if (rangeY <= 0) rangeY = 1.0;
-    
+
+    if (rangeX <= 0)
+        rangeX = 1.0;
+    if (rangeY <= 0)
+        rangeY = 1.0;
+
     // Add margins
     double margin = 0.1;
     double marginX = rangeX * margin;
     double marginY = rangeY * margin;
-    
+
     double scaleX = m_plotArea.width() / (rangeX + 2 * marginX);
     double scaleY = m_plotArea.height() / (rangeY + 2 * marginY);
-    
+
     // Use same scale for both axes to maintain aspect ratio
     double scale = std::min(scaleX, scaleY);
-    
+
     int screenX = static_cast<int>(m_plotArea.left() + (point.x - m_minBounds.x + marginX) * scale);
-    int screenY = static_cast<int>(m_plotArea.bottom() - (point.y - m_minBounds.y + marginY) * scale);
-    
+    int screenY = static_cast<int>(m_plotArea.bottom() -
+                                   (point.y - m_minBounds.y + marginY) * scale);
+
     return QPoint(screenX, screenY);
 }
 
@@ -253,30 +253,30 @@ void PlotWidget::calculateViewport() {
         m_plotArea = rect();
         return;
     }
-    
+
     // Use ITrussView interface (Clean Architecture)
     const auto& trussView = m_trussService.getTrussView(m_currentTrussHandle);
     auto nodeViews = trussView.getNodeViews();
-    
+
     if (nodeViews.empty()) {
         m_plotArea = rect();
         return;
     }
-    
+
     // Calculate bounding box
     m_minBounds = truss::core::Point2D{nodeViews[0].x, nodeViews[0].y};
     m_maxBounds = truss::core::Point2D{nodeViews[0].x, nodeViews[0].y};
-    
+
     for (const auto& nodeView : nodeViews) {
         m_minBounds.x = std::min(m_minBounds.x, nodeView.x);
         m_minBounds.y = std::min(m_minBounds.y, nodeView.y);
         m_maxBounds.x = std::max(m_maxBounds.x, nodeView.x);
         m_maxBounds.y = std::max(m_maxBounds.y, nodeView.y);
     }
-    
+
     // Set plot area (leave space for margins and controls)
     int margin = 20;
     m_plotArea = rect().adjusted(margin, margin, -margin, -margin);
 }
 
-} // namespace truss::gui
+}  // namespace truss::gui

@@ -1,0 +1,24 @@
+{
+  "name": "2d-truss-analysis-cpp",
+  "version": "3.0.0",
+  "description": "2D Truss Analysis - Engineering simulation and analysis tool",
+  "private": true,
+  "scripts": {
+    "format:docs": "prettier --write '**/*.md' --ignore-path .prettierignore",
+    "format:yaml": "prettier --write '**/*.{yml,yaml}' --ignore-path .prettierignore",
+    "format:all": "prettier --write '**/*.{md,yml,yaml}' --ignore-path .prettierignore",
+    "format:check": "prettier --check '**/*.{md,yml,yaml}' --ignore-path .prettierignore"
+  },
+  "devDependencies": {
+    "prettier": "^3.2.5"
+  },
+  "keywords": [
+    "structural-engineering",
+    "truss-analysis",
+    "cpp",
+    "qt6",
+    "cmake"
+  ],
+  "author": "Civil Engineering Software Solutions",
+  "license": "SEE LICENSE IN LICENSE"
+}

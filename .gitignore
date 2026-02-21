@@ -14,7 +14,7 @@ CMakeCache.txt
 CMakeFiles/
 CMakeScripts/
 Testing/
-Makefile
+# Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
@@ -96,7 +96,7 @@ coverage.info
 coverage/
 
 # Static Analysis
-.clang-tidy
+# .clang-tidy
 .cppcheck
 scan-build/
 _codeql_*/
@@ -195,6 +195,8 @@ build.ninja
 *.old
 
 # Package managers
+node_modules/
+package-lock.json
 conan.lock
 conaninfo.txt
 conanbuildinfo.*
@@ -209,3 +211,4 @@ validate_*_golden_master
 test_*_exporter
 test_json
 test_xml
+/cppcheck-report.txt
