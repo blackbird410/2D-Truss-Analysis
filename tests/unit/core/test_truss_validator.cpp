@@ -249,7 +249,7 @@ TEST_F(TrussValidatorTest, NoSupportsDetected) {
 
 TEST_F(TrussValidatorTest, InsufficientConstraintsDetected) {
     Truss truss;
-    auto node1 = truss.addNode(0.0, 0.0, SupportType::PinnedX); // Only 1 constraint
+    auto node1 = truss.addNode(0.0, 0.0, SupportType::RollerY); // Only 1 constraint
     auto node2 = truss.addNode(4.0, 0.0, SupportType::Free);
     
     truss.addMember(node1, node2);

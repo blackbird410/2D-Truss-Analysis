@@ -125,9 +125,7 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, AddNode_AllSupportTypes_Success) {
         SupportType::Free,
         SupportType::Pinned,
         SupportType::RollerX,
-        SupportType::RollerY,
-        SupportType::PinnedX,
-        SupportType::PinnedY
+        SupportType::RollerY
     };
     
     for (size_t i = 0; i < supportTypes.size(); ++i) {
@@ -358,9 +356,7 @@ TEST_F(TrussApplicationServiceGuiMethodsTest, SetNodeSupport_AllSupportTypes_Suc
         SupportType::Free,
         SupportType::Pinned,
         SupportType::RollerX,
-        SupportType::RollerY,
-        SupportType::PinnedX,
-        SupportType::PinnedY
+        SupportType::RollerY
     };
     
     for (auto supportType : supportTypes) {

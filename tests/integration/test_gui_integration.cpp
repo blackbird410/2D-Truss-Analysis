@@ -107,7 +107,7 @@ private slots:
 
         // Add 3 nodes
         controller->onNodeAddRequested(core::Point2D{0, 0}, core::SupportType::Pinned);
-        controller->onNodeAddRequested(core::Point2D{3, 0}, core::SupportType::PinnedY);
+        controller->onNodeAddRequested(core::Point2D{3, 0}, core::SupportType::RollerY);
         controller->onNodeAddRequested(core::Point2D{1.5, 2}, core::SupportType::Free);
 
         QCOMPARE(nodeAddedSpy.count(), 3);
@@ -379,7 +379,7 @@ private slots:
     void testGenerateStatisticsFromRealTruss() {
         // GIVEN: Truss with mixed supports and loads
         service->addNode(testHandle, core::Point2D{0, 0}, core::SupportType::Pinned);
-        service->addNode(testHandle, core::Point2D{3, 0}, core::SupportType::PinnedY);
+        service->addNode(testHandle, core::Point2D{3, 0}, core::SupportType::RollerY);
         service->addNode(testHandle, core::Point2D{1.5, 2}, core::SupportType::Free);
         service->applyNodeLoad(testHandle, 2, core::Force2D{0, -1000});
 

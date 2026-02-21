@@ -94,14 +94,16 @@ struct Force2D {
 
 /**
  * @brief Support constraint types
+ * 
+ * IMPORTANT: In 2D structural mechanics, a pinned support restrains BOTH translational DOFs.
+ * Directional constraints are represented by roller supports.
+ * Do NOT introduce directional pinning (e.g., PinnedX, PinnedY) - this is mechanically invalid.
  */
 enum class SupportType {
-    Free,           ///< No constraint
-    PinnedX,        ///< Fixed in X direction only
-    PinnedY,        ///< Fixed in Y direction only
-    Pinned,         ///< Fixed in both X and Y directions
-    RollerX,        ///< Roller support allowing movement in X direction
-    RollerY         ///< Roller support allowing movement in Y direction
+    Free,           ///< No constraint (2 DOFs free)
+    Pinned,         ///< Pin support: Fixed in both X and Y directions (0 DOFs free, 2 reactions)
+    RollerX,        ///< Roller allowing movement in X direction (1 DOF free: X, 1 reaction: Y)
+    RollerY         ///< Roller allowing movement in Y direction (1 DOF free: Y, 1 reaction: X)
 };
 
 /**

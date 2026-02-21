@@ -351,20 +351,75 @@ void TrussValidator::validateStaticDeterminacy(const Truss& truss, ValidationRes
 }
 
 void TrussValidator::validateKinematicStability(const Truss& truss, ValidationResult& result) const {
-    // This is a more sophisticated check than simple DOF counting
-    // For now, we check if the structure has minimum constraints
+    // Critical stability check: prevent geometrically unstable structures from analysis
+    
+    const auto& nodes = truss.getNodes();
+    
+    // Check 1: Minimum constraint count
+    if (truss.getConstrainedDofs() < 3) {
+        result.addIssue(ValidationIssue(
+            ValidationSeverity::Fatal,
+            "Kinematic Stability",
+            "Insufficient constraints: Structure has only " + std::to_string(truss.getConstrainedDofs()) + " constrained DOFs (minimum 3 required)",
+            "A 2D truss requires at least 3 constraints to prevent rigid body motion (2 translations + 1 rotation)."
+        ));
+        return;
+    }
+    
+    // Check 2: Rigid body mode prevention
+    bool hasXConstraint = false;
+    bool hasYConstraint = false;
+    
+    for (const auto& node : nodes) {
+        SupportType support = node->getSupportType();
+        
+        if (support == SupportType::Pinned || 
+            support == SupportType::RollerY) {
+            hasXConstraint = true;
+        }
+        
+        if (support == SupportType::Pinned || 
+            support == SupportType::RollerX) {
+            hasYConstraint = true;
+        }
+    }
+    
+    if (!hasXConstraint) {
+        result.addIssue(ValidationIssue(
+            ValidationSeverity::Fatal,
+            "Kinematic Stability",
+            "No horizontal constraints: Structure can translate freely in X direction",
+            "Add a support with X constraint (Pinned or RollerY)."
+        ));
+    }
+    
+    if (!hasYConstraint) {
+        result.addIssue(ValidationIssue(
+            ValidationSeverity::Fatal,
+            "Kinematic Stability",
+            "No vertical constraints: Structure can translate freely in Y direction (GEOMETRIC INSTABILITY)",
+            "CRITICAL: This causes singular stiffness matrix and astronomical displacements. "
+            "For typical bridge truss: Left=Pinned, Right=RollerX (NOT RollerY). "
+            "RollerY allows vertical movement and makes the structure unstable under vertical loads."
+        ));
+    }
+    
+    if (!hasXConstraint || !hasYConstraint) {
+        return;  // Don't continue if fatal errors found
+    }
+    
+    // Check 3: Full stability check
     if (!checkMinimumConstraints(truss)) {
         result.addIssue(ValidationIssue(
             ValidationSeverity::Error,
             "Kinematic Stability",
-            "Structure lacks minimum constraints for kinematic stability",
-            "The structure may contain mechanisms or lack adequate support."
+            "Structure lacks adequate constraints for kinematic stability",
+            "The structure may contain mechanisms. Verify support configuration prevents all rigid body modes."
         ));
     }
     
-    // Additional check: verify each node is connected to at least one member
-    // (except for isolated supported nodes which might be intentional)
-    for (const auto& node : truss.getNodes()) {
+    // Check 4: Isolated nodes
+    for (const auto& node : nodes) {
         auto connectedMembers = truss.getMembersConnectedTo(node->getId());
         if (connectedMembers.empty() && !node->isConstrained()) {
             ValidationIssue issue(
@@ -487,21 +542,66 @@ void TrussValidator::validateConnectivity(const Truss& truss, ValidationResult& 
 // ========== Private Helper Methods ==========
 
 bool TrussValidator::checkMinimumConstraints(const Truss& truss) const {
-    // Minimum 3 constraints needed to prevent rigid body motion in 2D
-    return truss.getConstrainedDofs() >= 3;
+    // For 2D truss: minimum 3 constraints needed to prevent rigid body motion
+    // BUT: must check that constraints prevent ALL 3 rigid body modes:
+    //   - Horizontal translation (need at least 1 X constraint)
+    //   - Vertical translation (need at least 1 Y constraint)  
+    //   - Rotation (need non-collinear constraints)
+    
+    if (truss.getConstrainedDofs() < 3) {
+        return false;
+    }
+    
+    // Check rigid body stability
+    return checkRigidBodyStability(truss);
 }
 
 bool TrussValidator::checkRigidBodyStability(const Truss& truss) const {
-    // Basic check: need at least 3 non-collinear constraint directions
-    // This is a simplified check; full stability analysis would require
-    // checking the rank of the constraint matrix
+    // Rigid body stability in 2D requires preventing:
+    //   1. Horizontal translation (X direction)
+    //   2. Vertical translation (Y direction)
+    //   3. Rotation about any point
     
-    size_t constraintCount = truss.getConstrainedDofs();
-    if (constraintCount < 3) return false;
+    const auto& nodes = truss.getNodes();
     
-    // For a more thorough check, we'd analyze the support locations and types
-    // to ensure they prevent all rigid body modes (2 translations + 1 rotation in 2D)
-    // For now, we accept any configuration with >= 3 constraints
+    // Count constraints by type
+    bool hasXConstraint = false;  // At least one fixed X DOF
+    bool hasYConstraint = false;  // At least one fixed Y DOF
+    int xConstraintCount = 0;
+    int yConstraintCount = 0;
+    
+    for (const auto& node : nodes) {
+        SupportType support = node->getSupportType();
+        
+        // Check X constraints (horizontal restraint)
+        if (support == SupportType::Pinned || 
+            support == SupportType::RollerY) {
+            hasXConstraint = true;
+            xConstraintCount++;
+        }
+        
+        // Check Y constraints (vertical restraint)
+        if (support == SupportType::Pinned || 
+            support == SupportType::RollerX) {
+            hasYConstraint = true;
+            yConstraintCount++;
+        }
+    }
+    
+    // CRITICAL: Must have at least one constraint in EACH direction
+    if (!hasXConstraint || !hasYConstraint) {
+        return false;  // Unstable: can translate as rigid body
+    }
+    
+    // Additional check: need sufficient constraints to prevent rotation
+    // Minimum 3 total constraints required
+    if (xConstraintCount + yConstraintCount < 3) {
+        return false;
+    }
+    
+    // For proper rotational stability, constraints must be non-collinear
+    // If all Y constraints are at same X coordinate, structure is unstable
+    // This is a more advanced check - for now, basic count is sufficient
     
     return true;
 }

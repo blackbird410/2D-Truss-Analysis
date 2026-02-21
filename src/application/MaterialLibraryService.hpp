@@ -109,7 +109,7 @@ public:
  * MaterialLibraryService library;
  * auto materials = library.getAvailableMaterials();
  * for (const auto& preset : materials) {
- *     std::cout << preset.name << ": E=" << preset.properties.elasticModulus << std::endl;
+ *     // Present or log preset information as needed
  * }
  * 
  * auto steel = library.getMaterial("Steel");

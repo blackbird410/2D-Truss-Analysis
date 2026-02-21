@@ -14,9 +14,10 @@
 #include "src/core/analysis/SolverFactory.hpp"
 #include "src/core/ResultsExporter.hpp"
 #include "src/core/model/Truss.hpp"
-#include <iostream>
+#include "src/infrastructure/logging/logger_factory.hpp"
 #include <filesystem>
 #include <iomanip>
+#include <sstream>
 
 using namespace truss::core;
 using namespace truss::core::analysis;
@@ -45,11 +46,16 @@ Truss createSimpleTriangleTruss() {
 }
 
 int main(int argc, char* argv[]) {
+    auto logger = truss::infrastructure::logging::LoggerFactory::createConsoleLogger(
+        truss::infrastructure::logging::LogLevel::Info,
+        true
+    );
+
     try {
-        std::cout << "=============================================================\n";
-        std::cout << "  Golden Master Export File Generator - Phase 3\n";
-        std::cout << "  2D Truss Analysis v3.0.0\n";
-        std::cout << "=============================================================\n\n";
+        logger->info("=============================================================");
+        logger->info("  Golden Master Export File Generator - Phase 3");
+        logger->info("  2D Truss Analysis v3.0.0");
+        logger->info("=============================================================");
         
         // Determine output directory
         std::string outputDir = "tests/fixtures/export_golden";
@@ -59,31 +65,47 @@ int main(int argc, char* argv[]) {
         
         // Ensure output directory exists
         std::filesystem::create_directories(outputDir);
-        std::cout << "Output directory: " << outputDir << "\n\n";
+        logger->info(std::string("Output directory: ") + outputDir);
         
         // Create test truss
-        std::cout << "Step 1: Creating test truss structure...\n";
+        logger->info("Step 1: Creating test truss structure...");
         Truss truss = createSimpleTriangleTruss();
-        std::cout << "  Nodes: " << truss.getNodeCount() << "\n";
-        std::cout << "  Members: " << truss.getMemberCount() << "\n";
-        std::cout << "  Applied loads: 1 (15 kN downward at top node)\n";
-        std::cout << "  Supports: Pinned (left) + RollerY (right)\n\n";
+        {
+            std::ostringstream oss;
+            oss << "Nodes: " << truss.getNodeCount();
+            logger->info(oss.str());
+        }
+        {
+            std::ostringstream oss;
+            oss << "Members: " << truss.getMemberCount();
+            logger->info(oss.str());
+        }
+        logger->info("Applied loads: 1 (15 kN downward at top node)");
+        logger->info("Supports: Pinned (left) + RollerY (right)");
 
         // Perform analysis
-        std::cout << "Step 2: Running structural analysis...\n";
+        logger->info("Step 2: Running structural analysis...");
         auto solver = SolverFactory::createDirectSolver();
         AnalysisOrchestrator orchestrator(std::move(solver), std::make_unique<validation::TrussValidator>());
         auto results = orchestrator.analyze(truss);
 
         if (!results.converged) {
-            std::cerr << "ERROR: Analysis did not converge\n";
+            logger->error("Analysis did not converge");
             return 1;
         }
 
-        std::cout << "  Analysis converged successfully!\n";
-        std::cout << "  Max displacement: " << std::scientific << std::setprecision(6) 
-                  << results.maxDisplacement << " m\n";
-        std::cout << "  Max stress: " << results.maxStress << " Pa\n\n";
+        logger->info("Analysis converged successfully!");
+        {
+            std::ostringstream oss;
+            oss << "Max displacement: " << std::scientific << std::setprecision(6)
+                << results.maxDisplacement << " m";
+            logger->info(oss.str());
+        }
+        {
+            std::ostringstream oss;
+            oss << "Max stress: " << results.maxStress << " Pa";
+            logger->info(oss.str());
+        }
 
         // Configure export options
         ExportOptions options;
@@ -100,7 +122,7 @@ int main(int argc, char* argv[]) {
         options.precision = 6;
 
         // Define export formats
-        std::cout << "Step 3: Generating golden master files...\n";
+        logger->info("Step 3: Generating golden master files...");
         std::vector<std::tuple<std::string, ExportFormat, std::string>> exportFormats = {
             {"golden_master.csv",   ExportFormat::CSV,    "CSV (Comma-Separated Values)"},
             {"golden_master.json",  ExportFormat::JSON,   "JSON (JavaScript Object Notation)"},
@@ -116,66 +138,79 @@ int main(int argc, char* argv[]) {
 
         for (const auto& [fileName, format, description] : exportFormats) {
             std::string fullPath = outputDir + "/" + fileName;
-            std::cout << "\n  [" << description << "]\n";
-            std::cout << "  Generating: " << fullPath << "... ";
+            logger->info(std::string("[") + description + "]");
+            logger->info(std::string("Generating: ") + fullPath + "...");
             
             if (exporter.exportResults(truss, results, fullPath, format, options)) {
                 if (std::filesystem::exists(fullPath)) {
                     auto fileSize = std::filesystem::file_size(fullPath);
                     totalBytes += fileSize;
-                    std::cout << "✓ SUCCESS (" << fileSize << " bytes)\n";
+                    {
+                        std::ostringstream oss;
+                        oss << "SUCCESS (" << fileSize << " bytes)";
+                        logger->info(oss.str());
+                    }
                     
                     if (fileSize == 0) {
-                        std::cout << "    ⚠️  WARNING: File is empty!\n";
+                        logger->warn("File is empty");
                         allSuccessful = false;
                     }
                 } else {
-                    std::cout << "✗ FAILED (file not created)\n";
+                    logger->error("FAILED (file not created)");
                     allSuccessful = false;
                 }
             } else {
-                std::cout << "✗ FAILED\n";
-                std::cout << "    Error: " << exporter.getLastError() << "\n";
+                logger->error(std::string("FAILED: ") + exporter.getLastError());
                 allSuccessful = false;
             }
         }
 
         // Summary
-        std::cout << "\n=============================================================\n";
-        std::cout << "  Golden Master Generation Summary\n";
-        std::cout << "=============================================================\n";
+        logger->info("=============================================================");
+        logger->info("  Golden Master Generation Summary");
+        logger->info("=============================================================");
         
         if (allSuccessful) {
-            std::cout << "✓ Status: ALL FORMATS SUCCESSFUL\n";
-            std::cout << "  Files generated: " << exportFormats.size() << "\n";
-            std::cout << "  Total size: " << totalBytes << " bytes\n";
-            std::cout << "  Location: " << std::filesystem::absolute(outputDir) << "\n\n";
+            logger->info("Status: ALL FORMATS SUCCESSFUL");
+            {
+                std::ostringstream oss;
+                oss << "Files generated: " << exportFormats.size();
+                logger->info(oss.str());
+            }
+            {
+                std::ostringstream oss;
+                oss << "Total size: " << totalBytes << " bytes";
+                logger->info(oss.str());
+            }
+            logger->info(std::string("Location: ") + std::filesystem::absolute(outputDir).string());
             
-            std::cout << "Golden master files:\n";
+            logger->info("Golden master files:");
             for (const auto& [fileName, format, description] : exportFormats) {
                 std::string fullPath = outputDir + "/" + fileName;
                 if (std::filesystem::exists(fullPath)) {
-                    std::cout << "  ✓ " << std::setw(25) << std::left << fileName 
-                              << " (" << std::setw(8) << std::right 
-                              << std::filesystem::file_size(fullPath) << " bytes)\n";
+                    std::ostringstream oss;
+                    oss << "- " << std::setw(25) << std::left << fileName
+                        << " (" << std::setw(8) << std::right
+                        << std::filesystem::file_size(fullPath) << " bytes)";
+                    logger->info(oss.str());
                 }
             }
             
-            std::cout << "\nNext steps:\n";
-            std::cout << "  1. Review generated files to ensure correctness\n";
-            std::cout << "  2. Commit golden masters to repository\n";
-            std::cout << "  3. Use these files to validate new exporter implementations\n";
-            std::cout << "  4. Byte-compare new outputs with golden masters\n\n";
+            logger->info("Next steps:");
+            logger->info("  1. Review generated files to ensure correctness");
+            logger->info("  2. Commit golden masters to repository");
+            logger->info("  3. Use these files to validate new exporter implementations");
+            logger->info("  4. Byte-compare new outputs with golden masters");
             
             return 0;
         } else {
-            std::cout << "✗ Status: SOME FORMATS FAILED\n";
-            std::cout << "  Check error messages above for details.\n\n";
+            logger->error("Status: SOME FORMATS FAILED");
+            logger->error("Check error messages above for details.");
             return 1;
         }
 
     } catch (const std::exception& e) {
-        std::cerr << "\n✗ EXCEPTION: " << e.what() << "\n";
+        logger->critical(std::string("EXCEPTION: ") + e.what());
         return 1;
     }
 }

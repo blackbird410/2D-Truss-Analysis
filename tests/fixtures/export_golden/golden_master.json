@@ -1,7 +1,7 @@
 {
   "project": {
     "name": "Golden Master Test Truss",
-    "exportTime": "2026-02-18 19:02:14",
+    "exportTime": "2026-02-20 19:06:48",
     "version": "3.0.0"
   },
   "geometry": {
@@ -10,13 +10,13 @@
         "id": 1,
         "x": 0.000000,
         "y": 0.000000,
-        "supportType": "3"
+        "supportType": "1"
       },
       {
         "id": 2,
         "x": 4.000000,
         "y": 0.000000,
-        "supportType": "5"
+        "supportType": "2"
       },
       {
         "id": 3,
@@ -81,20 +81,20 @@
     ]
   },
   "displacements": {
-    "values": [0.000000, 0.000000, 0.000000, 28633115306666.671875, -21474836480000.003906, 14316557653333.333984],
-    "maxDisplacement": 28633115306666.671875
+    "values": [0.000000, 0.000000, 0.001000, 0.000000, 0.000500, -0.002286],
+    "maxDisplacement": 0.002340
   },
   "memberForces": {
-    "values": [0.000000, -13161.877963, -8506.098452]
+    "values": [5000.000000, -9013.878189, -9013.878189]
   },
   "reactions": {
-    "values": [3730.565917, 14310.515542, -3730.565917]
+    "values": [-0.000000, 7500.000000, 7500.000000]
   },
   "analysis": {
     "converged": true,
     "iterations": 0,
     "totalDofs": 6,
     "freeDofs": 3,
-    "maxStress": 131618779.629931
+    "maxStress": 90138781.886600
   }
 }

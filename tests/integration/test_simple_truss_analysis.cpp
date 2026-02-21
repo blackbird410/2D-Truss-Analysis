@@ -28,7 +28,7 @@ TEST(SimpleTrussAnalysisTest, TriangularTrussAnalysis) {
     
     // Add nodes
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);
     
     // Add members
@@ -59,7 +59,7 @@ TEST(SimpleTrussAnalysisTest, BridgeTrussAnalysis) {
     
     // Add nodes - create a proper triangulated truss
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss.addNode(2.0, 0.0, SupportType::Free);
     auto node4 = truss.addNode(1.0, 2.0, SupportType::Free);
     auto node5 = truss.addNode(3.0, 2.0, SupportType::Free);
@@ -100,7 +100,7 @@ TEST(SimpleTrussAnalysisTest, CustomMaterialProperties) {
     
     // Add nodes
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss.addNode(3.0, 0.0, SupportType::RollerY);
+    auto node2 = truss.addNode(3.0, 0.0, SupportType::RollerX);
     auto node3 = truss.addNode(1.5, 2.0, SupportType::Free);
     
     // Define custom material and section properties

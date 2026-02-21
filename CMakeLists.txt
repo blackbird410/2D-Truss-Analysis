@@ -223,6 +223,12 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
     TrussCore
 )
 
+# Utility: Generate corrected golden masters
+add_executable(generate_corrected_golden_masters
+    generate_corrected_golden_masters.cpp
+)
+target_link_libraries(generate_corrected_golden_masters PRIVATE TrussCore)
+
 # ============================================================================
 # UNIT TESTS CONFIGURATION
 # ============================================================================
@@ -255,6 +261,9 @@ if(BUILD_TESTING)
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
         tests/unit/core/test_analysis_orchestrator.cpp
+        tests/unit/test_stiffness_matrix_bug.cpp
+        tests/unit/test_displacement_sign_check.cpp
+        tests/unit/test_warren_displacement.cpp
         # Infrastructure layer tests
         tests/unit/infrastructure/export/test_csv_exporter.cpp
         tests/unit/infrastructure/export/test_html_exporter.cpp

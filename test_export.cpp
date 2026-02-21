@@ -6,14 +6,20 @@
 #include "AnalysisEngine.hpp"
 #include "ResultsExporter.hpp"
 #include "Truss.hpp"
-#include <iostream>
+#include "src/infrastructure/logging/logger_factory.hpp"
 #include <filesystem>
+#include <sstream>
 
 using namespace truss::core;
 
 int main() {
+    auto logger = truss::infrastructure::logging::LoggerFactory::createConsoleLogger(
+        truss::infrastructure::logging::LogLevel::Info,
+        true
+    );
+
     try {
-        std::cout << "Testing Results Export Functionality...\n\n";
+        logger->info("Testing Results Export Functionality...");
         
         // Create a simple statically determinate truss system
         Truss truss("Export Test Truss");
@@ -28,21 +34,33 @@ int main() {
 
         truss.applyForce(node3->getId(), Force2D(0.0, -15000.0)); // Apply downward load
 
-        std::cout << "Created truss with " << truss.getNodeCount() 
-                  << " nodes and " << truss.getMemberCount() << " members\n";
+        {
+            std::ostringstream oss;
+            oss << "Created truss with " << truss.getNodeCount()
+                << " nodes and " << truss.getMemberCount() << " members";
+            logger->info(oss.str());
+        }
 
         // Perform analysis
         AnalysisEngine engine;
         auto results = engine.analyze(truss);
 
         if (!results.converged) {
-            std::cerr << "ERROR: Analysis did not converge\n";
+            logger->error("Analysis did not converge");
             return 1;
         }
 
-        std::cout << "Analysis completed successfully!\n";
-        std::cout << "Max displacement: " << results.maxDisplacement << "\n";
-        std::cout << "Max stress: " << results.maxStress << "\n\n";
+        logger->info("Analysis completed successfully!");
+        {
+            std::ostringstream oss;
+            oss << "Max displacement: " << results.maxDisplacement;
+            logger->info(oss.str());
+        }
+        {
+            std::ostringstream oss;
+            oss << "Max stress: " << results.maxStress;
+            logger->info(oss.str());
+        }
 
         // Test exports to different formats
         ResultsExporter exporter;
@@ -65,46 +83,51 @@ int main() {
 
         bool allSuccessful = true;
         for (const auto& [fileName, format] : testFormats) {
-            std::cout << "Exporting to " << fileName << "... ";
+            logger->info(std::string("Exporting to ") + fileName + "...");
             
             if (exporter.exportResults(truss, results, fileName, format, options)) {
-                std::cout << " SUCCESS\n";
+                logger->info("SUCCESS");
                 
                 // Check if file exists and has content
                 if (std::filesystem::exists(fileName)) {
                     auto fileSize = std::filesystem::file_size(fileName);
-                    std::cout << "   File size: " << fileSize << " bytes\n";
+                    {
+                        std::ostringstream oss;
+                        oss << "File size: " << fileSize << " bytes";
+                        logger->info(oss.str());
+                    }
                     if (fileSize == 0) {
-                        std::cout << "    WARNING: File is empty\n";
+                        logger->warn("File is empty");
                     }
                 } else {
-                    std::cout << "   ❌ ERROR: File was not created\n";
+                    logger->error("File was not created");
                     allSuccessful = false;
                 }
             } else {
-                std::cout << "❌ FAILED\n";
-                std::cout << "   Error: " << exporter.getLastError() << "\n";
+                logger->error(std::string("Export failed: ") + exporter.getLastError());
                 allSuccessful = false;
             }
         }
 
-        std::cout << "\n=== Export Test Summary ===\n";
+        logger->info("=== Export Test Summary ===");
         if (allSuccessful) {
-            std::cout << " All export formats tested successfully!\n";
-            std::cout << "Generated files:\n";
+            logger->info("All export formats tested successfully!");
+            logger->info("Generated files:");
             for (const auto& [fileName, format] : testFormats) {
                 if (std::filesystem::exists(fileName)) {
-                    std::cout << "  - " << fileName << " (" 
-                              << std::filesystem::file_size(fileName) << " bytes)\n";
+                    std::ostringstream oss;
+                    oss << "- " << fileName << " (" 
+                        << std::filesystem::file_size(fileName) << " bytes)";
+                    logger->info(oss.str());
                 }
             }
         } else {
-            std::cout << "❌ Some export tests failed!\n";
+            logger->error("Some export tests failed!");
             return 1;
         }
 
         // Test format detection
-        std::cout << "\n=== Testing Format Detection ===\n";
+        logger->info("=== Testing Format Detection ===");
         std::vector<std::pair<std::string, ExportFormat>> formatTests = {
             {"file.csv", ExportFormat::CSV},
             {"file.tsv", ExportFormat::TSV},
@@ -117,33 +140,38 @@ int main() {
 
         for (const auto& [fileName, expectedFormat] : formatTests) {
             auto detectedFormat = ResultsExporter::detectFormat(fileName);
-            std::cout << fileName << " -> ";
             if (detectedFormat == expectedFormat) {
-                std::cout << " Correct\n";
+                logger->info(fileName + " -> Correct");
             } else {
-                std::cout << "❌ Wrong (expected " << static_cast<int>(expectedFormat) 
-                          << ", got " << static_cast<int>(detectedFormat) << ")\n";
+                std::ostringstream oss;
+                oss << fileName << " -> Wrong (expected " << static_cast<int>(expectedFormat)
+                    << ", got " << static_cast<int>(detectedFormat) << ")";
+                logger->error(oss.str());
                 allSuccessful = false;
             }
         }
 
         // Test summary generation
-        std::cout << "\n=== Testing Summary Generation ===\n";
+        logger->info("=== Testing Summary Generation ===");
         std::string summary = exporter.generateSummary(truss, results);
-        std::cout << "Generated summary (" << summary.length() << " characters):\n";
-        std::cout << summary << "\n";
+        {
+            std::ostringstream oss;
+            oss << "Generated summary (" << summary.length() << " characters)";
+            logger->info(oss.str());
+        }
+        logger->info(summary);
 
-        std::cout << "\n=== Final Result ===\n";
+        logger->info("=== Final Result ===");
         if (allSuccessful) {
-            std::cout << " ALL TESTS PASSED! Results export feature is working correctly.\n";
+            logger->info("ALL TESTS PASSED! Results export feature is working correctly.");
             return 0;
         } else {
-            std::cout << "❌ SOME TESTS FAILED! Check the output above for details.\n";
+            logger->error("SOME TESTS FAILED! Check the output above for details.");
             return 1;
         }
 
     } catch (const std::exception& e) {
-        std::cerr << "Export test failed: " << e.what() << "\n";
+        logger->error(std::string("Export test failed: ") + e.what());
         return 1;
     }
 }
