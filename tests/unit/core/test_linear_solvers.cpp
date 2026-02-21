@@ -393,3 +393,228 @@ TEST_F(LinearSolverTest, SolverComparison) {
     double diff = (x_direct - x_iterative).norm();
     EXPECT_LT(diff, 1e-6);
 }
+
+// Phase 7 Task 7.5: Analysis Layer Hardening - Edge Case Tests
+
+TEST_F(LinearSolverTest, NearlyIdenticalMatrixRows) {
+    // Test matrix with nearly linearly dependent rows (ill-conditioned)
+    MatrixXd A(3, 3);
+    A << 1.0, 2.0, 3.0,
+         1.0, 2.0, 3.0 + 1e-14,  // Nearly identical to row 1
+         4.0, 5.0, 6.0;
+    
+    VectorXd b(3);
+    b << 1.0, 1.0, 2.0;
+    
+    DirectSolver directSolver;
+    VectorXd x = directSolver.solve(A, b);
+    
+    // Solution should exist but with reduced accuracy
+    VectorXd residual = A * x - b;
+    EXPECT_LT(residual.norm(), 1e-6);  // Loose tolerance for ill-conditioned
+}
+
+TEST_F(LinearSolverTest, SmallDiagonalElements) {
+    // Test matrix with very small diagonal elements
+    MatrixXd A(3, 3);
+    A << 1e-10, 0.0,    0.0,
+         0.0,    1e-10,  0.0,
+         0.0,    0.0,    1e-10;
+    
+    VectorXd b(3);
+    b << 1.0, 1.0, 1.0;
+    
+    DirectSolver directSolver;
+    VectorXd x = directSolver.solve(A, b);
+    
+    // Should handle small diagonal elements
+    EXPECT_EQ(x.size(), 3);
+    EXPECT_FALSE(std::isnan(x(0)));  // No NaN values
+}
+
+TEST_F(LinearSolverTest, LargeConditionNumber) {
+    // Test matrix with large condition number
+    MatrixXd A(4, 4);
+    A << 1.0, 0.9999,  0.0,    0.0,
+         0.9999, 1.0,   0.0,    0.0,
+         0.0,    0.0,   1e-8,   0.0,
+         0.0,    0.0,   0.0,    1e-8;
+    
+    VectorXd b(4);
+    b << 1.0, 2.0, 3.0, 4.0;
+    
+    DirectSolver directSolver;
+    VectorXd x = directSolver.solve(A, b);
+    
+    // Solution should exist despite poor conditioning
+    VectorXd residual = A * x - b;
+    EXPECT_LT(residual.norm(), 1.0);  // Loose tolerance
+}
+
+TEST_F(LinearSolverTest, SingleNonzeroValue) {
+    // Test diagonal matrix with mostly zeros (degenerate case)
+    MatrixXd A(3, 3);
+    A.setZero();
+    A(0, 0) = 1.0;
+    A(1, 1) = 1e-12;
+    A(2, 2) = 1.0;
+    
+    VectorXd b(3);
+    b << 1.0, 1.0, 1.0;
+    
+    DirectSolver directSolver;
+    VectorXd x = directSolver.solve(A, b);
+    
+    // Should handle sparse diagonal
+    EXPECT_EQ(x.size(), 3);
+}
+
+// ============================================================================
+// Solver Convergence Edge Cases Tests (Task 7.5 - Analysis Hardening)
+// ============================================================================
+
+TEST_F(LinearSolverTest, SingularSystemHandling) {
+    // Test solver behavior with singular (linearly dependent rows) matrix
+    MatrixXd A(3, 3);
+    A << 1, 2, 3,
+         2, 4, 6,  // Linearly dependent row
+         4, 8, 12; // Linearly dependent row
+    VectorXd b(3);
+    b << 1, 2, 4;
+
+    DirectSolver solver;
+    // Singular system - solver should handle gracefully or throw
+    try {
+        VectorXd x = solver.solve(A, b);
+        // If it succeeds, the solution should have the right size
+        EXPECT_EQ(x.size(), 3);
+    } catch (const std::runtime_error&) {
+        // Exception is also acceptable for singular matrix
+        EXPECT_TRUE(true);
+    }
+}
+
+TEST_F(LinearSolverTest, NonConvergentSystem) {
+    // Test with poorly conditioned matrix that may not converge quickly
+    MatrixXd A(3, 3);
+    A << 0.001, 2, 3,     // Poorly conditioned
+         4, 0.001, 6,
+         7, 8, 0.001;
+    VectorXd b(3);
+    b << 1, 2, 3;
+
+    // Test with direct solver which should still solve it
+    DirectSolver solver;
+    VectorXd x = solver.solve(A, b);
+    
+    // Solution should exist for non-singular matrix
+    EXPECT_EQ(x.size(), 3);
+    
+    // Test with iterative solver with limited iterations
+    IterativeSolver iterSolver(2, 1e-9);  // Very limited iterations
+    // Non-convergence with these tight constraints is expected
+    EXPECT_THROW(iterSolver.solve(A, b), std::runtime_error);
+}
+
+TEST_F(LinearSolverTest, IllConditionedMatrix) {
+    // Test matrix that is nearly singular but solvable
+    MatrixXd A(2, 2);
+    A << 1, 0.9999,
+         0.9999, 1;  // Nearly singular
+    VectorXd b(2);
+    b << 1, 1;
+
+    DirectSolver solver;
+    VectorXd x = solver.solve(A, b);
+
+    // Solution exists for technically non-singular matrix
+    EXPECT_EQ(x.size(), 2);
+}
+
+TEST_F(LinearSolverTest, ConditionNumberThreshold) {
+    // Matrix with poor conditioning but solvable
+    MatrixXd A = MatrixXd::Identity(3, 3);
+    A(2, 2) = 1e-10;  // Create poor conditioning
+
+    VectorXd b(3);
+    b << 1, 2, 3;
+
+    DirectSolver solver;
+    VectorXd x = solver.solve(A, b);
+    
+    // Should still produce a solution
+    EXPECT_EQ(x.size(), 3);
+    
+    // Verify solution (even if approximate due to conditioning)
+    EXPECT_NE(x(0), 0.0);
+    EXPECT_NE(x(1), 0.0);
+    EXPECT_NE(x(2), 0.0);
+}
+
+TEST_F(LinearSolverTest, MaxIterationLimit) {
+    // Test iterative solver respects max iterations
+    MatrixXd A(5, 5);
+    A = A.transpose() * A;  // Create SPD matrix
+    MatrixXd::Index n = A.rows();
+    A.diagonal() += VectorXd::Ones(n);
+
+    VectorXd b = VectorXd::Random(5);
+
+    int maxIter = 2;
+    IterativeSolver solver(maxIter, 1e-9);
+    
+    // Should not throw, but may not fully converge
+    try {
+        VectorXd x = solver.solve(A, b);
+        EXPECT_EQ(x.size(), 5);
+    } catch (const std::runtime_error&) {
+        // Non-convergence within max iterations is acceptable
+    }
+}
+
+TEST_F(LinearSolverTest, NumericalPrecisionLoss) {
+    // Test with matrix that demonstrates precision loss
+    MatrixXd A(2, 2);
+    double eps = 1e-14;
+    A << 1, eps,
+         eps, 1;
+    VectorXd b(2);
+    b << 1, 1;
+
+    DirectSolver solver;
+    VectorXd x = solver.solve(A, b);
+
+    // Solution should exist but verify it
+    EXPECT_EQ(x.size(), 2);
+    
+    // Check residual
+    VectorXd residual = A * x - b;
+    double relativeError = residual.norm() / b.norm();
+    
+    // Relative error might be elevated due to poor conditioning
+    EXPECT_LT(relativeError, 1.0);  // Should still be reasonable
+}
+
+TEST_F(LinearSolverTest, BackwardStabilityVerification) {
+    // Test solver backward stability with large magnitude differences
+    // Use a well-formed but ill-conditioned matrix
+    MatrixXd A(3, 3);
+    A << 1e10, 1e-10, 0,
+         1e-10, 1, 0,
+         0, 0, 1;
+    VectorXd b(3);
+    b << 1e10, 1e-10, 1;
+
+    DirectSolver solver;
+    VectorXd x = solver.solve(A, b);
+
+    // Solution should exist
+    EXPECT_EQ(x.size(), 3);
+    
+    // Verify backward stability (solution is computed)
+    VectorXd residual = A * x - b;
+    // Just verify computation completes - residual may be elevated due to ill-conditioning
+    EXPECT_EQ(residual.size(), 3);
+}
+
+

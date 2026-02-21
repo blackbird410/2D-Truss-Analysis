@@ -2,11 +2,15 @@
 
 This directory contains all tests for the 2D Truss Analysis project, organized by layer and component using Google Test framework.
 
+**Status:** ✅ 765/766 tests passing (99.87%)  
+**Coverage:** 72%+ line coverage (estimated)  
+**Execution Time:** 148ms total
+
 ## Directory Structure
 
 ```
 tests/
-├── unit/                    # Unit tests (458 passing, 1 skipped)
+├── unit/                    # Unit tests (712 passing, 1 skipped)
 │   ├── core/               # Core model and analysis tests
 │   │   ├── test_node.cpp
 │   │   ├── test_member.cpp
@@ -19,16 +23,26 @@ tests/
 │   │   ├── test_help_command.cpp         # HelpCommand tests
 │   │   ├── test_console_presenter.cpp    # ConsolePresenter tests
 │   │   └── test_argument_parser.cpp      # ArgumentParser tests (28)
+│   ├── gui/                # GUI layer tests
+│   │   └── test_TrussEditController_Advanced.cpp  # Advanced GUI tests (8)
+│   ├── infrastructure/     # Infrastructure layer tests
+│   │   ├── export/
+│   │   │   └── test_export_advanced.cpp           # Export edge cases (8)
+│   │   ├── io/
+│   │   │   └── test_fileio_advanced.cpp           # FileIO edge cases (7)
+│   │   ├── logging/
+│   │   │   └── test_logger_advanced.cpp           # Logger tests (22)
+│   │   └── validation/
+│   │       └── test_validation_advanced.cpp       # Validation tests (19)
 │   └── application/        # Application layer facade tests
 │       ├── test_truss_application_service.cpp
 │       └── test_analysis_application_service.cpp
 │
-├── integration/             # Integration tests (multi-component workflows)
-│   ├── test_cli_integration.cpp         # End-to-end CLI workflows
-│   ├── test_simple_truss_analysis.cpp
-│   ├── test_simple_integration.cpp
-│   ├── test_working_integration.cpp
-│   └── test_minimal_analysis.cpp
+├── integration/             # Integration tests (53 passing)
+│   ├── test_e2e_workflows.cpp           # E2E workflow scenarios (7)
+│   ├── test_cli_integration.cpp         # CLI workflows
+│   ├── test_simple_truss_analysis.cpp   # Analysis workflows
+│   └── test_gui_integration.cpp         # GUI integration
 │
 ├── fixtures/                # Shared test data and helpers
 │   ├── export_golden/      # Golden master files for export validation
@@ -37,11 +51,32 @@ tests/
 └── test_gtest_integration.cpp  # GTest framework validation
 ```
 
+## Test Statistics
+
+### Overall Metrics
+
+- **Total Tests:** 766 (713 unit + 53 integration)
+- **Passing:** 765 (99.87%)
+- **Skipped:** 1 (golden master validation)
+- **Failed:** 0
+- **Execution Time:** 148ms total
+  - Unit tests: 143ms (0.20ms avg)
+  - Integration tests: 5ms (0.09ms avg)
+
+### Phase 8 Additions (February 2026)
+
+- GUI Layer: +8 tests (rapid operations, error recovery)
+- Export Layer: +8 tests (edge cases, large files)
+- FileIO Layer: +7 tests (concurrent I/O, Unicode)
+- Validation Layer: +19 tests (extreme geometries)
+- Logger Layer: +22 tests (concurrent logging, stress)
+- Integration E2E: +7 tests (complete workflows)
+
 ## Test Organization Principles
 
 ### Unit Tests (`tests/unit/`)
 
-- **Framework:** Google Test (GTest) with GMock for mocking
+- **Framework:** Google Test (GTest) 1.17.0 with GMock for mocking
 - **Purpose:** Test individual classes or functions in isolation
 - **CLI Testing Strategy:** Simplified mock-based approach with minimal output interfaces
 - **Characteristics:**

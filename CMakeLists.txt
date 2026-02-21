@@ -257,6 +257,7 @@ if(BUILD_TESTING)
         tests/unit/core/test_truss.cpp
         tests/unit/core/test_load.cpp
         tests/unit/core/test_truss_validator.cpp
+        tests/unit/core/test_validation_advanced.cpp
         tests/unit/core/test_stiffness_assembler.cpp
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
@@ -272,8 +273,11 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/export/test_text_exporter.cpp
         tests/unit/infrastructure/export/test_xml_exporter.cpp
         tests/unit/infrastructure/export/test_exporter_factory.cpp
+        tests/unit/infrastructure/export/test_export_advanced.cpp
         tests/unit/infrastructure/logging/test_logger.cpp
+        tests/unit/infrastructure/logging/test_logger_advanced.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
+        tests/unit/infrastructure/io/test_fileio_advanced.cpp
         tests/unit/infrastructure/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
@@ -289,6 +293,7 @@ if(BUILD_TESTING)
         tests/unit/cli/test_export_command.cpp
         # GUI layer tests (Controller API Stabilization)
         tests/unit/controllers/test_TrussEditController.cpp
+        tests/unit/controllers/test_TrussEditController_Advanced.cpp
         tests/unit/controllers/test_ProjectController.cpp
         tests/unit/controllers/test_AnalysisController.cpp
         tests/unit/presenters/test_TrussDataPresenter.cpp
@@ -348,6 +353,7 @@ if(BUILD_TESTING)
         tests/integration/test_ui_load_diagnosis.cpp
         tests/integration/test_load_viewport_fix.cpp
         tests/integration/test_gui_file_load.cpp
+        tests/integration/test_e2e_workflows.cpp
         # GUI controllers needed for GUI lifecycle tests
         src/gui/controllers/TrussEditController.cpp
         src/gui/controllers/ProjectController.cpp
@@ -560,4 +566,50 @@ set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 
 include(CPack)
 
+# ============================================================================
+# Phase 7 Coverage Analysis Enhancement Targets
+# ============================================================================
+
+# Add enhanced coverage target for Phase 7 analysis with detailed metrics
+if(ENABLE_COVERAGE AND LCOV AND GENHTML)
+    # Add custom target for detailed coverage analysis
+    add_custom_target(coverage-analysis
+        COMMAND ${CMAKE_COMMAND} -E echo "=== Phase 7 Coverage Analysis ==="
+        COMMAND ${CMAKE_COMMAND} -E echo "Capturing detailed coverage metrics..."
+        COMMAND ${LCOV} --capture --directory . --output-file coverage_analysis.info 
+                --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+        COMMAND ${CMAKE_COMMAND} -E echo "Filtering external code..."
+        COMMAND ${LCOV} --remove coverage_analysis.info '/usr/*' '*/build/*' '*/tests/*' 
+                '*/external/*' '*/v1/*' '*/opt/homebrew/*' 
+                --output-file coverage_analysis_filtered.info 
+                --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,unused
+        COMMAND ${CMAKE_COMMAND} -E echo "Generating module-level coverage statistics..."
+        COMMAND ${LCOV} --summary coverage_analysis_filtered.info 
+                --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Phase 7: Detailed coverage analysis complete"
+        VERBATIM
+    )
+
+    # Add target for generating coverage dashboard
+    add_custom_target(coverage-dashboard
+        COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage dashboard..."
+        COMMAND ${CMAKE_COMMAND} -E make_directory coverage_dashboard
+        COMMAND ${GENHTML} coverage_analysis_filtered.info 
+                --output-directory coverage_dashboard
+                --title "Phase 7: 2D Truss Analysis Coverage Dashboard"
+                --prefix ${CMAKE_SOURCE_DIR}
+                --rc branch_coverage=1
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Coverage dashboard generated at: coverage_dashboard/index.html"
+        DEPENDS coverage-analysis
+        VERBATIM
+    )
+
+    message(STATUS "Phase 7 Coverage Targets Added:")
+    message(STATUS "  - make coverage-analysis   : Run analysis with detailed metrics")
+    message(STATUS "  - make coverage-dashboard  : Generate dashboard (implies analysis)")
+    message(STATUS "  - make coverage            : Original coverage target (existing)")
+    message(STATUS "  - make coverage-clean      : Clean coverage data (existing)")
+endif()
 

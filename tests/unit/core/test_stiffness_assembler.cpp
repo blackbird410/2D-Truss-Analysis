@@ -16,6 +16,9 @@
 #include "../../src/core/analysis/StiffnessAssembler.hpp"
 #include "../../src/core/model/Truss.hpp"
 #include <cmath>
+#include <Eigen/SVD>
+#include <Eigen/LU>
+#include <limits>
 
 using namespace truss::core;
 using namespace truss::core::analysis;
@@ -135,4 +138,154 @@ TEST_F(StiffnessAssemblerTest, MultipleOverlappingMembers) {
     }
 }
 
-// GTest provides main() automatically
+// Phase 7 Task 7.5: Analysis Layer Hardening - Edge Case Tests
+
+TEST_F(StiffnessAssemblerTest, ExtremeCoordinateRangeAssembly) {
+    // Test assembly with nodes spanning extreme coordinate ranges
+    Truss truss;
+    auto n1 = truss.addNode(1e-8, 1e-8, SupportType::Pinned);     // Micron scale
+    auto n2 = truss.addNode(1000.0, 1000.0, SupportType::RollerY);  // Meter scale
+    
+    truss.addMember(n1, n2);
+    truss.assignDofNumbers();
+    
+    MatrixXd K = assembler.assemble(truss);
+    
+    // Verify matrix properties despite extreme ranges
+    EXPECT_EQ(K.rows(), 4);  // 2 nodes × 2 DOFs
+    EXPECT_EQ(K.cols(), 4);
+    
+    // Matrix should remain symmetric
+    for (int i = 0; i < K.rows(); ++i) {
+        for (int j = 0; j < K.cols(); ++j) {
+            EXPECT_NEAR(K(i, j), K(j, i), 1e-6);
+        }
+    }
+}
+
+TEST_F(StiffnessAssemblerTest, NearlyZeroLengthMember) {
+    // Test assembly with very short member (near singularity)
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1e-6, 0.0, SupportType::Free);
+    
+    truss.addMember(n1, n2);
+    truss.assignDofNumbers();
+    
+    MatrixXd K = assembler.assemble(truss);
+    
+    // Matrix should still be assembled even for short members
+    EXPECT_EQ(K.rows(), 4);
+    
+    // Check for numerical issues
+    EXPECT_FALSE(std::isnan(K(0, 0)));
+    EXPECT_FALSE(std::isinf(K(0, 0)));
+}
+
+TEST_F(StiffnessAssemblerTest, SingleTriangleTruss) {
+    // Test assembly of minimal valid structure (single triangle)
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::Pinned);
+    auto n3 = truss.addNode(0.5, 0.866, SupportType::Free);
+    
+    truss.addMember(n1, n2);
+    truss.addMember(n1, n3);
+    truss.addMember(n2, n3);
+    truss.assignDofNumbers();
+    
+    MatrixXd K = assembler.assemble(truss);
+    
+    // 3 nodes × 2 DOFs = 6 total DOFs
+    // 2 pinned nodes (4 constrained DOFs) + 1 free node (2 free DOFs)
+    // Should reduce to 2×2 matrix for free DOFs
+    EXPECT_EQ(K.rows(), 6);
+    EXPECT_EQ(K.cols(), 6);
+}
+
+// ============================================================================
+// Singular Matrix Detection Tests (Task 7.5 - Analysis Hardening)
+// ============================================================================
+
+TEST_F(StiffnessAssemblerTest, SingularMatrixDetection) {
+    // Truss with insufficient constraints (kinematic instability)
+    // This tests detection of numerically singular matrices
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Free);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::Free);
+    truss.addMember(n1, n2);
+    truss.assignDofNumbers();
+
+    MatrixXd K = assembler.assemble(truss);
+
+    // Compute condition number (indicator of singularity)
+    Eigen::JacobiSVD<MatrixXd> svd(K);
+    double conditionNumber = svd.singularValues()(0) / svd.singularValues()(K.cols()-1);
+    
+    // Numerically singular matrices have very high condition numbers
+    EXPECT_GT(conditionNumber, 1e10);
+}
+
+TEST_F(StiffnessAssemblerTest, RankDeficientMatrix) {
+    // Create truss with both nodes only constrained in x-direction
+    // This creates a rank-deficient stiffness matrix
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::RollerY);  // Constrained in Y only
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::RollerY);  // Constrained in Y only
+    truss.addMember(n1, n2);
+    truss.assignDofNumbers();
+
+    MatrixXd K = assembler.assemble(truss);
+
+    // Compute rank using full pivot LU decomposition
+    Eigen::FullPivLU<MatrixXd> lu(K);
+    int rank = lu.rank();
+    
+    // Rank-deficient matrix should have rank less than dimensions
+    EXPECT_LT(rank, K.rows());
+}
+
+TEST_F(StiffnessAssemblerTest, NearSingularSystem) {
+    // Create a well-formed structure that tests near-singularity conditions
+    // by checking condition number of properly constrained system
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1e-10, 0.0, SupportType::Free);  // Very close to n1
+    truss.addMember(n1, n2);
+    truss.assignDofNumbers();
+
+    MatrixXd K = assembler.assemble(truss);
+
+    // Check for high condition number
+    Eigen::JacobiSVD<MatrixXd> svd(K);
+    double conditionNumber = svd.singularValues()(0) / svd.singularValues()(K.cols()-1);
+    
+    // Should have a high condition number indicating numerical issues
+    EXPECT_GT(conditionNumber, 1e6);
+}
+
+TEST_F(StiffnessAssemblerTest, ConditionNumberComputation) {
+    // Create well-conditioned system (equilateral triangle properly supported)
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::RollerY);
+    auto n3 = truss.addNode(0.5, 0.866, SupportType::Free);
+    truss.addMember(n1, n2);
+    truss.addMember(n2, n3);
+    truss.addMember(n3, n1);
+    truss.assignDofNumbers();
+
+    MatrixXd K = assembler.assemble(truss);
+
+    // Compute condition number
+    Eigen::JacobiSVD<MatrixXd> svd(K);
+    double conditionNumber = svd.singularValues()(0) / svd.singularValues()(K.cols()-1);
+
+    // Just verify that condition number can be computed
+    // Different geometric configurations will have different condition numbers
+    EXPECT_GT(conditionNumber, 0.0);
+    // The condition number should be finite (not infinite or NaN)
+    EXPECT_TRUE(std::isfinite(conditionNumber));
+}
+
+

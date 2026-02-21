@@ -233,3 +233,85 @@ TEST(MemberTest, GlobalStiffnessMatrixSymmetry) {
     }
 }
 
+// Phase 7 Task 7.4: Domain Layer Enhancement - Edge Case Tests
+
+TEST(MemberTest, ZeroLengthMemberCreation) {
+    auto node1 = std::make_shared<Node>(1, Point2D(0.0, 0.0), SupportType::Pinned);
+    auto node2 = std::make_shared<Node>(2, Point2D(0.0, 0.0), SupportType::Free);
+    MaterialProperties material(200.0e9, 7850.0, 250e6, 400e6, "Steel");
+    SectionProperties section(0.01, 1e-6, 0.01, "Test");
+
+    // Creating zero-length member (engineering edge case)
+    Member zeroMember(1, node1, node2, material, section);
+
+    // Length should be exactly zero
+    EXPECT_NEAR(zeroMember.getLength(), 0.0, 1e-15);
+}
+
+TEST(MemberTest, ExtremeLengthMembers) {
+    MaterialProperties material(200.0e9, 7850.0, 250e6, 400e6, "Steel");
+    SectionProperties section(0.01, 1e-6, 0.01, "Test");
+
+    // Very short member (micron-scale)
+    auto short1 = std::make_shared<Node>(10, Point2D(0.0, 0.0), SupportType::Pinned);
+    auto short2 = std::make_shared<Node>(11, Point2D(1e-6, 0.0), SupportType::Free);
+    Member shortMember(10, short1, short2, material, section);
+    EXPECT_NEAR(shortMember.getLength(), 1e-6, 1e-12);
+
+    // Very long member (km-scale, unrealistic but numerically valid)
+    auto long1 = std::make_shared<Node>(12, Point2D(0.0, 0.0), SupportType::Pinned);
+    auto long2 = std::make_shared<Node>(13, Point2D(1000.0, 1000.0), SupportType::Free);
+    Member longMember(11, long1, long2, material, section);
+    EXPECT_NEAR(longMember.getLength(), 1414.213562373095, 1e-8);
+}
+
+TEST(MemberTest, StressStateExtremeMagnitudes) {
+    auto n1 = std::make_shared<Node>(20, Point2D(0.0, 0.0), SupportType::Pinned);
+    auto n2 = std::make_shared<Node>(21, Point2D(1.0, 0.0), SupportType::Free);
+    MaterialProperties material(200.0e9, 7850.0, 250e6, 400e6, "Steel");
+    SectionProperties section(0.01, 1e-6, 0.01, "Test");
+    Member member(20, n1, n2, material, section);
+
+    // Very large tension (yield stress approached)
+    member.setAxialForce(350e6 * 0.01);  // 350 MPa stress
+    EXPECT_NEAR(member.getAxialStress(), 350e6, 1e4);
+
+    // Very large compression
+    member.setAxialForce(-350e6 * 0.01);
+    EXPECT_NEAR(member.getAxialStress(), -350e6, 1e4);
+}
+
+TEST(MemberTest, StressStateNearZero) {
+    auto n1 = std::make_shared<Node>(22, Point2D(0.0, 0.0), SupportType::Pinned);
+    auto n2 = std::make_shared<Node>(23, Point2D(1.0, 0.0), SupportType::Free);
+    MaterialProperties material(200.0e9, 7850.0, 250e6, 400e6, "Steel");
+    SectionProperties section(0.01, 1e-6, 0.01, "Test");
+    Member member(21, n1, n2, material, section);
+
+    // Forces near numerical precision limits
+    member.setAxialForce(1e-15);  // Near machine epsilon
+    double stress = member.getAxialStress();
+    EXPECT_TRUE(std::abs(stress) < 1e-10);  // Effectively zero
+}
+
+TEST(MemberTest, AlternatingStressStates) {
+    auto n1 = std::make_shared<Node>(24, Point2D(0.0, 0.0), SupportType::Pinned);
+    auto n2 = std::make_shared<Node>(25, Point2D(1.0, 0.0), SupportType::Free);
+    MaterialProperties material(200.0e9, 7850.0, 250e6, 400e6, "Steel");
+    SectionProperties section(0.01, 1e-6, 0.01, "Test");
+    Member member(22, n1, n2, material, section);
+
+    // Tension -> Compression -> Tension
+    member.setAxialForce(100e3);
+    double stress1 = member.getAxialStress();
+
+    member.setAxialForce(-100e3);
+    double stress2 = member.getAxialStress();
+
+    member.setAxialForce(100e3);
+    double stress3 = member.getAxialStress();
+
+    EXPECT_NEAR(stress1, stress3, 1e-6);  // Should be identical
+    EXPECT_LT(stress2, 0);  // Should be negative
+}
+
