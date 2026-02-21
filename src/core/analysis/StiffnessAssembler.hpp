@@ -61,7 +61,7 @@ public:
      * Complexity: O(n * d^2) where n = members, d = DOFs per member (4)
      * Memory: O(totalDofs^2)
      */
-    MatrixXd assemble(const Truss& truss) const;
+    static MatrixXd assemble(const Truss& truss);
 
     /**
      * @brief Assemble stiffness matrix and return as 2D vector (for display)
@@ -83,7 +83,7 @@ private:
      * global DOF indices, then adds the member's contribution to the
      * appropriate locations in the global matrix.
      */
-    void addMemberContribution(const Member& member, MatrixXd& globalK) const;
+    static void addMemberContribution(const Member& member, MatrixXd& globalK);
 };
 
 // Type aliases

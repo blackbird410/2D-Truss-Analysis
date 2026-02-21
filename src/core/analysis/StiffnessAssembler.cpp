@@ -9,7 +9,7 @@
 
 namespace truss::core::analysis {
 
-MatrixXd StiffnessAssembler::assemble(const Truss& truss) const {
+MatrixXd StiffnessAssembler::assemble(const Truss& truss) {
     // Initialize zero matrix
     size_t totalDofs = truss.getTotalDofs();
     MatrixXd K = MatrixXd::Zero(totalDofs, totalDofs);
@@ -40,7 +40,8 @@ StiffnessAssembler::assembleAsVector(const Truss& truss) const {
     return result;
 }
 
-void StiffnessAssembler::addMemberContribution(const Member& member, MatrixXd& globalK) const {
+// cppcheck-suppress constParameterReference
+void StiffnessAssembler::addMemberContribution(const Member& member, MatrixXd& globalK) {
     // Get member's global stiffness matrix and DOF indices
     auto dofIndices = member.getGlobalDofIndices();
     MatrixXd memberK = member.getGlobalStiffnessMatrix();

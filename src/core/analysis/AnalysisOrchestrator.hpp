@@ -156,14 +156,14 @@ private:
      * @brief Assign degree-of-freedom indices to nodes
      * @param truss Truss structure
      */
-    void assignDOFs(Truss& truss);
+    static void assignDOFs(Truss& truss);
 
     /**
      * @brief Assemble load vector from nodal forces
      * @param truss Truss structure
      * @return Global load vector
      */
-    VectorXd assembleLoadVector(const Truss& truss) const;
+    static VectorXd assembleLoadVector(const Truss& truss);
 
     /**
      * @brief Compute member axial forces from displacements
@@ -171,7 +171,7 @@ private:
      * @param displacements Global displacement vector
      * @return Member axial forces
      */
-    std::vector<Real> computeMemberForces(const Truss& truss, const VectorXd& displacements) const;
+    static std::vector<Real> computeMemberForces(const Truss& truss, const VectorXd& displacements);
 
     /**
      * @brief Compute support reactions from displacements
@@ -191,14 +191,14 @@ private:
      * @return Complete analysis results
      */
     AnalysisResults
-    postProcessResults(Truss& truss, const VectorXd& displacements, const MatrixXd& K);
+    postProcessResults(const Truss& truss, const VectorXd& displacements, const MatrixXd& K) const;
 
     /**
      * @brief Compute condition number of stiffness matrix
      * @param K Stiffness matrix
      * @return Condition number
      */
-    Real computeConditionNumber(const MatrixXd& K) const;
+    static Real computeConditionNumber(const MatrixXd& K);
 
     /**
      * @brief Check for singular stiffness matrix
@@ -206,7 +206,7 @@ private:
      * @return Determinant or matrix rank indicator
      * @throws std::runtime_error if matrix is singular
      */
-    Real checkMatrixSingularity(const MatrixXd& K) const;
+    static Real checkMatrixSingularity(const MatrixXd& K);
 
     /**
      * @brief Compute strain energy from displacements
@@ -214,28 +214,28 @@ private:
      * @param displacements Global displacement vector
      * @return Total strain energy
      */
-    Real computeStrainEnergy(const Truss& truss, const VectorXd& displacements) const;
+    static Real computeStrainEnergy(const Truss& truss, const VectorXd& displacements);
 
     /**
      * @brief Find maximum displacement magnitude
      * @param displacements Global displacement vector
      * @return Maximum displacement magnitude
      */
-    Real findMaxDisplacement(const VectorXd& displacements) const;
+    static Real findMaxDisplacement(const VectorXd& displacements);
 
     /**
      * @brief Find maximum stress in any member
      * @param stresses Member stresses
      * @return Maximum stress magnitude
      */
-    Real findMaxStress(const std::vector<Real>& stresses) const;
+    static Real findMaxStress(const std::vector<Real>& stresses);
 
     /**
      * @brief Update truss with analysis results
      * @param truss Truss structure
      * @param results Analysis results
      */
-    void updateTrussResults(Truss& truss, const AnalysisResults& results);
+    static void updateTrussResults(Truss& truss, const AnalysisResults& results);
 
     // Logging
     void logAnalysisStart(const Truss& truss) const;

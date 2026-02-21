@@ -103,14 +103,14 @@ public:
      * @param truss The truss to validate
      * @return Complete validation result with all issues found
      */
-    ValidationResult validate(const Truss& truss) const;
+    static ValidationResult validate(const Truss& truss);
 
     /**
      * @brief Quick validation check (returns only pass/fail)
      * @param truss The truss to validate
      * @return true if truss passes all critical checks
      */
-    bool isValid(const Truss& truss) const;
+    static bool isValid(const Truss& truss);
 
     // Individual validation categories (can be called independently)
 
@@ -118,64 +118,64 @@ public:
      * @brief Validate structural completeness
      * Checks: minimum node count, minimum member count, no null pointers
      */
-    void validateStructuralCompleteness(const Truss& truss, ValidationResult& result) const;
+    static void validateStructuralCompleteness(const Truss& truss, ValidationResult& result);
 
     /**
      * @brief Validate geometric properties
      * Checks: non-zero member lengths, no duplicate nodes, valid coordinates
      */
-    void validateGeometry(const Truss& truss, ValidationResult& result) const;
+    static void validateGeometry(const Truss& truss, ValidationResult& result);
 
     /**
      * @brief Validate material properties
      * Checks: positive Young's modulus, positive area, positive density
      */
-    void validateMaterials(const Truss& truss, ValidationResult& result) const;
+    static void validateMaterials(const Truss& truss, ValidationResult& result);
 
     /**
      * @brief Validate boundary conditions
      * Checks: adequate constraints, no over-constraints, valid support types
      */
-    void validateBoundaryConditions(const Truss& truss, ValidationResult& result) const;
+    static void validateBoundaryConditions(const Truss& truss, ValidationResult& result);
 
     /**
      * @brief Validate static determinacy
      * Checks: 2n = m + r equation, proper constraint distribution
      */
-    void validateStaticDeterminacy(const Truss& truss, ValidationResult& result) const;
+    static void validateStaticDeterminacy(const Truss& truss, ValidationResult& result);
 
     /**
      * @brief Validate kinematic stability
      * Checks: no mechanisms, adequate constraints to prevent rigid body motion
      */
-    void validateKinematicStability(const Truss& truss, ValidationResult& result) const;
+    static void validateKinematicStability(const Truss& truss, ValidationResult& result);
 
     /**
      * @brief Validate load definitions
      * Checks: loads applied to existing nodes, non-zero loads, no conflicts
      */
-    void validateLoads(const Truss& truss, ValidationResult& result) const;
+    static void validateLoads(const Truss& truss, ValidationResult& result);
 
     /**
      * @brief Validate member connectivity
      * Checks: all members connect valid nodes, no self-loops, no duplicate members
      */
-    void validateConnectivity(const Truss& truss, ValidationResult& result) const;
+    static void validateConnectivity(const Truss& truss, ValidationResult& result);
 
 private:
     // Helper methods for specific checks
-    bool checkMinimumConstraints(const Truss& truss) const;
-    bool checkRigidBodyStability(const Truss& truss) const;
-
-    std::vector<std::pair<NodeId, NodeId>> findCoincidentNodePairs(const Truss& truss,
-                                                                   Real tolerance) const;
-    std::vector<MemberId> findZeroLengthMembers(const Truss& truss, Real tolerance) const;
-    std::vector<std::pair<MemberId, MemberId>> findDuplicateMembers(const Truss& truss) const;
+    static bool checkMinimumConstraints(const Truss& truss);
+    static bool checkRigidBodyStability(const Truss& truss);
     [[maybe_unused]] static bool hasCoincidentNodes(
         const Truss& truss, Real tolerance = Constants::GEOMETRY_TOLERANCE);
     [[maybe_unused]] static bool hasDuplicateMembers(const Truss& truss);
     [[maybe_unused]] static bool hasZeroLengthMembers(
         const Truss& truss, Real tolerance = Constants::GEOMETRY_TOLERANCE);
+
+    static std::vector<std::pair<NodeId, NodeId>> findCoincidentNodePairs(const Truss& truss,
+                                                                          Real tolerance);
+    static std::vector<MemberId> findZeroLengthMembers(const Truss& truss, Real tolerance);
+    static std::vector<std::pair<MemberId, MemberId>> findDuplicateMembers(const Truss& truss);
 };
 
 }  // namespace truss::core::validation

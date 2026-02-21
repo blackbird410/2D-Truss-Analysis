@@ -67,7 +67,7 @@ public:
      * // freeDofs might be [0, 1, 2, 5, 6, 7] for a 4-node truss with 2 pinned supports
      * @endcode
      */
-    std::vector<Index> getFreeDofs(const Truss& truss) const;
+    static std::vector<Index> getFreeDofs(const Truss& truss);
 
     /**
      * @brief Get indices of constrained (fixed) degrees of freedom
@@ -89,7 +89,7 @@ public:
      * // constrainedDofs might be [3, 4, 8, 9] for a 5-node truss with 2 pinned supports
      * @endcode
      */
-    std::vector<Index> getConstrainedDofs(const Truss& truss) const;
+    static std::vector<Index> getConstrainedDofs(const Truss& truss);
 
     /**
      * @brief Apply boundary conditions to global stiffness matrix
@@ -118,7 +118,7 @@ public:
      * MatrixXd Kff = handler.applyToStiffness(K, freeDofs); // 6×6 matrix
      * @endcode
      */
-    MatrixXd applyToStiffness(const MatrixXd& K, const std::vector<Index>& freeDofs) const;
+    static MatrixXd applyToStiffness(const MatrixXd& K, const std::vector<Index>& freeDofs);
 
     /**
      * @brief Apply boundary conditions to global load vector
@@ -147,7 +147,7 @@ public:
      * VectorXd Ff = handler.applyToLoad(F, freeDofs); // 6×1 vector
      * @endcode
      */
-    VectorXd applyToLoad(const VectorXd& F, const std::vector<Index>& freeDofs) const;
+    static VectorXd applyToLoad(const VectorXd& F, const std::vector<Index>& freeDofs);
 
     /**
      * @brief Expand free DOF displacements to full displacement vector
@@ -181,9 +181,9 @@ public:
      * // U will have Uf values at indices 0-5, zeros at indices 6-9
      * @endcode
      */
-    VectorXd expandDisplacements(const VectorXd& freeSolution,
-                                 const std::vector<Index>& freeDofs,
-                                 size_t totalDofs) const;
+    static VectorXd expandDisplacements(const VectorXd& freeSolution,
+                                        const std::vector<Index>& freeDofs,
+                                        size_t totalDofs);
 };
 
 }  // namespace truss::core::analysis
