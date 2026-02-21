@@ -57,7 +57,7 @@ bool ConsoleLogger::isLevelEnabled(LogLevel level) const {
     return static_cast<int>(level) >= static_cast<int>(m_minLevel);
 }
 
-void ConsoleLogger::log(LogLevel level, const std::string& message) {
+void ConsoleLogger::log(LogLevel level, const std::string& message) const {
     std::lock_guard<std::mutex> lock(m_mutex);
 
     // Check level filter (duplicates isLevelEnabled logic to avoid deadlock,

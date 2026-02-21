@@ -55,7 +55,7 @@ private:
      * @param level Severity level
      * @param message Message to log
      */
-    void log(LogLevel level, const std::string& message);
+    void log(LogLevel level, const std::string& message) const;
 
     /**
      * @brief Get current timestamp string
