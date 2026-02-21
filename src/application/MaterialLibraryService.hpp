@@ -175,6 +175,14 @@ private:
 
     void initializeDefaultMaterials();
     void initializeDefaultSections();
+    
+    // Non-virtual helpers for initialization (avoid virtual calls in constructor)
+    void addMaterialInternal(const std::string& name,
+                             const std::string& description,
+                             const core::MaterialProperties& properties);
+    void addSectionInternal(const std::string& name,
+                            const std::string& description,
+                            const core::SectionProperties& properties);
 };
 
 }  // namespace truss::application
