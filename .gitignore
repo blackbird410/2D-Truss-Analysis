@@ -211,3 +211,4 @@ validate_*_golden_master
 test_*_exporter
 test_json
 test_xml
+/cppcheck-report.txt
