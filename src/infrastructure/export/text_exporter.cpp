@@ -75,7 +75,7 @@ bool TextExporter::exportResults(const ITrussView& truss,
     }
 }
 
-std::string TextExporter::formatNumber(Real value, const ExportOptions& options) const {
+std::string TextExporter::formatNumber(Real value, const ExportOptions& options) {
     std::stringstream ss;
     if (options.useScientificNotation) {
         ss << std::scientific;
@@ -86,7 +86,7 @@ std::string TextExporter::formatNumber(Real value, const ExportOptions& options)
     return ss.str();
 }
 
-std::string TextExporter::formatTimestamp() const {
+std::string TextExporter::formatTimestamp() {
     auto now = std::chrono::system_clock::now();
     auto time_t = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -94,11 +94,11 @@ std::string TextExporter::formatTimestamp() const {
     return ss.str();
 }
 
-void TextExporter::writeSeparator(std::ostream& os, int width) const {
+void TextExporter::writeSeparator(std::ostream& os, int width) {
     os << std::string(width, '=') << "\n";
 }
 
-void TextExporter::writeSectionHeader(std::ostream& os, const std::string& title) const {
+void TextExporter::writeSectionHeader(std::ostream& os, const std::string& title) {
     os << "\n";
     writeSeparator(os);
     os << title << "\n";

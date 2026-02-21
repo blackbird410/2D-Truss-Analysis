@@ -81,7 +81,7 @@ bool JSONExporter::exportResults(const ITrussView& truss,
     }
 }
 
-std::string JSONExporter::formatNumber(Real value, const ExportOptions& options) const {
+std::string JSONExporter::formatNumber(Real value, const ExportOptions& options) {
     std::stringstream ss;
     if (options.useScientificNotation) {
         ss << std::scientific;
@@ -92,7 +92,7 @@ std::string JSONExporter::formatNumber(Real value, const ExportOptions& options)
     return ss.str();
 }
 
-std::string JSONExporter::formatTimestamp() const {
+std::string JSONExporter::formatTimestamp() {
     auto now = std::chrono::system_clock::now();
     auto time_t = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -100,7 +100,7 @@ std::string JSONExporter::formatTimestamp() const {
     return ss.str();
 }
 
-std::string JSONExporter::escapeString(const std::string& str) const {
+std::string JSONExporter::escapeString(const std::string& str) {
     std::string result;
     result.reserve(str.length());
 

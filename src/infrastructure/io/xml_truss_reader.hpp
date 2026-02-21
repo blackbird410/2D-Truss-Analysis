@@ -55,7 +55,7 @@ private:
     /**
      * @brief Parse metadata section
      */
-    void parseMetadata(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
+    static void parseMetadata(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
 
     /**
      * @brief Parse nodes section
@@ -63,48 +63,48 @@ private:
      * @param dto Target DTO
      * @return Set of parsed node IDs for validation
      */
-    std::unordered_set<core::NodeId> parseNodes(tinyxml2::XMLElement* element,
-                                                core::interfaces::TrussDTO& dto);
+    static std::unordered_set<core::NodeId> parseNodes(tinyxml2::XMLElement* nodesElement,
+                                                       core::interfaces::TrussDTO& dto);
 
     /**
      * @brief Parse members section
-     * @param element Members XML element
+     * @param membersElement Members XML element
      * @param dto Target DTO
      * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseMembers(tinyxml2::XMLElement* element,
-                      core::interfaces::TrussDTO& dto,
-                      const std::unordered_set<core::NodeId>& validNodeIds);
+    static void parseMembers(tinyxml2::XMLElement* membersElement,
+                             core::interfaces::TrussDTO& dto,
+                             const std::unordered_set<core::NodeId>& validNodeIds);
 
     /**
      * @brief Parse loads section
-     * @param element Loads XML element
+     * @param loadsElement Loads XML element
      * @param dto Target DTO
      * @param validNodeIds Set of valid node IDs for referential integrity checking
      */
-    void parseLoads(tinyxml2::XMLElement* element,
-                    core::interfaces::TrussDTO& dto,
-                    const std::unordered_set<core::NodeId>& validNodeIds);
+    static void parseLoads(tinyxml2::XMLElement* loadsElement,
+                           core::interfaces::TrussDTO& dto,
+                           const std::unordered_set<core::NodeId>& validNodeIds);
 
     /**
      * @brief Parse support type from string
      */
-    core::SupportType parseSupportType(const std::string& str);
+    static core::SupportType parseSupportType(const std::string& str);
 
     /**
      * @brief Get required attribute as double
      */
-    core::Real getDoubleAttribute(tinyxml2::XMLElement* element, const char* name);
+    static core::Real getDoubleAttribute(tinyxml2::XMLElement* element, const char* name);
 
     /**
      * @brief Get required attribute as int
      */
-    int getIntAttribute(tinyxml2::XMLElement* element, const char* name);
+    static int getIntAttribute(tinyxml2::XMLElement* element, const char* name);
 
     /**
      * @brief Get optional attribute as double with default
      */
-    core::Real
+    static core::Real
     getDoubleAttribute(tinyxml2::XMLElement* element, const char* name, core::Real defaultValue);
 };
 

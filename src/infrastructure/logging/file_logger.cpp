@@ -129,7 +129,7 @@ void FileLogger::log(LogLevel level, const std::string& message) {
     }
 }
 
-std::string FileLogger::getCurrentTimestamp() const {
+std::string FileLogger::getCurrentTimestamp() {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
 
@@ -142,7 +142,7 @@ std::string FileLogger::getCurrentTimestamp() const {
     return oss.str();
 }
 
-std::string FileLogger::getLevelString(LogLevel level) const {
+std::string FileLogger::getLevelString(LogLevel level) {
     switch (level) {
         case LogLevel::Trace:
             return "[TRACE]";

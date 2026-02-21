@@ -85,14 +85,14 @@ private:
      * @brief Get current timestamp string
      * @return ISO 8601 timestamp (YYYY-MM-DD HH:MM:SS)
      */
-    std::string getCurrentTimestamp() const;
+    static std::string getCurrentTimestamp();
 
     /**
      * @brief Get log level string
      * @param level Severity level
      * @return Formatted level string (e.g., "[INFO ]")
      */
-    std::string getLevelString(LogLevel level) const;
+    static std::string getLevelString(LogLevel level);
 
     std::filesystem::path m_filePath;  ///< Log file path
     std::ofstream m_file;              ///< Output file stream

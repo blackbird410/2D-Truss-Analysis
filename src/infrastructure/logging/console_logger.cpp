@@ -80,7 +80,7 @@ void ConsoleLogger::log(LogLevel level, const std::string& message) {
     std::fflush(stream);
 }
 
-std::string ConsoleLogger::getCurrentTimestamp() const {
+std::string ConsoleLogger::getCurrentTimestamp() {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
 
@@ -93,7 +93,7 @@ std::string ConsoleLogger::getCurrentTimestamp() const {
     return oss.str();
 }
 
-std::string ConsoleLogger::getLevelString(LogLevel level) const {
+std::string ConsoleLogger::getLevelString(LogLevel level) {
     switch (level) {
         case LogLevel::Trace:
             return "[TRACE]";

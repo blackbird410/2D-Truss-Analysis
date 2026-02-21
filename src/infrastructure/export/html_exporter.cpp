@@ -85,7 +85,7 @@ bool HTMLExporter::exportResults(const ITrussView& truss,
     }
 }
 
-std::string HTMLExporter::formatNumber(Real value, const ExportOptions& options) const {
+std::string HTMLExporter::formatNumber(Real value, const ExportOptions& options) {
     std::stringstream ss;
     if (options.useScientificNotation) {
         ss << std::scientific;
@@ -96,7 +96,7 @@ std::string HTMLExporter::formatNumber(Real value, const ExportOptions& options)
     return ss.str();
 }
 
-std::string HTMLExporter::formatTimestamp() const {
+std::string HTMLExporter::formatTimestamp() {
     auto now = std::chrono::system_clock::now();
     auto time_t = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -104,7 +104,7 @@ std::string HTMLExporter::formatTimestamp() const {
     return ss.str();
 }
 
-std::string HTMLExporter::escapeHtml(const std::string& text) const {
+std::string HTMLExporter::escapeHtml(const std::string& text) {
     std::string result;
     result.reserve(text.size());
     for (char c : text) {

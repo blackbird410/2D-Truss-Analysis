@@ -39,7 +39,7 @@ private:
     /**
      * @brief Create metadata element
      */
-    void createMetadata(tinyxml2::XMLDocument& doc,
+    static void createMetadata(tinyxml2::XMLDocument& doc,
                         tinyxml2::XMLElement* root,
                         const core::interfaces::TrussDTO& trussData,
                         const FileIOOptions& options);
@@ -47,28 +47,28 @@ private:
     /**
      * @brief Create nodes element
      */
-    void createNodes(tinyxml2::XMLDocument& doc,
-                     tinyxml2::XMLElement* root,
-                     const core::interfaces::TrussDTO& trussData);
+    static void createNodes(tinyxml2::XMLDocument& doc,
+                            tinyxml2::XMLElement* root,
+                            const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Create members element
      */
-    void createMembers(tinyxml2::XMLDocument& doc,
+    static void createMembers(tinyxml2::XMLDocument& doc,
                        tinyxml2::XMLElement* root,
                        const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Create loads element
      */
-    void createLoads(tinyxml2::XMLDocument& doc,
+    static void createLoads(tinyxml2::XMLDocument& doc,
                      tinyxml2::XMLElement* root,
                      const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Convert support type to string
      */
-    std::string supportTypeToString(core::SupportType type);
+    static std::string supportTypeToString(core::SupportType type);
 };
 
 }  // namespace truss::infrastructure::io

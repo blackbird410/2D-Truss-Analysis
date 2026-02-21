@@ -93,7 +93,7 @@ private:
     /**
      * @brief Write LaTeX document preamble
      */
-    void writePreamble(std::ostream& os, const ITrussView& truss);
+    static void writePreamble(std::ostream& os, const ITrussView& truss);
 
     /**
      * @brief Write document closing
@@ -103,47 +103,47 @@ private:
     /**
      * @brief Write geometry section (nodes + members)
      */
-    void
+    static void
     writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write material properties section
      */
-    void
+    static void
     writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write applied loads section
      */
-    void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    static void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write displacements section
      */
-    void writeDisplacementsSection(std::ostream& os,
-                                   const IAnalysisResultsView& results,
-                                   const ExportOptions& options);
+    static void writeDisplacementsSection(std::ostream& os,
+                                          const IAnalysisResultsView& results,
+                                          const ExportOptions& options);
 
     /**
      * @brief Write member forces section
      */
-    void writeMemberForcesSection(std::ostream& os,
-                                  const IAnalysisResultsView& results,
-                                  const ExportOptions& options);
+    static void writeMemberForcesSection(std::ostream& os,
+                                         const IAnalysisResultsView& results,
+                                         const ExportOptions& options);
 
     /**
      * @brief Write reactions section
      */
-    void writeReactionsSection(std::ostream& os,
-                               const IAnalysisResultsView& results,
-                               const ExportOptions& options);
+    static void writeReactionsSection(std::ostream& os,
+                                      const IAnalysisResultsView& results,
+                                      const ExportOptions& options);
 
     /**
      * @brief Write analysis metadata section
      */
-    void writeMetadataSection(std::ostream& os,
-                              const IAnalysisResultsView& results,
-                              const ExportOptions& options);
+    static void writeMetadataSection(std::ostream& os,
+                                     const IAnalysisResultsView& results,
+                                     const ExportOptions& options);
 
     /**
      * @brief Format a number according to export options
@@ -151,20 +151,20 @@ private:
      * @param options Export options (precision, scientific notation)
      * @return Formatted string
      */
-    std::string formatNumber(Real value, const ExportOptions& options) const;
+    static std::string formatNumber(Real value, const ExportOptions& options);
 
     /**
      * @brief Format timestamp for LaTeX
      * @return Formatted timestamp string
      */
-    std::string formatTimestamp() const;
+    static std::string formatTimestamp();
 
     /**
      * @brief Escape special LaTeX characters
      * @param text Input text
      * @return Escaped text safe for LaTeX
      */
-    std::string escapeLatex(const std::string& text) const;
+    static std::string escapeLatex(const std::string& text);
 };
 
 }  // namespace truss::infrastructure::export_
