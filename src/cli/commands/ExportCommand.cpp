@@ -69,7 +69,7 @@ int ExportCommand::execute() {
     m_presenter.displayInfo("\nRe-analyzing to generate results for export...\n");
 
     // Get mutable truss for analysis
-    auto& truss = m_trussService.getTrussMutable(trussHandle);
+    const auto& truss = m_trussService.getTrussMutable(trussHandle);
 
     // Run analysis
     auto analysisResult = m_analysisService.analyze(truss);

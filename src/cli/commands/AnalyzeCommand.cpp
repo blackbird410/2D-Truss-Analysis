@@ -73,7 +73,7 @@ int AnalyzeCommand::execute() {
     }
 
     // Get mutable truss for analysis
-    auto& truss = m_trussService.getTrussMutable(trussHandle);
+    const auto& truss = m_trussService.getTrussMutable(trussHandle);
 
     // Run analysis
     m_presenter.displayInfo("\nRunning structural analysis...\n");

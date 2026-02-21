@@ -1029,7 +1029,7 @@ void PropertyPanel::updateFromSelection() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             const auto& pos = node->getPosition();
@@ -1389,7 +1389,7 @@ void PropertyPanel::onLoadChanged() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             truss::core::Force2D force(m_forceXSpin->value() * 1000.0,  // Convert to N
@@ -1411,7 +1411,7 @@ void PropertyPanel::onSupportChanged() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             // Map combo box index to correct SupportType enum value
@@ -1450,7 +1450,7 @@ void PropertyPanel::onNodePositionChanged() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             truss::core::Point2D newPos(m_nodeXSpin->value(), m_nodeYSpin->value());

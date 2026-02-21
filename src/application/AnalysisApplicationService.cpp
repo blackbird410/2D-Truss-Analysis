@@ -89,7 +89,7 @@ AnalysisApplicationService::exportResults(ResultsHandle handle,
         }
 
         // Get results
-        auto& results = getResults(handle);
+        const auto& results = getResults(handle);
 
         // Create exporter for specified format
         auto exporter = infrastructure::export_::ExporterFactory::create(format);
