@@ -36,7 +36,14 @@ Thank you for your interest in contributing to the 2D Truss Analysis project! Th
    ```
 
 3. **Build and Test**
+
    ```bash
+   # Using production Makefile (recommended)
+   make build        # Build release version
+   make test         # Run all tests
+   make format       # Format code before committing
+
+   # Or use CMake directly
    mkdir build && cd build
    cmake -DCMAKE_BUILD_TYPE=Debug ..
    make -j$(nproc)
@@ -135,6 +142,24 @@ build: update CMake configuration for Qt6
 
 2. **Code Style**
 
+   **Automated Formatting:**
+
+   ```bash
+   # Format all C++ code (uses .clang-format configuration)
+   make format
+
+   # Format Markdown documentation (uses .prettierrc.yaml)
+   make format-docs
+
+   # Format YAML files
+   make format-yaml
+
+   # Check formatting without modifying files (CI-friendly)
+   make format-check-all
+   ```
+
+   **Manual Style Guidelines:**
+
    ```cpp
    // Class names: PascalCase
    class TrussAnalysisEngine {
@@ -156,6 +181,9 @@ build: update CMake configuration for Qt6
        bool validateTrussGeometry(const Truss& truss);
    }
    ```
+
+   **Note:** Code style is enforced by `.clang-format` (C++), `.prettierrc.yaml` (Markdown/YAML),
+   and `.editorconfig` (baseline). Run `make format` before committing.
 
 3. **Documentation**
    ```cpp

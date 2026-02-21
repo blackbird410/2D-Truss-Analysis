@@ -163,7 +163,9 @@ The application follows **Clean Architecture** principles with strict layer sepa
 - **GUI Framework**: Qt6 (Core, Widgets, GUI) with MVP pattern
 - **Linear Algebra**: Eigen3 library
 - **Testing**: Google Test (GTest) + GoogleMock for unit/integration tests
-- **Build System**: CMake 3.20+
+- **Build System**: CMake 3.20+ with production Makefile wrapper
+- **Code Quality**: clang-format, clang-tidy, Prettier, EditorConfig
+- **Coverage**: lcov/genhtml with automated report generation
 - **Platform**: Linux (Ubuntu 22.04+, Fedora, Arch)
 - **Architecture**: Clean Architecture with SOLID principles
 
@@ -195,7 +197,32 @@ cd 2D-Truss-Analysis-cpp
 ./install.sh --help    # See all options
 ```
 
-### Building from Source (Linux only)
+### Building from Source (Production Makefile Wrapper)
+
+```bash
+# Quick build (uses optimized defaults)
+make build
+
+# Run all tests
+make test
+
+# Generate coverage report
+make coverage
+
+# See all available targets
+make help
+```
+
+**Build System Features:**
+
+- **Makefile Wrapper**: Developer-friendly interface to CMake
+- **Auto-detection**: Ninja (preferred) or Make backend
+- **Parallel Builds**: Automatic CPU core detection
+- **Isolated Build Modes**: Separate directories for release/debug/coverage
+- **Code Quality**: Integrated clang-format, clang-tidy, Prettier
+- **CI/CD Ready**: Non-interactive targets with proper exit codes
+
+### Alternative: Direct CMake Build (Linux only)
 
 > Note: This project currently supports Linux only. Windows and macOS builds and binaries (for example, `.exe` launchers such as `TrussAnalysisGUI.exe`) are not supported.
 

@@ -125,9 +125,55 @@ int main() {
 }
 ```
 
-## Build System (CMake)
+## Build System
 
-### Configuration Options
+### Production Makefile Wrapper (Recommended)
+
+The project provides a production-grade Makefile that wraps CMake and provides a streamlined developer experience:
+
+```bash
+# Show all available targets
+make help
+
+# Build targets
+make build              # Build release version (optimized)
+make debug              # Build debug version (with symbols)
+make rebuild            # Clean and rebuild release
+
+# Test targets
+make test               # Run all tests (release build)
+make test-debug         # Run tests in debug mode
+make coverage           # Generate coverage report with lcov
+make coverage-open      # Generate and open coverage in browser
+
+# Code quality targets
+make format             # Format C++ code with clang-format
+make format-docs        # Format Markdown docs with Prettier
+make format-yaml        # Format YAML files with Prettier
+make format-all         # Format everything (C++, docs, YAML)
+make format-check-all   # Check formatting (CI-friendly)
+make lint               # Run clang-tidy static analysis
+make static-analysis    # Run cppcheck analysis
+
+# Development targets
+make info               # Show build system configuration
+make clean              # Clean release build
+make clean-all          # Clean all build artifacts
+
+# CI/CD targets
+make ci                 # CI pipeline (build + test + format check)
+make ci-full            # Full CI (build + test + coverage + all checks)
+```
+
+**Key Features:**
+
+- **Auto-detection**: Prefers Ninja, falls back to Make
+- **Parallel builds**: Automatically detects CPU cores
+- **Isolated directories**: `build/`, `build_debug/`, `build_coverage/`
+- **Generator-agnostic**: Works with both Ninja and Make backends
+- **Self-documenting**: Comprehensive help with categorized targets
+
+### Direct CMake Usage (Alternative)
 
 ```bash
 # Standard build types
@@ -140,19 +186,10 @@ cmake -B build -DBUILD_TESTING=ON
 # Compiler selection
 cmake -B build -DCMAKE_CXX_COMPILER=g++
 cmake -B build -DCMAKE_CXX_COMPILER=clang++
-```
 
-### Custom Targets
-
-```bash
-# Run tests via CMake
-make run_tests                  # CTest execution
-make run_shell_tests           # Shell script execution
-
-# Build specific components
-make TrussCore                 # Core library
-make TrussAnalysisCLI         # Command-line interface with analyze/validate/export commands
-make TrussAnalysisGUI         # Graphical interface
+# Coverage build
+cmake -B build_coverage -DCMAKE_BUILD_TYPE=Debug -DENABLE_COVERAGE=ON
+cmake --build build_coverage --target coverage
 ```
 
 ### CMake Test Integration
@@ -282,21 +319,47 @@ cmake -B build -DBUILD_TESTING=ON
 ### Pre-commit Checklist
 
 ```bash
-# 1. Build successfully
-cmake --build build
+# 1. Format all code
+make format-all
 
-# 2. Pass all tests
-./tests/run_all_tests.sh
+# 2. Build successfully
+make build
 
-# 3. Static analysis clean
-cd build && cppcheck --enable=all ../src/ ../include/
+# 3. Pass all tests
+make test
 
-# 4. No memory leaks (if applicable)
-valgrind --leak-check=full ./build/test_integration
+# 4. Verify formatting (CI check)
+make format-check-all
 
-# 5. Documentation builds
-doxygen
+# 5. Run static analysis
+make lint
+
+# 6. Generate coverage (optional)
+make coverage
+
+# Or run the full CI pipeline locally
+make ci-full
 ```
+
+**Automated Code Quality:**
+
+- **clang-format**: C++ code formatting (`.clang-format` configuration)
+- **Prettier**: Markdown and YAML formatting (`.prettierrc.yaml` configuration)
+- **clang-tidy**: C++ static analysis (`.clang-tidy` configuration)
+- **EditorConfig**: Baseline formatting for all file types (`.editorconfig`)
+- **cppcheck**: Additional static analysis
+
+**Configuration Files:**
+
+- `.clang-format` - C++ code style (LLVM-based with 100-char lines)
+- `.clang-tidy` - C++ static analysis rules (400+ lines, 8 check categories)
+- `.prettierrc.yaml` - Markdown/YAML formatting (100-char prose, 2-space indent)
+- `.prettierignore` - Files excluded from Prettier
+- `.editorconfig` - Universal baseline (200+ lines, 25+ file types)
+- `package.json` - NPM scripts for Prettier
+
+See [docs/CLANG_TIDY_GUIDE.md](docs/CLANG_TIDY_GUIDE.md), [docs/PRETTIER_FORMATTING.md](docs/PRETTIER_FORMATTING.md),
+and [docs/EDITORCONFIG_GUIDE.md](docs/EDITORCONFIG_GUIDE.md) for detailed documentation.
 
 ## Performance Considerations
 
