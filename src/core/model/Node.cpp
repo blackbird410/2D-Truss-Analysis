@@ -25,14 +25,12 @@ Node::Node(NodeId id, const Point2D& position, SupportType support)
 }
 
 bool Node::isConstrainedX() const noexcept {
-    return m_supportType == SupportType::PinnedX || 
-           m_supportType == SupportType::Pinned ||
+    return m_supportType == SupportType::Pinned ||
            m_supportType == SupportType::RollerY;
 }
 
 bool Node::isConstrainedY() const noexcept {
-    return m_supportType == SupportType::PinnedY || 
-           m_supportType == SupportType::Pinned ||
+    return m_supportType == SupportType::Pinned ||
            m_supportType == SupportType::RollerX;
 }
 
@@ -94,8 +92,6 @@ int Node::getConstraintCount() const {
     switch (m_supportType) {
         case SupportType::Free:
             return 0;
-        case SupportType::PinnedX:
-        case SupportType::PinnedY:
         case SupportType::RollerX:
         case SupportType::RollerY:
             return 1;

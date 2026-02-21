@@ -44,7 +44,7 @@ int ExampleCommand::execute() {
     
     // Add nodes
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);   // Fixed support
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::PinnedY);  // Roller support
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);  // Roller support (Y-constrained)
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);     // Free node
     
     // Define material properties (steel)

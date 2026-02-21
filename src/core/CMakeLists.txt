@@ -3,8 +3,6 @@
 add_library(TrussCore STATIC
     Application.cpp
     Application.hpp
-    Logger.cpp
-    Logger.hpp
     # Domain model in model/ subdirectory
     model/Types.hpp
     model/Node.cpp

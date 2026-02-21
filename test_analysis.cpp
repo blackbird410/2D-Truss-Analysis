@@ -5,11 +5,17 @@
 
 #include "AnalysisEngine.hpp"
 #include "Truss.hpp"
-#include <iostream>
+#include "src/infrastructure/logging/logger_factory.hpp"
+#include <sstream>
 
 using namespace truss::core;
 
 int main() {
+    auto logger = truss::infrastructure::logging::LoggerFactory::createConsoleLogger(
+        truss::infrastructure::logging::LogLevel::Info,
+        true
+    );
+
     try {
         // Create a simple statically determinate truss system
         Truss truss("Test Truss");
@@ -29,12 +35,20 @@ int main() {
         auto results = engine.analyze(truss);
 
         // Output results
-        std::cout << "Analysis successful!\n";
-        std::cout << "Maximum displacement: " << results.maxDisplacement << "\n";
-        std::cout << "Maximum stress: " << results.maxStress << "\n";
+        logger->info("Analysis successful!");
+        {
+            std::ostringstream oss;
+            oss << "Maximum displacement: " << results.maxDisplacement;
+            logger->info(oss.str());
+        }
+        {
+            std::ostringstream oss;
+            oss << "Maximum stress: " << results.maxStress;
+            logger->info(oss.str());
+        }
 
     } catch (const std::exception& e) {
-        std::cerr << "Analysis failed: " << e.what() << "\n";
+        logger->error(std::string("Analysis failed: ") + e.what());
         return 1;
     }
     return 0;

@@ -223,6 +223,12 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
     TrussCore
 )
 
+# Utility: Generate corrected golden masters
+add_executable(generate_corrected_golden_masters
+    generate_corrected_golden_masters.cpp
+)
+target_link_libraries(generate_corrected_golden_masters PRIVATE TrussCore)
+
 # ============================================================================
 # UNIT TESTS CONFIGURATION
 # ============================================================================
@@ -255,6 +261,9 @@ if(BUILD_TESTING)
         tests/unit/core/test_boundary_condition_handler.cpp
         tests/unit/core/test_linear_solvers.cpp
         tests/unit/core/test_analysis_orchestrator.cpp
+        tests/unit/test_stiffness_matrix_bug.cpp
+        tests/unit/test_displacement_sign_check.cpp
+        tests/unit/test_warren_displacement.cpp
         # Infrastructure layer tests
         tests/unit/infrastructure/export/test_csv_exporter.cpp
         tests/unit/infrastructure/export/test_html_exporter.cpp
@@ -333,12 +342,25 @@ if(BUILD_TESTING)
         tests/integration/test_working_integration.cpp
         tests/integration/test_minimal_analysis.cpp
         tests/integration/test_cli_workflows.cpp
+        tests/integration/test_lifecycle_integration.cpp
+        tests/integration/test_load_workflow.cpp
+        tests/integration/test_gui_lifecycle.cpp
+        tests/integration/test_ui_load_diagnosis.cpp
+        tests/integration/test_load_viewport_fix.cpp
+        tests/integration/test_gui_file_load.cpp
+        # GUI controllers needed for GUI lifecycle tests
+        src/gui/controllers/TrussEditController.cpp
+        src/gui/controllers/ProjectController.cpp
+        src/gui/presenters/TrussDataPresenter.cpp
         ${CLI_SOURCES}
     )
     
     target_link_libraries(integration_tests PRIVATE
         TrussCore
         TrussApplication
+        Qt6::Core
+        Qt6::Widgets
+        Qt6::Test
         GTest::gtest
         GTest::gtest_main
         GTest::gmock

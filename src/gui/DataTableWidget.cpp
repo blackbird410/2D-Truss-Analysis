@@ -119,12 +119,6 @@ void DataTableWidget::updateNodesTable(application::TrussHandle trussHandle) {
             case truss::core::SupportType::Pinned: 
                 supportTypeStr = "Pinned"; 
                 break;
-            case truss::core::SupportType::PinnedX: 
-                supportTypeStr = "Pinned X"; 
-                break;
-            case truss::core::SupportType::PinnedY: 
-                supportTypeStr = "Pinned Y"; 
-                break;
             case truss::core::SupportType::RollerX: 
                 supportTypeStr = "Roller X"; 
                 break;

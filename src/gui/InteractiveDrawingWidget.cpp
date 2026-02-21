@@ -188,7 +188,16 @@ void DrawingCanvas::setCurrentSection(const SectionPreset& section) {
 void DrawingCanvas::setTrussHandle(application::TrussHandle handle) {
     m_trussHandle = handle;
     clearSelection();
-    updateViewport();
+    
+    // CRITICAL FIX: Auto-zoom to fit loaded geometry
+    // When loading a project, geometry may be at any scale/position
+    // Without this, loaded trusses appear "invisible" (off-viewport)
+    if (handle != 0) {
+        zoomToFit();
+    } else {
+        resetView();
+    }
+    
     update();
     emit trussModified();
 }
@@ -307,7 +316,7 @@ void DrawingCanvas::drawNodes(QPainter& painter) {
         QPoint screenPos = worldToScreen(truss::core::Point2D{nodeView.x, nodeView.y});
         
         // Check if selected
-        bool isSelected = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), i) != m_selectedNodes.end();
+        bool isSelected = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), nodeView.id) != m_selectedNodes.end();
         
         painter.setPen(m_nodePen);
         painter.setBrush(isSelected ? m_selectedBrush : m_nodeBrush);
@@ -569,24 +578,24 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
                 if (!(event->modifiers() & Qt::ControlModifier)) {
                     clearSelection();
                 }
-                auto it = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), nodeId - 1);
+                auto it = std::find(m_selectedNodes.begin(), m_selectedNodes.end(), nodeId);
                 if (it == m_selectedNodes.end()) {
-                    m_selectedNodes.push_back(nodeId - 1);
+                    m_selectedNodes.push_back(nodeId);
                 } else {
                     m_selectedNodes.erase(it);
                 }
-                emit nodeSelected(nodeId - 1);
+                emit nodeSelected(nodeId);
             } else if (memberId > 0) {
                 if (!(event->modifiers() & Qt::ControlModifier)) {
                     clearSelection();
                 }
-                auto it = std::find(m_selectedMembers.begin(), m_selectedMembers.end(), memberId - 1);
+                auto it = std::find(m_selectedMembers.begin(), m_selectedMembers.end(), memberId);
                 if (it == m_selectedMembers.end()) {
-                    m_selectedMembers.push_back(memberId - 1);
+                    m_selectedMembers.push_back(memberId);
                 } else {
                     m_selectedMembers.erase(it);
                 }
-                emit memberSelected(memberId - 1);
+                emit memberSelected(memberId);
             } else {
                 if (!(event->modifiers() & Qt::ControlModifier)) {
                     clearSelection();
@@ -610,7 +619,7 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
                     m_isCreatingMember = true;
                 } else {
                     if (nodeId != m_memberStartNode) {
-                        addMemberBetweenNodes(m_memberStartNode - 1, nodeId - 1);
+                        addMemberBetweenNodes(m_memberStartNode, nodeId);
                     }
                     m_isCreatingMember = false;
                     m_memberStartNode = 0;
@@ -624,7 +633,7 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
             if (nodeId > 0) {
                 // Show load input dialog or apply default load
                 truss::core::Force2D defaultLoad(0.0, -10000.0); // 10 kN downward
-                applyLoadToNode(nodeId - 1, defaultLoad);
+                applyLoadToNode(nodeId, defaultLoad);
             }
             break;
         }
@@ -660,7 +669,7 @@ void DrawingCanvas::mousePressEvent(QMouseEvent* event) {
                             break;
                     }
                     
-                    setSupportType(nodeId - 1, newType);
+                    setSupportType(nodeId, newType);
                 }
             }
             break;
@@ -1003,9 +1012,9 @@ void PropertyPanel::updateFromSelection() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             const auto& pos = node->getPosition();
             
             m_nodeXSpin->blockSignals(true);
@@ -1338,9 +1347,9 @@ void PropertyPanel::onLoadChanged() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             
             truss::core::Force2D force(
                 m_forceXSpin->value() * 1000.0, // Convert to N
@@ -1361,9 +1370,9 @@ void PropertyPanel::onSupportChanged() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             
             // Map combo box index to correct SupportType enum value
             truss::core::SupportType supportType;
@@ -1389,9 +1398,9 @@ void PropertyPanel::onNodePositionChanged() {
     if (selectedNodes.size() == 1) {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0) return;
-        const auto& nodes = m_canvas->getTrussService().getTrussMutable(trussHandle).getNodes();
-        if (selectedNodes[0] < nodes.size()) {
-            auto node = nodes[selectedNodes[0]];
+        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        auto node = truss.getNode(selectedNodes[0]);
+        if (node) {
             
             truss::core::Point2D newPos(m_nodeXSpin->value(), m_nodeYSpin->value());
             node->setPosition(newPos);

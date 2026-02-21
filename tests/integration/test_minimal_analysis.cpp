@@ -12,7 +12,6 @@
  */
 
 #include <gtest/gtest.h>
-#include <iostream>
 #include "../../src/core/model/Truss.hpp"
 #include "../../src/core/analysis/AnalysisOrchestrator.hpp"
 #include "../../src/core/analysis/DirectSolver.hpp"
@@ -28,7 +27,7 @@ TEST(MinimalAnalysisTest, BasicTriangularTrussWorkflow) {
     
     // Add a simple triangular truss
     auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerY);
+    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);
     auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);
     
     truss.addMember(node1, node2);
@@ -47,11 +46,6 @@ TEST(MinimalAnalysisTest, BasicTriangularTrussWorkflow) {
         // Validate results
         EXPECT_TRUE(results.converged) << "Analysis should converge";
         EXPECT_GT(results.maxDisplacement, 0.0) << "Max displacement should be positive";
-        
-        // Optional: Print results for debugging (visible with --gtest_verbose)
-        std::cout << "Analysis completed successfully!" << std::endl;
-        std::cout << "Converged: " << results.converged << std::endl;
-        std::cout << "Max displacement: " << results.maxDisplacement << std::endl;
         
     } catch (const std::exception& e) {
         FAIL() << "Analysis failed with exception: " << e.what();

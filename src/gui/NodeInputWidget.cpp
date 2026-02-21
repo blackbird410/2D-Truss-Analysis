@@ -51,8 +51,6 @@ void NodeInputWidget::setupUI() {
     // Set up support type combo box
     m_supportTypeCombo->addItem("Free", static_cast<int>(truss::core::SupportType::Free));
     m_supportTypeCombo->addItem("Pinned", static_cast<int>(truss::core::SupportType::Pinned));
-    m_supportTypeCombo->addItem("Pinned X", static_cast<int>(truss::core::SupportType::PinnedX));
-    m_supportTypeCombo->addItem("Pinned Y", static_cast<int>(truss::core::SupportType::PinnedY));
     m_supportTypeCombo->addItem("Roller X", static_cast<int>(truss::core::SupportType::RollerX));
     m_supportTypeCombo->addItem("Roller Y", static_cast<int>(truss::core::SupportType::RollerY));
     

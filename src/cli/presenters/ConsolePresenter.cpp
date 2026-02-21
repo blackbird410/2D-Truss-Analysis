@@ -2,7 +2,7 @@
  * @file ConsolePresenter.cpp
  * @brief Implementation of console presenter
  * 
- * Phase 5A.2: Refactored to eliminate direct I/O (std::cout/cerr).
+ * Phase 5A.2: Refactored to eliminate direct console I/O.
  * All output now routed through IApplicationOutput abstraction.
  */
 

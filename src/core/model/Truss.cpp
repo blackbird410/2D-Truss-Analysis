@@ -179,14 +179,12 @@ size_t Truss::getFreeDofs() const {
         
         // Count free X DOF
         if (support == SupportType::Free || 
-            support == SupportType::PinnedY || 
             support == SupportType::RollerX) {
             freeDofs++;
         }
         
         // Count free Y DOF
         if (support == SupportType::Free || 
-            support == SupportType::PinnedX || 
             support == SupportType::RollerY) {
             freeDofs++;
         }

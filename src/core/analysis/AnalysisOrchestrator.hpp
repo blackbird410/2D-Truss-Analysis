@@ -203,6 +203,14 @@ private:
     Real computeConditionNumber(const MatrixXd& K) const;
     
     /**
+     * @brief Check for singular stiffness matrix
+     * @param K Reduced stiffness matrix (after applying boundary conditions)
+     * @return Determinant or matrix rank indicator
+     * @throws std::runtime_error if matrix is singular
+     */
+    Real checkMatrixSingularity(const MatrixXd& K) const;
+    
+    /**
      * @brief Compute strain energy from displacements
      * @param truss Truss structure
      * @param displacements Global displacement vector

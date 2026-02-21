@@ -274,10 +274,10 @@ TEST_F(TrussEditControllerTest, InvalidHandleTriggersFailureSignal) {
     // WHEN: User requests operation
     controller->onNodeAddRequested(testPosition);
     
-    // THEN: operationFailed signal emitted
+    // THEN: operationFailed signal emitted with lifecycle-aware message
     ASSERT_EQ(failureSpy.count(), 1);
     QString errorMsg = failureSpy.at(0).at(0).toString();
-    EXPECT_TRUE(errorMsg.contains("truss") || errorMsg.contains("loaded"));
+    EXPECT_TRUE(errorMsg.contains("project") || errorMsg.contains("active"));
 }
 
 /**

@@ -23,7 +23,9 @@ void TrussEditController::setCurrentTruss(truss::application::TrussHandle handle
 
 bool TrussEditController::validateCurrentHandle() {
     if (m_currentHandle == 0) {
-        emit operationFailed("No truss is currently loaded");
+        // This should never occur if lifecycle is managed correctly
+        // (application should always have an active project after initialization)
+        emit operationFailed("No active project. Please create or open a project.");
         return false;
     }
     return true;

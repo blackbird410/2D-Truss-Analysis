@@ -57,6 +57,9 @@ MainWindow::MainWindow(
     // Configure window for Linux display compatibility
     setupWindowProperties();
     
+    // Initialize empty project (ensures non-null state from startup)
+    initializeEmptyProject();
+    
     // Enable analysis when there's something to analyze
     enableAnalysis(false);
 }
@@ -240,6 +243,22 @@ void MainWindow::setupWindowProperties() {
     // setWindowIcon(QIcon(":/icons/app-icon.png"));
 }
 
+void MainWindow::initializeEmptyProject() {
+    // Create initial empty project automatically on startup
+    // This ensures the application starts in a valid "EmptyProject" state
+    // where users can immediately add nodes without needing to explicitly
+    // create a new project first.
+    m_projectController.onNewProject();
+    
+    // CRITICAL FIX: Clear the modified flag after initialization
+    // The initial empty project should NOT be marked as unsaved,
+    // otherwise it prevents File -> Open from working immediately
+    m_projectController.markAsSaved();
+    
+    // Update status message
+    m_statusLabel->setText("Ready to design - Add nodes by clicking the canvas");
+}
+
 MainWindow::~MainWindow() {
     // Save window geometry and state
     QSettings settings;
@@ -287,6 +306,11 @@ void MainWindow::connectSignals() {
     connect(&m_trussEditController, &truss_controllers::TrussEditController::statusMessageChanged,
             this, &MainWindow::updateStatusMessage);
     
+    // CRITICAL: Connect TrussEditController mutation signals to DrawingCanvas refresh
+    // This ensures canvas repaints after any successful mutation (add/remove node/member)
+    connect(&m_trussEditController, &truss_controllers::TrussEditController::trussModified,
+            canvas, QOverload<>::of(&DrawingCanvas::update));
+    
     // Connect control buttons
     connect(m_analyzeButton, &QPushButton::clicked, this, &MainWindow::requestAnalyze);
     connect(m_clearButton, &QPushButton::clicked, this, &MainWindow::requestClearAll);
@@ -315,6 +339,9 @@ void MainWindow::connectSignals() {
     
     connect(&m_projectController, &truss_controllers::ProjectController::projectSaved,
             this, &MainWindow::onProjectSaved);
+    
+    connect(&m_projectController, &truss_controllers::ProjectController::saveAsRequested,
+            this, &MainWindow::requestSaveProjectAs);
     
     connect(&m_projectController, &truss_controllers::ProjectController::projectClosed,
             this, &MainWindow::onProjectClosed);
@@ -379,7 +406,7 @@ void MainWindow::requestOpenProject() {
     QString fileName = QFileDialog::getOpenFileName(this,
         "Open Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "Truss Project Files (*.truss);;All Files (*)");
+        "Truss Project Files (*.json *.xml);;JSON Files (*.json);;XML Files (*.xml);;All Files (*)");
     
     if (!fileName.isEmpty()) {
         m_projectController.onOpenProject(fileName);
@@ -394,12 +421,15 @@ void MainWindow::requestSaveProjectAs() {
     QString fileName = QFileDialog::getSaveFileName(this,
         "Save Truss Project", 
         QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "Truss Project Files (*.truss);;All Files (*)");
+        "JSON Files (*.json);;XML Files (*.xml);;All Files (*)",
+        nullptr,
+        QFileDialog::DontConfirmOverwrite);
     
     if (!fileName.isEmpty()) {
-        // Ensure .truss extension
-        if (!fileName.endsWith(".truss", Qt::CaseInsensitive)) {
-            fileName += ".truss";
+        // Ensure valid extension - add .json if no recognized extension
+        if (!fileName.endsWith(".json", Qt::CaseInsensitive) && 
+            !fileName.endsWith(".xml", Qt::CaseInsensitive)) {
+            fileName += ".json";  // Default to JSON
         }
         
         m_projectController.onSaveProjectAs(fileName);

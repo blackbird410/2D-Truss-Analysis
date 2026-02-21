@@ -30,7 +30,7 @@ These files serve as "golden masters" for validating new Strategy pattern export
 
 - **Nodes:** 3
   - Node 1: (0.0, 0.0) - Pinned support (Fx=0, Fy=0)
-  - Node 2: (4.0, 0.0) - RollerY support (Fy=0)
+  - Node 2: (4.0, 0.0) - RollerX support (Fy constrained)
   - Node 3: (2.0, 3.0) - Free node
 
 - **Members:** 3
