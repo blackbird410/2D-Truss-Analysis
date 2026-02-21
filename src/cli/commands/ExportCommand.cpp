@@ -171,7 +171,7 @@ std::string ExportCommand::getDescription() const {
     return "Export analysis results to various formats (JSON, XML, CSV, MARKDOWN, etc.)";
 }
 
-bool ExportCommand::validateInputFile(const std::string& filepath) const {
+bool ExportCommand::validateInputFile(const std::string& filepath) {
     namespace fs = std::filesystem;
 
     try {
@@ -193,7 +193,7 @@ bool ExportCommand::validateInputFile(const std::string& filepath) const {
 }
 
 std::optional<truss::infrastructure::export_::ExportFormat>
-ExportCommand::parseExportFormat(const std::string& formatStr) const {
+ExportCommand::parseExportFormat(const std::string& formatStr) {
     using namespace truss::infrastructure::export_;
 
     // Convert to uppercase for case-insensitive comparison
@@ -220,7 +220,7 @@ ExportCommand::parseExportFormat(const std::string& formatStr) const {
 }
 
 truss::infrastructure::export_::ExportFormat
-ExportCommand::getDefaultExportFormat(const std::string& filepath) const {
+ExportCommand::getDefaultExportFormat(const std::string& filepath) {
     using namespace truss::infrastructure::export_;
 
     namespace fs = std::filesystem;
