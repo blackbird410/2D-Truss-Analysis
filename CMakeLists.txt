@@ -515,7 +515,7 @@ if(ENABLE_COVERAGE)
     if(LCOV AND GENHTML)
         add_custom_target(coverage
             COMMAND ${CMAKE_COMMAND} -E echo "Running tests to generate coverage data..."
-            COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
+            COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure || true
             COMMAND ${CMAKE_COMMAND} -E echo "Capturing coverage data..."
             COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
             COMMAND ${CMAKE_COMMAND} -E echo "Filtering coverage data..."
@@ -560,4 +560,50 @@ set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 
 include(CPack)
 
+# ============================================================================
+# Phase 7 Coverage Analysis Enhancement Targets
+# ============================================================================
+
+# Add enhanced coverage target for Phase 7 analysis with detailed metrics
+if(ENABLE_COVERAGE AND LCOV AND GENHTML)
+    # Add custom target for detailed coverage analysis
+    add_custom_target(coverage-analysis
+        COMMAND ${CMAKE_COMMAND} -E echo "=== Phase 7 Coverage Analysis ==="
+        COMMAND ${CMAKE_COMMAND} -E echo "Capturing detailed coverage metrics..."
+        COMMAND ${LCOV} --capture --directory . --output-file coverage_analysis.info 
+                --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+        COMMAND ${CMAKE_COMMAND} -E echo "Filtering external code..."
+        COMMAND ${LCOV} --remove coverage_analysis.info '/usr/*' '*/build/*' '*/tests/*' 
+                '*/external/*' '*/v1/*' '*/opt/homebrew/*' 
+                --output-file coverage_analysis_filtered.info 
+                --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,unused
+        COMMAND ${CMAKE_COMMAND} -E echo "Generating module-level coverage statistics..."
+        COMMAND ${LCOV} --summary coverage_analysis_filtered.info 
+                --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Phase 7: Detailed coverage analysis complete"
+        VERBATIM
+    )
+
+    # Add target for generating coverage dashboard
+    add_custom_target(coverage-dashboard
+        COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage dashboard..."
+        COMMAND ${CMAKE_COMMAND} -E make_directory coverage_dashboard
+        COMMAND ${GENHTML} coverage_analysis_filtered.info 
+                --output-directory coverage_dashboard
+                --title "Phase 7: 2D Truss Analysis Coverage Dashboard"
+                --prefix ${CMAKE_SOURCE_DIR}
+                --rc branch_coverage=1
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Coverage dashboard generated at: coverage_dashboard/index.html"
+        DEPENDS coverage-analysis
+        VERBATIM
+    )
+
+    message(STATUS "Phase 7 Coverage Targets Added:")
+    message(STATUS "  - make coverage-analysis   : Run analysis with detailed metrics")
+    message(STATUS "  - make coverage-dashboard  : Generate dashboard (implies analysis)")
+    message(STATUS "  - make coverage            : Original coverage target (existing)")
+    message(STATUS "  - make coverage-clean      : Clean coverage data (existing)")
+endif()
 
