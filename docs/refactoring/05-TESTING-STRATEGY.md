@@ -35,13 +35,13 @@
 
 ### 2.2 Assertion Mapping
 
-| Custom Framework               | Google Test                              |
-| ------------------------------ | ---------------------------------------- |
-| `ASSERT_TRUE(x)`               | `EXPECT_TRUE(x)` or `ASSERT_TRUE(x)`     |
-| `ASSERT_EQ(expected, actual)`  | `EXPECT_EQ(expected, actual)`            |
-| `ASSERT_NEAR(a, b, eps)`       | `EXPECT_NEAR(a, b, eps)`                 |
-| `ASSERT_GT(a, b)`              | `EXPECT_GT(a, b)`                        |
-| `ASSERT_THROWS(expr)`          | `EXPECT_THROW(expr, Exception)`          |
+| Custom Framework              | Google Test                          |
+| ----------------------------- | ------------------------------------ |
+| `ASSERT_TRUE(x)`              | `EXPECT_TRUE(x)` or `ASSERT_TRUE(x)` |
+| `ASSERT_EQ(expected, actual)` | `EXPECT_EQ(expected, actual)`        |
+| `ASSERT_NEAR(a, b, eps)`      | `EXPECT_NEAR(a, b, eps)`             |
+| `ASSERT_GT(a, b)`             | `EXPECT_GT(a, b)`                    |
+| `ASSERT_THROWS(expr)`         | `EXPECT_THROW(expr, Exception)`      |
 
 **Guidelines:**
 
