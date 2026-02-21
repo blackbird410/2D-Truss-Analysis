@@ -346,8 +346,11 @@ TEST_F(ValidationAdvancedTest, ValidationResultCountBySeverity) {
     size_t warningCount = result.countBySeverity(ValidationSeverity::Warning);
     size_t infoCount = result.countBySeverity(ValidationSeverity::Info);
     
-    // Should have some issues detected
-    EXPECT_GT(warningCount, 0);  // No loads warning
+    // Validate countBySeverity() method for all severity levels
+    EXPECT_EQ(fatalCount, 0);  // No fatal issues - structure is geometrically valid
+    EXPECT_EQ(errorCount, 0);  // No errors - structure has adequate support
+    EXPECT_GT(warningCount, 0);  // Should warn about no loads and indeterminate (2n=4 vs m+r=5)
+    EXPECT_EQ(infoCount, 2);  // Info: support configuration + load count
 }
 
 // ============================================================================
