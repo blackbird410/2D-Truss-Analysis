@@ -105,11 +105,10 @@ MemberPtr Truss::getMember(MemberId memberId) const {
 
 std::vector<MemberPtr> Truss::getMembersConnectedTo(NodeId nodeId) const {
     std::vector<MemberPtr> connectedMembers;
-    for (const auto& member : m_members) {
-        if (member->hasNode(nodeId)) {
-            connectedMembers.push_back(member);
-        }
-    }
+    std::copy_if(m_members.begin(),
+                 m_members.end(),
+                 std::back_inserter(connectedMembers),
+                 [nodeId](const auto& member) { return member->hasNode(nodeId); });
     return connectedMembers;
 }
 
@@ -126,44 +125,43 @@ std::vector<MemberPtr> Truss::getMembersAtNode(NodeId nodeId) const {
 
 std::vector<NodePtr> Truss::getConstrainedNodes() const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        if (node->isConstrained()) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(),
+                 m_nodes.end(),
+                 std::back_inserter(result),
+                 [](const auto& node) { return node->isConstrained(); });
     return result;
 }
 
 std::vector<NodePtr> Truss::getLoadedNodes() const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        if (node->hasAppliedForce()) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(),
+                 m_nodes.end(),
+                 std::back_inserter(result),
+                 [](const auto& node) { return node->hasAppliedForce(); });
     return result;
 }
 
 std::vector<NodePtr> Truss::getFreeNodes() const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        if (!node->isConstrained()) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(),
+                 m_nodes.end(),
+                 std::back_inserter(result),
+                 [](const auto& node) { return !node->isConstrained(); });
     return result;
 }
 
 std::vector<NodePtr> Truss::getNodesInRegion(const Point2D& bottomLeft,
                                              const Point2D& topRight) const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        Real x = node->getX();
-        Real y = node->getY();
-        if (x >= bottomLeft.x && x <= topRight.x && y >= bottomLeft.y && y <= topRight.y) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(),
+                 m_nodes.end(),
+                 std::back_inserter(result),
+                 [&bottomLeft, &topRight](const auto& node) {
+                     Real x = node->getX();
+                     Real y = node->getY();
+                     return x >= bottomLeft.x && x <= topRight.x && y >= bottomLeft.y &&
+                            y <= topRight.y;
+                 });
     return result;
 }
 
