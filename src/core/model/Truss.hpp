@@ -100,9 +100,9 @@ public:
     [[maybe_unused]] std::vector<NodePtr> getFreeNodes() const;    ///< Get all unconstrained nodes
 
     // Boundary conditions
-    void applyForce(NodeId nodeId, const Force2D& force);
-    void applyForce(NodeId nodeId, Real fx, Real fy);
-    void setSupportType(NodeId nodeId, SupportType support);
+    void applyForce(NodeId nodeId, const Force2D& force) const;
+    void applyForce(NodeId nodeId, Real fx, Real fy) const;
+    void setSupportType(NodeId nodeId, SupportType support) const;
 
     // Validation
     [[deprecated("Use TrussValidator::validate() instead. Removal scheduled for v4.0.0")]]
