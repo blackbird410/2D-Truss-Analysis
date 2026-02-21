@@ -75,6 +75,7 @@ GENHTML := $(shell command -v genhtml 2>/dev/null)
 
 # Formatting tools
 CLANG_FORMAT := $(shell command -v clang-format 2>/dev/null)
+PRETTIER := $(shell command -v prettier 2>/dev/null)
 
 # Static analysis tools
 CLANG_TIDY := $(shell command -v clang-tidy 2>/dev/null)
@@ -319,6 +320,62 @@ static-analysis: ## Run cppcheck static analysis
 		src/ 2>&1 | tee cppcheck-report.txt
 	@echo -e "$(GREEN)✓ Static analysis complete (see cppcheck-report.txt)$(RESET)"
 
+.PHONY: format-docs
+format-docs: ## Format Markdown documentation with Prettier
+	@if [ -z "$(PRETTIER)" ]; then \
+		echo -e "$(YELLOW)⚠ Prettier not found$(RESET)"; \
+		echo "  Install: npm install -g prettier"; \
+		exit 1; \
+	fi
+	@echo -e "$(BOLD)Formatting Markdown documentation...$(RESET)"
+	@$(PRETTIER) --write "**/*.md" --ignore-path .prettierignore
+	@echo -e "$(GREEN)✓ Documentation formatted$(RESET)"
+
+.PHONY: format-yaml
+format-yaml: ## Format YAML configuration files with Prettier
+	@if [ -z "$(PRETTIER)" ]; then \
+		echo -e "$(YELLOW)⚠ Prettier not found$(RESET)"; \
+		echo "  Install: npm install -g prettier"; \
+		exit 1; \
+	fi
+	@echo -e "$(BOLD)Formatting YAML files...$(RESET)"
+	@$(PRETTIER) --write "**/*.{yml,yaml}" --ignore-path .prettierignore
+	@echo -e "$(GREEN)✓ YAML files formatted$(RESET)"
+
+.PHONY: format-all
+format-all: format format-docs format-yaml ## Format all code (C++, docs, YAML)
+	@echo -e "$(GREEN)✓ All files formatted$(RESET)"
+
+.PHONY: format-check-docs
+format-check-docs: ## Check if documentation needs formatting (CI-friendly)
+	@if [ -z "$(PRETTIER)" ]; then \
+		echo -e "$(YELLOW)⚠ Prettier not found, skipping check$(RESET)"; \
+		exit 0; \
+	fi
+	@echo -e "$(BOLD)Checking documentation formatting...$(RESET)"
+	@if ! $(PRETTIER) --check "**/*.md" --ignore-path .prettierignore 2>/dev/null; then \
+		echo -e "$(YELLOW)❌ Documentation needs formatting. Run 'make format-docs'$(RESET)"; \
+		exit 1; \
+	fi
+	@echo -e "$(GREEN)✓ Documentation is properly formatted$(RESET)"
+
+.PHONY: format-check-yaml
+format-check-yaml: ## Check if YAML files need formatting (CI-friendly)
+	@if [ -z "$(PRETTIER)" ]; then \
+		echo -e "$(YELLOW)⚠ Prettier not found, skipping check$(RESET)"; \
+		exit 0; \
+	fi
+	@echo -e "$(BOLD)Checking YAML formatting...$(RESET)"
+	@if ! $(PRETTIER) --check "**/*.{yml,yaml}" --ignore-path .prettierignore 2>/dev/null; then \
+		echo -e "$(YELLOW)❌ YAML files need formatting. Run 'make format-yaml'$(RESET)"; \
+		exit 1; \
+	fi
+	@echo -e "$(GREEN)✓ YAML files are properly formatted$(RESET)"
+
+.PHONY: format-check-all
+format-check-all: format-check format-check-docs format-check-yaml ## Check all formatting (CI-friendly)
+	@echo -e "$(GREEN)✓ All files are properly formatted$(RESET)"
+
 # ==============================================================================
 # Development Targets
 # ==============================================================================
@@ -358,6 +415,7 @@ info: ## Show build system information
 	@echo "  lcov:          $(if $(LCOV),✓ $(LCOV),✗ not found)"
 	@echo "  genhtml:       $(if $(GENHTML),✓ $(GENHTML),✗ not found)"
 	@echo "  clang-format:  $(if $(CLANG_FORMAT),✓ $(CLANG_FORMAT),✗ not found)"
+	@echo "  prettier:      $(if $(PRETTIER),✓ $(PRETTIER),✗ not found - run 'npm install')"
 	@echo "  clang-tidy:    $(if $(CLANG_TIDY),✓ $(CLANG_TIDY),✗ not found)"
 	@echo "  cppcheck:      $(if $(CPPCHECK),✓ $(CPPCHECK),✗ not found)"
 	@echo ""
@@ -416,7 +474,7 @@ ci: build test format-check ## CI pipeline (build + test + format check)
 	@echo -e "$(GREEN)✓ CI pipeline passed$(RESET)"
 
 .PHONY: ci-full
-ci-full: ci coverage ## Full CI pipeline (build + test + coverage)
+ci-full: ci coverage format-check-all ## Full CI pipeline (build + test + coverage + all format checks)
 	@echo -e "$(GREEN)✓ Full CI pipeline passed$(RESET)"
 
 # ==============================================================================
@@ -427,5 +485,6 @@ ci-full: ci coverage ## Full CI pipeline (build + test + coverage)
 .PHONY: all build debug configure-release configure-debug configure-coverage \
         rebuild rebuild-debug test test-verbose test-debug test-unit \
         test-integration test-gui coverage coverage-open format format-check \
-        lint static-analysis run-cli run-gui install info clean clean-debug \
-        clean-coverage clean-all distclean ci ci-full help
+        format-docs format-yaml format-all format-check-docs format-check-yaml \
+        format-check-all lint static-analysis run-cli run-gui install info \
+        clean clean-debug clean-coverage clean-all distclean ci ci-full help
