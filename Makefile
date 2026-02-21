@@ -244,7 +244,7 @@ coverage: configure-coverage ## Generate coverage report
 		exit 1; \
 	fi
 	@echo -e "$(BOLD)Generating coverage report...$(RESET)"
-	@cd $(BUILD_COVERAGE_DIR) && $(MAKE) coverage
+	@cmake --build $(BUILD_COVERAGE_DIR) --target coverage
 	@echo -e "$(GREEN)✓ Coverage report: $(BUILD_COVERAGE_DIR)/coverage_html/index.html$(RESET)"
 
 .PHONY: coverage-open
