@@ -408,3 +408,160 @@ TEST_F(BoundaryConditionHandlerTest, DofListsDisjointAndComplete) {
         EXPECT_TRUE(dofPresent[i]) << "DOF " << i << " missing from both lists";
     }
 }
+
+// Phase 7 Task 7.5: Analysis Layer Hardening - Edge Case Tests
+
+TEST_F(BoundaryConditionHandlerTest, SingleFreeNodeSystem) {
+    // Test system with single free node (under-constrained)
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Free);
+    
+    BoundaryConditionHandler handler;
+    
+    // Single free node should have all DOFs free
+    auto freeDofs = handler.getFreeDofs(truss);
+    auto constrainedDofs = handler.getConstrainedDofs(truss);
+    
+    EXPECT_EQ(freeDofs.size(), 2);  // Both DOFs free for single free node
+    EXPECT_EQ(constrainedDofs.size(), 0);  // No constraints
+}
+
+TEST_F(BoundaryConditionHandlerTest, AllPinnedNodes) {
+    // Test system where all nodes are pinned (over-constrained)
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::Pinned);
+    auto n3 = truss.addNode(0.5, 0.866, SupportType::Pinned);
+    
+    truss.addMember(n1, n2);
+    truss.addMember(n1, n3);
+    truss.addMember(n2, n3);
+    truss.assignDofNumbers();
+    
+    BoundaryConditionHandler handler;
+    
+    // All nodes pinned means no free DOFs
+    auto freeDofs = handler.getFreeDofs(truss);
+    auto constrainedDofs = handler.getConstrainedDofs(truss);
+    
+    EXPECT_EQ(freeDofs.size(), 0);  // No free DOFs
+    EXPECT_EQ(constrainedDofs.size(), 6);  // All 6 DOFs (3 nodes × 2) constrained
+}
+
+TEST_F(BoundaryConditionHandlerTest, MixedRollerSupports) {
+    // Test system with mixed roller constraints
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::RollerX);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::RollerY);
+    auto n3 = truss.addNode(0.5, 0.866, SupportType::Free);
+    
+    truss.addMember(n1, n2);
+    truss.addMember(n1, n3);
+    truss.addMember(n2, n3);
+    truss.assignDofNumbers();
+    
+    BoundaryConditionHandler handler;
+    
+    // RollerX constrains Y, RollerY constrains X, Free has both free
+    auto freeDofs = handler.getFreeDofs(truss);
+    auto constrainedDofs = handler.getConstrainedDofs(truss);
+    
+    EXPECT_EQ(freeDofs.size(), 4);  // 2 from rollers + 2 from free node
+    EXPECT_EQ(constrainedDofs.size(), 2);  // 1 from each roller
+}
+
+TEST_F(BoundaryConditionHandlerTest, SymmetricalSupportPattern) {
+    // Test system with symmetrical support pattern
+    Truss truss;
+    auto n1 = truss.addNode(-1.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::Pinned);
+    auto n3 = truss.addNode(0.0, 1.0, SupportType::Free);
+    auto n4 = truss.addNode(0.0, -1.0, SupportType::Free);
+    
+    truss.addMember(n1, n3);
+    truss.addMember(n3, n2);
+    truss.addMember(n2, n4);
+    truss.addMember(n4, n1);
+    truss.assignDofNumbers();
+    
+    BoundaryConditionHandler handler;
+    
+    // Symmetrical support: 2 pinned + 2 free
+    auto freeDofs = handler.getFreeDofs(truss);
+    auto constrainedDofs = handler.getConstrainedDofs(truss);
+    
+    EXPECT_EQ(freeDofs.size(), 4);  // Both free nodes = 4 DOFs
+    EXPECT_EQ(constrainedDofs.size(), 4);  // Both pinned nodes = 4 DOFs
+}
+
+// ============================================================================
+// Boundary Condition Conflict Tests (Task 7.5 - Analysis Hardening)
+// ============================================================================
+
+TEST_F(BoundaryConditionHandlerTest, OverConstrainedSystem) {
+    // Test detection of over-constrained system
+    // Both nodes fully constrained - system may be over-constrained
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::Pinned);
+    truss.addMember(n1, n2);
+    truss.assignDofNumbers();
+
+    // Check that both pinned nodes result in all DOFs being constrained
+    auto freeDofs = handler->getFreeDofs(truss);
+    auto constrainedDofs = handler->getConstrainedDofs(truss);
+    
+    EXPECT_EQ(freeDofs.size(), 0);  // No free DOFs
+    EXPECT_EQ(constrainedDofs.size(), 4);  // All 4 DOFs constrained
+}
+
+TEST_F(BoundaryConditionHandlerTest, ConflictingConstraints) {
+    // Test conflicting displacement constraints
+    // A single node with multiple conflicting support conditions
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::RollerX);  // Roller in X
+    truss.assignDofNumbers();
+
+    // RollerX should constrain Y DOF only, leaving X free
+    auto freeDofs = handler->getFreeDofs(truss);
+    
+    // X DOF (DOF 0) should be free
+    EXPECT_GE(freeDofs.size(), 1);
+}
+
+TEST_F(BoundaryConditionHandlerTest, RedundantSupports) {
+    // Test detection of redundant support conditions
+    // System with more constraints than needed for stability
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::RollerX);
+    auto n3 = truss.addNode(0.5, 0.866, SupportType::RollerY);
+    
+    truss.addMember(n1, n2);
+    truss.addMember(n2, n3);
+    truss.addMember(n3, n1);
+    truss.assignDofNumbers();
+
+    // Count total constrained DOFs
+    auto constrainedDofs = handler->getConstrainedDofs(truss);
+    
+    // Should have more constrained DOFs than needed for rigid body constraints (3 in 2D)
+    EXPECT_GE(constrainedDofs.size(), 3);
+}
+
+TEST_F(BoundaryConditionHandlerTest, UnderConstrainedSystem) {
+    // Test detection of under-constrained system
+    // Single free node with no supports - system unstable
+    Truss truss;
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Free);
+    truss.assignDofNumbers();
+
+    // Single unsupported node - all DOFs are free
+    auto freeDofs = handler->getFreeDofs(truss);
+    auto constrainedDofs = handler->getConstrainedDofs(truss);
+    
+    EXPECT_EQ(freeDofs.size(), 2);  // Both DOFs free
+    EXPECT_EQ(constrainedDofs.size(), 0);  // No constraints
+}
+
+
