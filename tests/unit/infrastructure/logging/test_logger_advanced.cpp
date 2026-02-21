@@ -489,11 +489,11 @@ TEST_F(LoggerAdvancedTest, AlternatingLoggersStressTest) {
         LogLevel::Trace,
         LogLevel::Debug,
         LogLevel::Info,
-        LogLevel::Warn,
+        LogLevel::Warning,
         LogLevel::Error,
         LogLevel::Critical
     };
-    constexpr size_t kLevelCount = sizeof(kLevels) / sizeof(kLevels[0]);
+    constexpr auto kLevelCount = sizeof(kLevels) / sizeof(kLevels[0]);
 
     for (int cycle = 0; cycle < 100; ++cycle) {
         logger->setLevel(kLevels[cycle % kLevelCount]);
