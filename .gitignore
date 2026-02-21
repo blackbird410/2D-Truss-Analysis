@@ -96,7 +96,7 @@ coverage.info
 coverage/
 
 # Static Analysis
-.clang-tidy
+# .clang-tidy
 .cppcheck
 scan-build/
 _codeql_*/
