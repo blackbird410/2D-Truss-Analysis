@@ -118,7 +118,8 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    static void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    static void
+    writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write nodal displacements section (Section 5)

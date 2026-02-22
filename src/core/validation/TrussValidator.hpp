@@ -67,10 +67,10 @@ public:
     [[maybe_unused]] size_t getIssueCount() const { return m_issues.size(); }
     const std::vector<ValidationIssue>& getIssues() const { return m_issues; }
 
-    [[maybe_unused]] std::vector<ValidationIssue> getIssuesBySeverity(
-        ValidationSeverity severity) const;
-    [[maybe_unused]] std::vector<ValidationIssue> getIssuesByCategory(
-        const std::string& category) const;
+    [[maybe_unused]] std::vector<ValidationIssue>
+    getIssuesBySeverity(ValidationSeverity severity) const;
+    [[maybe_unused]] std::vector<ValidationIssue>
+    getIssuesByCategory(const std::string& category) const;
 
     size_t countBySeverity(ValidationSeverity severity) const;
 
@@ -166,11 +166,11 @@ private:
     // Helper methods for specific checks
     static bool checkMinimumConstraints(const Truss& truss);
     static bool checkRigidBodyStability(const Truss& truss);
-    [[maybe_unused]] static bool hasCoincidentNodes(
-        const Truss& truss, Real tolerance = Constants::GEOMETRY_TOLERANCE);
+    [[maybe_unused]] static bool hasCoincidentNodes(const Truss& truss,
+                                                    Real tolerance = Constants::GEOMETRY_TOLERANCE);
     [[maybe_unused]] static bool hasDuplicateMembers(const Truss& truss);
-    [[maybe_unused]] static bool hasZeroLengthMembers(
-        const Truss& truss, Real tolerance = Constants::GEOMETRY_TOLERANCE);
+    [[maybe_unused]] static bool
+    hasZeroLengthMembers(const Truss& truss, Real tolerance = Constants::GEOMETRY_TOLERANCE);
 
     static std::vector<std::pair<NodeId, NodeId>> findCoincidentNodePairs(const Truss& truss,
                                                                           Real tolerance);

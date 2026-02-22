@@ -35,8 +35,7 @@ QString TrussDataPresenter::formatMemberCount(size_t count) {
     return QString("%1 member%2").arg(count).arg(count == 1 ? "" : "s");
 }
 
-QString
-TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView& truss) {
+QString TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView& truss) {
     size_t supportCount = 0;
     size_t loadCount = 0;
 
@@ -63,8 +62,8 @@ TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView
         .arg(loadCount);
 }
 
-[[maybe_unused]] QString TrussDataPresenter::formatNodeInfo(
-    const truss::core::interfaces::NodeView& nodeView) {
+[[maybe_unused]] QString
+TrussDataPresenter::formatNodeInfo(const truss::core::interfaces::NodeView& nodeView) {
     truss::core::Point2D pos{nodeView.x, nodeView.y};
     QString info = QString("Node %1: %2").arg(nodeView.id).arg(formatCoordinate(pos));
 
@@ -82,8 +81,8 @@ TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView
     return info;
 }
 
-[[maybe_unused]] QString TrussDataPresenter::formatMemberInfo(
-    const truss::core::interfaces::MemberView& memberView) {
+[[maybe_unused]] QString
+TrussDataPresenter::formatMemberInfo(const truss::core::interfaces::MemberView& memberView) {
     return QString("Member %1: Nodes [%2 - %3], Length: %4")
         .arg(memberView.id)
         .arg(memberView.startNodeId)

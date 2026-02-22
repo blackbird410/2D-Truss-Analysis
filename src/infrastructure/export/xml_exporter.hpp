@@ -79,7 +79,8 @@ private:
     writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
     static void
     writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
-    static void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    static void
+    writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
     static void writeDisplacementsSection(std::ostream& os,
                                           const IAnalysisResultsView& results,
                                           const ExportOptions& options);

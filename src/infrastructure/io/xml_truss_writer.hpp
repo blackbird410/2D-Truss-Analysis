@@ -40,9 +40,9 @@ private:
      * @brief Create metadata element
      */
     static void createMetadata(tinyxml2::XMLDocument& doc,
-                        tinyxml2::XMLElement* root,
-                        const core::interfaces::TrussDTO& trussData,
-                        const FileIOOptions& options);
+                               tinyxml2::XMLElement* root,
+                               const core::interfaces::TrussDTO& trussData,
+                               const FileIOOptions& options);
 
     /**
      * @brief Create nodes element
@@ -55,15 +55,15 @@ private:
      * @brief Create members element
      */
     static void createMembers(tinyxml2::XMLDocument& doc,
-                       tinyxml2::XMLElement* root,
-                       const core::interfaces::TrussDTO& trussData);
+                              tinyxml2::XMLElement* root,
+                              const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Create loads element
      */
     static void createLoads(tinyxml2::XMLDocument& doc,
-                     tinyxml2::XMLElement* root,
-                     const core::interfaces::TrussDTO& trussData);
+                            tinyxml2::XMLElement* root,
+                            const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Convert support type to string

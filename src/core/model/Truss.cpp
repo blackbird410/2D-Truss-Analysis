@@ -125,28 +125,25 @@ std::vector<MemberPtr> Truss::getMembersAtNode(NodeId nodeId) const {
 
 std::vector<NodePtr> Truss::getConstrainedNodes() const {
     std::vector<NodePtr> result;
-    std::copy_if(m_nodes.begin(),
-                 m_nodes.end(),
-                 std::back_inserter(result),
-                 [](const auto& node) { return node->isConstrained(); });
+    std::copy_if(m_nodes.begin(), m_nodes.end(), std::back_inserter(result), [](const auto& node) {
+        return node->isConstrained();
+    });
     return result;
 }
 
 std::vector<NodePtr> Truss::getLoadedNodes() const {
     std::vector<NodePtr> result;
-    std::copy_if(m_nodes.begin(),
-                 m_nodes.end(),
-                 std::back_inserter(result),
-                 [](const auto& node) { return node->hasAppliedForce(); });
+    std::copy_if(m_nodes.begin(), m_nodes.end(), std::back_inserter(result), [](const auto& node) {
+        return node->hasAppliedForce();
+    });
     return result;
 }
 
 std::vector<NodePtr> Truss::getFreeNodes() const {
     std::vector<NodePtr> result;
-    std::copy_if(m_nodes.begin(),
-                 m_nodes.end(),
-                 std::back_inserter(result),
-                 [](const auto& node) { return !node->isConstrained(); });
+    std::copy_if(m_nodes.begin(), m_nodes.end(), std::back_inserter(result), [](const auto& node) {
+        return !node->isConstrained();
+    });
     return result;
 }
 
@@ -243,9 +240,8 @@ void Truss::clear() {
 }
 
 bool Truss::hasAppliedForces() const {
-    return std::any_of(m_nodes.begin(), m_nodes.end(), [](const auto& node) {
-        return node->hasAppliedForce();
-    });
+    return std::any_of(
+        m_nodes.begin(), m_nodes.end(), [](const auto& node) { return node->hasAppliedForce(); });
 }
 
 void Truss::updateNodeIndexMap() {
@@ -371,10 +367,10 @@ Point2D Truss::getCentroid() const {
 }
 
 Real Truss::getTotalWeight() const {
-    return std::accumulate(m_members.begin(), m_members.end(), Real{0},
-                           [](Real total, const auto& member) {
-                               return total + member->getWeight();
-                           });
+    return std::accumulate(
+        m_members.begin(), m_members.end(), Real{0}, [](Real total, const auto& member) {
+            return total + member->getWeight();
+        });
 }
 
 void Truss::clearForces() {

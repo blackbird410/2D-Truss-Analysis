@@ -7,12 +7,13 @@
 
 #include "core/interfaces/ITrussView.hpp"
 
-#include <algorithm>
-#include <numeric>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
+
+#include <algorithm>
+#include <numeric>
 
 namespace truss::gui {
 
@@ -250,8 +251,8 @@ void ResultsWidget::updateSummary(application::TrussHandle trussHandle) {
     // Calculate max displacement and stress from node/member views
     const auto maxDisplacement = std::accumulate(
         nodeViews.begin(), nodeViews.end(), 0.0, [](double maxValue, const auto& nodeView) {
-            const double displacement =
-                std::sqrt(nodeView.dx * nodeView.dx + nodeView.dy * nodeView.dy);
+            const double displacement = std::sqrt(nodeView.dx * nodeView.dx +
+                                                  nodeView.dy * nodeView.dy);
             return std::max(maxValue, displacement);
         });
 

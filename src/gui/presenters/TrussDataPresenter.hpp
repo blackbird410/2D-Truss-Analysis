@@ -57,8 +57,7 @@ public:
      * @param unit Unit string (default: "m")
      * @return QString Formatted coordinate (e.g., "(1.500, 2.000) m")
      */
-    static QString formatCoordinate(const truss::core::Point2D& point,
-                                    const QString& unit = "m");
+    static QString formatCoordinate(const truss::core::Point2D& point, const QString& unit = "m");
 
     /**
      * @brief Format node count

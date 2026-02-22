@@ -94,12 +94,8 @@ public:
     [[maybe_unused]] void setDisplacement(Real dx, Real dy) {
         m_results.displacement = Point2D(dx, dy);
     }
-    [[maybe_unused]] void setReaction(const Force2D& reaction) {
-        m_results.reaction = reaction;
-    }
-    [[maybe_unused]] void setReaction(Real fx, Real fy) {
-        m_results.reaction = Force2D(fx, fy);
-    }
+    [[maybe_unused]] void setReaction(const Force2D& reaction) { m_results.reaction = reaction; }
+    [[maybe_unused]] void setReaction(Real fx, Real fy) { m_results.reaction = Force2D(fx, fy); }
 
     // Constraint checking
     bool isConstrainedX() const noexcept;
@@ -120,8 +116,8 @@ public:
     /**
      * @brief Check if this node is at the same position as another (within tolerance)
      */
-    [[maybe_unused]] bool isCoincidentWith(
-        const Node& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool isCoincidentWith(const Node& other,
+                                           Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     /**
      * @brief Check if the node has any applied forces

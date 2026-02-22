@@ -232,10 +232,12 @@ void DeformedTrussWidget::setData(const ITrussView& trussView,
     }
 
     // Calculate max force from member views
-    m_maxForce = std::accumulate(
-        m_memberViews.begin(), m_memberViews.end(), 0.0, [](double maxForce, const auto& memberView) {
-            return std::max(maxForce, std::abs(memberView.axialForce));
-        });
+    m_maxForce = std::accumulate(m_memberViews.begin(),
+                                 m_memberViews.end(),
+                                 0.0,
+                                 [](double maxForce, const auto& memberView) {
+                                     return std::max(maxForce, std::abs(memberView.axialForce));
+                                 });
 
     calculateBounds();
     resetView();

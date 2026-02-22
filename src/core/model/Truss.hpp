@@ -96,8 +96,9 @@ public:
 
     // Node queries by state
     std::vector<NodePtr> getConstrainedNodes() const;  ///< Get all nodes with constraints
-    [[maybe_unused]] std::vector<NodePtr> getLoadedNodes() const;  ///< Get all nodes with applied forces
-    [[maybe_unused]] std::vector<NodePtr> getFreeNodes() const;    ///< Get all unconstrained nodes
+    [[maybe_unused]] std::vector<NodePtr>
+    getLoadedNodes() const;  ///< Get all nodes with applied forces
+    [[maybe_unused]] std::vector<NodePtr> getFreeNodes() const;  ///< Get all unconstrained nodes
 
     // Boundary conditions
     void applyForce(NodeId nodeId, const Force2D& force) const;

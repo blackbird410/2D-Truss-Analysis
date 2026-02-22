@@ -115,7 +115,8 @@ private:
     /**
      * @brief Write applied loads section
      */
-    static void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    static void
+    writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write displacements section

@@ -294,8 +294,7 @@ Real AnalysisOrchestrator::checkMatrixSingularity(const MatrixXd& K) {
     }
 }
 
-Real AnalysisOrchestrator::computeStrainEnergy(const Truss& truss,
-                                               const VectorXd& displacements) {
+Real AnalysisOrchestrator::computeStrainEnergy(const Truss& truss, const VectorXd& displacements) {
     Real totalEnergy = 0.0;
     const auto& members = truss.getMembers();
 
@@ -351,9 +350,8 @@ Real AnalysisOrchestrator::findMaxStress(const std::vector<Real>& stresses) {
         return 0.0;
     }
 
-    auto it = std::max_element(stresses.begin(), stresses.end(), [](Real a, Real b) {
-        return std::abs(a) < std::abs(b);
-    });
+    auto it = std::max_element(
+        stresses.begin(), stresses.end(), [](Real a, Real b) { return std::abs(a) < std::abs(b); });
     return it != stresses.end() ? std::abs(*it) : 0.0;
 }
 

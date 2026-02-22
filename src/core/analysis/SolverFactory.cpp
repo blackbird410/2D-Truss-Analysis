@@ -26,8 +26,8 @@ namespace truss::core::analysis {
     return std::make_unique<DirectSolver>();
 }
 
-[[maybe_unused]] std::unique_ptr<ILinearSolver> SolverFactory::createIterativeSolver(
-    int maxIterations, double tolerance) {
+[[maybe_unused]] std::unique_ptr<ILinearSolver>
+SolverFactory::createIterativeSolver(int maxIterations, double tolerance) {
     return std::make_unique<IterativeSolver>(maxIterations, tolerance);
 }
 

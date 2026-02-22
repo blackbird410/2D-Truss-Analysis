@@ -31,12 +31,12 @@ FileLogger::FileLogger(const std::filesystem::path& filePath, LogLevel minLevel,
         throw std::runtime_error("Failed to open log file: " + m_filePath.string());
     }
 
-        // Log initialization message (lifecycle messages bypass level filtering)
-        std::string timestamp = getCurrentTimestamp();
-        m_file << "[" << timestamp
-            << "] [INFO ] Logger initialized (file: " << m_filePath.filename().string() << ")"
-            << std::endl;
-        m_file.flush();
+    // Log initialization message (lifecycle messages bypass level filtering)
+    std::string timestamp = getCurrentTimestamp();
+    m_file << "[" << timestamp
+           << "] [INFO ] Logger initialized (file: " << m_filePath.filename().string() << ")"
+           << std::endl;
+    m_file.flush();
 }
 
 FileLogger::~FileLogger() {

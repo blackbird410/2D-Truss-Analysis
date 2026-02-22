@@ -81,12 +81,12 @@ private:
     /**
      * @brief Group issues by severity
      */
-    static void groupIssuesBySeverity(
-        const std::vector<truss::core::validation::ValidationIssue>& issues,
-        std::vector<QString>& fatalErrors,
-        std::vector<QString>& errors,
-        std::vector<QString>& warnings,
-        std::vector<QString>& infos);
+    static void
+    groupIssuesBySeverity(const std::vector<truss::core::validation::ValidationIssue>& issues,
+                          std::vector<QString>& fatalErrors,
+                          std::vector<QString>& errors,
+                          std::vector<QString>& warnings,
+                          std::vector<QString>& infos);
 };
 
 }  // namespace truss_presenters

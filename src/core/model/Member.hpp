@@ -60,15 +60,15 @@ public:
 
     // Geometric properties
     Real getLength() const;
-    Real getAngle() const;           ///< Angle with respect to X-axis (radians)
+    Real getAngle() const;                          ///< Angle with respect to X-axis (radians)
     [[maybe_unused]] Real getAngleDegrees() const;  ///< Angle with respect to X-axis (degrees)
-    Vector2d getUnitVector() const;  ///< Unit vector from start to end node
-    Vector2d getDirection() const;   ///< Direction vector (not normalized)
+    Vector2d getUnitVector() const;                 ///< Unit vector from start to end node
+    Vector2d getDirection() const;                  ///< Direction vector (not normalized)
 
     // Structural properties
-    Real getStiffness() const;       ///< Axial stiffness (EA/L)
+    Real getStiffness() const;                        ///< Axial stiffness (EA/L)
     [[maybe_unused]] Real getAxialStiffness() const;  ///< Axial rigidity (EA)
-    Real getWeight() const;          ///< Self-weight of the member
+    Real getWeight() const;                           ///< Self-weight of the member
 
     // Analysis results
     const MemberResults& getResults() const noexcept { return m_results; }
@@ -80,9 +80,7 @@ public:
 
     // Setters
     void setId(MemberId id) { m_id = id; }
-    [[maybe_unused]] void setMaterial(const MaterialProperties& material) {
-        m_material = material;
-    }
+    [[maybe_unused]] void setMaterial(const MaterialProperties& material) { m_material = material; }
     [[maybe_unused]] void setSection(const SectionProperties& section) { m_section = section; }
     void setLabel(const std::string& label) { m_label = label; }
 
@@ -90,26 +88,25 @@ public:
     void setResults(const MemberResults& results) { m_results = results; }
     [[maybe_unused]] void setAxialForce(Real force);
     [[maybe_unused]] void setAxialStress(Real stress) { m_results.axialStress = stress; }
-    [[maybe_unused]] void setUtilizationRatio(Real ratio) {
-        m_results.utilizationRatio = ratio;
-    }
+    [[maybe_unused]] void setUtilizationRatio(Real ratio) { m_results.utilizationRatio = ratio; }
 
     // Node connectivity
     bool isConnectedTo(const Node& node) const;
     bool isConnectedTo(NodeId nodeId) const;
     bool hasNode(NodeId nodeId) const;  ///< Check if member has specific node (by ID)
-    [[maybe_unused]] bool connectsNodes(NodeId id1,
-                                        NodeId id2) const;  ///< Check if member connects two specific nodes
+    [[maybe_unused]] bool
+    connectsNodes(NodeId id1,
+                  NodeId id2) const;  ///< Check if member connects two specific nodes
     [[maybe_unused]] std::shared_ptr<Node> getOtherNode(const Node& node) const;
     std::shared_ptr<Node> getOtherNode(NodeId nodeId) const;
 
     // Geometric checks
     bool isVertical(Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
     bool isHorizontal(Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
-    [[maybe_unused]] bool isParallelTo(
-        const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
-    [[maybe_unused]] bool isPerpendicularTo(
-        const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool isParallelTo(const Member& other,
+                                       Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool isPerpendicularTo(const Member& other,
+                                            Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     // Validation
     bool isValid() const;
@@ -125,7 +122,8 @@ public:
 
     // Utility methods
     [[maybe_unused]] Point2D getMidpoint() const;
-    [[maybe_unused]] Real getSlope() const;  ///< Slope (dy/dx), returns infinity for vertical members
+    [[maybe_unused]] Real
+    getSlope() const;  ///< Slope (dy/dx), returns infinity for vertical members
 
     /**
      * @brief Check if this member intersects with another member
@@ -133,8 +131,8 @@ public:
      * @param tolerance Geometric tolerance for intersection check
      * @return true if members intersect (excluding endpoints)
      */
-    [[maybe_unused]] bool intersectsWith(
-        const Member& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool intersectsWith(const Member& other,
+                                         Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     /**
      * @brief Get the intersection point with another member

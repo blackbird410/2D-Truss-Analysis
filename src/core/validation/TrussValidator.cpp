@@ -104,8 +104,7 @@ bool TrussValidator::isValid(const Truss& truss) {
     return validate(truss).isValid();
 }
 
-void TrussValidator::validateStructuralCompleteness(const Truss& truss,
-                                                    ValidationResult& result) {
+void TrussValidator::validateStructuralCompleteness(const Truss& truss, ValidationResult& result) {
     // Check minimum node count
     if (truss.getNodeCount() < 2) {
         result.addIssue(ValidationIssue(
@@ -264,8 +263,7 @@ void TrussValidator::validateMaterials(const Truss& truss, ValidationResult& res
     }
 }
 
-void TrussValidator::validateBoundaryConditions(const Truss& truss,
-                                                ValidationResult& result) {
+void TrussValidator::validateBoundaryConditions(const Truss& truss, ValidationResult& result) {
     // Check minimum constraints for stability (at least 3 constraints to prevent rigid body motion)
     size_t totalConstraints = truss.getConstrainedDofs();
 
@@ -351,8 +349,7 @@ void TrussValidator::validateStaticDeterminacy(const Truss& truss, ValidationRes
     }
 }
 
-void TrussValidator::validateKinematicStability(const Truss& truss,
-                                                ValidationResult& result) {
+void TrussValidator::validateKinematicStability(const Truss& truss, ValidationResult& result) {
     // Critical stability check: prevent geometrically unstable structures from analysis
 
     const auto& nodes = truss.getNodes();
@@ -610,8 +607,8 @@ bool TrussValidator::checkRigidBodyStability(const Truss& truss) {
     return !findZeroLengthMembers(truss, tolerance).empty();
 }
 
-std::vector<std::pair<NodeId, NodeId>>
-TrussValidator::findCoincidentNodePairs(const Truss& truss, Real tolerance) {
+std::vector<std::pair<NodeId, NodeId>> TrussValidator::findCoincidentNodePairs(const Truss& truss,
+                                                                               Real tolerance) {
     std::vector<std::pair<NodeId, NodeId>> pairs;
     const auto& nodes = truss.getNodes();
 

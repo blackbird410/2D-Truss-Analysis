@@ -23,9 +23,9 @@
 #include "cli/commands/AnalyzeCommand.hpp"
 #include "cli/commands/ExampleCommand.hpp"
 #include "cli/commands/ExportCommand.hpp"
-#include "cli/commands/ValidateCommand.hpp"
 #include "cli/commands/HelpCommand.hpp"
 #include "cli/commands/ICommand.hpp"
+#include "cli/commands/ValidateCommand.hpp"
 
 #include <map>
 #include <memory>

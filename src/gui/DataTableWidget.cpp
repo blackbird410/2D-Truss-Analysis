@@ -7,11 +7,12 @@
 
 #include "core/interfaces/ITrussView.hpp"
 
-#include <algorithm>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
+
+#include <algorithm>
 
 using namespace truss::application;
 using namespace truss::infrastructure;
@@ -195,8 +196,8 @@ void DataTableWidget::updateLoadsTable(application::TrussHandle trussHandle) {
     auto nodeViews = trussView.getNodeViews();
 
     // Count nodes with applied forces
-    int loadCount = static_cast<int>(std::count_if(
-        nodeViews.begin(), nodeViews.end(), [](const auto& nodeView) {
+    int loadCount = static_cast<int>(
+        std::count_if(nodeViews.begin(), nodeViews.end(), [](const auto& nodeView) {
             return nodeView.fx != 0.0 || nodeView.fy != 0.0;
         }));
 

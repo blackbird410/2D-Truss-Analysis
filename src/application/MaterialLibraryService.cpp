@@ -196,20 +196,21 @@ void MaterialLibraryService::initializeDefaultSections() {
         props.shearArea = 0.005;         // ~83% of gross area
         props.designation = "Rectangular 60x100mm";
 
-        addSectionInternal("Rectangular 60x100mm", "Solid rectangular section (60mm × 100mm)", props);
+        addSectionInternal(
+            "Rectangular 60x100mm", "Solid rectangular section (60mm × 100mm)", props);
     }
 }
 
 // Non-virtual helper methods to avoid virtual calls in constructor
 void MaterialLibraryService::addMaterialInternal(const std::string& name,
-                                                  const std::string& description,
-                                                  const MaterialProperties& properties) {
+                                                 const std::string& description,
+                                                 const MaterialProperties& properties) {
     m_materials[name] = MaterialPreset{name, description, properties};
 }
 
 void MaterialLibraryService::addSectionInternal(const std::string& name,
-                                                 const std::string& description,
-                                                 const SectionProperties& properties) {
+                                                const std::string& description,
+                                                const SectionProperties& properties) {
     m_sections[name] = SectionPreset{name, description, properties};
 }
 
