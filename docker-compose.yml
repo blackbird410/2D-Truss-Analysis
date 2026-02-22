@@ -1,0 +1,45 @@
+services:
+  # Production runtime container
+  truss-analysis:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: runtime
+    image: truss-analysis:latest
+    container_name: truss-analysis
+    volumes:
+      # Mount examples as read-only input
+      - ./tests/fixtures/sample_data:/data/input:ro
+      # Mount output directory for results
+      - ./output:/data/output:rw
+    environment:
+      - TRUSS_LOG_LEVEL=info
+    user: "1000:1000"
+    stdin_open: true
+    tty: true
+
+  # Development container with full toolchain
+  truss-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile.dev
+    image: truss-analysis:dev
+    container_name: truss-dev
+    volumes:
+      # Mount entire workspace for development
+      - .:/workspace:rw
+      # Use named volume for build cache to improve performance
+      - build-cache:/workspace/build
+    working_dir: /workspace
+    stdin_open: true
+    tty: true
+    command: /bin/bash
+    environment:
+      - CMAKE_BUILD_TYPE=Debug
+      - CC=gcc
+      - CXX=g++
+
+volumes:
+  # Named volume for build cache
+  build-cache:
+    driver: local
