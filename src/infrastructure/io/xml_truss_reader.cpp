@@ -8,6 +8,7 @@
 
 #include "xml_truss_reader.hpp"
 
+#include <algorithm>
 #include <sstream>
 #include <unordered_set>
 
@@ -183,12 +184,12 @@ void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement,
         }
 
         // Find node and apply force
-        for (auto& node : dto.nodes) {
-            if (node.id == nodeId) {
-                node.fx = fx;
-                node.fy = fy;
-                break;
-            }
+        auto nodeIt = std::find_if(dto.nodes.begin(), dto.nodes.end(), [nodeId](const auto& node) {
+            return node.id == nodeId;
+        });
+        if (nodeIt != dto.nodes.end()) {
+            nodeIt->fx = fx;
+            nodeIt->fy = fy;
         }
     }
 }
