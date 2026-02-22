@@ -48,7 +48,7 @@ public:
      * @param argv Argument vector
      * @return Parsed arguments
      */
-    static ParsedArgs parse(int argc, char* const argv[]);
+    static ParsedArgs parse(int argc, const char* const argv[]);
 
     /**
      * @brief Get option value with fallback to short form

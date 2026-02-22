@@ -188,18 +188,18 @@ size_t Truss::getConstrainedDofs() const {
     return getTotalDofs() - getFreeDofs();
 }
 
-void Truss::applyForce(NodeId nodeId, const Force2D& force) const {
+void Truss::applyForce(NodeId nodeId, const Force2D& force) {
     auto node = getNode(nodeId);
     if (node) {
         node->setAppliedForce(force);
     }
 }
 
-void Truss::applyForce(NodeId nodeId, Real fx, Real fy) const {
+void Truss::applyForce(NodeId nodeId, Real fx, Real fy) {
     applyForce(nodeId, Force2D(fx, fy));
 }
 
-void Truss::setSupportType(NodeId nodeId, SupportType support) const {
+void Truss::setSupportType(NodeId nodeId, SupportType support) {
     auto node = getNode(nodeId);
     if (node) {
         node->setSupportType(support);
