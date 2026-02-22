@@ -179,24 +179,6 @@ The application follows **Clean Architecture** principles with strict layer sepa
 
 ## Quick Start
 
-### One-Step Installation (Linux)
-
-```bash
-# Clone and install in one command
-git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
-cd 2D-Truss-Analysis-cpp
-./install.sh
-```
-
-**Installation Options:**
-
-```bash
-./install.sh           # System-wide installation (requires sudo)
-./install.sh --user    # User installation (~/.local)
-./install.sh --prefix /opt/truss  # Custom location
-./install.sh --help    # See all options
-```
-
 ### Building from Source (Production Makefile Wrapper)
 
 ```bash
@@ -208,6 +190,9 @@ make test
 
 # Generate coverage report
 make coverage
+
+# Optional install (system-wide)
+sudo make install
 
 # See all available targets
 make help
@@ -389,7 +374,6 @@ ctest --verbose
 
 ## Documentation
 
-- **[Installation Guide](INSTALL_LINUX.md)**: Complete Linux installation instructions
 - **[Refactoring Progress](REFACTORING_PROGRESS.md)**: Track v3.0.0 refactoring status
 - **[Refactoring Documentation](docs/refactoring/)**: Detailed refactoring plans and architecture
 - **[Work Logs](docs/work-logs/)**: Detailed records of major refactoring milestones
