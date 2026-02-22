@@ -18,8 +18,10 @@ else()
     add_compile_options(-Wall -Wextra -Wpedantic -O3 -march=native)
 endif()
 
-# Coverage options (enabled when CMAKE_BUILD_TYPE=Coverage)
+# Build options
 option(ENABLE_COVERAGE "Enable code coverage reporting" OFF)
+option(BUILD_GUI "Build GUI application (requires Qt6)" ON)
+
 if(ENABLE_COVERAGE)
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
         add_compile_options(--coverage -fprofile-arcs -ftest-coverage)
@@ -32,8 +34,15 @@ endif()
 
 # Find required packages
 find_package(Eigen3 REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test)
 find_package(nlohmann_json REQUIRED)
+
+# Qt6 is only required if building GUI
+if(BUILD_GUI)
+    find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test)
+    message(STATUS "Building with GUI support (Qt6)")
+else()
+    message(STATUS "Building CLI only (no Qt6)")
+endif()
 
 # Find tinyxml2 (note: package name in CMake is lowercase)
 find_package(tinyxml2 QUIET)
@@ -61,12 +70,38 @@ enable_testing()
 if(BUILD_TESTING)
     find_package(GTest REQUIRED)
     message(STATUS "Google Test found: ${GTest_VERSION}")
+    
+    # Manually create gmock targets if not found (Ubuntu 24.04 requires this)
+    if(NOT TARGET GTest::gmock)
+        find_library(GMOCK_LIBRARY gmock PATHS /usr/lib /usr/local/lib)
+        find_library(GMOCK_MAIN_LIBRARY gmock_main PATHS /usr/lib /usr/local/lib)
+        
+        if(GMOCK_LIBRARY)
+            add_library(GTest::gmock UNKNOWN IMPORTED)
+            set_target_properties(GTest::gmock PROPERTIES
+                IMPORTED_LOCATION "${GMOCK_LIBRARY}"
+                INTERFACE_LINK_LIBRARIES "GTest::gtest"
+            )
+            message(STATUS "Created GTest::gmock target: ${GMOCK_LIBRARY}")
+        endif()
+        
+        if(GMOCK_MAIN_LIBRARY)
+            add_library(GTest::gmock_main UNKNOWN IMPORTED)
+            set_target_properties(GTest::gmock_main PROPERTIES
+                IMPORTED_LOCATION "${GMOCK_MAIN_LIBRARY}"
+                INTERFACE_LINK_LIBRARIES "GTest::gmock"
+            )
+            message(STATUS "Created GTest::gmock_main target: ${GMOCK_MAIN_LIBRARY}")
+        endif()
+    endif()
 endif()
 
-# Enable Qt6 automatic MOC, UIC, and RCC
-set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
+# Enable Qt6 automatic MOC, UIC, and RCC (only if building GUI)
+if(BUILD_GUI)
+    set(CMAKE_AUTOMOC ON)
+    set(CMAKE_AUTORCC ON)
+    set(CMAKE_AUTOUIC ON)
+endif()
 
 # Create library for core functionality
 add_library(TrussCore STATIC
@@ -223,11 +258,19 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
     TrussCore
 )
 
-# Utility: Generate corrected golden masters
-add_executable(generate_corrected_golden_masters
-    generate_corrected_golden_masters.cpp
+set_target_properties(TrussAnalysisCLI PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    OUTPUT_NAME "TrussAnalysisCLI"
 )
-target_link_libraries(generate_corrected_golden_masters PRIVATE TrussCore)
+
+# Utility: Generate corrected golden masters (optional - only if file exists)
+if(EXISTS ${CMAKE_SOURCE_DIR}/generate_corrected_golden_masters.cpp)
+    add_executable(generate_corrected_golden_masters
+        generate_corrected_golden_masters.cpp
+    )
+    target_link_libraries(generate_corrected_golden_masters PRIVATE TrussCore)
+endif()
 
 # ============================================================================
 # UNIT TESTS CONFIGURATION
@@ -426,14 +469,13 @@ if(BUILD_TESTING)
 endif()
 
 # Set target properties for CLI executable
-set_target_properties(TrussAnalysisCLI PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    OUTPUT_NAME "TrussAnalysisCLI"
-)
+# ============================================================================
+# GUI APPLICATION (Optional - requires Qt6)
+# ============================================================================
 
-# GUI executable
-add_executable(TrussAnalysisGUI
+if(BUILD_GUI)
+    # GUI executable
+    add_executable(TrussAnalysisGUI
     src/gui/main.cpp
     src/gui/MainWindow.cpp
     src/gui/MainWindow.hpp
@@ -476,21 +518,30 @@ set_target_properties(TrussAnalysisGUI PROPERTIES
     CXX_STANDARD_REQUIRED ON
     OUTPUT_NAME "TrussAnalysisGUI"
 )
+endif()  # BUILD_GUI
 
 # Install rules for packaging
-install(TARGETS TrussAnalysisCLI TrussAnalysisGUI
-    RUNTIME DESTINATION bin
-)
+if(BUILD_GUI)
+    install(TARGETS TrussAnalysisCLI TrussAnalysisGUI
+        RUNTIME DESTINATION bin
+    )
+else()
+    install(TARGETS TrussAnalysisCLI
+        RUNTIME DESTINATION bin
+    )
+endif()
 
 # Linux-specific settings
 message(STATUS "Configuring for Linux build")
 
-# Set RPATH for better library linking
-set_target_properties(TrussAnalysisGUI PROPERTIES
-    INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
-    BUILD_WITH_INSTALL_RPATH OFF
-    INSTALL_RPATH_USE_LINK_PATH ON
-)
+if(BUILD_GUI)
+    # Set RPATH for better library linking
+    set_target_properties(TrussAnalysisGUI PROPERTIES
+        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
+        BUILD_WITH_INSTALL_RPATH OFF
+        INSTALL_RPATH_USE_LINK_PATH ON
+    )
+endif()
 
 set_target_properties(TrussAnalysisCLI PROPERTIES
     INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
@@ -500,10 +551,12 @@ set_target_properties(TrussAnalysisCLI PROPERTIES
 
 # Strip debug symbols in release builds for smaller binaries
 if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-        COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
-        COMMENT "Stripping debug symbols from TrussAnalysisGUI"
-    )
+    if(BUILD_GUI)
+        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
+            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
+            COMMENT "Stripping debug symbols from TrussAnalysisGUI"
+        )
+    endif()
     
     add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
         COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisCLI>"
@@ -523,14 +576,14 @@ if(ENABLE_COVERAGE)
             COMMAND ${CMAKE_COMMAND} -E echo "Running tests to generate coverage data..."
             COMMAND ${CMAKE_CTEST_COMMAND} --output-on-failure
             COMMAND ${CMAKE_COMMAND} -E echo "Capturing coverage data..."
-            COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${LCOV} --capture --directory . --output-file coverage.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,mismatch,negative
             COMMAND ${CMAKE_COMMAND} -E echo "Filtering coverage data..."
-            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,unused
+            COMMAND ${LCOV} --remove coverage.info '/usr/*' '*/build/*' '*/tests/*' '*/external/*' '*/v1/*' --output-file coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,unused,mismatch,negative
             COMMAND ${CMAKE_COMMAND} -E echo "Generating HTML report..."
-            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent,category
+            COMMAND ${GENHTML} coverage_filtered.info --output-directory coverage_html --rc branch_coverage=1 --ignore-errors inconsistent,category,mismatch,negative
             COMMAND ${CMAKE_COMMAND} -E echo "Coverage report generated: coverage_html/index.html"
             COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage summary..."
-            COMMAND ${LCOV} --summary coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
+            COMMAND ${LCOV} --summary coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,mismatch,negative
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             DEPENDS unit_tests test_gtest_integration integration_tests
             COMMENT "Generating code coverage report"
