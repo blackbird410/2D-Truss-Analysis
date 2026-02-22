@@ -2,20 +2,12 @@
 
 **Last Updated:** 2026-02-08  
 **Purpose:** Phase 3 validation reference files  
-**Validated Formats:** CSV, JSON, XML (3/6)  
+**Validated Formats:** CSV, JSON, XML, HTML, LaTeX, TXT (6/6)  
 **Generator:** `generate_corrected_golden_masters.cpp`
 
-## ⚠️ CRITICAL NOTICE
+## Status
 
-**Only 3 of 6 formats are currently validated and safe for use:**
-
-- ✅ CSV (945 bytes) - Authoritative reference
-- ✅ JSON (1,315 bytes) - Corrected & validated 2026-02-08
-- ✅ XML (2,194 bytes) - Corrected & validated 2026-02-08
-
-**3 formats are UNVALIDATED** (HTML, LaTeX, TXT) and have been **ISOLATED** to `unvalidated_legacy/` directory.
-
-**DO NOT** use unvalidated formats for testing. See [VALIDATION_STATUS.md](VALIDATION_STATUS.md) for details.
+All six export formats are validated and safe for use. See [VALIDATION_STATUS.md](VALIDATION_STATUS.md) for full details.
 
 ## Overview
 
@@ -60,23 +52,16 @@ These files serve as "golden masters" for validating new Strategy pattern export
 
 ### ✅ Validated Golden Masters (Safe for Testing)
 
-| File                 | Format | Size        | Status           | Notes                              |
-| -------------------- | ------ | ----------- | ---------------- | ---------------------------------- |
-| `golden_master.csv`  | CSV    | 945 bytes   | ✅ **VALIDATED** | Authoritative reference (complete) |
-| `golden_master.json` | JSON   | 1,315 bytes | ✅ **VALIDATED** | Corrected 2026-02-08 (+reactions)  |
-| `golden_master.xml`  | XML    | 2,194 bytes | ✅ **VALIDATED** | Corrected 2026-02-08 (+4 sections) |
+| File                 | Format | Size (Feb 21) | Status           | Notes                              |
+| -------------------- | ------ | ------------- | ---------------- | ---------------------------------- |
+| `golden_master.csv`  | CSV    | ~1.1 KB       | ✅ **VALIDATED** | Authoritative reference (complete) |
+| `golden_master.json` | JSON   | ~1.9 KB       | ✅ **VALIDATED** | Complete 8-section export          |
+| `golden_master.xml`  | XML    | ~2.9 KB       | ✅ **VALIDATED** | Complete 8-section export          |
+| `golden_master.html` | HTML   | ~7.0 KB       | ✅ **VALIDATED** | Complete 8-section export          |
+| `golden_master.tex`  | LaTeX  | ~4.2 KB       | ✅ **VALIDATED** | Complete 8-section export          |
+| `golden_master.txt`  | TXT    | ~4.0 KB       | ✅ **VALIDATED** | Complete 8-section export          |
 
-**Total Validated:** 3 files, 4,454 bytes
-
-### ⚠️ Unvalidated Legacy Files (Isolated)
-
-| File                 | Format | Size        | Status            | Location              |
-| -------------------- | ------ | ----------- | ----------------- | --------------------- |
-| `golden_master.html` | HTML   | 1,087 bytes | ❌ **INCOMPLETE** | `unvalidated_legacy/` |
-| `golden_master.tex`  | LaTeX  | 764 bytes   | ❌ **INCOMPLETE** | `unvalidated_legacy/` |
-| `golden_master.txt`  | TXT    | 1,549 bytes | ❌ **INCOMPLETE** | `unvalidated_legacy/` |
-
-**Issue:** Missing reactions data (MANDATORY section). See [unvalidated_legacy/README.md](unvalidated_legacy/README.md).
+**Total Validated:** 6 files
 
 ## Export Options Used
 
@@ -124,20 +109,15 @@ For each new concrete exporter (CSV, JSON, XML, HTML, LaTeX):
 
 ### Regenerate Golden Masters
 
-If needed (e.g., after fixing a bug in legacy exporter):
+If needed (e.g., after updating exporter output):
 
 ```bash
-# Compile generator
-g++ -std=c++20 -I. -Isrc generate_golden_masters.cpp \
-    src/core/ResultsExporter.cpp \
-    src/core/Logger.cpp \
-    src/core/model/*.cpp \
-    src/core/analysis/*.cpp \
-    -o generate_golden_masters \
-    $(pkg-config --cflags --libs eigen3)
+# Build generator target
+cmake -B build -DCMAKE_BUILD_TYPE=Release
+cmake --build build --target generate_corrected_golden_masters
 
 # Generate files
-./generate_golden_masters
+./build/generate_corrected_golden_masters
 
 # Verify outputs
 ls -lh tests/fixtures/export_golden/
@@ -171,6 +151,4 @@ system("diff tests/fixtures/export_golden/golden_master.csv test_output.csv");
 
 ## See Also
 
-- [PHASE_3_ORIENTATION_SUMMARY.md](../../docs/refactoring/PHASE_3_ORIENTATION_SUMMARY.md) - Phase 3 plan
-- [04-REFACTORING-MASTER-PLAN.md](../../docs/refactoring/04-REFACTORING-MASTER-PLAN.md) - Overall refactoring plan
-- [generate_golden_masters.cpp](../../generate_golden_masters.cpp) - Generator source code
+- [generate_corrected_golden_masters.cpp](../../generate_corrected_golden_masters.cpp) - Generator source code
