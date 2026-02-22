@@ -23,9 +23,9 @@
 #include "cli/commands/AnalyzeCommand.hpp"
 #include "cli/commands/ExampleCommand.hpp"
 #include "cli/commands/ExportCommand.hpp"
+#include "cli/commands/ValidateCommand.hpp"
 #include "cli/commands/HelpCommand.hpp"
 #include "cli/commands/ICommand.hpp"
-#include "cli/commands/ValidateCommand.hpp"
 #include "cli/presenters/ConsolePresenter.hpp"
 
 #include <map>
@@ -84,8 +84,7 @@ int main(int argc, char* argv[]) {
     truss::application::AnalysisApplicationService analysisService;
 
     // Parse command-line arguments
-    truss::cli::ArgumentParser parser;
-    truss::cli::ParsedArgs args = parser.parse(argc, argv);
+    truss::cli::ParsedArgs args = truss::cli::ArgumentParser::parse(argc, argv);
 
     // Create command registry
     std::map<std::string, std::unique_ptr<truss::cli::commands::ICommand>> commands;
