@@ -32,7 +32,8 @@ if [ "$choice" = "2" ]; then
     echo "Building with GUI support..."
 else
     echo "Building CLI-only (faster)..."
-    BUILD_TESTING="OFF"  # Disable tests for CLI-only (some tests require Qt6)
+    # Tests remain enabled for CLI-only builds; Qt6-dependent tests are
+    # conditionally handled by CMake when BUILD_GUI=ON.
 fi
 
 # Configure build
