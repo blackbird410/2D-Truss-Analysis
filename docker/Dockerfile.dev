@@ -52,7 +52,20 @@ RUN if [ -d /usr/src/googletest ]; then \
         cd /usr/src/googletest && \
         cmake . && \
         cmake --build . && \
-        (cp -r lib/*.a /usr/lib/ 2>/dev/null || find . -name "*.a" -exec cp {} /usr/lib/ \; 2>/dev/null || true) && \
+        copied=0 && \
+        if ls lib/*.a >/dev/null 2>&1; then \
+            cp -r lib/*.a /usr/lib/ && copied=1; \
+        fi && \
+        if [ "$copied" -eq 0 ]; then \
+            libs_found="$(find . -name "*.a" -print 2>/dev/null)" && \
+            if [ -n "$libs_found" ]; then \
+                echo "$libs_found" | xargs -r -I{} cp {} /usr/lib/ && copied=1; \
+            fi; \
+        fi && \
+        if [ "$copied" -eq 0 ]; then \
+            echo "Error: Failed to install GoogleTest/GoogleMock static libraries into /usr/lib" >&2; \
+            exit 1; \
+        fi && \
         cp -r googlemock/include/gmock /usr/include/ && \
         cp -r googletest/include/gtest /usr/include/; \
     fi
