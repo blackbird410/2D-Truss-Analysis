@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <sstream>
 #include <unordered_set>
 
@@ -16,25 +17,23 @@ namespace truss::core::validation {
 
 // ========== ValidationResult Implementation ==========
 
-std::vector<ValidationIssue>
+[[maybe_unused]] std::vector<ValidationIssue>
 ValidationResult::getIssuesBySeverity(ValidationSeverity severity) const {
     std::vector<ValidationIssue> filtered;
-    for (const auto& issue : m_issues) {
-        if (issue.severity == severity) {
-            filtered.push_back(issue);
-        }
-    }
+    std::copy_if(m_issues.begin(),
+                 m_issues.end(),
+                 std::back_inserter(filtered),
+                 [severity](const ValidationIssue& issue) { return issue.severity == severity; });
     return filtered;
 }
 
-std::vector<ValidationIssue>
+[[maybe_unused]] std::vector<ValidationIssue>
 ValidationResult::getIssuesByCategory(const std::string& category) const {
     std::vector<ValidationIssue> filtered;
-    for (const auto& issue : m_issues) {
-        if (issue.category == category) {
-            filtered.push_back(issue);
-        }
-    }
+    std::copy_if(m_issues.begin(),
+                 m_issues.end(),
+                 std::back_inserter(filtered),
+                 [&category](const ValidationIssue& issue) { return issue.category == category; });
     return filtered;
 }
 
@@ -73,7 +72,7 @@ std::vector<std::string> ValidationResult::getErrorMessages() const {
     return messages;
 }
 
-std::vector<std::string> ValidationResult::getWarningMessages() const {
+[[maybe_unused]] std::vector<std::string> ValidationResult::getWarningMessages() const {
     std::vector<std::string> messages;
     for (const auto& issue : m_issues) {
         if (issue.severity == ValidationSeverity::Warning) {
@@ -85,7 +84,7 @@ std::vector<std::string> ValidationResult::getWarningMessages() const {
 
 // ========== TrussValidator Implementation ==========
 
-ValidationResult TrussValidator::validate(const Truss& truss) const {
+ValidationResult TrussValidator::validate(const Truss& truss) {
     ValidationResult result;
 
     // Run all validation checks in order of severity
@@ -101,12 +100,11 @@ ValidationResult TrussValidator::validate(const Truss& truss) const {
     return result;
 }
 
-bool TrussValidator::isValid(const Truss& truss) const {
+bool TrussValidator::isValid(const Truss& truss) {
     return validate(truss).isValid();
 }
 
-void TrussValidator::validateStructuralCompleteness(const Truss& truss,
-                                                    ValidationResult& result) const {
+void TrussValidator::validateStructuralCompleteness(const Truss& truss, ValidationResult& result) {
     // Check minimum node count
     if (truss.getNodeCount() < 2) {
         result.addIssue(ValidationIssue(
@@ -148,7 +146,7 @@ void TrussValidator::validateStructuralCompleteness(const Truss& truss,
     }
 }
 
-void TrussValidator::validateGeometry(const Truss& truss, ValidationResult& result) const {
+void TrussValidator::validateGeometry(const Truss& truss, ValidationResult& result) {
     // Check for zero-length members
     auto zeroLengthMembers = findZeroLengthMembers(truss, Constants::GEOMETRY_TOLERANCE);
     for (auto memberId : zeroLengthMembers) {
@@ -210,7 +208,7 @@ void TrussValidator::validateGeometry(const Truss& truss, ValidationResult& resu
     }
 }
 
-void TrussValidator::validateMaterials(const Truss& truss, ValidationResult& result) const {
+void TrussValidator::validateMaterials(const Truss& truss, ValidationResult& result) {
     for (const auto& member : truss.getMembers()) {
         const auto& material = member->getMaterial();
         const auto& section = member->getSection();
@@ -265,8 +263,7 @@ void TrussValidator::validateMaterials(const Truss& truss, ValidationResult& res
     }
 }
 
-void TrussValidator::validateBoundaryConditions(const Truss& truss,
-                                                ValidationResult& result) const {
+void TrussValidator::validateBoundaryConditions(const Truss& truss, ValidationResult& result) {
     // Check minimum constraints for stability (at least 3 constraints to prevent rigid body motion)
     size_t totalConstraints = truss.getConstrainedDofs();
 
@@ -316,7 +313,7 @@ void TrussValidator::validateBoundaryConditions(const Truss& truss,
                                     "Total DOF constraints: " + std::to_string(totalConstraints)));
 }
 
-void TrussValidator::validateStaticDeterminacy(const Truss& truss, ValidationResult& result) const {
+void TrussValidator::validateStaticDeterminacy(const Truss& truss, ValidationResult& result) {
     size_t n = truss.getNodeCount();
     size_t m = truss.getMemberCount();
     size_t r = truss.getConstrainedDofs();
@@ -352,8 +349,7 @@ void TrussValidator::validateStaticDeterminacy(const Truss& truss, ValidationRes
     }
 }
 
-void TrussValidator::validateKinematicStability(const Truss& truss,
-                                                ValidationResult& result) const {
+void TrussValidator::validateKinematicStability(const Truss& truss, ValidationResult& result) {
     // Critical stability check: prevent geometrically unstable structures from analysis
 
     const auto& nodes = truss.getNodes();
@@ -436,7 +432,7 @@ void TrussValidator::validateKinematicStability(const Truss& truss,
     }
 }
 
-void TrussValidator::validateLoads(const Truss& truss, ValidationResult& result) const {
+void TrussValidator::validateLoads(const Truss& truss, ValidationResult& result) {
     // Check if any loads are applied
     if (!truss.hasAppliedForces()) {
         result.addIssue(ValidationIssue(
@@ -487,7 +483,7 @@ void TrussValidator::validateLoads(const Truss& truss, ValidationResult& result)
                                     ""));
 }
 
-void TrussValidator::validateConnectivity(const Truss& truss, ValidationResult& result) const {
+void TrussValidator::validateConnectivity(const Truss& truss, ValidationResult& result) {
     // Check each member for valid node connections
     for (const auto& member : truss.getMembers()) {
         auto startNode = member->getStartNode();
@@ -536,7 +532,7 @@ void TrussValidator::validateConnectivity(const Truss& truss, ValidationResult& 
 
 // ========== Private Helper Methods ==========
 
-bool TrussValidator::checkMinimumConstraints(const Truss& truss) const {
+bool TrussValidator::checkMinimumConstraints(const Truss& truss) {
     // For 2D truss: minimum 3 constraints needed to prevent rigid body motion
     // BUT: must check that constraints prevent ALL 3 rigid body modes:
     //   - Horizontal translation (need at least 1 X constraint)
@@ -551,7 +547,7 @@ bool TrussValidator::checkMinimumConstraints(const Truss& truss) const {
     return checkRigidBodyStability(truss);
 }
 
-bool TrussValidator::checkRigidBodyStability(const Truss& truss) const {
+bool TrussValidator::checkRigidBodyStability(const Truss& truss) {
     // Rigid body stability in 2D requires preventing:
     //   1. Horizontal translation (X direction)
     //   2. Vertical translation (Y direction)
@@ -599,20 +595,20 @@ bool TrussValidator::checkRigidBodyStability(const Truss& truss) const {
     return true;
 }
 
-bool TrussValidator::hasCoincidentNodes(const Truss& truss, Real tolerance) const {
+[[maybe_unused]] bool TrussValidator::hasCoincidentNodes(const Truss& truss, Real tolerance) {
     return !findCoincidentNodePairs(truss, tolerance).empty();
 }
 
-bool TrussValidator::hasDuplicateMembers(const Truss& truss) const {
+[[maybe_unused]] bool TrussValidator::hasDuplicateMembers(const Truss& truss) {
     return !findDuplicateMembers(truss).empty();
 }
 
-bool TrussValidator::hasZeroLengthMembers(const Truss& truss, Real tolerance) const {
+[[maybe_unused]] bool TrussValidator::hasZeroLengthMembers(const Truss& truss, Real tolerance) {
     return !findZeroLengthMembers(truss, tolerance).empty();
 }
 
-std::vector<std::pair<NodeId, NodeId>>
-TrussValidator::findCoincidentNodePairs(const Truss& truss, Real tolerance) const {
+std::vector<std::pair<NodeId, NodeId>> TrussValidator::findCoincidentNodePairs(const Truss& truss,
+                                                                               Real tolerance) {
     std::vector<std::pair<NodeId, NodeId>> pairs;
     const auto& nodes = truss.getNodes();
 
@@ -627,8 +623,7 @@ TrussValidator::findCoincidentNodePairs(const Truss& truss, Real tolerance) cons
     return pairs;
 }
 
-std::vector<MemberId> TrussValidator::findZeroLengthMembers(const Truss& truss,
-                                                            Real tolerance) const {
+std::vector<MemberId> TrussValidator::findZeroLengthMembers(const Truss& truss, Real tolerance) {
     std::vector<MemberId> zeroLengthMembers;
 
     for (const auto& member : truss.getMembers()) {
@@ -641,7 +636,7 @@ std::vector<MemberId> TrussValidator::findZeroLengthMembers(const Truss& truss,
 }
 
 std::vector<std::pair<MemberId, MemberId>>
-TrussValidator::findDuplicateMembers(const Truss& truss) const {
+TrussValidator::findDuplicateMembers(const Truss& truss) {
     std::vector<std::pair<MemberId, MemberId>> duplicates;
     const auto& members = truss.getMembers();
 

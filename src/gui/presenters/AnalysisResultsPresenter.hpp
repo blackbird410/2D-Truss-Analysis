@@ -62,7 +62,7 @@ public:
      * @param displacementMeters Displacement in meters
      * @return QString Formatted string (e.g., "15.234 mm")
      */
-    QString formatDisplacement(double displacementMeters) const;
+    static QString formatDisplacement(double displacementMeters);
 
     /**
      * @brief Format stress value
@@ -70,7 +70,7 @@ public:
      * @param stressPascals Stress in Pascals
      * @return QString Formatted string (e.g., "125.5 MPa")
      */
-    QString formatStress(double stressPascals) const;
+    static QString formatStress(double stressPascals);
 
     /**
      * @brief Format force value
@@ -78,7 +78,7 @@ public:
      * @param forceNewtons Force in Newtons
      * @return QString Formatted string (e.g., "1250.0 N" or "1.25 kN")
      */
-    QString formatForce(double forceNewtons) const;
+    static QString formatForce(double forceNewtons);
 
     /**
      * @brief Format 2D vector (displacement, force)
@@ -88,7 +88,7 @@ public:
      * @param unit Unit string (e.g., "mm", "N")
      * @return QString Formatted string (e.g., "(12.3, -5.6) mm")
      */
-    QString formatVector2D(double x, double y, const QString& unit) const;
+    static QString formatVector2D(double x, double y, const QString& unit);
 
     /**
      * @brief Generate success message
@@ -99,10 +99,10 @@ public:
      * @param maxStress Maximum stress (Pascals)
      * @return QString Complete success message
      */
-    QString generateSuccessMessage(size_t nodeCount,
-                                   size_t memberCount,
-                                   double maxDisplacement,
-                                   double maxStress) const;
+    static QString generateSuccessMessage(size_t nodeCount,
+                                          size_t memberCount,
+                                          double maxDisplacement,
+                                          double maxStress);
 
 private:
     // Unit conversion constants

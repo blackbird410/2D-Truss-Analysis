@@ -146,28 +146,28 @@ public:
      * @param name Material name
      * @return true if material was removed
      */
-    bool removeCustomMaterial(const std::string& name);
+    [[maybe_unused]] bool removeCustomMaterial(const std::string& name);
 
     /**
      * @brief Remove custom section
      * @param name Section name
      * @return true if section was removed
      */
-    bool removeCustomSection(const std::string& name);
+    [[maybe_unused]] bool removeCustomSection(const std::string& name);
 
     /**
      * @brief Check if material exists
      * @param name Material name
      * @return true if material exists in library
      */
-    bool hasMaterial(const std::string& name) const;
+    [[maybe_unused]] bool hasMaterial(const std::string& name) const;
 
     /**
      * @brief Check if section exists
      * @param name Section name
      * @return true if section exists in library
      */
-    bool hasSection(const std::string& name) const;
+    [[maybe_unused]] bool hasSection(const std::string& name) const;
 
 private:
     std::unordered_map<std::string, MaterialPreset> m_materials;
@@ -175,6 +175,14 @@ private:
 
     void initializeDefaultMaterials();
     void initializeDefaultSections();
+
+    // Non-virtual helpers for initialization (avoid virtual calls in constructor)
+    void addMaterialInternal(const std::string& name,
+                             const std::string& description,
+                             const core::MaterialProperties& properties);
+    void addSectionInternal(const std::string& name,
+                            const std::string& description,
+                            const core::SectionProperties& properties);
 };
 
 }  // namespace truss::application

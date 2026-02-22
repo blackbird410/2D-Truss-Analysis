@@ -92,7 +92,7 @@ public:
      * VectorXd u2 = iterativeSolver->solve(K, F);
      * @endcode
      */
-    static std::unique_ptr<ILinearSolver> createSolver(SolverType type);
+    [[maybe_unused]] static std::unique_ptr<ILinearSolver> createSolver(SolverType type);
 
     /**
      * @brief Create a direct solver instance
@@ -108,7 +108,7 @@ public:
      * VectorXd x = solver->solve(A, b);
      * @endcode
      */
-    static std::unique_ptr<ILinearSolver> createDirectSolver();
+    [[maybe_unused]] static std::unique_ptr<ILinearSolver> createDirectSolver();
 
     /**
      * @brief Create an iterative solver with custom parameters
@@ -133,8 +133,8 @@ public:
      * VectorXd xApprox = fastSolver->solve(A, b);
      * @endcode
      */
-    static std::unique_ptr<ILinearSolver> createIterativeSolver(int maxIterations = 1000,
-                                                                double tolerance = 1e-9);
+    [[maybe_unused]] static std::unique_ptr<ILinearSolver>
+    createIterativeSolver(int maxIterations = 1000, double tolerance = 1e-9);
 
 private:
     // Private constructor to prevent instantiation

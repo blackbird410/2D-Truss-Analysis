@@ -320,7 +320,7 @@ Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId n
             return Result<bool>::Failure("Invalid truss handle");
         }
 
-        auto& truss = *m_trusses[handle];
+        const auto& truss = *m_trusses[handle];
         // Get the node and clear its force
         auto node = truss.getNode(nodeId);
         if (!node) {
@@ -336,7 +336,7 @@ Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId n
     }
 }
 
-bool TrussApplicationService::hasUnsavedChanges(TrussHandle handle) const {
+[[maybe_unused]] bool TrussApplicationService::hasUnsavedChanges(TrussHandle handle) const {
     if (!isValidHandle(handle)) {
         return false;
     }

@@ -11,7 +11,7 @@
 
 namespace truss::core::analysis {
 
-std::vector<Index> BoundaryConditionHandler::getFreeDofs(const Truss& truss) const {
+std::vector<Index> BoundaryConditionHandler::getFreeDofs(const Truss& truss) {
     std::vector<Index> freeDofs;
     const auto& nodes = truss.getNodes();
 
@@ -40,7 +40,7 @@ std::vector<Index> BoundaryConditionHandler::getFreeDofs(const Truss& truss) con
     return freeDofs;
 }
 
-std::vector<Index> BoundaryConditionHandler::getConstrainedDofs(const Truss& truss) const {
+std::vector<Index> BoundaryConditionHandler::getConstrainedDofs(const Truss& truss) {
     std::vector<Index> constrainedDofs;
     const auto& nodes = truss.getNodes();
 
@@ -69,7 +69,7 @@ std::vector<Index> BoundaryConditionHandler::getConstrainedDofs(const Truss& tru
 }
 
 MatrixXd BoundaryConditionHandler::applyToStiffness(const MatrixXd& K,
-                                                    const std::vector<Index>& freeDofs) const {
+                                                    const std::vector<Index>& freeDofs) {
     size_t n = freeDofs.size();
     MatrixXd Kff(n, n);
 
@@ -83,7 +83,7 @@ MatrixXd BoundaryConditionHandler::applyToStiffness(const MatrixXd& K,
 }
 
 VectorXd BoundaryConditionHandler::applyToLoad(const VectorXd& F,
-                                               const std::vector<Index>& freeDofs) const {
+                                               const std::vector<Index>& freeDofs) {
     size_t n = freeDofs.size();
     VectorXd Ff(n);
 
@@ -96,7 +96,7 @@ VectorXd BoundaryConditionHandler::applyToLoad(const VectorXd& F,
 
 VectorXd BoundaryConditionHandler::expandDisplacements(const VectorXd& freeSolution,
                                                        const std::vector<Index>& freeDofs,
-                                                       size_t totalDofs) const {
+                                                       size_t totalDofs) {
     VectorXd fullSolution = VectorXd::Zero(totalDofs);
 
     for (size_t i = 0; i < freeDofs.size(); ++i) {

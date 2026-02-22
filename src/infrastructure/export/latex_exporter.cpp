@@ -86,7 +86,7 @@ bool LaTeXExporter::exportResults(const ITrussView& truss,
     }
 }
 
-std::string LaTeXExporter::formatNumber(Real value, const ExportOptions& options) const {
+std::string LaTeXExporter::formatNumber(Real value, const ExportOptions& options) {
     std::stringstream ss;
     if (options.useScientificNotation) {
         ss << std::scientific;
@@ -97,7 +97,7 @@ std::string LaTeXExporter::formatNumber(Real value, const ExportOptions& options
     return ss.str();
 }
 
-std::string LaTeXExporter::formatTimestamp() const {
+std::string LaTeXExporter::formatTimestamp() {
     auto now = std::chrono::system_clock::now();
     auto time_t = std::chrono::system_clock::to_time_t(now);
     std::stringstream ss;
@@ -105,7 +105,7 @@ std::string LaTeXExporter::formatTimestamp() const {
     return ss.str();
 }
 
-std::string LaTeXExporter::escapeLatex(const std::string& text) const {
+std::string LaTeXExporter::escapeLatex(const std::string& text) {
     std::string result;
     result.reserve(text.size() * 1.2);  // Pre-allocate
 
@@ -162,7 +162,7 @@ void LaTeXExporter::writePreamble(std::ostream& os, const ITrussView& truss) {
     os << "\\date{" << formatTimestamp() << "}\n";
 }
 
-void LaTeXExporter::writeClosing(std::ostream& os) {
+[[maybe_unused]] void LaTeXExporter::writeClosing(std::ostream& os) {
     os << "\\end{document}\n";
 }
 

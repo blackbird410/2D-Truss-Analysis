@@ -74,7 +74,7 @@ private:
     /**
      * @brief Parse support type from string
      */
-    core::SupportType parseSupportType(const std::string& str);
+    static core::SupportType parseSupportType(const std::string& str);
 };
 
 }  // namespace truss::infrastructure::io

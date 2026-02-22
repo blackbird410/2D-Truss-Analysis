@@ -36,7 +36,7 @@ bool Application::initialize() {
     }
 }
 
-void Application::shutdown() {
+[[maybe_unused]] void Application::shutdown() {
     if (!m_initialized) {
         return;
     }

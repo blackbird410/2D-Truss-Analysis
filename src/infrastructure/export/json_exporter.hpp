@@ -70,39 +70,39 @@ private:
     std::string m_lastError;  ///< Last error message
 
     // Helper methods
-    std::string formatNumber(Real value, const ExportOptions& options) const;
-    std::string formatTimestamp() const;
-    std::string escapeString(const std::string& str) const;
+    static std::string formatNumber(Real value, const ExportOptions& options);
+    static std::string formatTimestamp();
+    static std::string escapeString(const std::string& str);
 
     // Section writers
-    void writeGeometrySection(std::ostream& os,
-                              const ITrussView& truss,
-                              const ExportOptions& options,
-                              bool& needsComma);
-    void writePropertiesSection(std::ostream& os,
-                                const ITrussView& truss,
-                                const ExportOptions& options,
-                                bool& needsComma);
-    void writeLoadsSection(std::ostream& os,
-                           const ITrussView& truss,
-                           const ExportOptions& options,
-                           bool& needsComma);
-    void writeDisplacementsSection(std::ostream& os,
-                                   const IAnalysisResultsView& results,
-                                   const ExportOptions& options,
-                                   bool& needsComma);
-    void writeMemberForcesSection(std::ostream& os,
-                                  const IAnalysisResultsView& results,
+    static void writeGeometrySection(std::ostream& os,
+                                     const ITrussView& truss,
+                                     const ExportOptions& options,
+                                     bool& needsComma);
+    static void writePropertiesSection(std::ostream& os,
+                                       const ITrussView& truss,
+                                       const ExportOptions& options,
+                                       bool& needsComma);
+    static void writeLoadsSection(std::ostream& os,
+                                  const ITrussView& truss,
                                   const ExportOptions& options,
                                   bool& needsComma);
-    void writeReactionsSection(std::ostream& os,
-                               const IAnalysisResultsView& results,
-                               const ExportOptions& options,
-                               bool& needsComma);
-    void writeMetadataSection(std::ostream& os,
-                              const IAnalysisResultsView& results,
-                              const ExportOptions& options,
-                              bool& needsComma);
+    static void writeDisplacementsSection(std::ostream& os,
+                                          const IAnalysisResultsView& results,
+                                          const ExportOptions& options,
+                                          bool& needsComma);
+    static void writeMemberForcesSection(std::ostream& os,
+                                         const IAnalysisResultsView& results,
+                                         const ExportOptions& options,
+                                         bool& needsComma);
+    static void writeReactionsSection(std::ostream& os,
+                                      const IAnalysisResultsView& results,
+                                      const ExportOptions& options,
+                                      bool& needsComma);
+    static void writeMetadataSection(std::ostream& os,
+                                     const IAnalysisResultsView& results,
+                                     const ExportOptions& options,
+                                     bool& needsComma);
 };
 
 }  // namespace truss::infrastructure::export_

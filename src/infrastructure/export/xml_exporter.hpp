@@ -70,28 +70,29 @@ private:
     std::string m_lastError;  ///< Last error message
 
     // Helper methods
-    std::string formatNumber(Real value, const ExportOptions& options) const;
-    std::string formatTimestamp() const;
-    std::string escapeString(const std::string& str) const;
+    static std::string formatNumber(Real value, const ExportOptions& options);
+    static std::string formatTimestamp();
+    static std::string escapeString(const std::string& str);
 
     // Section writers
-    void
+    static void
     writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
-    void
+    static void
     writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
-    void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
-    void writeDisplacementsSection(std::ostream& os,
-                                   const IAnalysisResultsView& results,
-                                   const ExportOptions& options);
-    void writeMemberForcesSection(std::ostream& os,
-                                  const IAnalysisResultsView& results,
-                                  const ExportOptions& options);
-    void writeReactionsSection(std::ostream& os,
-                               const IAnalysisResultsView& results,
-                               const ExportOptions& options);
-    void writeMetadataSection(std::ostream& os,
-                              const IAnalysisResultsView& results,
-                              const ExportOptions& options);
+    static void
+    writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    static void writeDisplacementsSection(std::ostream& os,
+                                          const IAnalysisResultsView& results,
+                                          const ExportOptions& options);
+    static void writeMemberForcesSection(std::ostream& os,
+                                         const IAnalysisResultsView& results,
+                                         const ExportOptions& options);
+    static void writeReactionsSection(std::ostream& os,
+                                      const IAnalysisResultsView& results,
+                                      const ExportOptions& options);
+    static void writeMetadataSection(std::ostream& os,
+                                     const IAnalysisResultsView& results,
+                                     const ExportOptions& options);
 };
 
 }  // namespace truss::infrastructure::export_

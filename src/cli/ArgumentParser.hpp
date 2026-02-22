@@ -48,7 +48,7 @@ public:
      * @param argv Argument vector
      * @return Parsed arguments
      */
-    ParsedArgs parse(int argc, char* argv[]) const;
+    static ParsedArgs parse(int argc, const char* const argv[]);
 
     /**
      * @brief Get option value with fallback to short form
@@ -61,11 +61,11 @@ public:
     getOption(const ParsedArgs& args, const std::string& longForm, const std::string& shortForm);
 
 private:
-    bool isOption(const std::string& arg) const;
-    bool isShortOption(const std::string& arg) const;
-    bool isLongOption(const std::string& arg) const;
-    std::string extractOptionName(const std::string& arg) const;
-    std::string extractOptionValue(const std::string& arg) const;
+    static bool isOption(const std::string& arg);
+    static bool isShortOption(const std::string& arg);
+    static bool isLongOption(const std::string& arg);
+    static std::string extractOptionName(const std::string& arg);
+    static std::string extractOptionValue(const std::string& arg);
 };
 
 }  // namespace truss::cli

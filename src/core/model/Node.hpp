@@ -80,7 +80,7 @@ public:
     void setSupportType(SupportType support) { m_supportType = support; }
     void setAppliedForce(const Force2D& force) { m_appliedForce = force; }
     void setAppliedForce(Real fx, Real fy) { m_appliedForce = Force2D(fx, fy); }
-    void setLabel(const std::string& label) { m_label = label; }
+    [[maybe_unused]] void setLabel(const std::string& label) { m_label = label; }
 
     // DOF setters (used during analysis setup)
     void setDofX(Index dof) { m_dofX = dof; }
@@ -88,22 +88,26 @@ public:
 
     // Results setters (used during analysis)
     void setResults(const NodeResults& results) { m_results = results; }
-    void setDisplacement(const Point2D& displacement) { m_results.displacement = displacement; }
-    void setDisplacement(Real dx, Real dy) { m_results.displacement = Point2D(dx, dy); }
-    void setReaction(const Force2D& reaction) { m_results.reaction = reaction; }
-    void setReaction(Real fx, Real fy) { m_results.reaction = Force2D(fx, fy); }
+    [[maybe_unused]] void setDisplacement(const Point2D& displacement) {
+        m_results.displacement = displacement;
+    }
+    [[maybe_unused]] void setDisplacement(Real dx, Real dy) {
+        m_results.displacement = Point2D(dx, dy);
+    }
+    [[maybe_unused]] void setReaction(const Force2D& reaction) { m_results.reaction = reaction; }
+    [[maybe_unused]] void setReaction(Real fx, Real fy) { m_results.reaction = Force2D(fx, fy); }
 
     // Constraint checking
     bool isConstrainedX() const noexcept;
     bool isConstrainedY() const noexcept;
-    bool isFree() const noexcept;
+    [[maybe_unused]] bool isFree() const noexcept;
     bool isPinned() const noexcept;
     bool isRoller() const noexcept;
     bool isConstrained() const noexcept;
 
     // Degrees of freedom queries
     int getDegreesOfFreedom() const noexcept;
-    std::vector<Index> getGlobalDOFs() const;
+    [[maybe_unused]] std::vector<Index> getGlobalDOFs() const;
 
     // Utility methods
     Real distanceTo(const Node& other) const;
@@ -112,7 +116,8 @@ public:
     /**
      * @brief Check if this node is at the same position as another (within tolerance)
      */
-    bool isCoincidentWith(const Node& other, Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
+    [[maybe_unused]] bool isCoincidentWith(const Node& other,
+                                           Real tolerance = Constants::GEOMETRY_TOLERANCE) const;
 
     /**
      * @brief Check if the node has any applied forces

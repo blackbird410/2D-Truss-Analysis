@@ -314,8 +314,11 @@ static-analysis: ## Run cppcheck static analysis
 		exit 1; \
 	fi
 	@echo -e "$(BOLD)Running cppcheck...$(RESET)"
-	@$(CPPCHECK) --enable=all --inconclusive --std=c++20 \
+	@$(CPPCHECK) --enable=all --inconclusive --std=c++20 --inline-suppr \
 		--suppress=missingIncludeSystem \
+		--suppress=missingInclude \
+		-i src/gui/PlotWidget_corrupted.cpp \
+		-Dslots= -Dsignals= -DQ_OBJECT= -Demit= \
 		-I src \
 		src/ 2>&1 | tee cppcheck-report.txt
 	@echo -e "$(GREEN)✓ Static analysis complete (see cppcheck-report.txt)$(RESET)"

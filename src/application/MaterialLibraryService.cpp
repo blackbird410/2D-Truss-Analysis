@@ -69,19 +69,19 @@ void MaterialLibraryService::addCustomSection(const std::string& name,
     m_sections[name] = preset;
 }
 
-bool MaterialLibraryService::removeCustomMaterial(const std::string& name) {
+[[maybe_unused]] bool MaterialLibraryService::removeCustomMaterial(const std::string& name) {
     return m_materials.erase(name) > 0;
 }
 
-bool MaterialLibraryService::removeCustomSection(const std::string& name) {
+[[maybe_unused]] bool MaterialLibraryService::removeCustomSection(const std::string& name) {
     return m_sections.erase(name) > 0;
 }
 
-bool MaterialLibraryService::hasMaterial(const std::string& name) const {
+[[maybe_unused]] bool MaterialLibraryService::hasMaterial(const std::string& name) const {
     return m_materials.find(name) != m_materials.end();
 }
 
-bool MaterialLibraryService::hasSection(const std::string& name) const {
+[[maybe_unused]] bool MaterialLibraryService::hasSection(const std::string& name) const {
     return m_sections.find(name) != m_sections.end();
 }
 
@@ -95,7 +95,7 @@ void MaterialLibraryService::initializeDefaultMaterials() {
         props.ultimateStrength = 400.0e6;  // 400 MPa
         props.name = "Steel";
 
-        addCustomMaterial("Steel", "Structural steel (Grade 50)", props);
+        addMaterialInternal("Steel", "Structural steel (Grade 50)", props);
     }
 
     // Aluminum Alloy 6061-T6 (Common structural aluminum)
@@ -107,7 +107,7 @@ void MaterialLibraryService::initializeDefaultMaterials() {
         props.ultimateStrength = 310.0e6;  // 310 MPa
         props.name = "Aluminum";
 
-        addCustomMaterial("Aluminum", "Aluminum alloy 6061-T6", props);
+        addMaterialInternal("Aluminum", "Aluminum alloy 6061-T6", props);
     }
 
     // Concrete (C25/30 - Common structural concrete)
@@ -119,7 +119,7 @@ void MaterialLibraryService::initializeDefaultMaterials() {
         props.ultimateStrength = 35.0e6;  // 35 MPa
         props.name = "Concrete";
 
-        addCustomMaterial("Concrete", "Structural concrete C25/30", props);
+        addMaterialInternal("Concrete", "Structural concrete C25/30", props);
     }
 
     // Timber (Softwood - Spruce/Pine/Fir)
@@ -131,7 +131,7 @@ void MaterialLibraryService::initializeDefaultMaterials() {
         props.ultimateStrength = 40.0e6;  // 40 MPa
         props.name = "Timber";
 
-        addCustomMaterial("Timber", "Softwood (Spruce/Pine/Fir)", props);
+        addMaterialInternal("Timber", "Softwood (Spruce/Pine/Fir)", props);
     }
 }
 
@@ -144,7 +144,7 @@ void MaterialLibraryService::initializeDefaultSections() {
         props.shearArea = 0.001473;        // ~75% of gross area (typical for circular)
         props.designation = "Circular 50mm";
 
-        addCustomSection("Circular 50mm", "Solid circular section (diameter 50mm)", props);
+        addSectionInternal("Circular 50mm", "Solid circular section (diameter 50mm)", props);
     }
 
     {
@@ -154,7 +154,7 @@ void MaterialLibraryService::initializeDefaultSections() {
         props.shearArea = 0.005891;        // ~75% of gross area
         props.designation = "Circular 100mm";
 
-        addCustomSection("Circular 100mm", "Solid circular section (diameter 100mm)", props);
+        addSectionInternal("Circular 100mm", "Solid circular section (diameter 100mm)", props);
     }
 
     // Square sections (solid)
@@ -165,7 +165,7 @@ void MaterialLibraryService::initializeDefaultSections() {
         props.shearArea = 0.002083;        // ~83% of gross area (typical for square)
         props.designation = "Square 50mm";
 
-        addCustomSection("Square 50mm", "Solid square section (50mm × 50mm)", props);
+        addSectionInternal("Square 50mm", "Solid square section (50mm × 50mm)", props);
     }
 
     {
@@ -175,7 +175,7 @@ void MaterialLibraryService::initializeDefaultSections() {
         props.shearArea = 0.008333;        // ~83% of gross area
         props.designation = "Square 100mm";
 
-        addCustomSection("Square 100mm", "Solid square section (100mm × 100mm)", props);
+        addSectionInternal("Square 100mm", "Solid square section (100mm × 100mm)", props);
     }
 
     // Rectangular sections (solid)
@@ -186,7 +186,7 @@ void MaterialLibraryService::initializeDefaultSections() {
         props.shearArea = 0.00125;         // ~83% of gross area
         props.designation = "Rectangular 30x50mm";
 
-        addCustomSection("Rectangular 30x50mm", "Solid rectangular section (30mm × 50mm)", props);
+        addSectionInternal("Rectangular 30x50mm", "Solid rectangular section (30mm × 50mm)", props);
     }
 
     {
@@ -196,8 +196,22 @@ void MaterialLibraryService::initializeDefaultSections() {
         props.shearArea = 0.005;         // ~83% of gross area
         props.designation = "Rectangular 60x100mm";
 
-        addCustomSection("Rectangular 60x100mm", "Solid rectangular section (60mm × 100mm)", props);
+        addSectionInternal(
+            "Rectangular 60x100mm", "Solid rectangular section (60mm × 100mm)", props);
     }
+}
+
+// Non-virtual helper methods to avoid virtual calls in constructor
+void MaterialLibraryService::addMaterialInternal(const std::string& name,
+                                                 const std::string& description,
+                                                 const MaterialProperties& properties) {
+    m_materials[name] = MaterialPreset{name, description, properties};
+}
+
+void MaterialLibraryService::addSectionInternal(const std::string& name,
+                                                const std::string& description,
+                                                const SectionProperties& properties) {
+    m_sections[name] = SectionPreset{name, description, properties};
 }
 
 }  // namespace truss::application

@@ -12,6 +12,8 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 
+#include <algorithm>
+
 using namespace truss::application;
 using namespace truss::infrastructure;
 
@@ -65,14 +67,14 @@ void DataTableWidget::setupUI() {
     layout->addWidget(tabWidget);
 }
 
-void DataTableWidget::updateTables(application::TrussHandle trussHandle) {
+[[maybe_unused]] void DataTableWidget::updateTables(application::TrussHandle trussHandle) {
     m_currentTrussHandle = trussHandle;
     updateNodesTable(trussHandle);
     updateMembersTable(trussHandle);
     updateLoadsTable(trussHandle);
 }
 
-void DataTableWidget::clearTables() {
+[[maybe_unused]] void DataTableWidget::clearTables() {
     m_currentTrussHandle = 0;
     m_nodesTable->setRowCount(0);
     m_membersTable->setRowCount(0);
@@ -194,12 +196,10 @@ void DataTableWidget::updateLoadsTable(application::TrussHandle trussHandle) {
     auto nodeViews = trussView.getNodeViews();
 
     // Count nodes with applied forces
-    int loadCount = 0;
-    for (const auto& nodeView : nodeViews) {
-        if (nodeView.fx != 0.0 || nodeView.fy != 0.0) {
-            loadCount++;
-        }
-    }
+    int loadCount = static_cast<int>(
+        std::count_if(nodeViews.begin(), nodeViews.end(), [](const auto& nodeView) {
+            return nodeView.fx != 0.0 || nodeView.fy != 0.0;
+        }));
 
     m_loadsTable->setRowCount(loadCount);
 

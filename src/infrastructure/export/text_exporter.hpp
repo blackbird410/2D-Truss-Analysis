@@ -92,7 +92,7 @@ private:
      * @param os Output stream
      * @param truss Truss structure
      */
-    void writeHeader(std::ostream& os, const ITrussView& truss);
+    static void writeHeader(std::ostream& os, const ITrussView& truss);
 
     /**
      * @brief Write geometry section with nodes and members (Section 2)
@@ -100,7 +100,7 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    void
+    static void
     writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
@@ -109,7 +109,7 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    void
+    static void
     writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
@@ -118,7 +118,8 @@ private:
      * @param truss Truss structure
      * @param options Export options
      */
-    void writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+    static void
+    writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write nodal displacements section (Section 5)
@@ -126,9 +127,9 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeDisplacementsSection(std::ostream& os,
-                                   const IAnalysisResultsView& results,
-                                   const ExportOptions& options);
+    static void writeDisplacementsSection(std::ostream& os,
+                                          const IAnalysisResultsView& results,
+                                          const ExportOptions& options);
 
     /**
      * @brief Write member forces section (Section 6)
@@ -136,9 +137,9 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeMemberForcesSection(std::ostream& os,
-                                  const IAnalysisResultsView& results,
-                                  const ExportOptions& options);
+    static void writeMemberForcesSection(std::ostream& os,
+                                         const IAnalysisResultsView& results,
+                                         const ExportOptions& options);
 
     /**
      * @brief Write support reactions section (Section 7 - MANDATORY)
@@ -146,9 +147,9 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeReactionsSection(std::ostream& os,
-                               const IAnalysisResultsView& results,
-                               const ExportOptions& options);
+    static void writeReactionsSection(std::ostream& os,
+                                      const IAnalysisResultsView& results,
+                                      const ExportOptions& options);
 
     /**
      * @brief Write analysis metadata section (Section 8)
@@ -156,9 +157,9 @@ private:
      * @param results Analysis results
      * @param options Export options
      */
-    void writeMetadataSection(std::ostream& os,
-                              const IAnalysisResultsView& results,
-                              const ExportOptions& options);
+    static void writeMetadataSection(std::ostream& os,
+                                     const IAnalysisResultsView& results,
+                                     const ExportOptions& options);
 
     /**
      * @brief Format a number according to export options
@@ -166,27 +167,27 @@ private:
      * @param options Export options
      * @return Formatted string
      */
-    std::string formatNumber(Real value, const ExportOptions& options) const;
+    static std::string formatNumber(Real value, const ExportOptions& options);
 
     /**
      * @brief Format current timestamp
      * @return Formatted timestamp string
      */
-    std::string formatTimestamp() const;
+    static std::string formatTimestamp();
 
     /**
      * @brief Write a section separator line
      * @param os Output stream
      * @param width Line width
      */
-    void writeSeparator(std::ostream& os, int width = 78) const;
+    static void writeSeparator(std::ostream& os, int width = 78);
 
     /**
      * @brief Write a section header
      * @param os Output stream
      * @param title Section title
      */
-    void writeSectionHeader(std::ostream& os, const std::string& title) const;
+    static void writeSectionHeader(std::ostream& os, const std::string& title);
 
     std::string m_lastError;  ///< Last error message
 };

@@ -5,7 +5,7 @@
 namespace truss_presenters {
 
 TrussDataPresenter::StatusData
-TrussDataPresenter::formatStatus(const truss::core::interfaces::ITrussView& truss) const {
+TrussDataPresenter::formatStatus(const truss::core::interfaces::ITrussView& truss) {
     StatusData data;
 
     // Status message
@@ -20,23 +20,22 @@ TrussDataPresenter::formatStatus(const truss::core::interfaces::ITrussView& trus
 }
 
 QString TrussDataPresenter::formatCoordinate(const truss::core::Point2D& point,
-                                             const QString& unit) const {
+                                             const QString& unit) {
     return QString("(%1, %2) %3")
         .arg(point.x, 0, 'f', COORDINATE_PRECISION)
         .arg(point.y, 0, 'f', COORDINATE_PRECISION)
         .arg(unit);
 }
 
-QString TrussDataPresenter::formatNodeCount(size_t count) const {
+QString TrussDataPresenter::formatNodeCount(size_t count) {
     return QString("%1 node%2").arg(count).arg(count == 1 ? "" : "s");
 }
 
-QString TrussDataPresenter::formatMemberCount(size_t count) const {
+QString TrussDataPresenter::formatMemberCount(size_t count) {
     return QString("%1 member%2").arg(count).arg(count == 1 ? "" : "s");
 }
 
-QString
-TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView& truss) const {
+QString TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView& truss) {
     size_t supportCount = 0;
     size_t loadCount = 0;
 
@@ -63,8 +62,8 @@ TrussDataPresenter::generateStatistics(const truss::core::interfaces::ITrussView
         .arg(loadCount);
 }
 
-QString
-TrussDataPresenter::formatNodeInfo(const truss::core::interfaces::NodeView& nodeView) const {
+[[maybe_unused]] QString
+TrussDataPresenter::formatNodeInfo(const truss::core::interfaces::NodeView& nodeView) {
     truss::core::Point2D pos{nodeView.x, nodeView.y};
     QString info = QString("Node %1: %2").arg(nodeView.id).arg(formatCoordinate(pos));
 
@@ -82,8 +81,8 @@ TrussDataPresenter::formatNodeInfo(const truss::core::interfaces::NodeView& node
     return info;
 }
 
-QString
-TrussDataPresenter::formatMemberInfo(const truss::core::interfaces::MemberView& memberView) const {
+[[maybe_unused]] QString
+TrussDataPresenter::formatMemberInfo(const truss::core::interfaces::MemberView& memberView) {
     return QString("Member %1: Nodes [%2 - %3], Length: %4")
         .arg(memberView.id)
         .arg(memberView.startNodeId)
@@ -91,7 +90,7 @@ TrussDataPresenter::formatMemberInfo(const truss::core::interfaces::MemberView& 
         .arg(formatLength(memberView.length));
 }
 
-QString TrussDataPresenter::formatSupportType(truss::core::SupportType supportType) const {
+QString TrussDataPresenter::formatSupportType(truss::core::SupportType supportType) {
     switch (supportType) {
         case truss::core::SupportType::Free:
             return "Free";
@@ -106,17 +105,17 @@ QString TrussDataPresenter::formatSupportType(truss::core::SupportType supportTy
     }
 }
 
-QString TrussDataPresenter::formatLength(double lengthMeters) const {
+QString TrussDataPresenter::formatLength(double lengthMeters) {
     return QString("%1 m").arg(lengthMeters, 0, 'f', LENGTH_PRECISION);
 }
 
 QString TrussDataPresenter::formatSupportChangeMessage(truss::core::NodeId nodeId,
-                                                       truss::core::SupportType supportType) const {
+                                                       truss::core::SupportType supportType) {
     return QString("Node %1 support changed to %2").arg(nodeId).arg(formatSupportType(supportType));
 }
 
 QString TrussDataPresenter::formatNodeAddedMessage(truss::core::NodeId nodeId,
-                                                   const truss::core::Point2D& position) const {
+                                                   const truss::core::Point2D& position) {
     return QString("Node %1 added at (%2, %3)")
         .arg(nodeId)
         .arg(position.x, 0, 'f', COORDINATE_PRECISION)
@@ -125,12 +124,12 @@ QString TrussDataPresenter::formatNodeAddedMessage(truss::core::NodeId nodeId,
 
 QString TrussDataPresenter::formatMemberAddedMessage(truss::core::MemberId memberId,
                                                      truss::core::NodeId startNodeId,
-                                                     truss::core::NodeId endNodeId) const {
+                                                     truss::core::NodeId endNodeId) {
     return QString("Member %1 added (Nodes %2 - %3)").arg(memberId).arg(startNodeId).arg(endNodeId);
 }
 
 QString TrussDataPresenter::formatLoadAppliedMessage(truss::core::NodeId nodeId,
-                                                     const truss::core::Force2D& force) const {
+                                                     const truss::core::Force2D& force) {
     return QString("Load applied to node %1: (%2, %3) N")
         .arg(nodeId)
         .arg(force.fx, 0, 'f', FORCE_PRECISION)

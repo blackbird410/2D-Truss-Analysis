@@ -73,7 +73,7 @@ std::unique_ptr<ITrussWriter> FileIOFactory::createWriter(const std::filesystem:
     return createWriter(format);
 }
 
-bool FileIOFactory::isFormatSupported(FileFormat format) {
+[[maybe_unused]] bool FileIOFactory::isFormatSupported(FileFormat format) {
     return format == FileFormat::JSON || format == FileFormat::XML;
 }
 

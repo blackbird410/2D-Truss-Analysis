@@ -333,6 +333,7 @@ make format-check-all
 
 # 5. Run static analysis
 make lint
+make static-analysis
 
 # 6. Generate coverage (optional)
 make coverage
@@ -348,6 +349,12 @@ make ci-full
 - **clang-tidy**: C++ static analysis (`.clang-tidy` configuration)
 - **EditorConfig**: Baseline formatting for all file types (`.editorconfig`)
 - **cppcheck**: Additional static analysis
+
+**cppcheck Notes:**
+
+- The Makefile `static-analysis` target defines Qt macros (`slots`, `signals`, `Q_OBJECT`, `emit`) to avoid false positives.
+- `src/gui/PlotWidget_corrupted.cpp` is excluded from analysis.
+- Output is written to `cppcheck-report.txt` at the repository root.
 
 **Configuration Files:**
 

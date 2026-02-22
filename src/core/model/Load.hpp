@@ -61,18 +61,18 @@ public:
 
     // Getters
     LoadId getId() const noexcept { return m_id; }
-    NodeId getNodeId() const noexcept { return m_nodeId; }
-    LoadType getType() const noexcept { return m_type; }
-    const Force2D& getForce() const noexcept { return m_force; }
-    Real getFx() const noexcept { return m_force.fx; }
-    Real getFy() const noexcept { return m_force.fy; }
+    [[maybe_unused]] NodeId getNodeId() const noexcept { return m_nodeId; }
+    [[maybe_unused]] LoadType getType() const noexcept { return m_type; }
+    [[maybe_unused]] const Force2D& getForce() const noexcept { return m_force; }
+    [[maybe_unused]] Real getFx() const noexcept { return m_force.fx; }
+    [[maybe_unused]] Real getFy() const noexcept { return m_force.fy; }
     const std::string& getLabel() const noexcept { return m_label; }
-    Real getMagnitude() const noexcept { return m_force.magnitude(); }
+    [[maybe_unused]] Real getMagnitude() const noexcept { return m_force.magnitude(); }
 
     // Setters
     void setId(LoadId id) { m_id = id; }
-    void setNodeId(NodeId nodeId) { m_nodeId = nodeId; }
-    void setForce(const Force2D& force) { m_force = force; }
+    [[maybe_unused]] void setNodeId(NodeId nodeId) { m_nodeId = nodeId; }
+    [[maybe_unused]] void setForce(const Force2D& force) { m_force = force; }
     void setForce(Real fx, Real fy) { m_force = Force2D(fx, fy); }
     void setLabel(const std::string& label) { m_label = label; }
 
@@ -80,7 +80,7 @@ public:
     bool isZero(Real tolerance = Constants::FORCE_TOLERANCE) const;
     bool isHorizontal(Real tolerance = Constants::FORCE_TOLERANCE) const;
     bool isVertical(Real tolerance = Constants::FORCE_TOLERANCE) const;
-    bool isAppliedAt(NodeId nodeId) const { return m_nodeId == nodeId; }
+    [[maybe_unused]] bool isAppliedAt(NodeId nodeId) const { return m_nodeId == nodeId; }
 
     // Operators
     bool operator==(const Load& other) const;

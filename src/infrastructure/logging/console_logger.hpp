@@ -55,20 +55,20 @@ private:
      * @param level Severity level
      * @param message Message to log
      */
-    void log(LogLevel level, const std::string& message);
+    void log(LogLevel level, const std::string& message) const;
 
     /**
      * @brief Get current timestamp string
      * @return ISO 8601 timestamp (YYYY-MM-DD HH:MM:SS)
      */
-    std::string getCurrentTimestamp() const;
+    static std::string getCurrentTimestamp();
 
     /**
      * @brief Get log level string with optional color codes
      * @param level Severity level
      * @return Formatted level string (e.g., "[INFO ]")
      */
-    std::string getLevelString(LogLevel level) const;
+    static std::string getLevelString(LogLevel level);
 
     /**
      * @brief Get ANSI color code for log level

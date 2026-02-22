@@ -12,6 +12,9 @@
 #include <QtWidgets/QTabWidget>
 #include <QtWidgets/QVBoxLayout>
 
+#include <algorithm>
+#include <numeric>
+
 namespace truss::gui {
 
 ResultsWidget::ResultsWidget(application::TrussApplicationService& trussService,
@@ -174,12 +177,10 @@ void ResultsWidget::updateReactionsTable(application::TrussHandle trussHandle) {
     auto nodeViews = trussView.getNodeViews();
 
     // Count nodes with reactions (non-zero reaction forces)
-    int reactionNodeCount = 0;
-    for (const auto& nodeView : nodeViews) {
-        if (nodeView.rx != 0.0 || nodeView.ry != 0.0) {
-            reactionNodeCount++;
-        }
-    }
+    const auto reactionNodeCount = static_cast<int>(
+        std::count_if(nodeViews.begin(), nodeViews.end(), [](const auto& nodeView) {
+            return nodeView.rx != 0.0 || nodeView.ry != 0.0;
+        }));
 
     m_reactionsTable->setRowCount(reactionNodeCount);
 
@@ -248,16 +249,17 @@ void ResultsWidget::updateSummary(application::TrussHandle trussHandle) {
                    .arg(std::sqrt(totalFx * totalFx + totalFy * totalFy), 0, 'f', 2);
 
     // Calculate max displacement and stress from node/member views
-    double maxDisplacement = 0.0;
-    for (const auto& nodeView : nodeViews) {
-        double disp = std::sqrt(nodeView.dx * nodeView.dx + nodeView.dy * nodeView.dy);
-        maxDisplacement = std::max(maxDisplacement, disp);
-    }
+    const auto maxDisplacement = std::accumulate(
+        nodeViews.begin(), nodeViews.end(), 0.0, [](double maxValue, const auto& nodeView) {
+            const double displacement = std::sqrt(nodeView.dx * nodeView.dx +
+                                                  nodeView.dy * nodeView.dy);
+            return std::max(maxValue, displacement);
+        });
 
-    double maxStress = 0.0;
-    for (const auto& memberView : memberViews) {
-        maxStress = std::max(maxStress, std::abs(memberView.axialStress));
-    }
+    const auto maxStress = std::accumulate(
+        memberViews.begin(), memberViews.end(), 0.0, [](double maxValue, const auto& memberView) {
+            return std::max(maxValue, std::abs(memberView.axialStress));
+        });
 
     summary += QString("Maximum Displacement: %1 m\n").arg(maxDisplacement, 0, 'e', 3);
     summary += QString("Maximum Stress: %1 Pa\n").arg(maxStress, 0, 'e', 3);

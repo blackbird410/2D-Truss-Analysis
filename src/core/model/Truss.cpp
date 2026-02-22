@@ -8,6 +8,8 @@
 #include "Truss.hpp"
 
 #include <algorithm>
+#include <iterator>
+#include <numeric>
 #include <stdexcept>
 
 namespace truss::core {
@@ -88,30 +90,25 @@ MemberPtr Truss::addMember(MemberPtr member) {
 }
 
 NodePtr Truss::getNode(NodeId nodeId) const {
-    for (const auto& node : m_nodes) {
-        if (node->getId() == nodeId) {
-            return node;
-        }
-    }
-    return nullptr;
+    auto it = std::find_if(m_nodes.begin(), m_nodes.end(), [nodeId](const auto& node) {
+        return node->getId() == nodeId;
+    });
+    return it != m_nodes.end() ? *it : nullptr;
 }
 
 MemberPtr Truss::getMember(MemberId memberId) const {
-    for (const auto& member : m_members) {
-        if (member->getId() == memberId) {
-            return member;
-        }
-    }
-    return nullptr;
+    auto it = std::find_if(m_members.begin(), m_members.end(), [memberId](const auto& member) {
+        return member->getId() == memberId;
+    });
+    return it != m_members.end() ? *it : nullptr;
 }
 
 std::vector<MemberPtr> Truss::getMembersConnectedTo(NodeId nodeId) const {
     std::vector<MemberPtr> connectedMembers;
-    for (const auto& member : m_members) {
-        if (member->hasNode(nodeId)) {
-            connectedMembers.push_back(member);
-        }
-    }
+    std::copy_if(m_members.begin(),
+                 m_members.end(),
+                 std::back_inserter(connectedMembers),
+                 [nodeId](const auto& member) { return member->hasNode(nodeId); });
     return connectedMembers;
 }
 
@@ -128,44 +125,40 @@ std::vector<MemberPtr> Truss::getMembersAtNode(NodeId nodeId) const {
 
 std::vector<NodePtr> Truss::getConstrainedNodes() const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        if (node->isConstrained()) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(), m_nodes.end(), std::back_inserter(result), [](const auto& node) {
+        return node->isConstrained();
+    });
     return result;
 }
 
 std::vector<NodePtr> Truss::getLoadedNodes() const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        if (node->hasAppliedForce()) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(), m_nodes.end(), std::back_inserter(result), [](const auto& node) {
+        return node->hasAppliedForce();
+    });
     return result;
 }
 
 std::vector<NodePtr> Truss::getFreeNodes() const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        if (!node->isConstrained()) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(), m_nodes.end(), std::back_inserter(result), [](const auto& node) {
+        return !node->isConstrained();
+    });
     return result;
 }
 
 std::vector<NodePtr> Truss::getNodesInRegion(const Point2D& bottomLeft,
                                              const Point2D& topRight) const {
     std::vector<NodePtr> result;
-    for (const auto& node : m_nodes) {
-        Real x = node->getX();
-        Real y = node->getY();
-        if (x >= bottomLeft.x && x <= topRight.x && y >= bottomLeft.y && y <= topRight.y) {
-            result.push_back(node);
-        }
-    }
+    std::copy_if(m_nodes.begin(),
+                 m_nodes.end(),
+                 std::back_inserter(result),
+                 [&bottomLeft, &topRight](const auto& node) {
+                     Real x = node->getX();
+                     Real y = node->getY();
+                     return x >= bottomLeft.x && x <= topRight.x && y >= bottomLeft.y &&
+                            y <= topRight.y;
+                 });
     return result;
 }
 
@@ -222,13 +215,9 @@ bool Truss::isValid() const {
     }
 
     // Check that all members have valid nodes
-    for (const auto& member : m_members) {
-        if (!member || !member->isValid()) {
-            return false;
-        }
-    }
-
-    return true;
+    return std::all_of(m_members.begin(), m_members.end(), [](const auto& member) {
+        return member && member->isValid();
+    });
 }
 
 void Truss::assignDofNumbers() {
@@ -251,12 +240,8 @@ void Truss::clear() {
 }
 
 bool Truss::hasAppliedForces() const {
-    for (const auto& node : m_nodes) {
-        if (node->hasAppliedForce()) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(
+        m_nodes.begin(), m_nodes.end(), [](const auto& node) { return node->hasAppliedForce(); });
 }
 
 void Truss::updateNodeIndexMap() {
@@ -382,11 +367,10 @@ Point2D Truss::getCentroid() const {
 }
 
 Real Truss::getTotalWeight() const {
-    Real totalWeight = 0;
-    for (const auto& member : m_members) {
-        totalWeight += member->getWeight();
-    }
-    return totalWeight;
+    return std::accumulate(
+        m_members.begin(), m_members.end(), Real{0}, [](Real total, const auto& member) {
+            return total + member->getWeight();
+        });
 }
 
 void Truss::clearForces() {

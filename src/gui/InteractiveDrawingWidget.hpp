@@ -96,7 +96,7 @@ public:
 
     // Drawing mode management
     void setDrawingMode(DrawingMode mode);
-    DrawingMode getDrawingMode() const { return m_drawingMode; }
+    [[maybe_unused]] DrawingMode getDrawingMode() const { return m_drawingMode; }
 
     // View management
     void zoomIn();
@@ -128,7 +128,9 @@ public:
     // Selection management
     void clearSelection();
     const std::vector<size_t>& getSelectedNodes() const { return m_selectedNodes; }
-    const std::vector<size_t>& getSelectedMembers() const { return m_selectedMembers; }
+    [[maybe_unused]] const std::vector<size_t>& getSelectedMembers() const {
+        return m_selectedMembers;
+    }
 
 signals:
     // Mutation request signals (emit intent, not perform action)
@@ -170,7 +172,7 @@ private:
     void drawMembers(QPainter& painter);
     void drawLoads(QPainter& painter);
     void drawSupports(QPainter& painter);
-    void drawSelection(QPainter& painter);
+    static void drawSelection(QPainter& painter);
     void drawCurrentOperation(QPainter& painter);
     void drawCoordinateSystem(QPainter& painter);
     void drawStatusOverlay(QPainter& painter);
@@ -325,7 +327,7 @@ public:
 
     // Access to components
     DrawingCanvas* getCanvas() const { return m_canvas; }
-    PropertyPanel* getPropertyPanel() const { return m_propertyPanel; }
+    [[maybe_unused]] PropertyPanel* getPropertyPanel() const { return m_propertyPanel; }
 
     // Truss handle management
     void setTrussHandle(application::TrussHandle handle);

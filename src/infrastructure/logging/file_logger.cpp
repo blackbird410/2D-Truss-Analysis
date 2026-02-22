@@ -32,13 +32,11 @@ FileLogger::FileLogger(const std::filesystem::path& filePath, LogLevel minLevel,
     }
 
     // Log initialization message (lifecycle messages bypass level filtering)
-    if (m_file.is_open()) {
-        std::string timestamp = getCurrentTimestamp();
-        m_file << "[" << timestamp
-               << "] [INFO ] Logger initialized (file: " << m_filePath.filename().string() << ")"
-               << std::endl;
-        m_file.flush();
-    }
+    std::string timestamp = getCurrentTimestamp();
+    m_file << "[" << timestamp
+           << "] [INFO ] Logger initialized (file: " << m_filePath.filename().string() << ")"
+           << std::endl;
+    m_file.flush();
 }
 
 FileLogger::~FileLogger() {
@@ -98,7 +96,7 @@ void FileLogger::flush() {
     }
 }
 
-bool FileLogger::isOpen() const {
+[[maybe_unused]] bool FileLogger::isOpen() const {
     std::lock_guard<std::mutex> lock(m_mutex);
     return m_file.is_open();
 }
@@ -129,7 +127,7 @@ void FileLogger::log(LogLevel level, const std::string& message) {
     }
 }
 
-std::string FileLogger::getCurrentTimestamp() const {
+std::string FileLogger::getCurrentTimestamp() {
     auto now = std::chrono::system_clock::now();
     auto time = std::chrono::system_clock::to_time_t(now);
 
@@ -142,7 +140,7 @@ std::string FileLogger::getCurrentTimestamp() const {
     return oss.str();
 }
 
-std::string FileLogger::getLevelString(LogLevel level) const {
+std::string FileLogger::getLevelString(LogLevel level) {
     switch (level) {
         case LogLevel::Trace:
             return "[TRACE]";

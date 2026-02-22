@@ -31,17 +31,17 @@ struct MaterialSpec {
     /**
      * @brief Predefined steel material (E = 200 GPa)
      */
-    static MaterialSpec Steel() { return {200e9, "Steel"}; }
+    [[maybe_unused]] static MaterialSpec Steel() { return {200e9, "Steel"}; }
 
     /**
      * @brief Predefined aluminum material (E = 69 GPa)
      */
-    static MaterialSpec Aluminum() { return {69e9, "Aluminum"}; }
+    [[maybe_unused]] static MaterialSpec Aluminum() { return {69e9, "Aluminum"}; }
 
     /**
      * @brief Predefined concrete material (E = 30 GPa)
      */
-    static MaterialSpec Concrete() { return {30e9, "Concrete"}; }
+    [[maybe_unused]] static MaterialSpec Concrete() { return {30e9, "Concrete"}; }
 };
 
 /**
@@ -58,7 +58,7 @@ struct SectionSpec {
      * @brief Create circular section from diameter
      * @param diameterM Diameter in meters
      */
-    static SectionSpec Circular(double diameterM) {
+    [[maybe_unused]] static SectionSpec Circular(double diameterM) {
         double area = 3.14159265359 * diameterM * diameterM / 4.0;
         return {area, "Circular"};
     }
@@ -67,7 +67,7 @@ struct SectionSpec {
      * @brief Create square section from side length
      * @param sideM Side length in meters
      */
-    static SectionSpec Square(double sideM) {
+    [[maybe_unused]] static SectionSpec Square(double sideM) {
         double area = sideM * sideM;
         return {area, "Square"};
     }

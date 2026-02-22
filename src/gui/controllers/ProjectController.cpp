@@ -115,7 +115,7 @@ void ProjectController::onSaveProjectAs(const QString& filepath) {
     }
 }
 
-void ProjectController::onCloseProject() {
+[[maybe_unused]] void ProjectController::onCloseProject() {
     // Check for unsaved changes
     if (m_hasUnsavedChanges) {
         emit unsavedChangesConfirmationRequested();

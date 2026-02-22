@@ -66,7 +66,7 @@ public:
      * @param format Export format
      * @return Recommended file extension (e.g., ".csv", ".json")
      */
-    static std::string getExtension(ExportFormat format);
+    [[maybe_unused]] static std::string getExtension(ExportFormat format);
 
     /**
      * @brief Get human-readable format name

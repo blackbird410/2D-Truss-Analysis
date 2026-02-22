@@ -45,7 +45,7 @@ public:
     Truss& operator=(Truss&& other) noexcept = default;
 
     // Destructor
-    ~Truss() = default;
+    ~Truss() override = default;
 
     // ITrussView interface implementation (for Infrastructure layer access)
     const std::string& getName() const noexcept override { return m_name; }
@@ -58,7 +58,7 @@ public:
     size_t getConstrainedDofs() const override;
 
     // Basic properties
-    void setName(const std::string& name) { m_name = name; }
+    [[maybe_unused]] void setName(const std::string& name) { m_name = name; }
 
     // Node management
     NodePtr addNode(Real x, Real y, SupportType support = SupportType::Free);
@@ -87,16 +87,18 @@ public:
     const MemberVector& getMembers() const noexcept { return m_members; }
 
     // Geometric queries
-    std::vector<NodePtr> getNodesInRegion(const Point2D& bottomLeft, const Point2D& topRight) const;
+    [[maybe_unused]] std::vector<NodePtr> getNodesInRegion(const Point2D& bottomLeft,
+                                                           const Point2D& topRight) const;
     std::vector<MemberPtr> getMembersConnectedTo(NodeId nodeId) const;
     std::vector<MemberPtr> getMembersConnectedTo(const NodePtr& node) const;
-    std::vector<MemberPtr>
+    [[maybe_unused]] std::vector<MemberPtr>
     getMembersAtNode(NodeId nodeId) const;  ///< Alias for getMembersConnectedTo
 
     // Node queries by state
     std::vector<NodePtr> getConstrainedNodes() const;  ///< Get all nodes with constraints
-    std::vector<NodePtr> getLoadedNodes() const;       ///< Get all nodes with applied forces
-    std::vector<NodePtr> getFreeNodes() const;         ///< Get all unconstrained nodes
+    [[maybe_unused]] std::vector<NodePtr>
+    getLoadedNodes() const;  ///< Get all nodes with applied forces
+    [[maybe_unused]] std::vector<NodePtr> getFreeNodes() const;  ///< Get all unconstrained nodes
 
     // Boundary conditions
     void applyForce(NodeId nodeId, const Force2D& force);
@@ -107,22 +109,22 @@ public:
     [[deprecated("Use TrussValidator::validate() instead. Removal scheduled for v4.0.0")]]
     bool isValid() const;
 
-    std::vector<std::string> getValidationErrors() const;
+    [[maybe_unused]] std::vector<std::string> getValidationErrors() const;
 
     // Analysis preparation
     void assignDofNumbers();
-    size_t getNextNodeId() const { return m_nextNodeId; }
-    size_t getNextMemberId() const { return m_nextMemberId; }
+    [[maybe_unused]] size_t getNextNodeId() const { return m_nextNodeId; }
+    [[maybe_unused]] size_t getNextMemberId() const { return m_nextMemberId; }
 
     // Utility methods
     void clear();
     Point2D getBoundingBoxMin() const;
     Point2D getBoundingBoxMax() const;
-    Point2D getCentroid() const;
+    [[maybe_unused]] Point2D getCentroid() const;
     Real getTotalWeight() const;
 
     // Load case management
-    void clearForces();
+    [[maybe_unused]] void clearForces();
     bool hasAppliedForces() const;
 
     // Member connectivity
@@ -148,7 +150,7 @@ public:
         Point2D boundingBoxMax{0.0, 0.0};
     };
 
-    TrussStatistics getStatistics() const;
+    [[maybe_unused]] TrussStatistics getStatistics() const;
 
 private:
     std::string m_name;                                     ///< Truss name

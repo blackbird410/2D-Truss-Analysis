@@ -107,7 +107,7 @@ void AnalysisOrchestrator::assignDOFs(Truss& truss) {
     truss.assignDofNumbers();
 }
 
-VectorXd AnalysisOrchestrator::assembleLoadVector(const Truss& truss) const {
+VectorXd AnalysisOrchestrator::assembleLoadVector(const Truss& truss) {
     size_t totalDofs = truss.getTotalDofs();
     VectorXd F = VectorXd::Zero(totalDofs);
 
@@ -126,7 +126,7 @@ VectorXd AnalysisOrchestrator::assembleLoadVector(const Truss& truss) const {
 }
 
 std::vector<Real> AnalysisOrchestrator::computeMemberForces(const Truss& truss,
-                                                            const VectorXd& displacements) const {
+                                                            const VectorXd& displacements) {
     const auto& members = truss.getMembers();
     std::vector<Real> forces;
     forces.reserve(members.size());
@@ -183,9 +183,9 @@ VectorXd AnalysisOrchestrator::computeReactions(const Truss& truss,
     return reactions;
 }
 
-AnalysisResults AnalysisOrchestrator::postProcessResults(Truss& truss,
+AnalysisResults AnalysisOrchestrator::postProcessResults(const Truss& truss,
                                                          const VectorXd& displacements,
-                                                         const MatrixXd& K) {
+                                                         const MatrixXd& K) const {
     AnalysisResults results;
 
     // Convert displacement vector to std::vector
@@ -242,7 +242,7 @@ AnalysisResults AnalysisOrchestrator::postProcessResults(Truss& truss,
     return results;
 }
 
-Real AnalysisOrchestrator::computeConditionNumber(const MatrixXd& K) const {
+Real AnalysisOrchestrator::computeConditionNumber(const MatrixXd& K) {
     if (K.rows() == 0 || K.cols() == 0) {
         return 0.0;
     }
@@ -268,7 +268,7 @@ Real AnalysisOrchestrator::computeConditionNumber(const MatrixXd& K) const {
     }
 }
 
-Real AnalysisOrchestrator::checkMatrixSingularity(const MatrixXd& K) const {
+Real AnalysisOrchestrator::checkMatrixSingularity(const MatrixXd& K) {
     // Check for singularity by computing smallest eigenvalue
     // For symmetric positive definite matrix, all eigenvalues should be > 0
 
@@ -294,8 +294,7 @@ Real AnalysisOrchestrator::checkMatrixSingularity(const MatrixXd& K) const {
     }
 }
 
-Real AnalysisOrchestrator::computeStrainEnergy(const Truss& truss,
-                                               const VectorXd& displacements) const {
+Real AnalysisOrchestrator::computeStrainEnergy(const Truss& truss, const VectorXd& displacements) {
     Real totalEnergy = 0.0;
     const auto& members = truss.getMembers();
 
@@ -330,7 +329,7 @@ Real AnalysisOrchestrator::computeStrainEnergy(const Truss& truss,
     return totalEnergy;
 }
 
-Real AnalysisOrchestrator::findMaxDisplacement(const VectorXd& displacements) const {
+Real AnalysisOrchestrator::findMaxDisplacement(const VectorXd& displacements) {
     if (displacements.size() == 0) {
         return 0.0;
     }
@@ -346,19 +345,17 @@ Real AnalysisOrchestrator::findMaxDisplacement(const VectorXd& displacements) co
     return maxDisp;
 }
 
-Real AnalysisOrchestrator::findMaxStress(const std::vector<Real>& stresses) const {
+Real AnalysisOrchestrator::findMaxStress(const std::vector<Real>& stresses) {
     if (stresses.empty()) {
         return 0.0;
     }
 
-    Real maxStress = 0.0;
-    for (Real stress : stresses) {
-        maxStress = std::max(maxStress, std::abs(stress));
-    }
-
-    return maxStress;
+    auto it = std::max_element(
+        stresses.begin(), stresses.end(), [](Real a, Real b) { return std::abs(a) < std::abs(b); });
+    return it != stresses.end() ? std::abs(*it) : 0.0;
 }
 
+// cppcheck-suppress constParameterReference
 void AnalysisOrchestrator::updateTrussResults(Truss& truss, const AnalysisResults& results) {
     const auto& members = truss.getMembers();
     const auto& nodes = truss.getNodes();
@@ -391,7 +388,6 @@ void AnalysisOrchestrator::updateTrussResults(Truss& truss, const AnalysisResult
             nodeResult.reaction.fx = 0.0;
             nodeResult.reaction.fy = 0.0;
 
-            std::vector<Index> constrainedDofs = m_bcHandler->getConstrainedDofs(truss);
             size_t reactionIndex = 0;
 
             for (const auto& node : nodes) {

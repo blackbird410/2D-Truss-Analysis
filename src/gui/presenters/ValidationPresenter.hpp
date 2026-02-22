@@ -50,8 +50,8 @@ public:
      * @param result Validation result from Domain layer
      * @return ValidationDisplay Formatted validation information
      */
-    ValidationDisplay
-    formatValidation(const truss::core::validation::ValidationResult& result) const;
+    static ValidationDisplay
+    formatValidation(const truss::core::validation::ValidationResult& result);
 
     /**
      * @brief Generate summary message
@@ -59,7 +59,7 @@ public:
      * @param result Validation result
      * @return QString Summary message
      */
-    QString generateSummary(const truss::core::validation::ValidationResult& result) const;
+    static QString generateSummary(const truss::core::validation::ValidationResult& result);
 
     /**
      * @brief Format single validation issue
@@ -67,7 +67,7 @@ public:
      * @param issue Validation issue
      * @return QString Formatted issue string
      */
-    QString formatIssue(const truss::core::validation::ValidationIssue& issue) const;
+    static QString formatIssue(const truss::core::validation::ValidationIssue& issue);
 
     /**
      * @brief Get severity icon/prefix
@@ -75,17 +75,18 @@ public:
      * @param severity Issue severity
      * @return QString Icon or prefix string
      */
-    QString getSeverityIcon(truss::core::validation::ValidationSeverity severity) const;
+    static QString getSeverityIcon(truss::core::validation::ValidationSeverity severity);
 
 private:
     /**
      * @brief Group issues by severity
      */
-    void groupIssuesBySeverity(const std::vector<truss::core::validation::ValidationIssue>& issues,
-                               std::vector<QString>& fatalErrors,
-                               std::vector<QString>& errors,
-                               std::vector<QString>& warnings,
-                               std::vector<QString>& infos) const;
+    static void
+    groupIssuesBySeverity(const std::vector<truss::core::validation::ValidationIssue>& issues,
+                          std::vector<QString>& fatalErrors,
+                          std::vector<QString>& errors,
+                          std::vector<QString>& warnings,
+                          std::vector<QString>& infos);
 };
 
 }  // namespace truss_presenters

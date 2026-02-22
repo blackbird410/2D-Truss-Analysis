@@ -73,7 +73,7 @@ int AnalyzeCommand::execute() {
     }
 
     // Get mutable truss for analysis
-    auto& truss = m_trussService.getTrussMutable(trussHandle);
+    const auto& truss = m_trussService.getTrussMutable(trussHandle);
 
     // Run analysis
     m_presenter.displayInfo("\nRunning structural analysis...\n");
@@ -173,7 +173,7 @@ bool AnalyzeCommand::validateInputFile() const {
 }
 
 std::optional<truss::infrastructure::export_::ExportFormat>
-AnalyzeCommand::parseExportFormat(const std::string& formatStr) const {
+AnalyzeCommand::parseExportFormat(const std::string& formatStr) {
     using namespace truss::infrastructure::export_;
 
     // Convert to uppercase for case-insensitive comparison
@@ -200,7 +200,7 @@ AnalyzeCommand::parseExportFormat(const std::string& formatStr) const {
 }
 
 truss::infrastructure::export_::ExportFormat
-AnalyzeCommand::getDefaultExportFormat(const std::string& filepath) const {
+AnalyzeCommand::getDefaultExportFormat(const std::string& filepath) {
     using namespace truss::infrastructure::export_;
 
     namespace fs = std::filesystem;

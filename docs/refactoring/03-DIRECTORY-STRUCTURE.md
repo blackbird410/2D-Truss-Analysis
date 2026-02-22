@@ -4,6 +4,12 @@
 **Target Version:** 3.0.0  
 **Target Platform:** Linux
 
+> **Status Update (2026-02-22):**
+>
+> - Static analysis and formatting are run via the top-level Makefile targets (`make lint`, `make static-analysis`, `make format`).
+> - cppcheck execution defines Qt macros and excludes `src/gui/PlotWidget_corrupted.cpp` to avoid false positives.
+> - The repository does not currently include a dedicated `static-analysis.yml` workflow or `StaticAnalysis.cmake` module; these are listed below as proposed artifacts.
+
 ---
 
 ## 1. Complete Directory Tree

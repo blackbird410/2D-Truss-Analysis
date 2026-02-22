@@ -112,9 +112,9 @@ void DrawingCanvas::zoomToFit() {
 
     // Calculate bounding box
     double minX = nodeViews[0].x;
-    double maxX = nodeViews[0].x;
+    double maxX = minX;
     double minY = nodeViews[0].y;
-    double maxY = nodeViews[0].y;
+    double maxY = minY;
 
     for (const auto& nodeView : nodeViews) {
         minX = std::min(minX, nodeView.x);
@@ -812,7 +812,7 @@ void DrawingCanvas::resizeEvent(QResizeEvent* event) {
     }
 }
 
-void DrawingCanvas::updateCursorPosition(const QPoint& pos) {
+[[maybe_unused]] void DrawingCanvas::updateCursorPosition(const QPoint& pos) {
     m_currentMouseWorld = screenToWorld(pos);
     emit coordinatesChanged(m_currentMouseWorld.x, m_currentMouseWorld.y);
 }
@@ -1029,7 +1029,7 @@ void PropertyPanel::updateFromSelection() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             const auto& pos = node->getPosition();
@@ -1389,7 +1389,7 @@ void PropertyPanel::onLoadChanged() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             truss::core::Force2D force(m_forceXSpin->value() * 1000.0,  // Convert to N
@@ -1411,7 +1411,7 @@ void PropertyPanel::onSupportChanged() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             // Map combo box index to correct SupportType enum value
@@ -1450,7 +1450,7 @@ void PropertyPanel::onNodePositionChanged() {
         auto trussHandle = m_canvas->getTrussHandle();
         if (trussHandle == 0)
             return;
-        auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
+        const auto& truss = m_canvas->getTrussService().getTrussMutable(trussHandle);
         auto node = truss.getNode(selectedNodes[0]);
         if (node) {
             truss::core::Point2D newPos(m_nodeXSpin->value(), m_nodeYSpin->value());
@@ -1664,7 +1664,8 @@ void InteractiveDrawingWidget::onDrawingModeChanged() {
     }
 }
 
-void InteractiveDrawingWidget::onViewChanged() {
+// cppcheck-suppress functionStatic
+[[maybe_unused]] void InteractiveDrawingWidget::onViewChanged() {
     // This can be used for any view-related updates
 }
 

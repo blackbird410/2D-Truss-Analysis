@@ -77,7 +77,7 @@ public:
      * @param format File format to check
      * @return true if format is supported, false otherwise
      */
-    static bool isFormatSupported(FileFormat format);
+    [[maybe_unused]] static bool isFormatSupported(FileFormat format);
 
     /**
      * @brief Detect file format from file extension

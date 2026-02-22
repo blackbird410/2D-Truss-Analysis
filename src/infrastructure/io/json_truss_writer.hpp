@@ -40,28 +40,28 @@ private:
     /**
      * @brief Create metadata JSON object
      */
-    nlohmann::json createMetadata(const core::interfaces::TrussDTO& trussData,
-                                  const FileIOOptions& options);
+    static nlohmann::json createMetadata(const core::interfaces::TrussDTO& trussData,
+                                         const FileIOOptions& options);
 
     /**
      * @brief Create nodes JSON array
      */
-    nlohmann::json createNodes(const core::interfaces::TrussDTO& trussData);
+    static nlohmann::json createNodes(const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Create members JSON array
      */
-    nlohmann::json createMembers(const core::interfaces::TrussDTO& trussData);
+    static nlohmann::json createMembers(const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Create loads JSON array
      */
-    nlohmann::json createLoads(const core::interfaces::TrussDTO& trussData);
+    static nlohmann::json createLoads(const core::interfaces::TrussDTO& trussData);
 
     /**
      * @brief Convert support type to string
      */
-    std::string supportTypeToString(core::SupportType type);
+    static std::string supportTypeToString(core::SupportType type);
 };
 
 }  // namespace truss::infrastructure::io

@@ -9,7 +9,7 @@
 
 namespace truss::cli {
 
-ParsedArgs ArgumentParser::parse(int argc, char* argv[]) const {
+ParsedArgs ArgumentParser::parse(int argc, const char* const argv[]) {
     ParsedArgs result;
 
     // Skip program name (argv[0])
@@ -59,19 +59,19 @@ ParsedArgs ArgumentParser::parse(int argc, char* argv[]) const {
     return result;
 }
 
-bool ArgumentParser::isOption(const std::string& arg) const {
+bool ArgumentParser::isOption(const std::string& arg) {
     return isShortOption(arg) || isLongOption(arg);
 }
 
-bool ArgumentParser::isShortOption(const std::string& arg) const {
+bool ArgumentParser::isShortOption(const std::string& arg) {
     return arg.size() >= 2 && arg[0] == '-' && arg[1] != '-';
 }
 
-bool ArgumentParser::isLongOption(const std::string& arg) const {
+bool ArgumentParser::isLongOption(const std::string& arg) {
     return arg.size() >= 3 && arg[0] == '-' && arg[1] == '-';
 }
 
-std::string ArgumentParser::extractOptionName(const std::string& arg) const {
+std::string ArgumentParser::extractOptionName(const std::string& arg) {
     if (isLongOption(arg)) {
         // Extract from --name or --name=value
         size_t start = 2;
@@ -86,7 +86,7 @@ std::string ArgumentParser::extractOptionName(const std::string& arg) const {
     return "";
 }
 
-std::string ArgumentParser::extractOptionValue(const std::string& arg) const {
+std::string ArgumentParser::extractOptionValue(const std::string& arg) {
     size_t pos = arg.find('=');
     if (pos != std::string::npos && pos + 1 < arg.size()) {
         return arg.substr(pos + 1);
