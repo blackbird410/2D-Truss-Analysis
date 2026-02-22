@@ -139,6 +139,9 @@ build: update CMake configuration for Qt6
    - Prefer `auto` for type deduction when clear
    - Use smart pointers over raw pointers
    - Leverage STL algorithms and containers
+   - Prefer `const` references for read-only access
+   - Make stateless helper functions `static`
+   - Use `[[maybe_unused]]` for intentionally unused public APIs to keep cppcheck clean
 
 2. **Code Style**
 
