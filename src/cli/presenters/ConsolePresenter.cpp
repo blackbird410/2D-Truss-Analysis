@@ -85,10 +85,9 @@ void ConsolePresenter::displayAnalysisResults(const IAnalysisResultsView& result
 
         std::ostringstream oss;
         oss << "  Member " << (i + 1) << ": Force = " << std::fixed << std::setprecision(2)
-            << force / 1000 << " kN"
-            << ", Stress = " << std::fixed << std::setprecision(1) << stress / 1e6 << " MPa"
-            << ", Utilization = " << std::fixed << std::setprecision(1) << utilization * 100 << "%"
-            << (force > 0 ? " (Tension)" : " (Compression)");
+            << force / 1000 << " kN" << ", Stress = " << std::fixed << std::setprecision(1)
+            << stress / 1e6 << " MPa" << ", Utilization = " << std::fixed << std::setprecision(1)
+            << utilization * 100 << "%" << (force > 0 ? " (Tension)" : " (Compression)");
         m_output.info(oss.str());
     }
 
