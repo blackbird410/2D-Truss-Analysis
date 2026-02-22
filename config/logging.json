@@ -1,0 +1,17 @@
+{
+  "logging": {
+    "console": {
+      "enabled": true,
+      "level": "info",
+      "format": "[%timestamp%] [%level%] %message%"
+    },
+    "file": {
+      "enabled": false,
+      "path": "data/app.log",
+      "level": "debug",
+      "format": "[%timestamp%] [%level%] %component% - %message%",
+      "maxSize": 10485760,
+      "backupCount": 5
+    }
+  }
+}
