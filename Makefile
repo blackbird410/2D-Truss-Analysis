@@ -293,6 +293,7 @@ format-check: ## Check if code needs formatting (CI-friendly)
 		echo -e "$(GREEN)✓ Code is properly formatted$(RESET)"; \
 	else \
 		echo -e "$(YELLOW)⚠ Code needs formatting. Run 'make format'$(RESET)"; \
+		exit 1; \
 	fi
 
 .PHONY: lint
