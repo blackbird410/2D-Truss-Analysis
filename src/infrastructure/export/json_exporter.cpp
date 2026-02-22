@@ -7,8 +7,10 @@
 
 #include "json_exporter.hpp"
 
+#include <algorithm>
 #include <ctime>
 #include <fstream>
+#include <iterator>
 
 namespace truss::infrastructure::export_ {
 
@@ -228,11 +230,11 @@ void JSONExporter::writeLoadsSection(std::ostream& os,
 
     // Collect nodes with non-zero forces
     std::vector<NodeView> loadedNodes;
-    for (const auto& node : truss.getNodeViews()) {
-        if (node.fx != 0.0 || node.fy != 0.0) {
-            loadedNodes.push_back(node);
-        }
-    }
+    const auto& nodes = truss.getNodeViews();
+    loadedNodes.reserve(nodes.size());
+    std::copy_if(nodes.begin(), nodes.end(), std::back_inserter(loadedNodes), [](const auto& node) {
+        return node.fx != 0.0 || node.fy != 0.0;
+    });
 
     for (size_t i = 0; i < loadedNodes.size(); ++i) {
         const auto& node = loadedNodes[i];
