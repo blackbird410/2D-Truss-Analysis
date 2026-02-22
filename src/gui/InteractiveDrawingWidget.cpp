@@ -112,9 +112,9 @@ void DrawingCanvas::zoomToFit() {
 
     // Calculate bounding box
     double minX = nodeViews[0].x;
-    double maxX = nodeViews[0].x;
+    double maxX = minX;
     double minY = nodeViews[0].y;
-    double maxY = nodeViews[0].y;
+    double maxY = minY;
 
     for (const auto& nodeView : nodeViews) {
         minX = std::min(minX, nodeView.x);
