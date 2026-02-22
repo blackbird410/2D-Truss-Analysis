@@ -248,15 +248,16 @@ void ResultsWidget::updateSummary(application::TrussHandle trussHandle) {
                    .arg(std::sqrt(totalFx * totalFx + totalFy * totalFy), 0, 'f', 2);
 
     // Calculate max displacement and stress from node/member views
-    double maxStress = 0.0;
-    for (const auto& memberView : memberViews) {
-        maxStress = std::max(maxStress, std::abs(memberView.axialStress));
-    }
     const auto maxDisplacement = std::accumulate(
         nodeViews.begin(), nodeViews.end(), 0.0, [](double maxValue, const auto& nodeView) {
             const double displacement =
                 std::sqrt(nodeView.dx * nodeView.dx + nodeView.dy * nodeView.dy);
             return std::max(maxValue, displacement);
+        });
+
+    const auto maxStress = std::accumulate(
+        memberViews.begin(), memberViews.end(), 0.0, [](double maxValue, const auto& memberView) {
+            return std::max(maxValue, std::abs(memberView.axialStress));
         });
 
     summary += QString("Maximum Displacement: %1 m\n").arg(maxDisplacement, 0, 'e', 3);
