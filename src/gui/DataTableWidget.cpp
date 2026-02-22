@@ -43,8 +43,8 @@ void DataTableWidget::setupUI() {
     // Set up members table
     m_membersTable->setColumnCount(7);
     QStringList memberHeaders;
-    memberHeaders << "Member ID" << "Start Node" << "End Node"
-                  << "Area (m²)" << "E (Pa)" << "Density (kg/m³)" << "Yield (Pa)";
+    memberHeaders << "Member ID" << "Start Node" << "End Node" << "Area (m²)" << "E (Pa)"
+                  << "Density (kg/m³)" << "Yield (Pa)";
     m_membersTable->setHorizontalHeaderLabels(memberHeaders);
     m_membersTable->horizontalHeader()->setStretchLastSection(true);
     m_membersTable->setAlternatingRowColors(true);

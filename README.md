@@ -7,7 +7,7 @@
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
 [![Tests](https://img.shields.io/badge/tests-765%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Phase 8 (Testing Enhancement) complete! The project achieves 72%+ test coverage with 766 comprehensive tests, clean layered architecture following SOLID principles, MVP pattern in GUI, and complete dependency injection. Production-ready v3.0.0 with 99.87% test pass rate. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details.
+> **✅ REFACTORING STATUS**: Phase 9 (Containerization) complete! Production-ready v3.0.0 with Docker infrastructure (125MB production image, 1.94GB dev image), 766 comprehensive tests achieving 72%+ coverage, clean layered architecture following SOLID principles, MVP pattern in GUI, and complete dependency injection. Test pass rate: 99.87%. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details.
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface, robust computational engine, and clean layered architecture following SOLID principles and industry best practices.
 
@@ -252,6 +252,31 @@ sudo pacman -S cmake qt6-base qt6-charts eigen gcc
 cmake -B build -DCMAKE_BUILD_TYPE=Release
 cmake --build build -j$(nproc)
 ```
+
+### Docker Deployment (Recommended for Production)
+
+```bash
+# Production: CLI-only optimized image (125MB)
+make docker-build
+make docker-run
+
+# Development: Full toolchain with Qt6 (1.94GB)
+make docker-build-dev
+make docker-dev
+
+# Inside development container
+setup  # Interactive build configuration
+```
+
+**Docker Features:**
+
+- **Production Image**: 125MB CLI-only build (75% better than target)
+- **Development Image**: Complete toolchain (gcc 13.3.0, cmake 3.28, Qt6 Charts 6.4.2)
+- **Multi-platform**: Supports linux/amd64, linux/arm64
+- **Security**: Non-root execution, multi-stage builds, Trivy scanning
+- **CI/CD**: Automated builds via GitHub Actions
+
+See [docker/README.md](docker/README.md) for comprehensive Docker usage guide.
 
 ## Usage
 

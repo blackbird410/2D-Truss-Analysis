@@ -1,0 +1,132 @@
+# =============================================================================
+# Development Dockerfile for 2D Truss Analysis
+# Full development environment with debugging and analysis tools
+# Base: Ubuntu 24.04.1 LTS (Noble Numbat) - includes Qt6 Charts
+# =============================================================================
+
+FROM ubuntu:24.04 AS dev
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+# Install development tools and all dependencies
+RUN apt-get update && apt-get install -y \
+    --no-install-recommends \
+    # Build essentials
+    build-essential \
+    cmake \
+    ninja-build \
+    pkg-config \
+    git \
+    # C++ Libraries
+    libeigen3-dev \
+    nlohmann-json3-dev \
+    libtinyxml2-dev \
+    # Qt6 for GUI development (Charts available in Ubuntu 24.04)
+    qt6-base-dev \
+    qt6-base-dev-tools \
+    qt6-charts-dev \
+    libqt6charts6-dev \
+    libqt6core6 \
+    libqt6widgets6 \
+    # Debugging tools
+    gdb \
+    valgrind \
+    # Static analysis
+    clang-format \
+    clang-tidy \
+    cppcheck \
+    # Testing
+    libgtest-dev \
+    # Utilities
+    vim \
+    curl \
+    wget \
+    ca-certificates \
+    # Code coverage
+    lcov \
+    gcovr \
+    && rm -rf /var/lib/apt/lists/*
+
+# Build and install GoogleTest and GoogleMock (Ubuntu package only provides source)
+RUN if [ -d /usr/src/googletest ]; then \
+        cd /usr/src/googletest && \
+        cmake . && \
+        cmake --build . && \
+        copied=0 && \
+        if ls lib/*.a >/dev/null 2>&1; then \
+            cp -r lib/*.a /usr/lib/ && copied=1; \
+        fi && \
+        if [ "$copied" -eq 0 ]; then \
+            libs_found="$(find . -name "*.a" -print 2>/dev/null)" && \
+            if [ -n "$libs_found" ]; then \
+                echo "$libs_found" | xargs -r -I{} cp {} /usr/lib/ && copied=1; \
+            fi; \
+        fi && \
+        if [ "$copied" -eq 0 ]; then \
+            echo "Error: Failed to install GoogleTest/GoogleMock static libraries into /usr/lib" >&2; \
+            exit 1; \
+        fi && \
+        cp -r googlemock/include/gmock /usr/include/ && \
+        cp -r googletest/include/gtest /usr/include/; \
+    fi
+
+WORKDIR /workspace
+
+# Copy helpful setup script
+COPY scripts/dev-setup.sh /usr/local/bin/setup
+RUN chmod +x /usr/local/bin/setup
+
+# Non-root user for development
+# Ubuntu 24.04 creates a default user with UID 1000, so we handle that
+RUN if id -u 1000 >/dev/null 2>&1; then \
+        # User with UID 1000 exists, remove it first
+        userdel -r $(id -un 1000) 2>/dev/null || true; \
+    fi && \
+    useradd -m -u 1000 -s /bin/bash dev && \
+    chown -R dev:dev /workspace
+
+# Create build cache directory
+RUN mkdir -p /workspace/build && chown -R dev:dev /workspace/build
+
+# Create a helpful MOTD (Message of the Day)
+RUN echo '#!/bin/bash' > /etc/profile.d/dev-motd.sh && \
+    echo 'cat << "EOF"' >> /etc/profile.d/dev-motd.sh && \
+    echo '╔═══════════════════════════════════════════════════════════╗' >> /etc/profile.d/dev-motd.sh && \
+    echo '║   2D Truss Analysis - Development Environment            ║' >> /etc/profile.d/dev-motd.sh && \
+    echo '╚═══════════════════════════════════════════════════════════╝' >> /etc/profile.d/dev-motd.sh && \
+    echo '' >> /etc/profile.d/dev-motd.sh && \
+    echo 'Quick Start:' >> /etc/profile.d/dev-motd.sh && \
+    echo '  setup                           # Run automated setup' >> /etc/profile.d/dev-motd.sh && \
+    echo '' >> /etc/profile.d/dev-motd.sh && \
+    echo 'Manual Setup:' >> /etc/profile.d/dev-motd.sh && \
+    echo '  cmake -B build -DBUILD_GUI=OFF  # Configure (CLI-only)' >> /etc/profile.d/dev-motd.sh && \
+    echo '  cmake --build build -j$(nproc) # Build' >> /etc/profile.d/dev-motd.sh && \
+    echo '  ./build/TrussAnalysisCLI --help # Test' >> /etc/profile.d/dev-motd.sh && \
+    echo '' >> /etc/profile.d/dev-motd.sh && \
+    echo 'Available Tools:' >> /etc/profile.d/dev-motd.sh && \
+    echo '  cmake, ninja, gcc, g++, gdb, valgrind,' >> /etc/profile.d/dev-motd.sh && \
+    echo '  clang-format, clang-tidy, cppcheck, lcov' >> /etc/profile.d/dev-motd.sh && \
+    echo '' >> /etc/profile.d/dev-motd.sh && \
+    echo 'EOF' >> /etc/profile.d/dev-motd.sh && \
+    chmod +x /etc/profile.d/dev-motd.sh
+
+USER dev
+
+# Make MOTD show for bash sessions
+RUN echo 'source /etc/profile.d/dev-motd.sh' >> ~/.bashrc
+
+# Set up development environment variables
+ENV PATH="/workspace/build:${PATH}"
+ENV CC=gcc
+ENV CXX=g++
+
+# Default shell
+CMD ["/bin/bash"]
+
+# Metadata
+LABEL org.opencontainers.image.title="2D Truss Analysis - Development Environment"
+LABEL org.opencontainers.image.description="Full development environment with debugging and analysis tools"
+LABEL org.opencontainers.image.version="3.0.0"
+LABEL org.opencontainers.image.authors="Neil Taison Rigaud <ntsrigaud14@gmail.com>"
+LABEL org.opencontainers.image.source="https://github.com/blackbird410/2D-Truss-Analysis-cpp"
+LABEL org.opencontainers.image.base.name="ubuntu:24.04"
