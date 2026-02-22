@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <cmath>
+#include <iterator>
 #include <sstream>
 #include <unordered_set>
 
@@ -19,22 +20,20 @@ namespace truss::core::validation {
 [[maybe_unused]] std::vector<ValidationIssue>
 ValidationResult::getIssuesBySeverity(ValidationSeverity severity) const {
     std::vector<ValidationIssue> filtered;
-    for (const auto& issue : m_issues) {
-        if (issue.severity == severity) {
-            filtered.push_back(issue);
-        }
-    }
+    std::copy_if(m_issues.begin(),
+                 m_issues.end(),
+                 std::back_inserter(filtered),
+                 [severity](const ValidationIssue& issue) { return issue.severity == severity; });
     return filtered;
 }
 
 [[maybe_unused]] std::vector<ValidationIssue>
 ValidationResult::getIssuesByCategory(const std::string& category) const {
     std::vector<ValidationIssue> filtered;
-    for (const auto& issue : m_issues) {
-        if (issue.category == category) {
-            filtered.push_back(issue);
-        }
-    }
+    std::copy_if(m_issues.begin(),
+                 m_issues.end(),
+                 std::back_inserter(filtered),
+                 [&category](const ValidationIssue& issue) { return issue.category == category; });
     return filtered;
 }
 
