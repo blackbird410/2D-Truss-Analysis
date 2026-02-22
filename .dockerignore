@@ -1,0 +1,117 @@
+# Build artifacts
+build/
+build_*/
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+*.exe
+
+# CMake artifacts
+CMakeCache.txt
+CMakeFiles/
+cmake_install.cmake
+CPackConfig.cmake
+CPackSourceConfig.cmake
+CTestTestfile.cmake
+DartConfiguration.tcl
+compile_commands.json
+install_manifest.txt
+Makefile
+*.cmake
+
+# Qt artifacts
+*_autogen/
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+
+# IDE files
+.vscode/
+.idea/
+.vs/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Git
+.git/
+.gitignore
+.gitattributes
+.github/
+
+# Documentation (not needed in runtime container, but keep essential files)
+docs/
+*.md
+
+# Keep necessary files (must come after wildcards to override)
+!README.md
+!LICENSE
+!CMakeLists.txt
+!vcpkg.json
+
+# Tests (not needed in runtime container)
+tests/
+test_*/
+*_test.cpp
+*_tests.cpp
+
+# Coverage reports
+coverage/
+*.gcov
+*.gcda
+*.gcno
+*.lcov
+
+# Temporary files
+*.tmp
+*.log
+*.bak
+*.cache
+*.pid
+*.seed
+*.pid.lock
+
+# Output directories
+output/
+bin/
+lib/
+
+# Development files
+examples/
+scripts/
+
+# Keep necessary scripts for containers
+!scripts/dev-setup.sh
+
+images/
+
+# Flatpak
+flatpak/
+
+# Container files (avoid recursive copying)
+Dockerfile
+docker/
+.dockerignore
+
+# Package managers
+node_modules/
+.npm/
+package-lock.json
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Linux
+*~
+.directory
+
+# Windows
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
