@@ -7,6 +7,7 @@
 
 #include "core/interfaces/ITrussView.hpp"
 
+#include <algorithm>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QTabWidget>
@@ -174,12 +175,10 @@ void ResultsWidget::updateReactionsTable(application::TrussHandle trussHandle) {
     auto nodeViews = trussView.getNodeViews();
 
     // Count nodes with reactions (non-zero reaction forces)
-    int reactionNodeCount = 0;
-    for (const auto& nodeView : nodeViews) {
-        if (nodeView.rx != 0.0 || nodeView.ry != 0.0) {
-            reactionNodeCount++;
-        }
-    }
+    const auto reactionNodeCount = static_cast<int>(
+        std::count_if(nodeViews.begin(), nodeViews.end(), [](const auto& nodeView) {
+            return nodeView.rx != 0.0 || nodeView.ry != 0.0;
+        }));
 
     m_reactionsTable->setRowCount(reactionNodeCount);
 
