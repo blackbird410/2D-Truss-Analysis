@@ -1,0 +1,21 @@
+{
+  "name": "Steel Structures",
+  "description": "Analysis preset optimized for steel structures",
+  "analysis": {
+    "solverType": "direct",
+    "tolerance": 1e-9,
+    "maxIterations": 1000
+  },
+  "materials": {
+    "default": {
+      "type": "steel",
+      "youngModulus": 200000,
+      "density": 7850
+    }
+  },
+  "export": {
+    "precision": 6,
+    "includeStress": true,
+    "includeStrain": true
+  }
+}

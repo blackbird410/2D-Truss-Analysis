@@ -1,0 +1,21 @@
+{
+  "name": "Timber Structures",
+  "description": "Analysis preset optimized for timber structures",
+  "analysis": {
+    "solverType": "iterative",
+    "tolerance": 1e-7,
+    "maxIterations": 5000
+  },
+  "materials": {
+    "default": {
+      "type": "timber",
+      "youngModulus": 12000,
+      "density": 600
+    }
+  },
+  "export": {
+    "precision": 4,
+    "includeStress": true,
+    "includeStrain": true
+  }
+}
