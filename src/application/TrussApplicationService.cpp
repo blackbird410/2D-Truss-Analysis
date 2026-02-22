@@ -287,7 +287,7 @@ Result<bool> TrussApplicationService::setNodeSupport(TrussHandle handle,
             return Result<bool>::Failure("Invalid truss handle");
         }
 
-        const auto& truss = *m_trusses[handle];
+        auto& truss = *m_trusses[handle];
         truss.setSupportType(nodeId, supportType);
         markAsModified(handle);
         return Result<bool>::Success(true);
@@ -304,7 +304,7 @@ TrussApplicationService::applyNodeLoad(TrussHandle handle, NodeId nodeId, const 
             return Result<bool>::Failure("Invalid truss handle");
         }
 
-        const auto& truss = *m_trusses[handle];
+        auto& truss = *m_trusses[handle];
         truss.applyForce(nodeId, force);
         markAsModified(handle);
         return Result<bool>::Success(true);
