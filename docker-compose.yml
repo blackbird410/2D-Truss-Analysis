@@ -28,7 +28,9 @@ services:
     volumes:
       # Mount entire workspace for development
       - .:/workspace:rw
-      # Use named volume for build cache to improve performance
+      # Use named volume for build cache to improve performance.
+      # Note: this overrides /workspace/build from the host, so ./build on the host
+      # will not be visible inside the container; /workspace/build is an isolated cache.
       - build-cache:/workspace/build
     working_dir: /workspace
     stdin_open: true

@@ -92,7 +92,6 @@ flatpak/
 
 # Container files (avoid recursive copying)
 Dockerfile
-docker/
 .dockerignore
 
 # Package managers
