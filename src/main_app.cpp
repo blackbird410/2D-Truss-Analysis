@@ -26,7 +26,6 @@
 #include "cli/commands/ValidateCommand.hpp"
 #include "cli/commands/HelpCommand.hpp"
 #include "cli/commands/ICommand.hpp"
-#include "cli/presenters/ConsolePresenter.hpp"
 
 #include <map>
 #include <memory>
@@ -42,7 +41,7 @@
  */
 int executeCommand(const truss::cli::ParsedArgs& args,
                    std::map<std::string, std::unique_ptr<truss::cli::commands::ICommand>>& commands,
-                   truss::cli::presenters::ConsolePresenter& presenter) {
+                   const truss::cli::presenters::ConsolePresenter& presenter) {
     auto it = commands.find(args.commandName);
     if (it == commands.end()) {
         presenter.displayError("Unknown command '" + args.commandName + "'");
