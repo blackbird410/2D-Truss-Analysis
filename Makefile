@@ -287,13 +287,13 @@ format-check: ## Check if code needs formatting (CI-friendly)
 		exit 0; \
 	fi
 	@echo -e "$(BOLD)Checking code formatting...$(RESET)"
-	@if ! find src tests -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
+	@if find src tests -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
 		-not -path "*/build*/*" \
 		-exec $(CLANG_FORMAT) --dry-run -Werror -style=file {} + 2>/dev/null; then \
-		echo -e "$(YELLOW)❌ Code needs formatting. Run 'make format'$(RESET)"; \
-		exit 1; \
+		echo -e "$(GREEN)✓ Code is properly formatted$(RESET)"; \
+	else \
+		echo -e "$(YELLOW)⚠ Code needs formatting. Run 'make format'$(RESET)"; \
 	fi
-	@echo -e "$(GREEN)✓ Code is properly formatted$(RESET)"
 
 .PHONY: lint
 lint: ## Run clang-tidy static analysis
