@@ -111,8 +111,8 @@ CMD ["--help"]
 LABEL org.opencontainers.image.title="2D Truss Analysis"
 LABEL org.opencontainers.image.description="Professional 2D truss structural analysis tool"
 LABEL org.opencontainers.image.version="3.0.0"
-LABEL org.opencontainers.image.authors="Your Name <your.email@example.com>"
-LABEL org.opencontainers.image.source="https://github.com/yourusername/2D-Truss-Analysis-cpp"
+LABEL org.opencontainers.image.authors="Neil Taison Rigaud <ntsrigaud14@gmail.com>"
+LABEL org.opencontainers.image.source="https://github.com/blackbird410/2D-Truss-Analysis-cpp"
 LABEL org.opencontainers.image.licenses="MIT"
 ```
 
@@ -409,7 +409,7 @@ docker run --rm -v $(pwd):/data truss-analysis:latest \
 jobs:
   analyze:
     runs-on: ubuntu-latest
-    container: ghcr.io/yourusername/truss-analysis:latest
+    container: ghcr.io/blackbird410/truss-analysis:latest
     steps:
       - uses: actions/checkout@v3
       - name: Run analysis
@@ -424,7 +424,7 @@ jobs:
   "family": "truss-analysis",
   "containerDefinitions": [{
     "name": "truss-analysis",
-    "image": "ghcr.io/yourusername/truss-analysis:latest",
+    "image": "ghcr.io/blackbird410/truss-analysis:latest",
     "memory": 512,
     "cpu": 256,
     "essential": true,
@@ -462,7 +462,7 @@ spec:
     spec:
       containers:
         - name: truss-analysis
-          image: ghcr.io/yourusername/truss-analysis:3.0.0
+          image: ghcr.io/blackbird410/truss-analysis:3.0.0
           resources:
             requests:
               memory: "256Mi"
@@ -555,7 +555,7 @@ metadataTest:
 
 DOCKER_IMAGE := truss-analysis
 DOCKER_TAG := latest
-REGISTRY := ghcr.io/yourusername
+REGISTRY := ghcr.io/blackbird410
 
 docker-build:
 	docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) -f docker/Dockerfile .
