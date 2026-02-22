@@ -19,7 +19,6 @@ DartConfiguration.tcl
 compile_commands.json
 install_manifest.txt
 Makefile
-*.cmake
 
 # Qt artifacts
 *_autogen/
