@@ -530,13 +530,19 @@ docker-push: ## Push Docker image to registry
 	@echo -e "$(GREEN)✓ Image pushed: $(REGISTRY)/$(DOCKER_IMAGE):$(DOCKER_TAG)$(RESET)"
 
 .PHONY: docker-clean
-docker-clean: ## Remove Docker images and containers
-	@echo -e "$(BOLD)Cleaning Docker artifacts...$(RESET)"
+docker-clean: ## Remove project Docker images, containers, and volumes
+	@echo -e "$(BOLD)Cleaning project Docker artifacts...$(RESET)"
+	@echo "Stopping and removing project containers..."
+	@docker compose down -v 2>/dev/null || true
+	@docker stop truss-analysis truss-dev 2>/dev/null || true
+	@docker rm truss-analysis truss-dev 2>/dev/null || true
+	@echo "Removing project images..."
 	@docker rmi $(DOCKER_IMAGE):$(DOCKER_TAG) 2>/dev/null || true
 	@docker rmi $(DOCKER_IMAGE):dev 2>/dev/null || true
 	@docker rmi $(DOCKER_IMAGE):test 2>/dev/null || true
-	@docker system prune -f
-	@echo -e "$(GREEN)✓ Docker artifacts cleaned$(RESET)"
+	@echo "Removing project build cache volume..."
+	@docker volume rm 2d-truss-analysis-cpp_build-cache 2>/dev/null || true
+	@echo -e "$(GREEN)✓ Project Docker artifacts cleaned$(RESET)"
 
 .PHONY: docker-size
 docker-size: ## Show Docker image sizes
