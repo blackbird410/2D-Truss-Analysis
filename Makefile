@@ -118,10 +118,16 @@ help: ## Show this help message
 		awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/ {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}' | \
 		grep -E "run|debug|install|info"
 	@echo ""
+	@echo -e "$(BOLD)Docker/Containers:$(RESET)"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
+		awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/ {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}' | \
+		grep -E "docker"
+	@echo ""
 	@echo -e "$(BOLD)Examples:$(RESET)"
 	@echo "  make build test        # Build and test (release mode)"
 	@echo "  make debug             # Build debug version"
 	@echo "  make coverage          # Generate coverage report"
+	@echo "  make docker-build      # Build Docker container"
 	@echo "  make clean-all         # Clean all build artifacts"
 	@echo ""
 	@echo -e "$(BOLD)Environment:$(RESET)"
@@ -469,6 +475,75 @@ distclean: clean-all ## Deep clean (including CMake caches)
 	@echo -e "$(GREEN)✓ Deep clean complete$(RESET)"
 
 # ==============================================================================
+# Docker/Container Targets
+# ==============================================================================
+
+# Docker configuration
+DOCKER_IMAGE := truss-analysis
+DOCKER_TAG := latest
+REGISTRY := ghcr.io/blackbird410
+
+.PHONY: docker-build
+docker-build: ## Build production Docker image (CLI only)
+	@echo -e "$(BOLD)Building production Docker image...$(RESET)"
+	@DOCKER_BUILDKIT=1 docker build -t $(DOCKER_IMAGE):$(DOCKER_TAG) -f docker/Dockerfile .
+	@echo -e "$(GREEN)✓ Docker image built: $(DOCKER_IMAGE):$(DOCKER_TAG)$(RESET)"
+
+.PHONY: docker-build-dev
+docker-build-dev: ## Build development Docker image
+	@echo -e "$(BOLD)Building development Docker image...$(RESET)"
+	@DOCKER_BUILDKIT=1 docker build -t $(DOCKER_IMAGE):dev -f docker/Dockerfile.dev .
+	@echo -e "$(GREEN)✓ Development image built: $(DOCKER_IMAGE):dev$(RESET)"
+
+.PHONY: docker-run
+docker-run: ## Run analysis in Docker container
+	@echo -e "$(BOLD)Running Docker container...$(RESET)"
+	@docker run --rm -it \
+		-v $(PWD)/tests/fixtures/sample_data:/data/input:ro \
+		-v $(PWD)/output:/data/output:rw \
+		$(DOCKER_IMAGE):$(DOCKER_TAG)
+
+.PHONY: docker-dev
+docker-dev: ## Start interactive development container
+	@echo -e "$(BOLD)Starting development container...$(RESET)"
+	@docker compose run --rm truss-dev
+
+.PHONY: docker-shell
+docker-shell: ## Open shell in running container
+	@echo -e "$(BOLD)Opening shell in container...$(RESET)"
+	@docker run --rm -it \
+		-v $(PWD):/workspace:rw \
+		$(DOCKER_IMAGE):dev /bin/bash
+
+.PHONY: docker-test
+docker-test: ## Test Docker container
+	@echo -e "$(BOLD)Testing Docker container...$(RESET)"
+	@docker build -t $(DOCKER_IMAGE):test -f docker/Dockerfile .
+	@docker run --rm $(DOCKER_IMAGE):test --help
+	@echo -e "$(GREEN)✓ Container test passed$(RESET)"
+
+.PHONY: docker-push
+docker-push: ## Push Docker image to registry
+	@echo -e "$(BOLD)Pushing Docker image to registry...$(RESET)"
+	@docker tag $(DOCKER_IMAGE):$(DOCKER_TAG) $(REGISTRY)/$(DOCKER_IMAGE):$(DOCKER_TAG)
+	@docker push $(REGISTRY)/$(DOCKER_IMAGE):$(DOCKER_TAG)
+	@echo -e "$(GREEN)✓ Image pushed: $(REGISTRY)/$(DOCKER_IMAGE):$(DOCKER_TAG)$(RESET)"
+
+.PHONY: docker-clean
+docker-clean: ## Remove Docker images and containers
+	@echo -e "$(BOLD)Cleaning Docker artifacts...$(RESET)"
+	@docker rmi $(DOCKER_IMAGE):$(DOCKER_TAG) 2>/dev/null || true
+	@docker rmi $(DOCKER_IMAGE):dev 2>/dev/null || true
+	@docker rmi $(DOCKER_IMAGE):test 2>/dev/null || true
+	@docker system prune -f
+	@echo -e "$(GREEN)✓ Docker artifacts cleaned$(RESET)"
+
+.PHONY: docker-size
+docker-size: ## Show Docker image sizes
+	@echo -e "$(BOLD)Docker Image Sizes:$(RESET)"
+	@docker images | grep $(DOCKER_IMAGE) || echo "No images found"
+
+# ==============================================================================
 # CI/CD Targets
 # ==============================================================================
 
@@ -490,4 +565,7 @@ ci-full: ci coverage format-check-all ## Full CI pipeline (build + test + covera
         test-integration test-gui coverage coverage-open format format-check \
         format-docs format-yaml format-all format-check-docs format-check-yaml \
         format-check-all lint static-analysis run-cli run-gui install info \
-        clean clean-debug clean-coverage clean-all distclean ci ci-full help
+        clean clean-debug clean-coverage clean-all distclean \
+        docker-build docker-build-dev docker-run docker-dev docker-shell \
+        docker-test docker-push docker-clean docker-size \
+        ci ci-full help
