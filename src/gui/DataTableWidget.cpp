@@ -7,6 +7,7 @@
 
 #include "core/interfaces/ITrussView.hpp"
 
+#include <algorithm>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QTabWidget>
@@ -194,12 +195,10 @@ void DataTableWidget::updateLoadsTable(application::TrussHandle trussHandle) {
     auto nodeViews = trussView.getNodeViews();
 
     // Count nodes with applied forces
-    int loadCount = 0;
-    for (const auto& nodeView : nodeViews) {
-        if (nodeView.fx != 0.0 || nodeView.fy != 0.0) {
-            loadCount++;
-        }
-    }
+    int loadCount = static_cast<int>(std::count_if(
+        nodeViews.begin(), nodeViews.end(), [](const auto& nodeView) {
+            return nodeView.fx != 0.0 || nodeView.fy != 0.0;
+        }));
 
     m_loadsTable->setRowCount(loadCount);
 
