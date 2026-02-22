@@ -371,11 +371,10 @@ Point2D Truss::getCentroid() const {
 }
 
 Real Truss::getTotalWeight() const {
-    Real totalWeight = 0;
-    for (const auto& member : m_members) {
-        totalWeight += member->getWeight();
-    }
-    return totalWeight;
+    return std::accumulate(m_members.begin(), m_members.end(), Real{0},
+                           [](Real total, const auto& member) {
+                               return total + member->getWeight();
+                           });
 }
 
 void Truss::clearForces() {
