@@ -8,6 +8,7 @@
 #include "core/interfaces/ITrussView.hpp"
 
 #include <algorithm>
+#include <numeric>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QTabWidget>
@@ -247,16 +248,16 @@ void ResultsWidget::updateSummary(application::TrussHandle trussHandle) {
                    .arg(std::sqrt(totalFx * totalFx + totalFy * totalFy), 0, 'f', 2);
 
     // Calculate max displacement and stress from node/member views
-    double maxDisplacement = 0.0;
-    for (const auto& nodeView : nodeViews) {
-        double disp = std::sqrt(nodeView.dx * nodeView.dx + nodeView.dy * nodeView.dy);
-        maxDisplacement = std::max(maxDisplacement, disp);
-    }
-
     double maxStress = 0.0;
     for (const auto& memberView : memberViews) {
         maxStress = std::max(maxStress, std::abs(memberView.axialStress));
     }
+    const auto maxDisplacement = std::accumulate(
+        nodeViews.begin(), nodeViews.end(), 0.0, [](double maxValue, const auto& nodeView) {
+            const double displacement =
+                std::sqrt(nodeView.dx * nodeView.dx + nodeView.dy * nodeView.dy);
+            return std::max(maxValue, displacement);
+        });
 
     summary += QString("Maximum Displacement: %1 m\n").arg(maxDisplacement, 0, 'e', 3);
     summary += QString("Maximum Stress: %1 Pa\n").arg(maxStress, 0, 'e', 3);
