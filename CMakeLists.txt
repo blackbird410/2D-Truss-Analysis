@@ -76,6 +76,12 @@ if(BUILD_TESTING)
         find_library(GMOCK_LIBRARY gmock PATHS /usr/lib /usr/local/lib)
         find_library(GMOCK_MAIN_LIBRARY gmock_main PATHS /usr/lib /usr/local/lib)
         
+        if(GMOCK_LIBRARY AND NOT GMOCK_MAIN_LIBRARY)
+            message(WARNING "gmock found but gmock_main not found; GTest::gmock_main target will not be created")
+        elseif(NOT GMOCK_LIBRARY AND GMOCK_MAIN_LIBRARY)
+            message(WARNING "gmock_main found but gmock not found; neither GTest::gmock nor GTest::gmock_main targets will be created")
+        endif()
+
         if(GMOCK_LIBRARY)
             add_library(GTest::gmock UNKNOWN IMPORTED)
             set_target_properties(GTest::gmock PROPERTIES
@@ -85,7 +91,7 @@ if(BUILD_TESTING)
             message(STATUS "Created GTest::gmock target: ${GMOCK_LIBRARY}")
         endif()
         
-        if(GMOCK_MAIN_LIBRARY)
+        if(GMOCK_LIBRARY AND GMOCK_MAIN_LIBRARY)
             add_library(GTest::gmock_main UNKNOWN IMPORTED)
             set_target_properties(GTest::gmock_main PROPERTIES
                 IMPORTED_LOCATION "${GMOCK_MAIN_LIBRARY}"
