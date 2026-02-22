@@ -243,12 +243,9 @@ void Truss::clear() {
 }
 
 bool Truss::hasAppliedForces() const {
-    for (const auto& node : m_nodes) {
-        if (node->hasAppliedForce()) {
-            return true;
-        }
-    }
-    return false;
+    return std::any_of(m_nodes.begin(), m_nodes.end(), [](const auto& node) {
+        return node->hasAppliedForce();
+    });
 }
 
 void Truss::updateNodeIndexMap() {
