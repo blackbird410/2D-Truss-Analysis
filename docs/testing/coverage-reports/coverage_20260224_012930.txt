@@ -1,0 +1,25 @@
+================================================================================
+2D Truss Analysis - Coverage Report
+Generated: Tue Feb 24 01:40:22 AM CST 2026
+================================================================================
+
+Summary:
+--------
+Line Coverage:     1.9%
+Function Coverage: 9.3%
+Branch Coverage:   1.2%
+
+Test Results:
+-------------
+Unit Tests:        PASSED
+Integration Tests: PASSED
+
+Detailed Report:
+----------------
+HTML: file:///home/neil/dev/repos/2D-Truss-Analysis-cpp/build/coverage/html/index.html
+Raw:  /home/neil/dev/repos/2D-Truss-Analysis-cpp/build/coverage/coverage_filtered.info
+
+Summary coverage rate:
+  lines......: 71.9% (5131 of 7139 lines)
+  functions..: 79.3% (600 of 757 functions)
+  branches...: 41.2% (4521 of 10977 branches)
