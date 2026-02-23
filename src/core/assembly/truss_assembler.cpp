@@ -3,11 +3,11 @@
  * @brief Implementation of TrussAssembler
  */
 
-#include "TrussAssembler.hpp"
+#include "truss_assembler.hpp"
 
-#include "../model/Member.hpp"
-#include "../model/Node.hpp"
-#include "../model/Types.hpp"
+#include "../model/member.hpp"
+#include "../model/node.hpp"
+#include "../model/types.hpp"
 
 #include <sstream>
 #include <unordered_map>

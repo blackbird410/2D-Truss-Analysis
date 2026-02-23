@@ -12,8 +12,8 @@
 
 #pragma once
 
-#include "../interfaces/TrussDTO.hpp"
-#include "../model/Truss.hpp"
+#include "../interfaces/truss_dto.hpp"
+#include "../model/truss.hpp"
 
 #include <memory>
 #include <stdexcept>
