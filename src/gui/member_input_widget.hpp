@@ -5,7 +5,7 @@
 
 #pragma once
 
-#include "application/TrussApplicationService.hpp"
+#include "application/truss_application_service.hpp"
 
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QLineEdit>

@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "core/validation/TrussValidator.hpp"
+#include "core/validation/truss_validator.hpp"
 
 #include <QString>
 

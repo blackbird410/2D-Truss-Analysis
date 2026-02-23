@@ -12,8 +12,8 @@
  * Note: All tests use default material and section properties from Truss::addMember()
  */
 
-#include "../../src/core/analysis/StiffnessAssembler.hpp"
-#include "../../src/core/model/Truss.hpp"
+#include "../../src/core/analysis/stiffness_assembler.hpp"
+#include "../../src/core/model/truss.hpp"
 
 #include <Eigen/LU>
 #include <Eigen/SVD>

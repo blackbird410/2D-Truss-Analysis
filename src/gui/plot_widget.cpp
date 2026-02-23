@@ -5,7 +5,7 @@
 
 #include "plot_widget.hpp"
 
-#include "core/interfaces/ITrussView.hpp"
+#include "core/interfaces/itruss_view.hpp"
 
 #include <QtCore/QTimer>
 #include <QtGui/QBrush>

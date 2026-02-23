@@ -5,7 +5,7 @@
 
 #include "results_widget.hpp"
 
-#include "core/interfaces/ITrussView.hpp"
+#include "core/interfaces/itruss_view.hpp"
 
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>

@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "gui/controllers/ProjectController.hpp"
+#include "gui/controllers/project_controller.hpp"
 #include "mocks/MockTrussApplicationService.hpp"
 
 #include <QSignalSpy>

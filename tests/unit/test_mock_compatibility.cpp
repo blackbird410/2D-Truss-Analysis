@@ -7,8 +7,8 @@
  * ITrussService and can be used polymorphically with TrussEditController.
  */
 
-#include "gui/controllers/TrussEditController.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/controllers/truss_edit_controller.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 #include "mocks/MockTrussApplicationService.hpp"
 
 #include <gtest/gtest.h>

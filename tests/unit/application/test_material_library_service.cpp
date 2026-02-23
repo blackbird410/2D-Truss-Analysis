@@ -21,8 +21,8 @@
  * Target Coverage: >95%
  */
 
-#include "../../../src/application/MaterialLibraryService.hpp"
-#include "../../../src/core/model/Types.hpp"
+#include "../../../src/application/material_library_service.hpp"
+#include "../../../src/core/model/types.hpp"
 
 #include <algorithm>
 #include <gtest/gtest.h>

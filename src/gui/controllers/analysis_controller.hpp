@@ -20,10 +20,10 @@
 
 #pragma once
 
-#include "application/interfaces/IAnalysisService.hpp"
-#include "application/interfaces/ITrussService.hpp"
-#include "gui/presenters/AnalysisResultsPresenter.hpp"
-#include "gui/presenters/ValidationPresenter.hpp"
+#include "application/interfaces/ianalysis_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
+#include "gui/presenters/analysis_results_presenter.hpp"
+#include "gui/presenters/validation_presenter.hpp"
 
 #include <QObject>
 #include <QString>

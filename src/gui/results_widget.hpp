@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "application/AnalysisApplicationService.hpp"
-#include "application/TrussApplicationService.hpp"
+#include "application/analysis_application_service.hpp"
+#include "application/truss_application_service.hpp"
 
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QTextEdit>

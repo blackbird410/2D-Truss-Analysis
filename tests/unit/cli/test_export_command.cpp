@@ -16,10 +16,10 @@
  * Target: 80%+ line coverage with focused test scenarios
  */
 
-#include "../../../src/application/AnalysisApplicationService.hpp"
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/cli/commands/ExportCommand.hpp"
-#include "../../../src/cli/presenters/ConsolePresenter.hpp"
+#include "../../../src/application/analysis_application_service.hpp"
+#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/cli/commands/export_command.hpp"
+#include "../../../src/cli/presenters/console_presenter.hpp"
 
 #include <filesystem>
 #include <fstream>

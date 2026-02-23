@@ -5,8 +5,8 @@
  * @version 3.0.0
  */
 
-#include "../../src/core/model/Load.hpp"
-#include "../../src/core/model/Types.hpp"
+#include "../../src/core/model/load.hpp"
+#include "../../src/core/model/types.hpp"
 
 #include <gtest/gtest.h>
 

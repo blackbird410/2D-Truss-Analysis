@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include "application/TrussApplicationService.hpp"
-#include "core/model/Types.hpp"
+#include "application/truss_application_service.hpp"
+#include "core/model/types.hpp"
 
 #include <QtGui/QPainter>
 #include <QtWidgets/QWidget>

@@ -5,9 +5,9 @@
  * @version 3.0.0
  */
 
-#include "gui/controllers/AnalysisController.hpp"
-#include "gui/presenters/AnalysisResultsPresenter.hpp"
-#include "gui/presenters/ValidationPresenter.hpp"
+#include "gui/controllers/analysis_controller.hpp"
+#include "gui/presenters/analysis_results_presenter.hpp"
+#include "gui/presenters/validation_presenter.hpp"
 #include "mocks/MockAnalysisApplicationService.hpp"
 #include "mocks/MockTrussApplicationService.hpp"
 

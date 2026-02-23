@@ -5,7 +5,7 @@
 
 #include "interactive_drawing_widget.hpp"
 
-#include "core/interfaces/ITrussView.hpp"
+#include "core/interfaces/itruss_view.hpp"
 
 #include <QtCore/QDebug>
 #include <QtCore/QStandardPaths>

@@ -15,8 +15,8 @@
  * - No direct I/O operations (all delegated)
  */
 
-#include "../../../src/application/interfaces/IApplicationOutput.hpp"
-#include "../../../src/cli/presenters/ConsolePresenter.hpp"
+#include "../../../src/application/interfaces/iapplication_output.hpp"
+#include "../../../src/cli/presenters/console_presenter.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

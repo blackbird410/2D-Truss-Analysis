@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "application/interfaces/ITrussService.hpp"
+#include "application/interfaces/itruss_service.hpp"
 
 #include <gmock/gmock.h>
 

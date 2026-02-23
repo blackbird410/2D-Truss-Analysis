@@ -19,10 +19,10 @@
 
 #pragma once
 
-#include "application/TrussEditDTOs.hpp"
-#include "application/interfaces/ITrussService.hpp"
-#include "core/model/Types.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "application/truss_edit_dtos.hpp"
+#include "application/interfaces/itruss_service.hpp"
+#include "core/model/types.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 
 #include <QObject>
 

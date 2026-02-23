@@ -8,8 +8,8 @@
  * are not being loaded into the application.
  */
 
-#include "application/TrussApplicationService.hpp"
-#include "gui/controllers/ProjectController.hpp"
+#include "application/truss_application_service.hpp"
+#include "gui/controllers/project_controller.hpp"
 
 #include <QDebug>
 #include <QDir>

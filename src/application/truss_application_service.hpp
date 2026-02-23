@@ -26,7 +26,7 @@
 #include "../infrastructure/io/fileio_factory.hpp"
 #include "result.hpp"
 #include "truss_edit_dtos.hpp"
-#include "interfaces/ITrussService.hpp"
+#include "interfaces/itruss_service.hpp"
 
 #include <filesystem>
 #include <memory>

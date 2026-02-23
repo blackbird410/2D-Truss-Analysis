@@ -5,7 +5,7 @@
 
 #include "node_input_widget.hpp"
 
-#include "controllers/TrussEditController.hpp"
+#include "controllers/truss_edit_controller.hpp"
 
 #include <QtCore/QRegularExpression>
 #include <QtGui/QDoubleValidator>

@@ -6,9 +6,9 @@
 
 #pragma once
 
-#include "application/AnalysisApplicationService.hpp"
-#include "core/interfaces/IAnalysisResultsView.hpp"
-#include "core/interfaces/ITrussView.hpp"
+#include "application/analysis_application_service.hpp"
+#include "core/interfaces/ianalysis_results_view.hpp"
+#include "core/interfaces/itruss_view.hpp"
 
 #include <QCheckBox>
 #include <QComboBox>

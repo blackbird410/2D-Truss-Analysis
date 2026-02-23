@@ -17,8 +17,8 @@
 
 #pragma once
 
-#include "core/interfaces/ITrussView.hpp"
-#include "core/model/Types.hpp"
+#include "core/interfaces/itruss_view.hpp"
+#include "core/model/types.hpp"
 
 #include <QString>
 

@@ -6,8 +6,8 @@
  * @date 2026-02-21
  */
 
-#include "core/model/Truss.hpp"
-#include "core/validation/TrussValidator.hpp"
+#include "core/model/truss.hpp"
+#include "core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 #include <limits>

@@ -12,8 +12,8 @@
  * Purpose: Verify Controller orchestration logic in isolation
  */
 
-#include "gui/controllers/TrussEditController.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/controllers/truss_edit_controller.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 #include "mocks/MockTrussApplicationService.hpp"
 
 #include <QCoreApplication>

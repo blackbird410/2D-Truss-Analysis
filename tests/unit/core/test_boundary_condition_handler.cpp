@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "../../src/core/analysis/BoundaryConditionHandler.hpp"
+#include "../../src/core/analysis/boundary_condition_handler.hpp"
 
 #include <gtest/gtest.h>
 

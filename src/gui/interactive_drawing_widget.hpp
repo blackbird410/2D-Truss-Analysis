@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "application/TrussApplicationService.hpp"
-#include "application/TrussEditDTOs.hpp"
-#include "core/interfaces/ITrussView.hpp"
-#include "core/model/Types.hpp"
+#include "application/truss_application_service.hpp"
+#include "application/truss_edit_dtos.hpp"
+#include "core/interfaces/itruss_view.hpp"
+#include "core/model/types.hpp"
 
 #include <QtCore/QTimer>
 #include <QtGui/QAction>

@@ -13,8 +13,8 @@
  * - Interface abstraction (ITrussView access)
  */
 
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/core/model/Truss.hpp"
+#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/core/model/truss.hpp"
 #include "../../../src/infrastructure/io/fileio_factory.hpp"
 
 #include <chrono>

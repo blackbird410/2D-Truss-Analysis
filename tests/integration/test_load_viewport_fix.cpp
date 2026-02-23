@@ -8,9 +8,9 @@
  * to fit loaded geometry, ensuring visibility after load.
  */
 
-#include "application/TrussApplicationService.hpp"
-#include "gui/controllers/ProjectController.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "application/truss_application_service.hpp"
+#include "gui/controllers/project_controller.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 
 #include <QDir>
 #include <QFile>

@@ -8,8 +8,8 @@
  * lifecycle flows correctly, independent of GUI controllers.
  */
 
-#include "application/AnalysisApplicationService.hpp"
-#include "application/TrussApplicationService.hpp"
+#include "application/analysis_application_service.hpp"
+#include "application/truss_application_service.hpp"
 
 #include <gtest/gtest.h>
 

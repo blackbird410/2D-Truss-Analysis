@@ -15,14 +15,14 @@
 #include "node_input_widget.hpp"
 #include "plot_widget.hpp"
 #include "results_widget.hpp"
-#include "application/AnalysisApplicationService.hpp"
-#include "application/TrussApplicationService.hpp"
-#include "gui/controllers/AnalysisController.hpp"
-#include "gui/controllers/ProjectController.hpp"
-#include "gui/controllers/TrussEditController.hpp"
-#include "gui/presenters/AnalysisResultsPresenter.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
-#include "gui/presenters/ValidationPresenter.hpp"
+#include "application/analysis_application_service.hpp"
+#include "application/truss_application_service.hpp"
+#include "gui/controllers/analysis_controller.hpp"
+#include "gui/controllers/project_controller.hpp"
+#include "gui/controllers/truss_edit_controller.hpp"
+#include "gui/presenters/analysis_results_presenter.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
+#include "gui/presenters/validation_presenter.hpp"
 
 #include <QtCore/QTimer>
 #include <QtGui/QAction>

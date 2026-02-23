@@ -3,7 +3,7 @@
  * @brief Integration test for complete load workflow
  */
 
-#include "application/TrussApplicationService.hpp"
+#include "application/truss_application_service.hpp"
 #include "infrastructure/io/fileio_factory.hpp"
 
 #include <filesystem>

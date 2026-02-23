@@ -11,8 +11,8 @@
  * - Removed manual test registration (GTest auto-discovers tests)
  */
 
-#include "../../src/core/model/Member.hpp"
-#include "../../src/core/model/Node.hpp"
+#include "../../src/core/model/member.hpp"
+#include "../../src/core/model/node.hpp"
 
 #include <gtest/gtest.h>
 #include <memory>

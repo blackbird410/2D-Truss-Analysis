@@ -3,7 +3,7 @@
  * @brief Implementation of example command
  *
  * TECHNICAL DEBT:
- * - Includes core/model/Truss.hpp for direct geometry construction
+ * - Includes core/model/truss.hpp for direct geometry construction
  * - Required by getTrussMutable() which returns Truss& reference
  * - Necessitates access to Domain types: SupportType, MaterialProperties, etc.
  * - FUTURE: Replace with Application-layer Builder API to eliminate this dependency

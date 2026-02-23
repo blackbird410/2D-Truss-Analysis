@@ -17,7 +17,7 @@
  * Tests verify the adapter correctly bridges Application to Infrastructure layer.
  */
 
-#include "../../../src/infrastructure/adapters/ConsoleOutputAdapter.hpp"
+#include "../../../src/infrastructure/adapters/console_output_adapter.hpp"
 #include "../../../src/infrastructure/logging/logger.hpp"
 
 #include <gmock/gmock.h>

@@ -6,10 +6,10 @@
  * @date 2026-02-21
  */
 
-#include "application/AnalysisApplicationService.hpp"
-#include "core/assembly/TrussAssembler.hpp"
-#include "core/model/Truss.hpp"
-#include "core/validation/TrussValidator.hpp"
+#include "application/analysis_application_service.hpp"
+#include "core/assembly/truss_assembler.hpp"
+#include "core/model/truss.hpp"
+#include "core/validation/truss_validator.hpp"
 #include "infrastructure/export/exporter_factory.hpp"
 #include "infrastructure/io/fileio_factory.hpp"
 

@@ -6,8 +6,8 @@
 // Purpose: Extend TrussEditController coverage with advanced scenarios
 // Phase: 8, Task 8.1.1 (Advanced Coverage)
 
-#include "gui/controllers/TrussEditController.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/controllers/truss_edit_controller.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 #include "mocks/MockTrussApplicationService.hpp"
 
 #include <QCoreApplication>

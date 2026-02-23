@@ -12,7 +12,7 @@
  * Purpose: Verify formatting correctness and consistency
  */
 
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 
 #include <gtest/gtest.h>
 

@@ -5,10 +5,10 @@
  * @version 3.0.0
  */
 
-#include "../../src/core/analysis/DirectSolver.hpp"
-#include "../../src/core/analysis/ILinearSolver.hpp"
-#include "../../src/core/analysis/IterativeSolver.hpp"
-#include "../../src/core/analysis/SolverFactory.hpp"
+#include "../../src/core/analysis/direct_solver.hpp"
+#include "../../src/core/analysis/ilinear_solver.hpp"
+#include "../../src/core/analysis/iterative_solver.hpp"
+#include "../../src/core/analysis/solver_factory.hpp"
 
 #include <cmath>
 #include <gtest/gtest.h>

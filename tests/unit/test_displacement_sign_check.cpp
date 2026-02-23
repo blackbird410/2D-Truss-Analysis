@@ -12,7 +12,7 @@
 #include "../../src/core/model/member.hpp"
 #include "../../src/core/model/node.hpp"
 #include "../../src/core/model/truss.hpp"
-#include "../../src/core/validation/TrussValidator.hpp"
+#include "../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 
