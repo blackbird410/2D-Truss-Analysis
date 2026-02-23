@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "../../core/interfaces/ITrussView.hpp"
-#include "../../core/model/Types.hpp"
-#include "../../core/validation/TrussValidator.hpp"  // For ValidationResult
-#include "../Result.hpp"
-#include "../TrussEditDTOs.hpp"
+#include "../../core/interfaces/itruss_view.hpp"
+#include "../../core/model/types.hpp"
+#include "../../core/validation/truss_validator.hpp"  // For ValidationResult
+#include "../result.hpp"
+#include "../truss_edit_dtos.hpp"
 
 #include <filesystem>
 #include <string>

@@ -13,11 +13,11 @@
 
 #pragma once
 
-#include "../../core/analysis/AnalysisOrchestrator.hpp"
-#include "../../core/interfaces/IAnalysisResultsView.hpp"
-#include "../../core/model/Truss.hpp"
+#include "../../core/analysis/analysis_orchestrator.hpp"
+#include "../../core/interfaces/ianalysis_results_view.hpp"
+#include "../../core/model/truss.hpp"
 #include "../../infrastructure/export/exporter_factory.hpp"
-#include "../Result.hpp"
+#include "../result.hpp"
 
 #include <cstddef>
 #include <filesystem>
