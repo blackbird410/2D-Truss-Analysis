@@ -111,38 +111,38 @@ endif()
 
 # Create library for core functionality
 add_library(TrussCore STATIC
-    src/core/Application.cpp
-    src/core/Application.hpp
+    src/core/application.cpp
+    src/core/application.hpp
     # Domain model in model/ subdirectory
-    src/core/model/Types.hpp
-    src/core/model/Node.cpp
-    src/core/model/Node.hpp
-    src/core/model/Member.cpp
-    src/core/model/Member.hpp
-    src/core/model/Truss.cpp
-    src/core/model/Truss.hpp
-    src/core/model/Load.cpp
-    src/core/model/Load.hpp
+    src/core/model/types.hpp
+    src/core/model/node.cpp
+    src/core/model/node.hpp
+    src/core/model/member.cpp
+    src/core/model/member.hpp
+    src/core/model/truss.cpp
+    src/core/model/truss.hpp
+    src/core/model/load.cpp
+    src/core/model/load.hpp
     # Domain assembly utilities
-    src/core/assembly/TrussAssembler.cpp
-    src/core/assembly/TrussAssembler.hpp
+    src/core/assembly/truss_assembler.cpp
+    src/core/assembly/truss_assembler.hpp
     # Domain validation services
-    src/core/validation/TrussValidator.cpp
-    src/core/validation/TrussValidator.hpp
+    src/core/validation/truss_validator.cpp
+    src/core/validation/truss_validator.hpp
     # Phase 2 - Analysis decomposition
-    src/core/analysis/StiffnessAssembler.cpp
-    src/core/analysis/StiffnessAssembler.hpp
-    src/core/analysis/BoundaryConditionHandler.cpp
-    src/core/analysis/BoundaryConditionHandler.hpp
-    src/core/analysis/ILinearSolver.hpp
-    src/core/analysis/DirectSolver.cpp
-    src/core/analysis/DirectSolver.hpp
-    src/core/analysis/IterativeSolver.cpp
-    src/core/analysis/IterativeSolver.hpp
-    src/core/analysis/SolverFactory.cpp
-    src/core/analysis/SolverFactory.hpp
-    src/core/analysis/AnalysisOrchestrator.cpp
-    src/core/analysis/AnalysisOrchestrator.hpp
+    src/core/analysis/stiffness_assembler.cpp
+    src/core/analysis/stiffness_assembler.hpp
+    src/core/analysis/boundary_condition_handler.cpp
+    src/core/analysis/boundary_condition_handler.hpp
+    src/core/analysis/ilinear_solver.hpp
+    src/core/analysis/direct_solver.cpp
+    src/core/analysis/direct_solver.hpp
+    src/core/analysis/iterative_solver.cpp
+    src/core/analysis/iterative_solver.hpp
+    src/core/analysis/solver_factory.cpp
+    src/core/analysis/solver_factory.hpp
+    src/core/analysis/analysis_orchestrator.cpp
+    src/core/analysis/analysis_orchestrator.hpp
     # Phase 3 - Infrastructure layer (export subsystem)
     src/infrastructure/export/export_types.hpp
     src/infrastructure/export/exporter.hpp
@@ -169,8 +169,8 @@ add_library(TrussCore STATIC
     src/infrastructure/logging/logger_factory.cpp
     src/infrastructure/logging/logger_factory.hpp
     # Phase 5A - Infrastructure adapters
-    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
-    src/infrastructure/adapters/ConsoleOutputAdapter.hpp
+    src/infrastructure/adapters/console_output_adapter.cpp
+    src/infrastructure/adapters/console_output_adapter.hpp
     # Phase 2 (Infrastructure Refactoring) - File I/O subsystem
     src/infrastructure/io/io_types.hpp
     src/infrastructure/io/truss_reader.hpp
@@ -214,12 +214,12 @@ set_target_properties(TrussCore PROPERTIES
 # ============================================================================
 
 add_library(TrussApplication STATIC
-    src/application/TrussApplicationService.cpp
-    src/application/TrussApplicationService.hpp
-    src/application/AnalysisApplicationService.cpp
-    src/application/AnalysisApplicationService.hpp
-    src/application/MaterialLibraryService.cpp
-    src/application/MaterialLibraryService.hpp
+    src/application/truss_application_service.cpp
+    src/application/truss_application_service.hpp
+    src/application/analysis_application_service.cpp
+    src/application/analysis_application_service.hpp
+    src/application/material_library_service.cpp
+    src/application/material_library_service.hpp
 )
 
 target_include_directories(TrussApplication PUBLIC
@@ -243,14 +243,14 @@ set_target_properties(TrussApplication PROPERTIES
 
 # CLI source files
 set(CLI_SOURCES
-    src/cli/ArgumentParser.cpp
-    src/cli/commands/ExampleCommand.cpp
-    src/cli/commands/HelpCommand.cpp
-    src/cli/commands/AnalyzeCommand.cpp
-    src/cli/commands/ValidateCommand.cpp
-    src/cli/commands/ExportCommand.cpp
-    src/cli/presenters/ConsolePresenter.cpp
-    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
+    src/cli/argument_parser.cpp
+    src/cli/commands/example_command.cpp
+    src/cli/commands/help_command.cpp
+    src/cli/commands/analyze_command.cpp
+    src/cli/commands/validate_command.cpp
+    src/cli/commands/export_command.cpp
+    src/cli/presenters/console_presenter.cpp
+    src/infrastructure/adapters/console_output_adapter.cpp
 )
 
 # Main application CLI executable
@@ -341,21 +341,21 @@ if(BUILD_TESTING)
         tests/unit/cli/test_validate_command.cpp
         tests/unit/cli/test_export_command.cpp
         # GUI layer tests (Controller API Stabilization)
-        tests/unit/controllers/test_TrussEditController.cpp
-        tests/unit/controllers/test_TrussEditController_Advanced.cpp
-        tests/unit/controllers/test_ProjectController.cpp
-        tests/unit/controllers/test_AnalysisController.cpp
-        tests/unit/presenters/test_TrussDataPresenter.cpp
+        tests/unit/controllers/test_truss_edit_controller.cpp
+        tests/unit/controllers/test_truss_edit_controller_advanced.cpp
+        tests/unit/controllers/test_project_controller.cpp
+        tests/unit/controllers/test_analysis_controller.cpp
+        tests/unit/presenters/test_truss_data_presenter.cpp
         # Mock compatibility tests (Phase 6: Dependency Inversion validation)
         tests/unit/test_mock_compatibility.cpp
         tests/unit/test_mock_analysis_compatibility.cpp
         # GUI source files needed for GUI tests
-        src/gui/presenters/TrussDataPresenter.cpp
-        src/gui/presenters/AnalysisResultsPresenter.cpp
-        src/gui/presenters/ValidationPresenter.cpp
-        src/gui/controllers/TrussEditController.cpp
-        src/gui/controllers/AnalysisController.cpp
-        src/gui/controllers/ProjectController.cpp
+        src/gui/presenters/truss_data_presenter.cpp
+        src/gui/presenters/analysis_results_presenter.cpp
+        src/gui/presenters/validation_presenter.cpp
+        src/gui/controllers/truss_edit_controller.cpp
+        src/gui/controllers/analysis_controller.cpp
+        src/gui/controllers/project_controller.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
@@ -404,9 +404,9 @@ if(BUILD_TESTING)
         tests/integration/test_gui_file_load.cpp
         tests/integration/test_e2e_workflows.cpp
         # GUI controllers needed for GUI lifecycle tests
-        src/gui/controllers/TrussEditController.cpp
-        src/gui/controllers/ProjectController.cpp
-        src/gui/presenters/TrussDataPresenter.cpp
+        src/gui/controllers/truss_edit_controller.cpp
+        src/gui/controllers/project_controller.cpp
+        src/gui/presenters/truss_data_presenter.cpp
         ${CLI_SOURCES}
     )
     
@@ -438,12 +438,12 @@ if(BUILD_TESTING)
     add_executable(gui_integration_test
         tests/integration/test_gui_integration.cpp
         # GUI source files needed for integration tests
-        src/gui/presenters/TrussDataPresenter.cpp
-        src/gui/presenters/AnalysisResultsPresenter.cpp
-        src/gui/presenters/ValidationPresenter.cpp
-        src/gui/controllers/TrussEditController.cpp
-        src/gui/controllers/AnalysisController.cpp
-        src/gui/controllers/ProjectController.cpp
+        src/gui/presenters/truss_data_presenter.cpp
+        src/gui/presenters/analysis_results_presenter.cpp
+        src/gui/presenters/validation_presenter.cpp
+        src/gui/controllers/truss_edit_controller.cpp
+        src/gui/controllers/analysis_controller.cpp
+        src/gui/controllers/project_controller.cpp
     )
     
     target_link_libraries(gui_integration_test PRIVATE
@@ -483,32 +483,32 @@ if(BUILD_GUI)
     # GUI executable
     add_executable(TrussAnalysisGUI
     src/gui/main.cpp
-    src/gui/MainWindow.cpp
-    src/gui/MainWindow.hpp
-    src/gui/NodeInputWidget.cpp
-    src/gui/NodeInputWidget.hpp
-    src/gui/MemberInputWidget.cpp
-    src/gui/MemberInputWidget.hpp
-    src/gui/LoadInputWidget.cpp
-    src/gui/LoadInputWidget.hpp
-    src/gui/DataTableWidget.cpp
-    src/gui/DataTableWidget.hpp
-    src/gui/ResultsWidget.cpp
-    src/gui/ResultsWidget.hpp
-    src/gui/PlotWidget.cpp
-    src/gui/PlotWidget.hpp
-    src/gui/InteractiveDrawingWidget.cpp
-    src/gui/InteractiveDrawingWidget.hpp
-    src/gui/DeformedTrussWidget.cpp
-    src/gui/DeformedTrussWidget.hpp
+    src/gui/main_window.cpp
+    src/gui/main_window.hpp
+    src/gui/node_input_widget.cpp
+    src/gui/node_input_widget.hpp
+    src/gui/member_input_widget.cpp
+    src/gui/member_input_widget.hpp
+    src/gui/load_input_widget.cpp
+    src/gui/load_input_widget.hpp
+    src/gui/data_table_widget.cpp
+    src/gui/data_table_widget.hpp
+    src/gui/results_widget.cpp
+    src/gui/results_widget.hpp
+    src/gui/plot_widget.cpp
+    src/gui/plot_widget.hpp
+    src/gui/interactive_drawing_widget.cpp
+    src/gui/interactive_drawing_widget.hpp
+    src/gui/deformed_truss_widget.cpp
+    src/gui/deformed_truss_widget.hpp
     # Phase 3A - Presenters
-    src/gui/presenters/AnalysisResultsPresenter.cpp
-    src/gui/presenters/TrussDataPresenter.cpp
-    src/gui/presenters/ValidationPresenter.cpp
+    src/gui/presenters/analysis_results_presenter.cpp
+    src/gui/presenters/truss_data_presenter.cpp
+    src/gui/presenters/validation_presenter.cpp
     # Phase 3A - Controllers
-    src/gui/controllers/TrussEditController.cpp
-    src/gui/controllers/AnalysisController.cpp
-    src/gui/controllers/ProjectController.cpp
+    src/gui/controllers/truss_edit_controller.cpp
+    src/gui/controllers/analysis_controller.cpp
+    src/gui/controllers/project_controller.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
