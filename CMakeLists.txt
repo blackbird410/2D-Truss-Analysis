@@ -307,18 +307,19 @@ if(BUILD_TESTING)
         tests/unit/core/model/test_member.cpp
         tests/unit/core/model/test_truss.cpp
         tests/unit/core/model/test_load.cpp
+        tests/unit/core/model/test_stiffness_matrix_bug.cpp
         # Domain layer tests - VALIDATION
         tests/unit/core/validation/test_truss_validator.cpp
         tests/unit/core/validation/test_validation_advanced.cpp
+        tests/unit/core/validation/test_mock_compatibility.cpp
+        tests/unit/core/validation/test_mock_analysis_compatibility.cpp
         # Domain layer tests - ANALYSIS
         tests/unit/core/analysis/test_stiffness_assembler.cpp
         tests/unit/core/analysis/test_boundary_condition_handler.cpp
         tests/unit/core/analysis/test_linear_solvers.cpp
         tests/unit/core/analysis/test_analysis_orchestrator.cpp
-        # Legacy tests (not yet reorganized)
-        tests/unit/test_stiffness_matrix_bug.cpp
-        tests/unit/test_displacement_sign_check.cpp
-        tests/unit/test_warren_displacement.cpp
+        tests/unit/core/analysis/test_displacement_sign_check.cpp
+        tests/unit/core/analysis/test_warren_displacement.cpp
         # Infrastructure layer tests
         tests/unit/infrastructure/export/test_csv_exporter.cpp
         tests/unit/infrastructure/export/test_html_exporter.cpp
@@ -332,7 +333,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/logging/test_logger_advanced.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
         tests/unit/infrastructure/io/test_fileio_advanced.cpp
-        tests/unit/infrastructure/test_console_output_adapter.cpp
+        tests/unit/infrastructure/adapters/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_truss_application_service_gui_methods.cpp
@@ -346,14 +347,11 @@ if(BUILD_TESTING)
         tests/unit/cli/test_validate_command.cpp
         tests/unit/cli/test_export_command.cpp
         # GUI layer tests (Controller API Stabilization)
-        tests/unit/controllers/test_truss_edit_controller.cpp
-        tests/unit/controllers/test_truss_edit_controller_advanced.cpp
-        tests/unit/controllers/test_project_controller.cpp
-        tests/unit/controllers/test_analysis_controller.cpp
-        tests/unit/presenters/test_truss_data_presenter.cpp
-        # Mock compatibility tests (Phase 6: Dependency Inversion validation)
-        tests/unit/test_mock_compatibility.cpp
-        tests/unit/test_mock_analysis_compatibility.cpp
+        tests/unit/gui/controllers/test_truss_edit_controller.cpp
+        tests/unit/gui/controllers/test_truss_edit_controller_advanced.cpp
+        tests/unit/gui/controllers/test_project_controller.cpp
+        tests/unit/gui/controllers/test_analysis_controller.cpp
+        tests/unit/gui/presenters/test_truss_data_presenter.cpp
         # GUI source files needed for GUI tests
         src/gui/presenters/truss_data_presenter.cpp
         src/gui/presenters/analysis_results_presenter.cpp
