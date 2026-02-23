@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(TrussAnalysis VERSION 3.0.0 LANGUAGES CXX)
 
+# Export compile commands for tools like clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -111,7 +114,6 @@ endif()
 
 # Create library for core functionality
 add_library(TrussCore STATIC
-    src/core/application.cpp
     src/core/application.hpp
     # Domain model in model/ subdirectory
     src/core/model/types.hpp
