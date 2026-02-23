@@ -4,7 +4,7 @@
  * @version 2.1.0
  */
 
-#include "DeformedTrussWidget.hpp"
+#include "deformed_truss_widget.hpp"
 
 #include <QApplication>
 #include <QPaintEvent>

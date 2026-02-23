@@ -3,7 +3,7 @@
  * @brief Implementation of the main window for the 2D Truss Analysis GUI
  */
 
-#include "MainWindow.hpp"
+#include "main_window.hpp"
 
 #include <QtCore/QDir>
 #include <QtCore/QSettings>

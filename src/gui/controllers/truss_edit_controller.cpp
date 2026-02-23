@@ -1,4 +1,4 @@
-#include "TrussEditController.hpp"
+#include "truss_edit_controller.hpp"
 
 #include <stdexcept>
 

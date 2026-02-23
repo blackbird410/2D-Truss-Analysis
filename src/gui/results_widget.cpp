@@ -3,7 +3,7 @@
  * @brief Implementation of the results widget
  */
 
-#include "ResultsWidget.hpp"
+#include "results_widget.hpp"
 
 #include "core/interfaces/ITrussView.hpp"
 

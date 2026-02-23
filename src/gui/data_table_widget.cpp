@@ -3,7 +3,7 @@
  * @brief Implementation of the data table widget
  */
 
-#include "DataTableWidget.hpp"
+#include "data_table_widget.hpp"
 
 #include "core/interfaces/ITrussView.hpp"
 

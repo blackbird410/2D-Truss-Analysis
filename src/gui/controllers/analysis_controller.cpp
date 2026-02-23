@@ -1,4 +1,4 @@
-#include "AnalysisController.hpp"
+#include "analysis_controller.hpp"
 
 #include <stdexcept>
 

@@ -7,14 +7,14 @@
 
 #pragma once
 
-#include "DataTableWidget.hpp"
-#include "DeformedTrussWidget.hpp"
-#include "InteractiveDrawingWidget.hpp"
-#include "LoadInputWidget.hpp"
-#include "MemberInputWidget.hpp"
-#include "NodeInputWidget.hpp"
-#include "PlotWidget.hpp"
-#include "ResultsWidget.hpp"
+#include "data_table_widget.hpp"
+#include "deformed_truss_widget.hpp"
+#include "interactive_drawing_widget.hpp"
+#include "load_input_widget.hpp"
+#include "member_input_widget.hpp"
+#include "node_input_widget.hpp"
+#include "plot_widget.hpp"
+#include "results_widget.hpp"
 #include "application/AnalysisApplicationService.hpp"
 #include "application/TrussApplicationService.hpp"
 #include "gui/controllers/AnalysisController.hpp"

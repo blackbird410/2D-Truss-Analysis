@@ -3,7 +3,7 @@
  * @brief Implementation of the node input widget
  */
 
-#include "NodeInputWidget.hpp"
+#include "node_input_widget.hpp"
 
 #include "controllers/TrussEditController.hpp"
 

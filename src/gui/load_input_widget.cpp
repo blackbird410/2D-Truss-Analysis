@@ -4,7 +4,7 @@
  * @version 3.0.0
  */
 
-#include "LoadInputWidget.hpp"
+#include "load_input_widget.hpp"
 
 #include "controllers/TrussEditController.hpp"
 

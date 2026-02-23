@@ -1,4 +1,4 @@
-#include "AnalysisResultsPresenter.hpp"
+#include "analysis_results_presenter.hpp"
 
 #include <cmath>
 

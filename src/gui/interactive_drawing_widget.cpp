@@ -3,7 +3,7 @@
  * @brief Implementation of interactive drawing widget for truss design
  */
 
-#include "InteractiveDrawingWidget.hpp"
+#include "interactive_drawing_widget.hpp"
 
 #include "core/interfaces/ITrussView.hpp"
 

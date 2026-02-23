@@ -3,7 +3,7 @@
  * @brief Implementation of the member input widget
  */
 
-#include "MemberInputWidget.hpp"
+#include "member_input_widget.hpp"
 
 #include "application/TrussEditDTOs.hpp"
 #include "controllers/TrussEditController.hpp"
