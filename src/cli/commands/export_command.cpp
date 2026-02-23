@@ -3,7 +3,7 @@
  * @brief Implementation of export command
  */
 
-#include "ExportCommand.hpp"
+#include "export_command.hpp"
 
 #include <algorithm>
 #include <cctype>

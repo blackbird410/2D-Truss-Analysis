@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../presenters/ConsolePresenter.hpp"
-#include "ICommand.hpp"
+#include "../presenters/console_presenter.hpp"
+#include "icommand.hpp"
 
 #include <memory>
 #include <vector>

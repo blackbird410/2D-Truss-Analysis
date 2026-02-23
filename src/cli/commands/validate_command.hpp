@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "../../application/TrussApplicationService.hpp"
-#include "../presenters/ConsolePresenter.hpp"
-#include "ICommand.hpp"
+#include "../../application/truss_application_service.hpp"
+#include "../presenters/console_presenter.hpp"
+#include "icommand.hpp"
 
 #include <string>
 

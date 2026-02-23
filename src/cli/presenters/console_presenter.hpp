@@ -13,9 +13,9 @@
 
 #pragma once
 
-#include "../../application/interfaces/IApplicationOutput.hpp"
-#include "../../core/interfaces/IAnalysisResultsView.hpp"
-#include "../../core/interfaces/ITrussView.hpp"
+#include "../../application/interfaces/iapplication_output.hpp"
+#include "../../core/interfaces/ianalysis_results_view.hpp"
+#include "../../core/interfaces/itruss_view.hpp"
 
 #include <string>
 

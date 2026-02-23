@@ -6,7 +6,7 @@
  * All output now routed through IApplicationOutput abstraction.
  */
 
-#include "ConsolePresenter.hpp"
+#include "console_presenter.hpp"
 
 #include <iomanip>
 #include <sstream>

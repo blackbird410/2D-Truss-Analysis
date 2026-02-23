@@ -13,10 +13,10 @@
 
 #pragma once
 
-#include "../../application/AnalysisApplicationService.hpp"
-#include "../../application/TrussApplicationService.hpp"
-#include "../presenters/ConsolePresenter.hpp"
-#include "ICommand.hpp"
+#include "../../application/analysis_application_service.hpp"
+#include "../../application/truss_application_service.hpp"
+#include "../presenters/console_presenter.hpp"
+#include "icommand.hpp"
 
 #include <optional>
 #include <string>

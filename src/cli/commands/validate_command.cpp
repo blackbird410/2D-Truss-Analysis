@@ -3,7 +3,7 @@
  * @brief Implementation of validate command
  */
 
-#include "ValidateCommand.hpp"
+#include "validate_command.hpp"
 
 #include <filesystem>
 

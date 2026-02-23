@@ -3,7 +3,7 @@
  * @brief Implementation of help command
  */
 
-#include "HelpCommand.hpp"
+#include "help_command.hpp"
 
 #include <sstream>
 

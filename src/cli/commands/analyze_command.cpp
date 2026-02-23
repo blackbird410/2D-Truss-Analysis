@@ -3,7 +3,7 @@
  * @brief Implementation of analyze command
  */
 
-#include "AnalyzeCommand.hpp"
+#include "analyze_command.hpp"
 
 #include <algorithm>
 #include <cctype>

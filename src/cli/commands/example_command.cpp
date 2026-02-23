@@ -9,9 +9,9 @@
  * - FUTURE: Replace with Application-layer Builder API to eliminate this dependency
  */
 
-#include "ExampleCommand.hpp"
+#include "example_command.hpp"
 
-#include "../../core/model/Truss.hpp"
+#include "../../core/model/truss.hpp"
 
 namespace truss::cli::commands {
 

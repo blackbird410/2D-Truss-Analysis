@@ -3,7 +3,7 @@
  * @brief Implementation of argument parser
  */
 
-#include "ArgumentParser.hpp"
+#include "argument_parser.hpp"
 
 #include <algorithm>
 
