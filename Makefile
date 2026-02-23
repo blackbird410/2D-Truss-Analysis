@@ -431,7 +431,7 @@ docker-run: ## Run analysis in Docker container
 .PHONY: docker-dev
 docker-dev: ## Start interactive development container
 	@echo -e "$(BOLD)Starting development container...$(RESET)"
-	@docker compose run --rm truss-dev
+	@docker compose -f docker/docker-compose.yml run --rm truss-dev
 
 .PHONY: docker-shell
 docker-shell: ## Open shell in running container
@@ -458,7 +458,7 @@ docker-push: ## Push Docker image to registry
 docker-clean: ## Remove project Docker images, containers, and volumes
 	@echo -e "$(BOLD)Cleaning project Docker artifacts...$(RESET)"
 	@echo "Stopping and removing project containers..."
-	@docker compose down -v 2>/dev/null || true
+	@docker compose -f docker/docker-compose.yml down -v 2>/dev/null || true
 	@docker stop truss-analysis truss-dev 2>/dev/null || true
 	@docker rm truss-analysis truss-dev 2>/dev/null || true
 	@echo "Removing project images..."
