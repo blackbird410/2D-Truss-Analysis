@@ -12,6 +12,7 @@
 
 #include <tinyxml2.h>
 
+#include <unordered_map>
 #include <unordered_set>
 
 namespace truss::infrastructure::io {
@@ -71,10 +72,38 @@ private:
      * @param membersElement Members XML element
      * @param dto Target DTO
      * @param validNodeIds Set of valid node IDs for referential integrity checking
+     * @param materials Map of material IDs to their properties
+     * @param sections Map of section IDs to their properties
      */
     static void parseMembers(tinyxml2::XMLElement* membersElement,
                              core::interfaces::TrussDTO& dto,
-                             const std::unordered_set<core::NodeId>& validNodeIds);
+                             const std::unordered_set<core::NodeId>& validNodeIds,
+                             const std::unordered_map<std::string, tinyxml2::XMLElement*>& materials,
+                             const std::unordered_map<std::string, tinyxml2::XMLElement*>& sections);
+
+    /**
+     * @brief Parse materials section
+     * @return Map of material IDs to their XML elements
+     */
+    static std::unordered_map<std::string, tinyxml2::XMLElement*>
+    parseMaterials(tinyxml2::XMLElement* materialsElement);
+
+    /**
+     * @brief Parse sections section
+     * @return Map of section IDs to their XML elements
+     */
+    static std::unordered_map<std::string, tinyxml2::XMLElement*>
+    parseSections(tinyxml2::XMLElement* sectionsElement);
+
+    /**
+     * @brief Parse supports section
+     * @param supportsElement Supports XML element
+     * @param dto Target DTO
+     * @param validNodeIds Set of valid node IDs for referential integrity checking
+     */
+    static void parseSupports(tinyxml2::XMLElement* supportsElement,
+                              core::interfaces::TrussDTO& dto,
+                              const std::unordered_set<core::NodeId>& validNodeIds);
 
     /**
      * @brief Parse loads section

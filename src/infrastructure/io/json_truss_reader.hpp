@@ -58,8 +58,32 @@ private:
     /**
      * @brief Parse members section - creates MemberDTO objects
      * @param validNodeIds Set of valid node IDs for referential integrity checking
+     * @param materials Map of material IDs to their properties
+     * @param sections Map of section IDs to their properties
      */
     void parseMembers(const nlohmann::json& j,
+                      core::interfaces::TrussDTO& dto,
+                      const std::unordered_set<core::NodeId>& validNodeIds,
+                      const std::unordered_map<std::string, nlohmann::json>& materials,
+                      const std::unordered_map<std::string, nlohmann::json>& sections);
+
+    /**
+     * @brief Parse materials section
+     * @return Map of material IDs to their properties
+     */
+    std::unordered_map<std::string, nlohmann::json> parseMaterials(const nlohmann::json& j);
+
+    /**
+     * @brief Parse sections section
+     * @return Map of section IDs to their properties
+     */
+    std::unordered_map<std::string, nlohmann::json> parseSections(const nlohmann::json& j);
+
+    /**
+     * @brief Parse supports section
+     * @param dto The DTO to update with support information
+     */
+    void parseSupports(const nlohmann::json& j,
                       core::interfaces::TrussDTO& dto,
                       const std::unordered_set<core::NodeId>& validNodeIds);
 

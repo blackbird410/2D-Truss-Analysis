@@ -11,6 +11,7 @@
 #include <algorithm>
 #include <fstream>
 #include <sstream>
+#include <unordered_map>
 #include <unordered_set>
 
 using json = nlohmann::json;
@@ -47,6 +48,17 @@ core::interfaces::TrussDTO JsonTrussReader::read(const std::filesystem::path& fi
             parseMetadata(j["metadata"], dto);
         }
 
+        // Parse materials and sections first (these are referenced by members)
+        std::unordered_map<std::string, json> materials;
+        if (j.contains("materials")) {
+            materials = parseMaterials(j["materials"]);
+        }
+
+        std::unordered_map<std::string, json> sections;
+        if (j.contains("sections")) {
+            sections = parseSections(j["sections"]);
+        }
+
         std::unordered_set<core::NodeId> validNodeIds;
         if (j.contains("nodes")) {
             validNodeIds = parseNodes(j["nodes"], dto);
@@ -55,7 +67,11 @@ core::interfaces::TrussDTO JsonTrussReader::read(const std::filesystem::path& fi
         }
 
         if (j.contains("members")) {
-            parseMembers(j["members"], dto, validNodeIds);
+            parseMembers(j["members"], dto, validNodeIds, materials, sections);
+        }
+
+        if (j.contains("supports")) {
+            parseSupports(j["supports"], dto, validNodeIds);
         }
 
         if (j.contains("loads")) {
@@ -121,7 +137,9 @@ std::unordered_set<core::NodeId> JsonTrussReader::parseNodes(const json& j,
 
 void JsonTrussReader::parseMembers(const json& j,
                                    core::interfaces::TrussDTO& dto,
-                                   const std::unordered_set<core::NodeId>& validNodeIds) {
+                                   const std::unordered_set<core::NodeId>& validNodeIds,
+                                   const std::unordered_map<std::string, json>& materials,
+                                   const std::unordered_map<std::string, json>& sections) {
     if (!j.is_array()) {
         throw ParseException("'members' must be an array");
     }
@@ -171,6 +189,104 @@ void JsonTrussReader::parseMembers(const json& j,
     }
 }
 
+std::unordered_map<std::string, json> JsonTrussReader::parseMaterials(const json& j) {
+    std::unordered_map<std::string, json> materials;
+    
+    if (!j.is_array()) {
+        throw ParseException("'materials' must be an array");
+    }
+    
+    for (const auto& matJson : j) {
+        if (!matJson.contains("id")) {
+            throw ParseException("Material missing required field 'id'");
+        }
+        std::string id = matJson["id"].get<std::string>();
+        materials[id] = matJson;
+    }
+    
+    return materials;
+}
+
+std::unordered_map<std::string, json> JsonTrussReader::parseSections(const json& j) {
+    std::unordered_map<std::string, json> sections;
+    
+    if (!j.is_array()) {
+        throw ParseException("'sections' must be an array");
+    }
+    
+    for (const auto& secJson : j) {
+        if (!secJson.contains("id")) {
+            throw ParseException("Section missing required field 'id'");
+        }
+        std::string id = secJson["id"].get<std::string>();
+        sections[id] = secJson;
+    }
+    
+    return sections;
+}
+
+void JsonTrussReader::parseSupports(const json& j,
+                                    core::interfaces::TrussDTO& dto,
+                                    const std::unordered_set<core::NodeId>& validNodeIds) {
+    if (!j.is_array()) {
+        throw ParseException("'supports' must be an array");
+    }
+    
+    for (const auto& supportJson : j) {
+        if (!supportJson.contains("nodeId")) {
+            throw ParseException("Support missing required field 'nodeId'");
+        }
+        
+        core::NodeId nodeId = supportJson["nodeId"].get<core::NodeId>();
+        
+        // Validate node exists
+        if (validNodeIds.find(nodeId) == validNodeIds.end()) {
+            throw ParseException("Support references unknown node ID: " + std::to_string(nodeId));
+        }
+        
+        // Find node and apply support
+        auto nodeIt = std::find_if(dto.nodes.begin(), dto.nodes.end(), [nodeId](const auto& node) {
+            return node.id == nodeId;
+        });
+        
+        if (nodeIt != dto.nodes.end()) {
+            // Parse support type
+            if (supportJson.contains("type")) {
+                nodeIt->support = parseSupportType(supportJson["type"].get<std::string>());
+            }
+            
+            // Alternative: parse from "restrained" array
+            if (supportJson.contains("restrained")) {
+                const auto& restrainedArray = supportJson["restrained"];
+                if (restrainedArray.is_array()) {
+                    bool xRestrained = false;
+                    bool yRestrained = false;
+                    
+                    for (const auto& item : restrainedArray) {
+                        std::string restraint = item.get<std::string>();
+                        if (restraint == "x" || restraint == "X") {
+                            xRestrained = true;
+                        } else if (restraint == "y" || restraint == "Y") {
+                            yRestrained = true;
+                        }
+                    }
+                    
+                    // Determine support type based on restraints
+                    if (xRestrained && yRestrained) {
+                        nodeIt->support = core::SupportType::Pinned;
+                    } else if (yRestrained && !xRestrained) {
+                        nodeIt->support = core::SupportType::RollerX;  // Y constrained, can move in X
+                    } else if (xRestrained && !yRestrained) {
+                        nodeIt->support = core::SupportType::RollerY;  // X constrained, can move in Y
+                    } else {
+                        nodeIt->support = core::SupportType::Free;
+                    }
+                }
+            }
+        }
+    }
+}
+
 void JsonTrussReader::parseLoads(const json& j,
                                  core::interfaces::TrussDTO& dto,
                                  const std::unordered_set<core::NodeId>& validNodeIds) {
@@ -210,6 +326,8 @@ core::SupportType JsonTrussReader::parseSupportType(const std::string& str) {
         return core::SupportType::Pinned;
     if (str == "fixed" || str == "Fixed")
         return core::SupportType::Pinned;  // Fixed maps to Pinned
+    if (str == "roller" || str == "Roller")
+        return core::SupportType::RollerX;  // Generic roller - default to RollerX
 
     // Backward compatibility: Legacy directional pins map to single-DOF rollers
     // pinned_x / PinnedX: X constrained, Y free -> RollerY

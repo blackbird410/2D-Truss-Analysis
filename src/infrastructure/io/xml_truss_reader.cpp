@@ -10,6 +10,7 @@
 
 #include <algorithm>
 #include <sstream>
+#include <unordered_map>
 #include <unordered_set>
 
 namespace truss::infrastructure::io {
@@ -46,6 +47,19 @@ core::interfaces::TrussDTO XmlTrussReader::read(const std::filesystem::path& fil
             parseMetadata(metadata, dto);
         }
 
+        // Parse materials and sections first (these are referenced by members)
+        std::unordered_map<std::string, tinyxml2::XMLElement*> materials;
+        tinyxml2::XMLElement* materialsElement = root->FirstChildElement("materials");
+        if (materialsElement) {
+            materials = parseMaterials(materialsElement);
+        }
+
+        std::unordered_map<std::string, tinyxml2::XMLElement*> sections;
+        tinyxml2::XMLElement* sectionsElement = root->FirstChildElement("sections");
+        if (sectionsElement) {
+            sections = parseSections(sectionsElement);
+        }
+
         // Nodes (required)
         tinyxml2::XMLElement* nodes = root->FirstChildElement("nodes");
         if (!nodes) {
@@ -56,7 +70,13 @@ core::interfaces::TrussDTO XmlTrussReader::read(const std::filesystem::path& fil
         // Members (optional)
         tinyxml2::XMLElement* members = root->FirstChildElement("members");
         if (members) {
-            parseMembers(members, dto, validNodeIds);
+            parseMembers(members, dto, validNodeIds, materials, sections);
+        }
+
+        // Supports (optional)
+        tinyxml2::XMLElement* supports = root->FirstChildElement("supports");
+        if (supports) {
+            parseSupports(supports, dto, validNodeIds);
         }
 
         // Loads (optional)
@@ -122,7 +142,9 @@ std::unordered_set<core::NodeId> XmlTrussReader::parseNodes(tinyxml2::XMLElement
 
 void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement,
                                   core::interfaces::TrussDTO& dto,
-                                  const std::unordered_set<core::NodeId>& validNodeIds) {
+                                  const std::unordered_set<core::NodeId>& validNodeIds,
+                                  const std::unordered_map<std::string, tinyxml2::XMLElement*>& materials,
+                                  const std::unordered_map<std::string, tinyxml2::XMLElement*>& sections) {
     for (tinyxml2::XMLElement* memberElement = membersElement->FirstChildElement("member");
          memberElement != nullptr;
          memberElement = memberElement->NextSiblingElement("member")) {
@@ -194,6 +216,89 @@ void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement,
     }
 }
 
+std::unordered_map<std::string, tinyxml2::XMLElement*> XmlTrussReader::parseMaterials(
+    tinyxml2::XMLElement* materialsElement) {
+    std::unordered_map<std::string, tinyxml2::XMLElement*> materials;
+
+    for (tinyxml2::XMLElement* materialElement = materialsElement->FirstChildElement("material");
+         materialElement != nullptr;
+         materialElement = materialElement->NextSiblingElement("material")) {
+        const char* id = materialElement->Attribute("id");
+        if (!id) {
+            throw ParseException("Material missing required attribute 'id'");
+        }
+        materials[id] = materialElement;
+    }
+
+    return materials;
+}
+
+std::unordered_map<std::string, tinyxml2::XMLElement*> XmlTrussReader::parseSections(
+    tinyxml2::XMLElement* sectionsElement) {
+    std::unordered_map<std::string, tinyxml2::XMLElement*> sections;
+
+    for (tinyxml2::XMLElement* sectionElement = sectionsElement->FirstChildElement("section");
+         sectionElement != nullptr;
+         sectionElement = sectionElement->NextSiblingElement("section")) {
+        const char* id = sectionElement->Attribute("id");
+        if (!id) {
+            throw ParseException("Section missing required attribute 'id'");
+        }
+        sections[id] = sectionElement;
+    }
+
+    return sections;
+}
+
+void XmlTrussReader::parseSupports(tinyxml2::XMLElement* supportsElement,
+                                   core::interfaces::TrussDTO& dto,
+                                   const std::unordered_set<core::NodeId>& validNodeIds) {
+    for (tinyxml2::XMLElement* supportElement = supportsElement->FirstChildElement("support");
+         supportElement != nullptr;
+         supportElement = supportElement->NextSiblingElement("support")) {
+        core::NodeId nodeId = getIntAttribute(supportElement, "nodeId");
+
+        // Validate node exists
+        if (validNodeIds.find(nodeId) == validNodeIds.end()) {
+            throw ParseException("Support references unknown node ID: " + std::to_string(nodeId));
+        }
+
+        // Find node and apply support
+        auto nodeIt = std::find_if(dto.nodes.begin(), dto.nodes.end(), [nodeId](const auto& node) {
+            return node.id == nodeId;
+        });
+
+        if (nodeIt != dto.nodes.end()) {
+            // Parse support type
+            const char* typeStr = supportElement->Attribute("type");
+            if (typeStr) {
+                nodeIt->support = parseSupportType(typeStr);
+            }
+
+            // Alternative: parse from restrained attribute (space-separated)
+            const char* restrainedStr = supportElement->Attribute("restrained");
+            if (restrainedStr) {
+                std::string restrainedString(restrainedStr);
+                bool xRestrained = restrainedString.find('x') != std::string::npos ||
+                                   restrainedString.find('X') != std::string::npos;
+                bool yRestrained = restrainedString.find('y') != std::string::npos ||
+                                   restrainedString.find('Y') != std::string::npos;
+
+                // Determine support type based on restraints
+                if (xRestrained && yRestrained) {
+                    nodeIt->support = core::SupportType::Pinned;
+                } else if (yRestrained && !xRestrained) {
+                    nodeIt->support = core::SupportType::RollerX;  // Y constrained, can move in X
+                } else if (xRestrained && !yRestrained) {
+                    nodeIt->support = core::SupportType::RollerY;  // X constrained, can move in Y
+                } else {
+                    nodeIt->support = core::SupportType::Free;
+                }
+            }
+        }
+    }
+}
+
 core::SupportType XmlTrussReader::parseSupportType(const std::string& str) {
     if (str == "free" || str == "Free")
         return core::SupportType::Free;
@@ -201,6 +306,8 @@ core::SupportType XmlTrussReader::parseSupportType(const std::string& str) {
         return core::SupportType::Pinned;
     if (str == "fixed" || str == "Fixed")
         return core::SupportType::Pinned;  // Fixed maps to Pinned
+    if (str == "roller" || str == "Roller")
+        return core::SupportType::RollerX;  // Generic roller - default to RollerX
 
     // Backward compatibility: Legacy directional pins were one-DOF supports.
     // Map them to rollers to preserve original behavior (same as JSON mapping).
