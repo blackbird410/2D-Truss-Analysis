@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- Simple Triangular Truss Example -->
+<truss>
+  <metadata name="Simple Triangular Truss" description="Basic three-node triangular truss for learning"/>
+  
+  <!-- Material Library -->
+  <materials>
+    <material id="steel" 
+              youngModulus="2.0e11" 
+              poissonRatio="0.3"
+              density="7850"/>
+  </materials>
+  
+  <!-- Section Library -->
+  <sections>
+    <section id="tube_50x50" 
+             name="50x50mm Tube"
+             crossSectionalArea="0.000954"/>
+  </sections>
+  
+  <!-- Node Definitions -->
+  <nodes>
+    <node id="1" x="0.0" y="0.0" label="Base Left"/>
+    <node id="2" x="2.0" y="0.0" label="Base Right"/>
+    <node id="3" x="1.0" y="1.732" label="Apex"/>
+  </nodes>
+  
+  <!-- Member Definitions with Material/Section References -->
+  <members>
+    <member id="1" startNode="1" endNode="2" material="steel" section="tube_50x50" label="Base"/>
+    <member id="2" startNode="1" endNode="3" material="steel" section="tube_50x50" label="Left Leg"/>
+    <member id="3" startNode="2" endNode="3" material="steel" section="tube_50x50" label="Right Leg"/>
+  </members>
+  
+  <!-- Support Definitions -->
+  <supports>
+    <support nodeId="1" type="pinned" restrained="x y"/>
+    <support nodeId="2" type="roller" restrained="y"/>
+  </supports>
+  
+  <!-- Load Definitions -->
+  <loads>
+    <load nodeId="3" fx="0.0" fy="-10000.0" label="Vertical Load"/>
+  </loads>
+</truss>

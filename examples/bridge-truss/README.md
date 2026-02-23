@@ -29,19 +29,31 @@ A realistic two-span Warren truss bridge structure demonstrating:
 - **Bottom chord nodes (3, 7):** 40 kN downward
 - **Total load:** 200 kN
 
-## Model File
+## Model Files
 
-See `model.json` for the complete truss definition.
+This example is provided in two formats:
+
+- **JSON:** `model.json` - Human-readable JSON format with material/section library references
+- **XML:** `model.xml` - Structured XML format with the same data model
+
+Both formats are fully compatible and produce identical analysis results.
 
 ## How to Run
 
 ```bash
-# Command line analysis with CSV export
+# Command line analysis with JSON (CSV export)
 ./build/TrussAnalysisCLI analyze --file examples/bridge-truss/model.json -o data/bridge-truss-results.csv --format csv
+
+# Command line analysis with XML (CSV export)
+./build/TrussAnalysisCLI analyze --file examples/bridge-truss/model.xml -o data/bridge-truss-results.csv --format csv
+
+# Validate the model
+./build/TrussAnalysisCLI validate --file examples/bridge-truss/model.json
+./build/TrussAnalysisCLI validate --file examples/bridge-truss/model.xml
 
 # GUI mode
 ./build/TrussAnalysisGUI
-# Then: File > Open > examples/bridge-truss/model.json
+# Then: File > Open > examples/bridge-truss/model.json (or model.xml)
 ```
 
 ## Expected Results

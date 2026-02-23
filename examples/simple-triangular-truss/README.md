@@ -21,19 +21,31 @@ The fundamental building block of truss analysis: a single equilateral triangle.
 
 - **Node 3 (apex):** 5 kN downward vertical load
 
-## Model File
+## Model Files
 
-See `model.json` for the complete truss definition.
+This example is provided in two formats:
+
+- **JSON:** `model.json` - Human-readable JSON format with material/section library references
+- **XML:** `model.xml` - Structured XML format with the same data model
+
+Both formats are fully compatible and produce identical analysis results.
 
 ## How to Run
 
 ```bash
-# Command line analysis with CSV export
+# Command line analysis with JSON (CSV export)
 ./build/TrussAnalysisCLI analyze --file examples/simple-triangular-truss/model.json -o data/simple-truss-results.csv --format csv
+
+# Command line analysis with XML (CSV export)
+./build/TrussAnalysisCLI analyze --file examples/simple-triangular-truss/model.xml -o data/simple-truss-results.csv --format csv
+
+# Validate the model
+./build/TrussAnalysisCLI validate --file examples/simple-triangular-truss/model.json
+./build/TrussAnalysisCLI validate --file examples/simple-triangular-truss/model.xml
 
 # GUI mode
 ./build/TrussAnalysisGUI
-# Then: File > Open > examples/simple-triangular-truss/model.json
+# Then: File > Open > examples/simple-triangular-truss/model.json (or model.xml)
 ```
 
 ## Expected Results
