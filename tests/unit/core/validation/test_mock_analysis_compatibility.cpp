@@ -8,8 +8,8 @@
 #include "gui/controllers/analysis_controller.hpp"
 #include "gui/presenters/analysis_results_presenter.hpp"
 #include "gui/presenters/validation_presenter.hpp"
-#include "mocks/MockAnalysisApplicationService.hpp"
-#include "mocks/MockTrussApplicationService.hpp"
+#include "mocks/mock_analysis_application_service.hpp"
+#include "mocks/mock_truss_application_service.hpp"
 
 #include <gtest/gtest.h>
 #include <memory>
