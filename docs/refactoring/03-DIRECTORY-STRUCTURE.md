@@ -130,17 +130,44 @@
 │   │   │   ├── member_input_widget.cpp
 │   │   │   ├── load_input_widget.hpp
 │   │   │   ├── load_input_widget.cpp
-│   │   │   ├── drawing_widget.hpp
-│   │   │   ├── drawing_widget.cpp
+│   │   │   ├── data_table_widget.hpp
+│   │   │   ├── data_table_widget.cpp
+│   │   │   ├── interactive_drawing_widget.hpp
+│   │   │   ├── interactive_drawing_widget.cpp
+│   │   │   ├── deformed_truss_widget.hpp
+│   │   │   ├── deformed_truss_widget.cpp
 │   │   │   ├── results_widget.hpp
 │   │   │   ├── results_widget.cpp
 │   │   │   ├── plot_widget.hpp
 │   │   │   └── plot_widget.cpp
-│   │   └── project_manager/          # Project file management
+│   │   ├── presenters/               # View presenters (MVP pattern)
+│   │   │   ├── analysis_results_presenter.hpp
+│   │   │   ├── analysis_results_presenter.cpp
+│   │   │   ├── truss_data_presenter.hpp
+│   │   │   ├── truss_data_presenter.cpp
+│   │   │   ├── validation_presenter.hpp
+│   │   │   └── validation_presenter.cpp
+│   │   ├── controllers/              # GUI controllers
+│   │   │   ├── truss_edit_controller.hpp
+│   │   │   ├── truss_edit_controller.cpp
+│   │   │   ├── analysis_controller.hpp
+│   │   │   ├── analysis_controller.cpp
+│   │   │   ├── project_controller.hpp
+│   │   │   └── project_controller.cpp
+│   │   └── project_manager/          # Project file management (future)
 │   │       ├── project_manager.hpp
 │   │       └── project_manager.cpp
 │   │
-│   ├── interface/                    # Application facade layer
+│   ├── application/                  # Application service layer (facade)
+│   │   ├── truss_application_service.hpp
+│   │   ├── truss_application_service.cpp
+│   │   ├── analysis_application_service.hpp
+│   │   ├── analysis_application_service.cpp
+│   │   ├── material_library_service.hpp
+│   │   ├── material_library_service.cpp
+│   │   └── truss_edit_dtos.hpp       # Data transfer objects
+│   │
+│   ├── interface/                    # Application facade layer (legacy - to be merged with application/)
 │   │   ├── truss_analysis_facade.hpp
 │   │   ├── truss_analysis_facade.cpp
 │   │   ├── truss_builder.hpp
@@ -154,12 +181,23 @@
 │   │   │   ├── node.cpp
 │   │   │   ├── member.hpp
 │   │   │   ├── member.cpp
+│   │   │   ├── load.hpp
+│   │   │   ├── load.cpp
 │   │   │   ├── truss.hpp
 │   │   │   ├── truss.cpp
-│   │   │   ├── material.hpp
+│   │   │   ├── material.hpp          # Future implementation
 │   │   │   ├── material.cpp
-│   │   │   ├── section.hpp
+│   │   │   ├── section.hpp           # Future implementation
 │   │   │   └── section.cpp
+│   │   │
+│   │   ├── interfaces/               # Port interfaces (hexagonal architecture)
+│   │   │   ├── itruss_view.hpp       # View interface for truss presentation
+│   │   │   ├── ianalysis_results_view.hpp
+│   │   │   └── truss_dto.hpp         # Data transfer object
+│   │   │
+│   │   ├── assembly/                 # Object assembly from DTOs
+│   │   │   ├── truss_assembler.hpp
+│   │   │   └── truss_assembler.cpp
 │   │   │
 │   │   ├── analysis/                 # Analysis services
 │   │   │   ├── analysis_orchestrator.hpp
@@ -219,6 +257,10 @@
 │   │   │   ├── file_sink.cpp
 │   │   │   ├── syslog_sink.hpp
 │   │   │   └── syslog_sink.cpp
+│   │   │
+│   │   ├── adapters/                 # Infrastructure adapters (hexagonal)
+│   │   │   ├── console_output_adapter.hpp
+│   │   │   └── console_output_adapter.cpp
 │   │   │
 │   │   └── config/                   # Configuration management
 │   │       ├── config_manager.hpp
