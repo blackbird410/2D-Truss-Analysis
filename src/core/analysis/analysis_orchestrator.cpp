@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "AnalysisOrchestrator.hpp"
+#include "analysis_orchestrator.hpp"
 
 #include <Eigen/Eigenvalues>
 

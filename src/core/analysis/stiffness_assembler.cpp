@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "StiffnessAssembler.hpp"
+#include "stiffness_assembler.hpp"
 
 namespace truss::core::analysis {
 

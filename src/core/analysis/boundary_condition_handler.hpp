@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "../model/Truss.hpp"
-#include "../model/Types.hpp"
+#include "../model/truss.hpp"
+#include "../model/types.hpp"
 
 #include <Eigen/Dense>
 

@@ -7,9 +7,9 @@
 
 #pragma once
 
-#include "DirectSolver.hpp"
-#include "ILinearSolver.hpp"
-#include "IterativeSolver.hpp"
+#include "direct_solver.hpp"
+#include "ilinear_solver.hpp"
+#include "iterative_solver.hpp"
 
 #include <memory>
 

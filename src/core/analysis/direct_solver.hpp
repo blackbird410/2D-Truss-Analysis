@@ -7,7 +7,7 @@
 
 #pragma once
 
-#include "ILinearSolver.hpp"
+#include "ilinear_solver.hpp"
 
 namespace truss::core::analysis {
 

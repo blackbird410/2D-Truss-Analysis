@@ -11,9 +11,9 @@
 
 #pragma once
 
-#include "../model/Member.hpp"
-#include "../model/Truss.hpp"
-#include "../model/Types.hpp"
+#include "../model/member.hpp"
+#include "../model/truss.hpp"
+#include "../model/types.hpp"
 
 #include <Eigen/Dense>
 

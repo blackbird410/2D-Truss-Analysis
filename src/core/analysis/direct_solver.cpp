@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "DirectSolver.hpp"
+#include "direct_solver.hpp"
 
 #include <Eigen/Cholesky>
 #include <Eigen/LU>

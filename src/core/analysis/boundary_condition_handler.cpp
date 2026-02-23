@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "BoundaryConditionHandler.hpp"
+#include "boundary_condition_handler.hpp"
 
 #include <algorithm>
 

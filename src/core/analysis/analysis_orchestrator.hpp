@@ -7,13 +7,13 @@
 
 #pragma once
 
-#include "../interfaces/IAnalysisResultsView.hpp"
-#include "../model/Truss.hpp"
-#include "../model/Types.hpp"
-#include "../validation/TrussValidator.hpp"
-#include "BoundaryConditionHandler.hpp"
-#include "ILinearSolver.hpp"
-#include "StiffnessAssembler.hpp"
+#include "../interfaces/ianalysis_results_view.hpp"
+#include "../model/truss.hpp"
+#include "../model/types.hpp"
+#include "../validation/truss_validator.hpp"
+#include "boundary_condition_handler.hpp"
+#include "ilinear_solver.hpp"
+#include "stiffness_assembler.hpp"
 
 #include <memory>
 #include <vector>

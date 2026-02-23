@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "SolverFactory.hpp"
+#include "solver_factory.hpp"
 
 namespace truss::core::analysis {
 
