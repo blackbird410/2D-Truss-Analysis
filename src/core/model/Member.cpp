@@ -4,7 +4,7 @@
  * @version 3.0.0
  */
 
-#include "Member.hpp"
+#include "member.hpp"
 
 #include <cmath>
 #include <limits>

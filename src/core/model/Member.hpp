@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "Node.hpp"
-#include "Types.hpp"
+#include "node.hpp"
+#include "types.hpp"
 
 #include <memory>
 #include <string>

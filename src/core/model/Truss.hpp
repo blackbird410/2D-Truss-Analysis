@@ -7,10 +7,10 @@
 
 #pragma once
 
-#include "../interfaces/ITrussView.hpp"
-#include "Member.hpp"
-#include "Node.hpp"
-#include "Types.hpp"
+#include "../interfaces/itruss_view.hpp"
+#include "member.hpp"
+#include "node.hpp"
+#include "types.hpp"
 
 #include <memory>
 #include <string>
