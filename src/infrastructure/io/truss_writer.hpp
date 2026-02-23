@@ -8,7 +8,7 @@
 
 #pragma once
 
-#include "../../core/interfaces/TrussDTO.hpp"
+#include "../../core/interfaces/truss_dto.hpp"
 #include "io_types.hpp"
 
 #include <filesystem>

@@ -8,8 +8,8 @@
 
 #pragma once
 
-#include "../../core/interfaces/IAnalysisResultsView.hpp"
-#include "../../core/interfaces/ITrussView.hpp"
+#include "../../core/interfaces/ianalysis_results_view.hpp"
+#include "../../core/interfaces/itruss_view.hpp"
 #include "export_types.hpp"
 
 #include <filesystem>

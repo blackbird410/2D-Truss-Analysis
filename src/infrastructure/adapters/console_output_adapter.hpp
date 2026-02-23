@@ -21,7 +21,7 @@
 
 #pragma once
 
-#include "../../application/interfaces/IApplicationOutput.hpp"
+#include "../../application/interfaces/iapplication_output.hpp"
 #include "../logging/logger.hpp"
 
 #include <string>

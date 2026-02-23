@@ -3,7 +3,7 @@
  * @brief Implementation of console output adapter
  */
 
-#include "ConsoleOutputAdapter.hpp"
+#include "console_output_adapter.hpp"
 
 #include <string>
 
