@@ -71,8 +71,8 @@ echo ""
 echo -e "${YELLOW}Capturing coverage data...${NC}"
 cd ..
 lcov --capture --directory "$BUILD_DIR" --output-file "$COVERAGE_DIR/coverage.info" \
-     --rc lcov_branch_coverage=1 \
-     --ignore-errors format,inconsistent --quiet
+     --rc branch_coverage=1 \
+     --ignore-errors format,inconsistent,mismatch --quiet
 
 # Filter out system headers and test files
 lcov --remove "$COVERAGE_DIR/coverage.info" \
@@ -83,7 +83,7 @@ lcov --remove "$COVERAGE_DIR/coverage.info" \
      '*/include/gmock/*' \
      '*/include/eigen3/*' \
      --output-file "$COVERAGE_DIR/coverage_filtered.info" \
-     --rc lcov_branch_coverage=1 --ignore-errors format,inconsistent,unused --quiet
+     --rc branch_coverage=1 --ignore-errors format,inconsistent,unused,mismatch --quiet
 
 echo -e "${GREEN}✓ Coverage data captured${NC}"
 echo ""
@@ -97,7 +97,7 @@ genhtml "$COVERAGE_DIR/coverage_filtered.info" \
         --show-details \
         --branch-coverage \
         --rc derive_function_end_line=1 \
-        --ignore-errors inconsistent,category \
+        --ignore-errors inconsistent,category,mismatch \
         --quiet
 
 echo -e "${GREEN}✓ HTML report generated${NC}"
@@ -106,7 +106,7 @@ echo ""
 # Generate text summary
 echo -e "${YELLOW}Generating coverage summary...${NC}"
 lcov --summary "$COVERAGE_DIR/coverage_filtered.info" \
-     --rc lcov_branch_coverage=1 --ignore-errors format,inconsistent > "$COVERAGE_DIR/summary.txt" 2>&1
+     --rc branch_coverage=1 --ignore-errors format,inconsistent,mismatch > "$COVERAGE_DIR/summary.txt" 2>&1
 
 # Extract key metrics
 LINE_COVERAGE=$(grep "lines" "$COVERAGE_DIR/summary.txt" | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\)%.*/\1/')
