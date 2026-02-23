@@ -23,7 +23,7 @@
  * Target Coverage: >95%
  */
 
-#include "../../../src/application/TrussApplicationService.hpp"
+#include "../../../src/application/truss_application_service.hpp"
 
 #include <filesystem>
 #include <fstream>

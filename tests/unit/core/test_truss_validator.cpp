@@ -5,10 +5,10 @@
  * @version 3.0.0
  */
 
-#include "../../src/core/model/Member.hpp"
-#include "../../src/core/model/Node.hpp"
-#include "../../src/core/model/Truss.hpp"
-#include "../../src/core/validation/TrussValidator.hpp"
+#include "../../src/core/model/member.hpp"
+#include "../../src/core/model/node.hpp"
+#include "../../src/core/model/truss.hpp"
+#include "../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 

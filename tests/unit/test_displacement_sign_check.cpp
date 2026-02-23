@@ -6,13 +6,13 @@
  * in the analysis results, ruling out computation errors.
  */
 
-#include "../../src/core/analysis/AnalysisOrchestrator.hpp"
-#include "../../src/core/analysis/BoundaryConditionHandler.hpp"
-#include "../../src/core/analysis/SolverFactory.hpp"
-#include "../../src/core/model/Member.hpp"
-#include "../../src/core/model/Node.hpp"
-#include "../../src/core/model/Truss.hpp"
-#include "../../src/core/validation/TrussValidator.hpp"
+#include "../../src/core/analysis/analysis_orchestrator.hpp"
+#include "../../src/core/analysis/boundary_condition_handler.hpp"
+#include "../../src/core/analysis/solver_factory.hpp"
+#include "../../src/core/model/member.hpp"
+#include "../../src/core/model/node.hpp"
+#include "../../src/core/model/truss.hpp"
+#include "../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 

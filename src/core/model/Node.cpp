@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "Node.hpp"
+#include "node.hpp"
 
 #include <cmath>
 

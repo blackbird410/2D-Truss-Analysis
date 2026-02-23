@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "Truss.hpp"
+#include "truss.hpp"
 
 #include <algorithm>
 #include <iterator>

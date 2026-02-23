@@ -11,8 +11,8 @@
  * - Removed manual test registration (GTest auto-discovers tests)
  */
 
-#include "../../src/core/model/Truss.hpp"
-#include "../../src/core/validation/TrussValidator.hpp"
+#include "../../src/core/model/truss.hpp"
+#include "../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 

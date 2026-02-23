@@ -5,7 +5,7 @@
  * Tests all parsing logic, edge cases, and control flow branches
  */
 
-#include "../../../src/cli/ArgumentParser.hpp"
+#include "../../../src/cli/argument_parser.hpp"
 
 #include <cstring>
 #include <gtest/gtest.h>

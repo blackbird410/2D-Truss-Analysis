@@ -6,8 +6,8 @@
  * @date 2026-02-13
  */
 
-#include "core/assembly/TrussAssembler.hpp"
-#include "core/model/Truss.hpp"
+#include "core/assembly/truss_assembler.hpp"
+#include "core/model/truss.hpp"
 #include "infrastructure/io/fileio_factory.hpp"
 #include "infrastructure/io/json_truss_reader.hpp"
 #include "infrastructure/io/json_truss_writer.hpp"

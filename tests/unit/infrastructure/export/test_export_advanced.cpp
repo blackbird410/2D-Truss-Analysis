@@ -5,9 +5,9 @@
  * @date 2026-02-21
  */
 
-#include "core/analysis/AnalysisOrchestrator.hpp"
-#include "core/analysis/SolverFactory.hpp"
-#include "core/model/Truss.hpp"
+#include "core/analysis/analysis_orchestrator.hpp"
+#include "core/analysis/solver_factory.hpp"
+#include "core/model/truss.hpp"
 #include "infrastructure/export/csv_exporter.hpp"
 #include "infrastructure/export/exporter_factory.hpp"
 #include "infrastructure/export/json_exporter.hpp"

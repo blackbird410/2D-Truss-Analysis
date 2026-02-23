@@ -5,9 +5,9 @@
  * @version 3.0.0
  */
 
-#include "core/analysis/AnalysisOrchestrator.hpp"
-#include "core/analysis/SolverFactory.hpp"
-#include "core/model/Truss.hpp"
+#include "core/analysis/analysis_orchestrator.hpp"
+#include "core/analysis/solver_factory.hpp"
+#include "core/model/truss.hpp"
 #include "infrastructure/export/csv_exporter.hpp"
 
 #include <filesystem>

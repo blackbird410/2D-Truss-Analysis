@@ -9,17 +9,17 @@
  * Provides comprehensive structural analysis capabilities for civil engineers.
  */
 
-#include "application/AnalysisApplicationService.hpp"
-#include "application/TrussApplicationService.hpp"
-#include "core/Application.hpp"
-#include "database/DatabaseManager.hpp"
-#include "gui/MainWindow.hpp"
-#include "gui/controllers/AnalysisController.hpp"
-#include "gui/controllers/ProjectController.hpp"
-#include "gui/controllers/TrussEditController.hpp"
-#include "gui/presenters/AnalysisResultsPresenter.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
-#include "gui/presenters/ValidationPresenter.hpp"
+#include "application/analysis_application_service.hpp"
+#include "application/truss_application_service.hpp"
+#include "core/application.hpp"
+#include "database/database_manager.hpp"
+#include "gui/main_window.hpp"
+#include "gui/controllers/analysis_controller.hpp"
+#include "gui/controllers/project_controller.hpp"
+#include "gui/controllers/truss_edit_controller.hpp"
+#include "gui/presenters/analysis_results_presenter.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
+#include "gui/presenters/validation_presenter.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
 
 #include <QApplication>

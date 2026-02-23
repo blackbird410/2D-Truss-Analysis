@@ -16,9 +16,9 @@
  * - Empty command list handled gracefully
  */
 
-#include "../../../src/application/interfaces/IApplicationOutput.hpp"
-#include "../../../src/cli/commands/HelpCommand.hpp"
-#include "../../../src/cli/presenters/ConsolePresenter.hpp"
+#include "../../../src/application/interfaces/iapplication_output.hpp"
+#include "../../../src/cli/commands/help_command.hpp"
+#include "../../../src/cli/presenters/console_presenter.hpp"
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>

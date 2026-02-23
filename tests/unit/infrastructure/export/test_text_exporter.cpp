@@ -8,9 +8,9 @@
  * Text exporter MUST emit semantically equivalent data to CSV, JSON, XML, HTML, LaTeX.
  */
 
-#include "core/analysis/AnalysisOrchestrator.hpp"
-#include "core/analysis/SolverFactory.hpp"
-#include "core/model/Truss.hpp"
+#include "core/analysis/analysis_orchestrator.hpp"
+#include "core/analysis/solver_factory.hpp"
+#include "core/model/truss.hpp"
 #include "infrastructure/export/text_exporter.hpp"
 
 #include <filesystem>

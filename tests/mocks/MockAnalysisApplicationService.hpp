@@ -20,10 +20,10 @@
 
 #pragma once
 
-#include "application/Result.hpp"
-#include "application/interfaces/IAnalysisService.hpp"
-#include "core/interfaces/IAnalysisResultsView.hpp"
-#include "core/model/Truss.hpp"
+#include "application/result.hpp"
+#include "application/interfaces/ianalysis_service.hpp"
+#include "core/interfaces/ianalysis_results_view.hpp"
+#include "core/model/truss.hpp"
 #include "infrastructure/export/exporter_factory.hpp"
 
 #include <gmock/gmock.h>

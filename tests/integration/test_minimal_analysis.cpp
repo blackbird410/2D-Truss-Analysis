@@ -11,9 +11,9 @@
  * - Tests absolute minimal successful analysis workflow
  */
 
-#include "../../src/core/analysis/AnalysisOrchestrator.hpp"
-#include "../../src/core/analysis/DirectSolver.hpp"
-#include "../../src/core/model/Truss.hpp"
+#include "../../src/core/analysis/analysis_orchestrator.hpp"
+#include "../../src/core/analysis/direct_solver.hpp"
+#include "../../src/core/model/truss.hpp"
 
 #include <gtest/gtest.h>
 

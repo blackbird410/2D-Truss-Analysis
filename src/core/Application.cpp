@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "Application.hpp"
+#include "application.hpp"
 
 #include <stdexcept>
 

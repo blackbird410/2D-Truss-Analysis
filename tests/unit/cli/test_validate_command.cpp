@@ -17,9 +17,9 @@
  * Target: 80%+ line coverage with focused test scenarios
  */
 
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/cli/commands/ValidateCommand.hpp"
-#include "../../../src/cli/presenters/ConsolePresenter.hpp"
+#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/cli/commands/validate_command.hpp"
+#include "../../../src/cli/presenters/console_presenter.hpp"
 
 #include <filesystem>
 #include <fstream>
