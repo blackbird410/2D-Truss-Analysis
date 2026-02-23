@@ -5,8 +5,8 @@
 
 #include "member_input_widget.hpp"
 
+#include "../controllers/truss_edit_controller.hpp"
 #include "application/truss_edit_dtos.hpp"
-#include "controllers/truss_edit_controller.hpp"
 
 #include <QtGui/QDoubleValidator>
 #include <QtWidgets/QFormLayout>

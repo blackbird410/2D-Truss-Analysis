@@ -24,9 +24,9 @@
 #include "../core/model/truss.hpp"
 #include "../core/validation/truss_validator.hpp"
 #include "../infrastructure/io/fileio_factory.hpp"
+#include "interfaces/itruss_service.hpp"
 #include "result.hpp"
 #include "truss_edit_dtos.hpp"
-#include "interfaces/itruss_service.hpp"
 
 #include <filesystem>
 #include <memory>

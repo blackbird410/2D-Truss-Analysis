@@ -3,13 +3,13 @@
  * @brief Main entry point for the 2D Truss Analysis GUI application
  */
 
-#include "main_window.hpp"
 #include "application/analysis_application_service.hpp"
 #include "application/truss_application_service.hpp"
 #include "controllers/analysis_controller.hpp"
 #include "controllers/project_controller.hpp"
 #include "controllers/truss_edit_controller.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
+#include "main_window.hpp"
 #include "presenters/analysis_results_presenter.hpp"
 #include "presenters/truss_data_presenter.hpp"
 #include "presenters/validation_presenter.hpp"

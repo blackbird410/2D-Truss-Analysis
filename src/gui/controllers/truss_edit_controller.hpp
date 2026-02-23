@@ -19,8 +19,8 @@
 
 #pragma once
 
-#include "application/truss_edit_dtos.hpp"
 #include "application/interfaces/itruss_service.hpp"
+#include "application/truss_edit_dtos.hpp"
 #include "core/model/types.hpp"
 #include "gui/presenters/truss_data_presenter.hpp"
 

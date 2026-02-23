@@ -237,11 +237,11 @@ void JsonTrussReader::parseMembers(const json& j,
 
 std::unordered_map<std::string, json> JsonTrussReader::parseMaterials(const json& j) {
     std::unordered_map<std::string, json> materials;
-    
+
     if (!j.is_array()) {
         throw ParseException("'materials' must be an array");
     }
-    
+
     for (const auto& matJson : j) {
         if (!matJson.contains("id")) {
             throw ParseException("Material missing required field 'id'");
@@ -249,17 +249,17 @@ std::unordered_map<std::string, json> JsonTrussReader::parseMaterials(const json
         std::string id = matJson["id"].get<std::string>();
         materials[id] = matJson;
     }
-    
+
     return materials;
 }
 
 std::unordered_map<std::string, json> JsonTrussReader::parseSections(const json& j) {
     std::unordered_map<std::string, json> sections;
-    
+
     if (!j.is_array()) {
         throw ParseException("'sections' must be an array");
     }
-    
+
     for (const auto& secJson : j) {
         if (!secJson.contains("id")) {
             throw ParseException("Section missing required field 'id'");
@@ -267,7 +267,7 @@ std::unordered_map<std::string, json> JsonTrussReader::parseSections(const json&
         std::string id = secJson["id"].get<std::string>();
         sections[id] = secJson;
     }
-    
+
     return sections;
 }
 
@@ -277,37 +277,37 @@ void JsonTrussReader::parseSupports(const json& j,
     if (!j.is_array()) {
         throw ParseException("'supports' must be an array");
     }
-    
+
     for (const auto& supportJson : j) {
         if (!supportJson.contains("nodeId")) {
             throw ParseException("Support missing required field 'nodeId'");
         }
-        
+
         core::NodeId nodeId = supportJson["nodeId"].get<core::NodeId>();
-        
+
         // Validate node exists
         if (validNodeIds.find(nodeId) == validNodeIds.end()) {
             throw ParseException("Support references unknown node ID: " + std::to_string(nodeId));
         }
-        
+
         // Find node and apply support
         auto nodeIt = std::find_if(dto.nodes.begin(), dto.nodes.end(), [nodeId](const auto& node) {
             return node.id == nodeId;
         });
-        
+
         if (nodeIt != dto.nodes.end()) {
             // Parse support type
             if (supportJson.contains("type")) {
                 nodeIt->support = parseSupportType(supportJson["type"].get<std::string>());
             }
-            
+
             // Alternative: parse from "restrained" array
             if (supportJson.contains("restrained")) {
                 const auto& restrainedArray = supportJson["restrained"];
                 if (restrainedArray.is_array()) {
                     bool xRestrained = false;
                     bool yRestrained = false;
-                    
+
                     for (const auto& item : restrainedArray) {
                         std::string restraint = item.get<std::string>();
                         if (restraint == "x" || restraint == "X") {
@@ -316,14 +316,16 @@ void JsonTrussReader::parseSupports(const json& j,
                             yRestrained = true;
                         }
                     }
-                    
+
                     // Determine support type based on restraints
                     if (xRestrained && yRestrained) {
                         nodeIt->support = core::SupportType::Pinned;
                     } else if (yRestrained && !xRestrained) {
-                        nodeIt->support = core::SupportType::RollerX;  // Y constrained, can move in X
+                        nodeIt->support =
+                            core::SupportType::RollerX;  // Y constrained, can move in X
                     } else if (xRestrained && !yRestrained) {
-                        nodeIt->support = core::SupportType::RollerY;  // X constrained, can move in Y
+                        nodeIt->support =
+                            core::SupportType::RollerY;  // X constrained, can move in Y
                     } else {
                         nodeIt->support = core::SupportType::Free;
                     }

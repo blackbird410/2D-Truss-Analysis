@@ -300,17 +300,20 @@ if(BUILD_TESTING)
     
     # Unit tests (core functionality tests)
     add_executable(unit_tests
-        # Domain layer tests
-        tests/unit/core/test_node.cpp
-        tests/unit/core/test_member.cpp
-        tests/unit/core/test_truss.cpp
-        tests/unit/core/test_load.cpp
-        tests/unit/core/test_truss_validator.cpp
-        tests/unit/core/test_validation_advanced.cpp
-        tests/unit/core/test_stiffness_assembler.cpp
-        tests/unit/core/test_boundary_condition_handler.cpp
-        tests/unit/core/test_linear_solvers.cpp
-        tests/unit/core/test_analysis_orchestrator.cpp
+        # Domain layer tests - MODEL
+        tests/unit/core/model/test_node.cpp
+        tests/unit/core/model/test_member.cpp
+        tests/unit/core/model/test_truss.cpp
+        tests/unit/core/model/test_load.cpp
+        # Domain layer tests - VALIDATION
+        tests/unit/core/validation/test_truss_validator.cpp
+        tests/unit/core/validation/test_validation_advanced.cpp
+        # Domain layer tests - ANALYSIS
+        tests/unit/core/analysis/test_stiffness_assembler.cpp
+        tests/unit/core/analysis/test_boundary_condition_handler.cpp
+        tests/unit/core/analysis/test_linear_solvers.cpp
+        tests/unit/core/analysis/test_analysis_orchestrator.cpp
+        # Legacy tests (not yet reorganized)
         tests/unit/test_stiffness_matrix_bug.cpp
         tests/unit/test_displacement_sign_check.cpp
         tests/unit/test_warren_displacement.cpp
@@ -485,22 +488,23 @@ if(BUILD_GUI)
     src/gui/main.cpp
     src/gui/main_window.cpp
     src/gui/main_window.hpp
-    src/gui/node_input_widget.cpp
-    src/gui/node_input_widget.hpp
-    src/gui/member_input_widget.cpp
-    src/gui/member_input_widget.hpp
-    src/gui/load_input_widget.cpp
-    src/gui/load_input_widget.hpp
-    src/gui/data_table_widget.cpp
-    src/gui/data_table_widget.hpp
-    src/gui/results_widget.cpp
-    src/gui/results_widget.hpp
-    src/gui/plot_widget.cpp
-    src/gui/plot_widget.hpp
-    src/gui/interactive_drawing_widget.cpp
-    src/gui/interactive_drawing_widget.hpp
-    src/gui/deformed_truss_widget.cpp
-    src/gui/deformed_truss_widget.hpp
+    # Widgets
+    src/gui/widgets/node_input_widget.cpp
+    src/gui/widgets/node_input_widget.hpp
+    src/gui/widgets/member_input_widget.cpp
+    src/gui/widgets/member_input_widget.hpp
+    src/gui/widgets/load_input_widget.cpp
+    src/gui/widgets/load_input_widget.hpp
+    src/gui/widgets/data_table_widget.cpp
+    src/gui/widgets/data_table_widget.hpp
+    src/gui/widgets/results_widget.cpp
+    src/gui/widgets/results_widget.hpp
+    src/gui/widgets/plot_widget.cpp
+    src/gui/widgets/plot_widget.hpp
+    src/gui/widgets/interactive_drawing_widget.cpp
+    src/gui/widgets/interactive_drawing_widget.hpp
+    src/gui/widgets/deformed_truss_widget.cpp
+    src/gui/widgets/deformed_truss_widget.hpp
     # Phase 3A - Presenters
     src/gui/presenters/analysis_results_presenter.cpp
     src/gui/presenters/truss_data_presenter.cpp

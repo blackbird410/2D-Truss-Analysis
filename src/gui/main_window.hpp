@@ -7,14 +7,6 @@
 
 #pragma once
 
-#include "data_table_widget.hpp"
-#include "deformed_truss_widget.hpp"
-#include "interactive_drawing_widget.hpp"
-#include "load_input_widget.hpp"
-#include "member_input_widget.hpp"
-#include "node_input_widget.hpp"
-#include "plot_widget.hpp"
-#include "results_widget.hpp"
 #include "application/analysis_application_service.hpp"
 #include "application/truss_application_service.hpp"
 #include "gui/controllers/analysis_controller.hpp"
@@ -23,6 +15,14 @@
 #include "gui/presenters/analysis_results_presenter.hpp"
 #include "gui/presenters/truss_data_presenter.hpp"
 #include "gui/presenters/validation_presenter.hpp"
+#include "widgets/data_table_widget.hpp"
+#include "widgets/deformed_truss_widget.hpp"
+#include "widgets/interactive_drawing_widget.hpp"
+#include "widgets/load_input_widget.hpp"
+#include "widgets/member_input_widget.hpp"
+#include "widgets/node_input_widget.hpp"
+#include "widgets/plot_widget.hpp"
+#include "widgets/results_widget.hpp"
 
 #include <QtCore/QTimer>
 #include <QtGui/QAction>

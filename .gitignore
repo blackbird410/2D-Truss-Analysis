@@ -1,6 +1,7 @@
 # C++ build artifacts
 build/
 build_*/
+install/
 *.o
 *.obj
 *.so
@@ -93,6 +94,9 @@ docs/latex/
 *.gcno
 *.gcda
 coverage.info
+coverage_filtered.info
+coverage_html/
+coverage_dashboard/
 coverage/
 
 # Static Analysis
