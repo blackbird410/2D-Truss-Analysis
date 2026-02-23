@@ -26,8 +26,8 @@
 #include "../core/model/truss.hpp"
 #include "../core/validation/truss_validator.hpp"
 #include "../infrastructure/export/exporter_factory.hpp"
-#include "truss_application_service.hpp"  // For Result<T> template
 #include "interfaces/ianalysis_service.hpp"
+#include "truss_application_service.hpp"  // For Result<T> template
 
 #include <filesystem>
 #include <memory>

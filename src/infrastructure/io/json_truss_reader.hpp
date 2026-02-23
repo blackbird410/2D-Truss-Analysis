@@ -84,8 +84,8 @@ private:
      * @param dto The DTO to update with support information
      */
     void parseSupports(const nlohmann::json& j,
-                      core::interfaces::TrussDTO& dto,
-                      const std::unordered_set<core::NodeId>& validNodeIds);
+                       core::interfaces::TrussDTO& dto,
+                       const std::unordered_set<core::NodeId>& validNodeIds);
 
     /**
      * @brief Parse loads section - updates NodeDTO force fields

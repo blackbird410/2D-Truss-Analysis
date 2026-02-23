@@ -59,7 +59,7 @@ Result<TrussHandle> TrussApplicationService::loadTruss(const std::filesystem::pa
         if (!validationResult.isValid()) {
             std::string errorMsg = "Truss loaded but failed validation: " +
                                    validationResult.getSummary();
-            
+
             // Append detailed error messages
             auto errorMessages = validationResult.getErrorMessages();
             if (!errorMessages.empty()) {
@@ -68,7 +68,7 @@ Result<TrussHandle> TrussApplicationService::loadTruss(const std::filesystem::pa
                     errorMsg += "  - " + msg + "\n";
                 }
             }
-            
+
             return Result<TrussHandle>::Failure(errorMsg);
         }
 

@@ -140,11 +140,12 @@ std::unordered_set<core::NodeId> XmlTrussReader::parseNodes(tinyxml2::XMLElement
     return seenNodeIds;
 }
 
-void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement,
-                                  core::interfaces::TrussDTO& dto,
-                                  const std::unordered_set<core::NodeId>& validNodeIds,
-                                  const std::unordered_map<std::string, tinyxml2::XMLElement*>& materials,
-                                  const std::unordered_map<std::string, tinyxml2::XMLElement*>& sections) {
+void XmlTrussReader::parseMembers(
+    tinyxml2::XMLElement* membersElement,
+    core::interfaces::TrussDTO& dto,
+    const std::unordered_set<core::NodeId>& validNodeIds,
+    const std::unordered_map<std::string, tinyxml2::XMLElement*>& materials,
+    const std::unordered_map<std::string, tinyxml2::XMLElement*>& sections) {
     for (tinyxml2::XMLElement* memberElement = membersElement->FirstChildElement("member");
          memberElement != nullptr;
          memberElement = memberElement->NextSiblingElement("member")) {
@@ -180,15 +181,18 @@ void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement,
                 memberDTO.density = getDoubleAttribute(matIt->second, "density", 7850.0);
                 memberDTO.yieldStrength = getDoubleAttribute(matIt->second, "yieldStrength", 250e6);
             } else {
-                throw ParseException("Member references unknown material ID: " + std::string(materialStr));
+                throw ParseException("Member references unknown material ID: " +
+                                     std::string(materialStr));
             }
         } else {
             // Check for inline material element
             tinyxml2::XMLElement* materialElement = memberElement->FirstChildElement("material");
             if (materialElement) {
-                memberDTO.youngModulus = getDoubleAttribute(materialElement, "youngsModulus", 210e9);
+                memberDTO.youngModulus = getDoubleAttribute(
+                    materialElement, "youngsModulus", 210e9);
                 memberDTO.density = getDoubleAttribute(materialElement, "density", 7850.0);
-                memberDTO.yieldStrength = getDoubleAttribute(materialElement, "yieldStrength", 250e6);
+                memberDTO.yieldStrength = getDoubleAttribute(
+                    materialElement, "yieldStrength", 250e6);
             }
         }
 
@@ -203,13 +207,15 @@ void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement,
             if (secIt != sections.end()) {
                 // Try both "crossSectionalArea" and "area" attribute names for compatibility
                 double area = 0.01;
-                tinyxml2::XMLError result = secIt->second->QueryDoubleAttribute("crossSectionalArea", &area);
+                tinyxml2::XMLError result = secIt->second->QueryDoubleAttribute(
+                    "crossSectionalArea", &area);
                 if (result != tinyxml2::XML_SUCCESS) {
                     result = secIt->second->QueryDoubleAttribute("area", &area);
                 }
                 memberDTO.area = area;
             } else {
-                throw ParseException("Member references unknown section ID: " + std::string(sectionStr));
+                throw ParseException("Member references unknown section ID: " +
+                                     std::string(sectionStr));
             }
         } else {
             // Check for inline section element
@@ -249,8 +255,8 @@ void XmlTrussReader::parseLoads(tinyxml2::XMLElement* loadsElement,
     }
 }
 
-std::unordered_map<std::string, tinyxml2::XMLElement*> XmlTrussReader::parseMaterials(
-    tinyxml2::XMLElement* materialsElement) {
+std::unordered_map<std::string, tinyxml2::XMLElement*>
+XmlTrussReader::parseMaterials(tinyxml2::XMLElement* materialsElement) {
     std::unordered_map<std::string, tinyxml2::XMLElement*> materials;
 
     for (tinyxml2::XMLElement* materialElement = materialsElement->FirstChildElement("material");
@@ -266,8 +272,8 @@ std::unordered_map<std::string, tinyxml2::XMLElement*> XmlTrussReader::parseMate
     return materials;
 }
 
-std::unordered_map<std::string, tinyxml2::XMLElement*> XmlTrussReader::parseSections(
-    tinyxml2::XMLElement* sectionsElement) {
+std::unordered_map<std::string, tinyxml2::XMLElement*>
+XmlTrussReader::parseSections(tinyxml2::XMLElement* sectionsElement) {
     std::unordered_map<std::string, tinyxml2::XMLElement*> sections;
 
     for (tinyxml2::XMLElement* sectionElement = sectionsElement->FirstChildElement("section");

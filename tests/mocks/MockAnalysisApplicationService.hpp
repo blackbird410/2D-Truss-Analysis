@@ -20,8 +20,8 @@
 
 #pragma once
 
-#include "application/result.hpp"
 #include "application/interfaces/ianalysis_service.hpp"
+#include "application/result.hpp"
 #include "core/interfaces/ianalysis_results_view.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/exporter_factory.hpp"

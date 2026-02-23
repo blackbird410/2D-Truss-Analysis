@@ -75,11 +75,12 @@ private:
      * @param materials Map of material IDs to their properties
      * @param sections Map of section IDs to their properties
      */
-    static void parseMembers(tinyxml2::XMLElement* membersElement,
-                             core::interfaces::TrussDTO& dto,
-                             const std::unordered_set<core::NodeId>& validNodeIds,
-                             const std::unordered_map<std::string, tinyxml2::XMLElement*>& materials,
-                             const std::unordered_map<std::string, tinyxml2::XMLElement*>& sections);
+    static void
+    parseMembers(tinyxml2::XMLElement* membersElement,
+                 core::interfaces::TrussDTO& dto,
+                 const std::unordered_set<core::NodeId>& validNodeIds,
+                 const std::unordered_map<std::string, tinyxml2::XMLElement*>& materials,
+                 const std::unordered_map<std::string, tinyxml2::XMLElement*>& sections);
 
     /**
      * @brief Parse materials section
