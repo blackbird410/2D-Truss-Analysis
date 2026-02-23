@@ -57,8 +57,19 @@ Result<TrussHandle> TrussApplicationService::loadTruss(const std::filesystem::pa
         // Validate assembled truss
         auto validationResult = m_validator.validate(*truss);
         if (!validationResult.isValid()) {
-            return Result<TrussHandle>::Failure("Truss loaded but failed validation: " +
-                                                validationResult.getSummary());
+            std::string errorMsg = "Truss loaded but failed validation: " +
+                                   validationResult.getSummary();
+            
+            // Append detailed error messages
+            auto errorMessages = validationResult.getErrorMessages();
+            if (!errorMessages.empty()) {
+                errorMsg += "\nErrors:\n";
+                for (const auto& msg : errorMessages) {
+                    errorMsg += "  - " + msg + "\n";
+                }
+            }
+            
+            return Result<TrussHandle>::Failure(errorMsg);
         }
 
         // Store and return handle
