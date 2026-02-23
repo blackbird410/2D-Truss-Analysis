@@ -1,0 +1,14 @@
+# Generated analysis results - not tracked in version control
+# Only the directory structure and README documentation are tracked
+*.csv
+*.json
+*.xml
+*.html
+*.txt
+*.pdf
+*.tex
+*.latex
+
+# But DO track these files for documentation purposes
+!README.md
+!.gitkeep
