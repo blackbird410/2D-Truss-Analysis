@@ -165,25 +165,58 @@ void XmlTrussReader::parseMembers(tinyxml2::XMLElement* membersElement,
                                  std::to_string(memberDTO.endNodeId));
         }
 
-        // Material properties (defaults if not specified)
-        tinyxml2::XMLElement* materialElement = memberElement->FirstChildElement("material");
-        if (materialElement) {
-            memberDTO.youngModulus = getDoubleAttribute(materialElement, "youngsModulus", 210e9);
-            memberDTO.density = getDoubleAttribute(materialElement, "density", 7850.0);
-            memberDTO.yieldStrength = getDoubleAttribute(materialElement, "yieldStrength", 250e6);
+        // Material properties - default values
+        memberDTO.youngModulus = 210e9;   // Default steel
+        memberDTO.density = 7850.0;       // Default steel
+        memberDTO.yieldStrength = 250e6;  // Default steel
+
+        // Check for material specification
+        const char* materialStr = memberElement->Attribute("material");
+        if (materialStr) {
+            // Material specified by ID - look it up
+            auto matIt = materials.find(materialStr);
+            if (matIt != materials.end()) {
+                memberDTO.youngModulus = getDoubleAttribute(matIt->second, "youngModulus", 210e9);
+                memberDTO.density = getDoubleAttribute(matIt->second, "density", 7850.0);
+                memberDTO.yieldStrength = getDoubleAttribute(matIt->second, "yieldStrength", 250e6);
+            } else {
+                throw ParseException("Member references unknown material ID: " + std::string(materialStr));
+            }
         } else {
-            // Use defaults
-            memberDTO.youngModulus = 210e9;
-            memberDTO.density = 7850.0;
-            memberDTO.yieldStrength = 250e6;
+            // Check for inline material element
+            tinyxml2::XMLElement* materialElement = memberElement->FirstChildElement("material");
+            if (materialElement) {
+                memberDTO.youngModulus = getDoubleAttribute(materialElement, "youngsModulus", 210e9);
+                memberDTO.density = getDoubleAttribute(materialElement, "density", 7850.0);
+                memberDTO.yieldStrength = getDoubleAttribute(materialElement, "yieldStrength", 250e6);
+            }
         }
 
-        // Section properties
-        tinyxml2::XMLElement* sectionElement = memberElement->FirstChildElement("section");
-        if (sectionElement) {
-            memberDTO.area = getDoubleAttribute(sectionElement, "area", 0.01);
+        // Section properties - default value
+        memberDTO.area = 0.01;  // Default area
+
+        // Check for section specification
+        const char* sectionStr = memberElement->Attribute("section");
+        if (sectionStr) {
+            // Section specified by ID - look it up
+            auto secIt = sections.find(sectionStr);
+            if (secIt != sections.end()) {
+                // Try both "crossSectionalArea" and "area" attribute names for compatibility
+                double area = 0.01;
+                tinyxml2::XMLError result = secIt->second->QueryDoubleAttribute("crossSectionalArea", &area);
+                if (result != tinyxml2::XML_SUCCESS) {
+                    result = secIt->second->QueryDoubleAttribute("area", &area);
+                }
+                memberDTO.area = area;
+            } else {
+                throw ParseException("Member references unknown section ID: " + std::string(sectionStr));
+            }
         } else {
-            memberDTO.area = 0.01;
+            // Check for inline section element
+            tinyxml2::XMLElement* sectionElement = memberElement->FirstChildElement("section");
+            if (sectionElement) {
+                memberDTO.area = getDoubleAttribute(sectionElement, "area", 0.01);
+            }
         }
 
         dto.members.push_back(memberDTO);
