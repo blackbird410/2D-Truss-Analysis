@@ -12,7 +12,7 @@ BUILD_DIR="${PROJECT_DIR}/build"
 
 # Parse arguments
 BUILD_TYPE="Release"
-PARALLEL_JOBS=$(nproc)
+PARALLEL_JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 CLEAN_BUILD=false
 
 while [[ $# -gt 0 ]]; do
@@ -29,7 +29,13 @@ while [[ $# -gt 0 ]]; do
             CLEAN_BUILD=true
             shift
             ;;
+        -j*)
+            # Handle -j8 format (no space)
+            PARALLEL_JOBS="${1#-j}"
+            shift
+            ;;
         -j|--jobs)
+            # Handle -j 8 format (with space)
             PARALLEL_JOBS="$2"
             shift 2
             ;;
