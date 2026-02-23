@@ -10,6 +10,7 @@ BUILD_DIR="build"
 COVERAGE_DIR="build/coverage"
 REPORT_DIR="docs/testing/coverage-reports"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
+NPROC=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
 # Colors for output
 RED='\033[0;31m'
@@ -48,7 +49,7 @@ cmake .. -DCMAKE_BUILD_TYPE=Debug \
          -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage" \
          -DCMAKE_EXE_LINKER_FLAGS="--coverage"
 make clean
-make -j$(nproc) unit_tests integration_tests
+make -j$NPROC unit_tests integration_tests
 echo -e "${GREEN}✓ Build complete${NC}"
 echo ""
 
@@ -70,17 +71,19 @@ echo ""
 echo -e "${YELLOW}Capturing coverage data...${NC}"
 cd ..
 lcov --capture --directory "$BUILD_DIR" --output-file "$COVERAGE_DIR/coverage.info" \
-     --rc lcov_branch_coverage=1 --quiet
+     --rc branch_coverage=1 \
+     --ignore-errors format,inconsistent,mismatch --quiet
 
 # Filter out system headers and test files
 lcov --remove "$COVERAGE_DIR/coverage.info" \
      '/usr/*' \
      '*/build/*' \
      '*/tests/*' \
-     '*/test_*' \
-     '*_autogen/*' \
+     '*/include/gtest/*' \
+     '*/include/gmock/*' \
+     '*/include/eigen3/*' \
      --output-file "$COVERAGE_DIR/coverage_filtered.info" \
-     --rc lcov_branch_coverage=1 --quiet
+     --rc branch_coverage=1 --ignore-errors format,inconsistent,unused,mismatch --quiet
 
 echo -e "${GREEN}✓ Coverage data captured${NC}"
 echo ""
@@ -93,6 +96,8 @@ genhtml "$COVERAGE_DIR/coverage_filtered.info" \
         --legend \
         --show-details \
         --branch-coverage \
+        --rc derive_function_end_line=1 \
+        --ignore-errors inconsistent,category,mismatch \
         --quiet
 
 echo -e "${GREEN}✓ HTML report generated${NC}"
@@ -101,12 +106,12 @@ echo ""
 # Generate text summary
 echo -e "${YELLOW}Generating coverage summary...${NC}"
 lcov --summary "$COVERAGE_DIR/coverage_filtered.info" \
-     --rc lcov_branch_coverage=1 > "$COVERAGE_DIR/summary.txt" 2>&1
+     --rc branch_coverage=1 --ignore-errors format,inconsistent,mismatch > "$COVERAGE_DIR/summary.txt" 2>&1
 
 # Extract key metrics
-LINE_COVERAGE=$(grep "lines" "$COVERAGE_DIR/summary.txt" | grep -oP '\d+\.\d+(?=%)')
-FUNCTION_COVERAGE=$(grep "functions" "$COVERAGE_DIR/summary.txt" | grep -oP '\d+\.\d+(?=%)')
-BRANCH_COVERAGE=$(grep "branches" "$COVERAGE_DIR/summary.txt" | grep -oP '\d+\.\d+(?=%)')
+LINE_COVERAGE=$(grep "lines" "$COVERAGE_DIR/summary.txt" | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\)%.*/\1/')
+FUNCTION_COVERAGE=$(grep "functions" "$COVERAGE_DIR/summary.txt" | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\)%.*/\1/')
+BRANCH_COVERAGE=$(grep "branches" "$COVERAGE_DIR/summary.txt" | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\)%.*/\1/')
 
 # Create timestamped summary
 cat > "$REPORT_DIR/coverage_${TIMESTAMP}.txt" <<EOF

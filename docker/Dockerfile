@@ -7,7 +7,7 @@
 # =============================================================================
 # Stage 1: Base image with system dependencies
 # =============================================================================
-FROM ubuntu:22.04.3 AS base
+FROM ubuntu:22.04 AS base
 
 # Prevent interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive

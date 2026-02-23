@@ -283,6 +283,8 @@
 │   ├── test_main.cpp                 # Google Test main
 │   │
 │   ├── unit/                         # Unit tests
+│   │   ├── application/              # Application layer tests
+│   │   ├── cli/                      # CLI layer tests
 │   │   ├── core/                     # Core layer tests
 │   │   │   ├── model/
 │   │   │   │   ├── test_node.cpp
@@ -296,8 +298,11 @@
 │   │   │   │   └── test_results_processor.cpp
 │   │   │   └── validation/
 │   │   │       └── test_truss_validator.cpp
-│   │   │
+│   │   ├── gui/                      # GUI layer tests
+│   │   │   ├── controllers/
+│   │   │   └── presenters/
 │   │   ├── infrastructure/           # Infrastructure tests
+│   │   │   ├── adapters/
 │   │   │   ├── io/
 │   │   │   │   ├── test_json_file_reader.cpp
 │   │   │   │   └── test_json_file_writer.cpp
@@ -307,8 +312,7 @@
 │   │   │   │   └── test_html_exporter.cpp
 │   │   │   └── logging/
 │   │   │       └── test_logger.cpp
-│   │   │
-│   │   └── utilities/                # Utility tests
+│   │   └── utilities/                # Utility tests (optional)
 │   │       ├── test_math_utils.cpp
 │   │       └── test_string_utils.cpp
 │   │

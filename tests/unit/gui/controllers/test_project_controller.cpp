@@ -6,7 +6,7 @@
  */
 
 #include "gui/controllers/project_controller.hpp"
-#include "mocks/MockTrussApplicationService.hpp"
+#include "mocks/mock_truss_application_service.hpp"
 
 #include <QSignalSpy>
 

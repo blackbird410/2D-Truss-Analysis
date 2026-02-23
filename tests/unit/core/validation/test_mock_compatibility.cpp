@@ -9,7 +9,7 @@
 
 #include "gui/controllers/truss_edit_controller.hpp"
 #include "gui/presenters/truss_data_presenter.hpp"
-#include "mocks/MockTrussApplicationService.hpp"
+#include "mocks/mock_truss_application_service.hpp"
 
 #include <gtest/gtest.h>
 #include <memory>
