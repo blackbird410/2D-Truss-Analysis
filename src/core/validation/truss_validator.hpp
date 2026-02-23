@@ -11,10 +11,10 @@
 
 #pragma once
 
-#include "../model/Load.hpp"
-#include "../model/Member.hpp"
-#include "../model/Node.hpp"
-#include "../model/Truss.hpp"
+#include "../model/load.hpp"
+#include "../model/member.hpp"
+#include "../model/node.hpp"
+#include "../model/truss.hpp"
 
 #include <memory>
 #include <string>

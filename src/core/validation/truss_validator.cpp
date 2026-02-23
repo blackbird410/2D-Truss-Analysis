@@ -5,7 +5,7 @@
  * @version 3.0.0
  */
 
-#include "TrussValidator.hpp"
+#include "truss_validator.hpp"
 
 #include <algorithm>
 #include <cmath>
