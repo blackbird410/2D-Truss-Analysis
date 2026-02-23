@@ -16,7 +16,7 @@
 
 #pragma once
 
-#include "../core/model/Types.hpp"
+#include "../core/model/types.hpp"
 
 #include <optional>
 #include <string>

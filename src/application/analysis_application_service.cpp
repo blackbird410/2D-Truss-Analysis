@@ -3,9 +3,9 @@
  * @brief Implementation of analysis application service
  */
 
-#include "AnalysisApplicationService.hpp"
+#include "analysis_application_service.hpp"
 
-#include "../core/validation/TrussValidator.hpp"
+#include "../core/validation/truss_validator.hpp"
 
 #include <stdexcept>
 

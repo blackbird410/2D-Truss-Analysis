@@ -19,13 +19,13 @@
 
 #pragma once
 
-#include "../core/assembly/TrussAssembler.hpp"
-#include "../core/interfaces/ITrussView.hpp"
-#include "../core/model/Truss.hpp"
-#include "../core/validation/TrussValidator.hpp"
+#include "../core/assembly/truss_assembler.hpp"
+#include "../core/interfaces/itruss_view.hpp"
+#include "../core/model/truss.hpp"
+#include "../core/validation/truss_validator.hpp"
 #include "../infrastructure/io/fileio_factory.hpp"
-#include "Result.hpp"
-#include "TrussEditDTOs.hpp"
+#include "result.hpp"
+#include "truss_edit_dtos.hpp"
 #include "interfaces/ITrussService.hpp"
 
 #include <filesystem>

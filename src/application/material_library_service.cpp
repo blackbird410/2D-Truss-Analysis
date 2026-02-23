@@ -3,7 +3,7 @@
  * @brief Implementation of material and section library service
  */
 
-#include "MaterialLibraryService.hpp"
+#include "material_library_service.hpp"
 
 #include <stdexcept>
 

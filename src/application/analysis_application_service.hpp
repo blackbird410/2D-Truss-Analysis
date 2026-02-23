@@ -19,14 +19,14 @@
 
 #pragma once
 
-#include "../core/analysis/AnalysisOrchestrator.hpp"
-#include "../core/analysis/DirectSolver.hpp"
-#include "../core/analysis/IterativeSolver.hpp"
-#include "../core/interfaces/IAnalysisResultsView.hpp"
-#include "../core/model/Truss.hpp"
-#include "../core/validation/TrussValidator.hpp"
+#include "../core/analysis/analysis_orchestrator.hpp"
+#include "../core/analysis/direct_solver.hpp"
+#include "../core/analysis/iterative_solver.hpp"
+#include "../core/interfaces/ianalysis_results_view.hpp"
+#include "../core/model/truss.hpp"
+#include "../core/validation/truss_validator.hpp"
 #include "../infrastructure/export/exporter_factory.hpp"
-#include "TrussApplicationService.hpp"  // For Result<T> template
+#include "truss_application_service.hpp"  // For Result<T> template
 #include "interfaces/IAnalysisService.hpp"
 
 #include <filesystem>

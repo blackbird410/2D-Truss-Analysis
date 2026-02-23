@@ -3,7 +3,7 @@
  * @brief Implementation of truss model application service
  */
 
-#include "TrussApplicationService.hpp"
+#include "truss_application_service.hpp"
 
 #include <stdexcept>
 
