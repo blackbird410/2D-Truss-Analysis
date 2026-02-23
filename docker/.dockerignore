@@ -1,0 +1,14 @@
+# Docker build context ignores (docker/)
+.git/
+build/
+build_*/
+install/
+.vscode/
+.idea/
+**/*.o
+**/*.obj
+**/*.dylib
+**/*.so
+**/*.a
+**/*.exe
+**/*.app
