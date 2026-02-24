@@ -21,6 +21,7 @@ namespace truss::infrastructure::io {
  * @brief Reads truss structures from XML format files.
  *
  * Reads truss structures from XML files with the following format:
+ * @code{.xml}
  * <truss>
  *   <metadata name="..." />
  *   <nodes>
@@ -36,6 +37,7 @@ namespace truss::infrastructure::io {
  *     <load nodeId="1" fx="0.0" fy="-1000.0" />
  *   </loads>
  * </truss>
+ * @endcode
  */
 class XmlTrussReader : public ITrussReader {
 public:
@@ -55,6 +57,8 @@ public:
 private:
     /**
      * @brief Parse metadata section
+     * @param element Metadata XML element
+     * @param dto Target DTO to populate with metadata
      */
     static void parseMetadata(tinyxml2::XMLElement* element, core::interfaces::TrussDTO& dto);
 
@@ -118,21 +122,33 @@ private:
 
     /**
      * @brief Parse support type from string
+     * @param str String representation of support type
+     * @return Parsed support type enumeration value
      */
     static core::SupportType parseSupportType(const std::string& str);
 
     /**
      * @brief Get required attribute as double
+     * @param element XML element to read from
+     * @param name Attribute name
+     * @return Attribute value as double
      */
     static core::Real getDoubleAttribute(tinyxml2::XMLElement* element, const char* name);
 
     /**
      * @brief Get required attribute as int
+     * @param element XML element to read from
+     * @param name Attribute name
+     * @return Attribute value as integer
      */
     static int getIntAttribute(tinyxml2::XMLElement* element, const char* name);
 
     /**
      * @brief Get optional attribute as double with default
+     * @param element XML element to read from
+     * @param name Attribute name
+     * @param defaultValue Default value if attribute is missing
+     * @return Attribute value or default
      */
     static core::Real
     getDoubleAttribute(tinyxml2::XMLElement* element, const char* name, core::Real defaultValue);
