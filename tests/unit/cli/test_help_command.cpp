@@ -1,8 +1,9 @@
 /**
  * @file test_help_command.cpp
- * @brief Unit tests for HelpCommand
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for HelpCommand.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Tests verify that HelpCommand correctly uses injected ConsolePresenter
  * to display help information without direct I/O operations.

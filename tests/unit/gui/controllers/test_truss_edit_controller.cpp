@@ -1,8 +1,9 @@
 /**
- * @file test_TrussEditController.cpp
- * @brief Unit tests for TrussEditController
- * @author Civil Engineering Software Solutions
+ * @file test_truss_edit_controller.cpp
+ * @brief Unit tests for TrussEditController.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * These tests verify that TrussEditController correctly orchestrates
  * Application Service calls and Presenter formatting without performing

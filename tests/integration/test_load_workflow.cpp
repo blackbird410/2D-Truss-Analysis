@@ -1,6 +1,9 @@
 /**
  * @file test_load_workflow.cpp
- * @brief Integration test for complete load workflow
+ * @brief Integration test for complete load workflow.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "application/truss_application_service.hpp"

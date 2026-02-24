@@ -1,8 +1,9 @@
 /**
  * @file test_gui_integration.cpp
- * @brief Qt Test framework integration tests for GUI components
- * @author Civil Engineering Software Solutions
+ * @brief Qt Test framework integration tests for GUI components.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * @details
  * Comprehensive GUI integration tests using Qt Test framework.

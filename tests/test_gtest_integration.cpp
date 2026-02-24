@@ -1,8 +1,9 @@
 /**
  * @file test_gtest_integration.cpp
- * @brief Minimal test to validate Google Test integration
- * @author Civil Engineering Software Solutions
+ * @brief Minimal test to validate Google Test integration.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Purpose: Verify that Google Test framework is properly integrated
  * into the build system before migrating production tests.

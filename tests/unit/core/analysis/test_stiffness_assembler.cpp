@@ -1,8 +1,9 @@
 /**
  * @file test_stiffness_assembler.cpp
- * @brief Google Test unit tests for StiffnessAssembler class
- * @author Civil Engineering Software Solutions
+ * @brief Google Test unit tests for StiffnessAssembler class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Strategy:
  * - Focus on numerical equivalence with AnalysisEngine (CRITICAL)

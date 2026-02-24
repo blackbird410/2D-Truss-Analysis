@@ -1,8 +1,9 @@
 /**
  * @file test_member.cpp
- * @brief Google Test unit tests for Member class
- * @author Civil Engineering Software Solutions
+ * @brief Google Test unit tests for Member class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test

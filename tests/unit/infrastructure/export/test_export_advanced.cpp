@@ -1,8 +1,9 @@
 /**
  * @file test_export_advanced.cpp
- * @brief Advanced tests for export functionality
+ * @brief Advanced tests for export functionality.
  * @version 3.0.0
- * @date 2026-02-21
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "core/analysis/analysis_orchestrator.hpp"

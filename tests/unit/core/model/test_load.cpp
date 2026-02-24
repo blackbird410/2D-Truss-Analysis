@@ -1,8 +1,9 @@
 /**
  * @file test_load.cpp
- * @brief Google Test unit tests for Load class
- * @author Civil Engineering Software Solutions
+ * @brief Google Test unit tests for Load class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "../../src/core/model/load.hpp"

@@ -1,8 +1,9 @@
 /**
  * @file test_working_integration.cpp
- * @brief Google Test integration tests with memory-safe analysis execution
- * @author Civil Engineering Software Solutions
+ * @brief Google Test integration tests with memory-safe analysis execution.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test

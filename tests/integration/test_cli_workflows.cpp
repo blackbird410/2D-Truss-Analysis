@@ -1,8 +1,9 @@
 /**
  * @file test_cli_workflows.cpp
- * @brief Integration tests for CLI workflows with real dependencies
- * @author Civil Engineering Software Solutions
+ * @brief Integration tests for CLI workflows with real dependencies.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Tests verify complete CLI execution paths using real dependencies
  * (not mocks) to validate end-to-end functionality.

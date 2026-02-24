@@ -1,6 +1,9 @@
 /**
  * @file test_warren_displacement.cpp
- * @brief Simple test to verify displacement signs in Warren truss
+ * @brief Simple test to verify displacement signs in Warren truss.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "../../src/core/analysis/analysis_orchestrator.hpp"

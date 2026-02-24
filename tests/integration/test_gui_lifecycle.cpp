@@ -1,8 +1,9 @@
 /**
  * @file test_gui_lifecycle.cpp
- * @brief Integration tests for GUI mutation and load lifecycle
- * @author Civil Engineering Software Solutions
+ * @brief Integration tests for GUI mutation and load lifecycle.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Tests for Phase 1-2 regression investigation:
  * - Add node triggers canvas update

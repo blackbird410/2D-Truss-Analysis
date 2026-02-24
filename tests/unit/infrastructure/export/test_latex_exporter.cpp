@@ -1,8 +1,9 @@
 /**
  * @file test_latex_exporter.cpp
- * @brief Unit tests for LaTeX exporter
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for LaTeX exporter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * CRITICAL: These tests enforce the 8-section export contract.
  * LaTeX exporter MUST emit semantically equivalent data to CSV, JSON, XML, HTML.

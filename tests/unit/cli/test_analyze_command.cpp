@@ -1,8 +1,9 @@
 /**
  * @file test_analyze_command.cpp
- * @brief Comprehensive unit tests for AnalyzeCommand
- * @author Civil Engineering Software Solutions
+ * @brief Comprehensive unit tests for AnalyzeCommand.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Command execution with valid input file

@@ -1,8 +1,9 @@
 /**
  * @file test_export_command.cpp
- * @brief Comprehensive unit tests for ExportCommand
- * @author Civil Engineering Software Solutions
+ * @brief Comprehensive unit tests for ExportCommand.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Command execution with valid files

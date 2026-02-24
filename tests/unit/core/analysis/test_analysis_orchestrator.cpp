@@ -1,8 +1,9 @@
 /**
  * @file test_analysis_orchestrator.cpp
- * @brief Integration tests for AnalysisOrchestrator
- * @author Civil Engineering Software Solutions
+ * @brief Integration tests for AnalysisOrchestrator.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * These tests validate that the AnalysisOrchestrator produces
  * numerically equivalent results to the original AnalysisEngine.

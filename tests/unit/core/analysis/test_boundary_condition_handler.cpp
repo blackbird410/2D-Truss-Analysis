@@ -1,8 +1,9 @@
 /**
  * @file test_boundary_condition_handler.cpp
- * @brief Unit tests for BoundaryConditionHandler class
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for BoundaryConditionHandler class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "../../src/core/analysis/boundary_condition_handler.hpp"

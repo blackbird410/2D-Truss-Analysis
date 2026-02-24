@@ -1,8 +1,9 @@
 /**
  * @file test_console_presenter.cpp
- * @brief Unit tests for ConsolePresenter
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for ConsolePresenter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Tests verify that ConsolePresenter correctly formats output and delegates
  * to IApplicationOutput abstraction without adding redundant prefixes.

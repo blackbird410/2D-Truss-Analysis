@@ -1,8 +1,9 @@
 /**
- * @file test_ProjectController.cpp
- * @brief Unit tests for ProjectController with dependency injection
- * @author Civil Engineering Software Solutions
+ * @file test_project_controller.cpp
+ * @brief Unit tests for ProjectController with dependency injection.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "gui/controllers/project_controller.hpp"

@@ -1,7 +1,9 @@
 /**
  * @file test_mock_compatibility.cpp
- * @brief Type compatibility verification for MockTrussApplicationService
+ * @brief Type compatibility verification for MockTrussApplicationService.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This test verifies that MockTrussApplicationService correctly implements
  * ITrussService and can be used polymorphically with TrussEditController.

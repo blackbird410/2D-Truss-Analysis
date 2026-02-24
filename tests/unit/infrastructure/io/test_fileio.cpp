@@ -1,9 +1,9 @@
 /**
  * @file test_fileio.cpp
- * @brief Google Test unit tests for File I/O services
- * @author Civil Engineering Software Solutions
+ * @brief Google Test unit tests for File I/O services.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "core/assembly/truss_assembler.hpp"
