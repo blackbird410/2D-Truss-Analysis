@@ -1,8 +1,9 @@
 /**
- * @file ITrussService.hpp
- * @brief Abstract interface for truss application services
- * @author Civil Engineering Software Solutions
+ * @file itruss_service.hpp
+ * @brief Abstract interface for truss application services.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This interface defines the contract for truss lifecycle and editing operations,
  * enabling dependency injection and unit testing of GUI controllers.

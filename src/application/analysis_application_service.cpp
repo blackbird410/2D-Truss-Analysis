@@ -1,6 +1,9 @@
 /**
- * @file AnalysisApplicationService.cpp
- * @brief Implementation of analysis application service
+ * @file analysis_application_service.cpp
+ * @brief Implements the analysis application service.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "analysis_application_service.hpp"

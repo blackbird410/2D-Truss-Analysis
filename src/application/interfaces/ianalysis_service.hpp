@@ -1,8 +1,9 @@
 /**
- * @file IAnalysisService.hpp
- * @brief Abstract interface for analysis application services
- * @author Civil Engineering Software Solutions
+ * @file ianalysis_service.hpp
+ * @brief Abstract interface for analysis application services.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This interface defines the contract for structural analysis operations,
  * enabling dependency injection and unit testing of GUI controllers.

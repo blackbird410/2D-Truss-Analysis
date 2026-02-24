@@ -1,8 +1,9 @@
 /**
- * @file MaterialLibraryService.hpp
- * @brief Material and section property library service
- * @author Civil Engineering Software Solutions
+ * @file material_library_service.hpp
+ * @brief Material and section property library service.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Provides centralized management of material and section properties
  * for use in GUI and other interface layers.

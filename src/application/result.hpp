@@ -1,8 +1,9 @@
 /**
- * @file Result.hpp
- * @brief Result type for operations that may fail
- * @author Civil Engineering Software Solutions
+ * @file result.hpp
+ * @brief Result type for operations that may fail.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Provides a simple Result<T> monad for error handling without exceptions.
  *

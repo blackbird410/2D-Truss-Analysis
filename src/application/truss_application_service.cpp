@@ -1,6 +1,9 @@
 /**
- * @file TrussApplicationService.cpp
- * @brief Implementation of truss model application service
+ * @file truss_application_service.cpp
+ * @brief Implements the truss model application service.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "truss_application_service.hpp"
