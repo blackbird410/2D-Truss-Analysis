@@ -6,7 +6,7 @@
   "license": "MIT",
   "dependencies": [
     {
-      "name": "qt6",
+      "name": "qtbase",
       "features": ["widgets"]
     },
     {
@@ -19,11 +19,5 @@
       "name": "tinyxml2"
     }
   ],
-  "builtin-baseline": "6d7bf7ef2193e2d1c5798a5ff8811d533104c861",
-  "overrides": [
-    {
-      "name": "qt6",
-      "version": "6.5.0"
-    }
-  ]
+  "builtin-baseline": "01f602195983451bc83e72f4214af2cbc495aa94"
 }
