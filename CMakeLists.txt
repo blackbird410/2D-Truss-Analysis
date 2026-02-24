@@ -630,6 +630,51 @@ set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 include(CPack)
 
 # ============================================================================
+# Documentation Generation (Doxygen)
+# ============================================================================
+
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+
+if(DOXYGEN_FOUND)
+    # Set project description for Doxyfile
+    set(PROJECT_DESCRIPTION "Professional 2D truss structural analysis software")
+    
+    # Configure Doxyfile with project metadata
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/Doxyfile.in
+        ${CMAKE_BINARY_DIR}/Doxyfile
+        @ONLY
+    )
+    
+    # Add custom target for generating documentation
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+    
+    # Optional: Add install target for documentation
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/docs/api/html
+        DESTINATION share/doc/${PROJECT_NAME}
+        OPTIONAL
+        COMPONENT documentation
+    )
+    
+    message(STATUS "Doxygen found - 'make docs' target available")
+    if(DOXYGEN_DOT_FOUND)
+        message(STATUS "  - Graphviz (dot) found - diagrams enabled")
+    else()
+        message(STATUS "  - Graphviz (dot) not found - diagrams disabled")
+        message(STATUS "    Install graphviz for call graphs and class diagrams")
+    endif()
+    message(STATUS "  Output: ${PROJECT_SOURCE_DIR}/docs/api/html/index.html")
+else()
+    message(STATUS "Doxygen not found - 'make docs' target unavailable")
+    message(STATUS "  Install doxygen to generate API documentation")
+endif()
+
+# ============================================================================
 # Phase 7 Coverage Analysis Enhancement Targets
 # ============================================================================
 

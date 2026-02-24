@@ -86,6 +86,8 @@ tests/unit/test_*
 docs/_build/
 docs/html/
 docs/latex/
+docs/api/html/
+docs/api/latex/
 *.pdf
 !docs/*.pdf
 
