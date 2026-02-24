@@ -1,8 +1,9 @@
 /**
- * @file ExportCommand.hpp
- * @brief Command for exporting analysis results to various formats
- * @author Civil Engineering Software Solutions
+ * @file export_command.hpp
+ * @brief Command for exporting analysis results to various formats.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This command exports previously generated analysis results to different
  * file formats. Requires both input truss file and results file.

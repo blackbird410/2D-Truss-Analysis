@@ -1,6 +1,9 @@
 /**
- * @file ExportCommand.cpp
- * @brief Implementation of export command
+ * @file export_command.cpp
+ * @brief Implements the export command.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "export_command.hpp"

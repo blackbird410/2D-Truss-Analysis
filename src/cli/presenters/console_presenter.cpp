@@ -1,6 +1,9 @@
 /**
- * @file ConsolePresenter.cpp
- * @brief Implementation of console presenter
+ * @file console_presenter.cpp
+ * @brief Implements the console presenter.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Phase 5A.2: Refactored to eliminate direct console I/O.
  * All output now routed through IApplicationOutput abstraction.

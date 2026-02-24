@@ -1,8 +1,9 @@
 /**
- * @file ConsolePresenter.hpp
- * @brief Console output presenter for CLI
- * @author Civil Engineering Software Solutions
+ * @file console_presenter.hpp
+ * @brief Console output presenter for CLI.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Formats and displays data to console via view interfaces.
  * Does not contain business logic or orchestration.

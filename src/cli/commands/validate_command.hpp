@@ -1,8 +1,9 @@
 /**
- * @file ValidateCommand.hpp
- * @brief Command for validating truss structures without analysis
- * @author Civil Engineering Software Solutions
+ * @file validate_command.hpp
+ * @brief Command for validating truss structures without analysis.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This command validates truss structures loaded from files without
  * performing structural analysis. Useful for quick structure checks.

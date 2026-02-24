@@ -1,6 +1,9 @@
 /**
- * @file AnalyzeCommand.cpp
- * @brief Implementation of analyze command
+ * @file analyze_command.cpp
+ * @brief Implements the analyze command.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "analyze_command.hpp"

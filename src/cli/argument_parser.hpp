@@ -1,8 +1,9 @@
 /**
- * @file ArgumentParser.hpp
- * @brief CLI argument parser
- * @author Civil Engineering Software Solutions
+ * @file argument_parser.hpp
+ * @brief CLI argument parser.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Responsibility: Parse command-line arguments into structured format.
  * Does not execute commands or perform validation logic.

@@ -1,8 +1,9 @@
 /**
- * @file HelpCommand.hpp
- * @brief Help command for displaying CLI usage information
- * @author Civil Engineering Software Solutions
+ * @file help_command.hpp
+ * @brief Help command for displaying CLI usage information.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
