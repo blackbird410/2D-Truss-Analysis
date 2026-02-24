@@ -29,7 +29,7 @@ enum class LogLevel {
 };
 
 /**
- * @brief Abstract interface for logging implementations
+ * @brief Abstract interface for logging subsystem.
  *
  * Defines the contract for all concrete logger implementations.
  * Supports multiple logging targets (console, file, etc.) and severity levels.

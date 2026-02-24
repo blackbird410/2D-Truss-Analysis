@@ -1,7 +1,6 @@
 /**
  * @file data_table_widget.cpp
- * @brief Implements the truss data table widget.
- *
+ * @brief Table widget displaying analysis results in tabular format.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

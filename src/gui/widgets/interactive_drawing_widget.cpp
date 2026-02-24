@@ -1,7 +1,6 @@
 /**
  * @file interactive_drawing_widget.cpp
- * @brief Implements interactive truss drawing and editing interactions.
- *
+ * @brief Interactive canvas for truss drawing and editing.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

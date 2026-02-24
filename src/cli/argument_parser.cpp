@@ -1,6 +1,6 @@
 /**
  * @file argument_parser.cpp
- * @brief Implements the argument parser.
+ * @brief Parses and validates command-line arguments.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

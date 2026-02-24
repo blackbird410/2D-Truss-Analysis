@@ -1,6 +1,6 @@
 /**
  * @file json_truss_reader.cpp
- * @brief Implements JSON format truss file reader.
+ * @brief Reads truss models from JSON files.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

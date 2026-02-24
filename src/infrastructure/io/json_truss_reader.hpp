@@ -17,7 +17,7 @@
 namespace truss::infrastructure::io {
 
 /**
- * @brief Concrete implementation of ITrussReader for JSON format
+ * @brief Reads truss structures from JSON format files.
  *
  * Reads truss structures from JSON files with the following format:
  * {

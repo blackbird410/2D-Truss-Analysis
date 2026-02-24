@@ -1,7 +1,6 @@
 /**
  * @file deformed_truss_widget.cpp
- * @brief Renders deformed truss visualization and interaction controls.
- *
+ * @brief Visualization widget showing deformed truss structure.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

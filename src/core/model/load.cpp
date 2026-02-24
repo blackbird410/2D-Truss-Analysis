@@ -1,6 +1,6 @@
 /**
  * @file load.cpp
- * @brief Implements the Load class.
+ * @brief Applied force at a truss node.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

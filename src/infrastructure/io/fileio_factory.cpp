@@ -1,6 +1,6 @@
 /**
  * @file fileio_factory.cpp
- * @brief Implements the file I/O factory.
+ * @brief Creates readers and writers based on file format.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

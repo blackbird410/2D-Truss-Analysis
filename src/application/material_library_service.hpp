@@ -99,7 +99,7 @@ public:
 };
 
 /**
- * @brief Material and section library service implementation
+ * @brief Service providing standard materials and section profiles.
  *
  * Provides standard engineering materials and section profiles
  * with support for custom user-defined properties.

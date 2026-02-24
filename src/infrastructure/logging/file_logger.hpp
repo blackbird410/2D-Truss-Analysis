@@ -1,6 +1,6 @@
 /**
  * @file file_logger.hpp
- * @brief File logger implementation.
+ * @brief Logs messages to rotating log files.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud
@@ -75,7 +75,7 @@ public:
 
 private:
     /**
-     * @brief Core logging implementation
+     * @brief Logs message to file output.
      * @param level Severity level
      * @param message Message to log
      */

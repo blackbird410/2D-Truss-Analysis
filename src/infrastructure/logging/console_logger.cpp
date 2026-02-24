@@ -1,6 +1,6 @@
 /**
  * @file console_logger.cpp
- * @brief Implements the console logger.
+ * @brief Logs messages to standard output with level filtering.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

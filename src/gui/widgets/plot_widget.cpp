@@ -1,7 +1,6 @@
 /**
  * @file plot_widget.cpp
- * @brief Implements the truss plot widget.
- *
+ * @brief Custom plotting widget using QCustomPlot for visualizations.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

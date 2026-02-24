@@ -30,7 +30,7 @@
 #include <gmock/gmock.h>
 
 /**
- * @brief GoogleMock implementation of IAnalysisService
+ * @brief GoogleMock for IAnalysisService interface.
  *
  * Provides mock methods for all IAnalysisService interface methods,
  * enabling behavior verification and isolated unit testing.

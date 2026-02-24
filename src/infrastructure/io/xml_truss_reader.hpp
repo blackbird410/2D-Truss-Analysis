@@ -18,7 +18,7 @@
 namespace truss::infrastructure::io {
 
 /**
- * @brief Concrete implementation of ITrussReader for XML format
+ * @brief Reads truss structures from XML format files.
  *
  * Reads truss structures from XML files with the following format:
  * <truss>

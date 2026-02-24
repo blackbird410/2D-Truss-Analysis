@@ -1,6 +1,6 @@
 /**
  * @file text_exporter.cpp
- * @brief Implements the plain text exporter.
+ * @brief Exports analysis results to plain text format.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

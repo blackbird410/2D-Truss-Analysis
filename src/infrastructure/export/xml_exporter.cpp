@@ -1,6 +1,6 @@
 /**
  * @file xml_exporter.cpp
- * @brief Implements the XML exporter.
+ * @brief Exports analysis results to XML format.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

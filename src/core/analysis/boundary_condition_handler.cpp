@@ -1,6 +1,6 @@
 /**
  * @file boundary_condition_handler.cpp
- * @brief Implements boundary condition application.
+ * @brief Applies support constraints to global stiffness matrix.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

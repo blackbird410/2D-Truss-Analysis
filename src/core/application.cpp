@@ -1,6 +1,6 @@
 /**
  * @file application.cpp
- * @brief Implements core application management class.
+ * @brief Core application lifecycle management.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

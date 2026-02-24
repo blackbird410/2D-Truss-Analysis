@@ -15,7 +15,7 @@
 namespace truss::infrastructure::io {
 
 /**
- * @brief Concrete implementation of ITrussWriter for XML format
+ * @brief Writes truss structures to XML format files.
  *
  * Writes truss structures to XML files with a structured format.
  */

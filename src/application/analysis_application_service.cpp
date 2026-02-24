@@ -1,6 +1,6 @@
 /**
  * @file analysis_application_service.cpp
- * @brief Implements the analysis application service.
+ * @brief Application service for truss analysis execution and results.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

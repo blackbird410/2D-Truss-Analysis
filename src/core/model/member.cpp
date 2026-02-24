@@ -1,6 +1,6 @@
 /**
  * @file member.cpp
- * @brief Implements the Member class.
+ * @brief Truss member connecting two nodes with material properties.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

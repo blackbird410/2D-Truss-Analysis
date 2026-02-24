@@ -1,6 +1,6 @@
 /**
  * @file logger_factory.cpp
- * @brief Implements the logger factory.
+ * @brief Creates logger instances based on configuration.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

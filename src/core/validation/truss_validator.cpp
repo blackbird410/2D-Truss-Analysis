@@ -1,6 +1,6 @@
 /**
  * @file truss_validator.cpp
- * @brief Implements the TrussValidator service.
+ * @brief Validates truss structural integrity and analysis readiness.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

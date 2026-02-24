@@ -1,6 +1,6 @@
 /**
  * @file xml_truss_writer.cpp
- * @brief Implements XML format truss file writer.
+ * @brief Writes truss models to XML files.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

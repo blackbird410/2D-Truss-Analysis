@@ -79,7 +79,7 @@ public:
     virtual VectorXd solve(const MatrixXd& A, const VectorXd& b) const = 0;
 
     /**
-     * @brief Get the name of the solver implementation
+     * @brief Get the solver type name.
      *
      * Returns a human-readable identifier for the solver type,
      * useful for logging and debugging purposes.

@@ -1,6 +1,6 @@
 /**
  * @file truss_assembler.cpp
- * @brief Implements TrussAssembler.
+ * @brief Constructs truss domain objects from data transfer objects.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

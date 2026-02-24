@@ -1,6 +1,6 @@
 /**
  * @file node.cpp
- * @brief Implements the Node class.
+ * @brief Truss node with position and support constraints.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

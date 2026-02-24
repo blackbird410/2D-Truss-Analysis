@@ -1,6 +1,6 @@
 /**
  * @file latex_exporter.cpp
- * @brief Implements the LaTeX exporter.
+ * @brief Exports analysis results to LaTeX format for documents.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

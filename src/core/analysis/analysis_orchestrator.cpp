@@ -1,6 +1,6 @@
 /**
  * @file analysis_orchestrator.cpp
- * @brief Implements the AnalysisOrchestrator class.
+ * @brief Coordinates truss analysis workflow from assembly to solution.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

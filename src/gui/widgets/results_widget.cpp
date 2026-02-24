@@ -1,7 +1,6 @@
 /**
  * @file results_widget.cpp
- * @brief Implements the analysis results widget.
- *
+ * @brief Combined widget displaying analysis results with tabs.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

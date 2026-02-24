@@ -123,7 +123,7 @@ private:
     };
 
     /**
-     * @brief Internal null logger implementation
+     * @brief Null logger that discards all messages.
      *
      * Discards all log messages. The getLevel() method returns Trace level
      * (most permissive) because NullLogger accepts all messages for processing,

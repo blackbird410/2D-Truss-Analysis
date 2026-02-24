@@ -1,6 +1,6 @@
 /**
  * @file file_logger.cpp
- * @brief Implements the file logger.
+ * @brief Logs messages to rotating log files.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

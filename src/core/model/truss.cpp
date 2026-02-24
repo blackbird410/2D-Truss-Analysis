@@ -1,6 +1,6 @@
 /**
  * @file truss.cpp
- * @brief Implements the Truss class.
+ * @brief Complete truss structure with nodes, members, and loads.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

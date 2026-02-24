@@ -1,6 +1,6 @@
 /**
  * @file xml_truss_reader.cpp
- * @brief Implements XML format truss file reader.
+ * @brief Reads truss models from XML files.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

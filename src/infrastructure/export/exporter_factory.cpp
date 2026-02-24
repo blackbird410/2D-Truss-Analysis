@@ -1,6 +1,6 @@
 /**
  * @file exporter_factory.cpp
- * @brief Implements the results exporter factory.
+ * @brief Creates result exporters based on output format.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

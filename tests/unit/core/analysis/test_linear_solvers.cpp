@@ -1,6 +1,6 @@
 /**
  * @file test_linear_solvers.cpp
- * @brief Unit tests for linear solver implementations.
+ * @brief Unit tests for linear solvers (direct and iterative).
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

@@ -1,6 +1,6 @@
 /**
  * @file console_presenter.cpp
- * @brief Implements the console presenter.
+ * @brief Formats data for console output display.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

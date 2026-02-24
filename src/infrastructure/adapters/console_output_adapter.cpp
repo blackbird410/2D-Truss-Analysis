@@ -1,6 +1,6 @@
 /**
  * @file console_output_adapter.cpp
- * @brief Implements the console output adapter.
+ * @brief Adapts logger interface for application output abstraction.
  * @version 3.0.0
  * @date 2026-02-24
  * @author Neil Taison Rigaud

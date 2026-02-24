@@ -15,7 +15,7 @@
 namespace truss::infrastructure::io {
 
 /**
- * @brief Concrete implementation of ITrussWriter for JSON format
+ * @brief Writes truss structures to JSON format files.
  *
  * Writes truss structures to JSON files with a structured format
  * including metadata, nodes, members, and loads.
