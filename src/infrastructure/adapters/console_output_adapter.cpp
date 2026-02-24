@@ -1,6 +1,9 @@
 /**
- * @file ConsoleOutputAdapter.cpp
- * @brief Implementation of console output adapter
+ * @file console_output_adapter.cpp
+ * @brief Implements the console output adapter.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "console_output_adapter.hpp"

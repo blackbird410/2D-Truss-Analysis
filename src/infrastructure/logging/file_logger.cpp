@@ -1,9 +1,9 @@
 /**
  * @file file_logger.cpp
- * @brief File logger implementation
- * @author Civil Engineering Software Solutions
+ * @brief Implements the file logger.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "file_logger.hpp"

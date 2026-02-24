@@ -1,8 +1,9 @@
 /**
  * @file exporter_factory.cpp
- * @brief Factory for creating results exporters - Implementation
- * @author Civil Engineering Software Solutions
+ * @brief Implements the results exporter factory.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "exporter_factory.hpp"

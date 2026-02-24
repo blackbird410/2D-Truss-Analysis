@@ -1,9 +1,9 @@
 /**
  * @file xml_truss_writer.hpp
- * @brief XML format truss file writer
- * @author Civil Engineering Software Solutions
+ * @brief XML format truss file writer.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

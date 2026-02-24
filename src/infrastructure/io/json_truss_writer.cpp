@@ -1,9 +1,9 @@
 /**
  * @file json_truss_writer.cpp
- * @brief JSON format truss file writer implementation
- * @author Civil Engineering Software Solutions
+ * @brief Implements JSON format truss file writer.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "json_truss_writer.hpp"

@@ -1,9 +1,9 @@
 /**
  * @file logger_factory.hpp
- * @brief Factory for creating logger instances
- * @author Civil Engineering Software Solutions
+ * @brief Factory for creating logger instances.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

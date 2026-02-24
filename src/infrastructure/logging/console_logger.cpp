@@ -1,9 +1,9 @@
 /**
  * @file console_logger.cpp
- * @brief Console logger implementation
- * @author Civil Engineering Software Solutions
+ * @brief Implements the console logger.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "console_logger.hpp"

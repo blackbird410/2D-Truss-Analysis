@@ -1,9 +1,9 @@
 /**
  * @file logger_factory.cpp
- * @brief Factory for creating logger instances
- * @author Civil Engineering Software Solutions
+ * @brief Implements the logger factory.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "logger_factory.hpp"
