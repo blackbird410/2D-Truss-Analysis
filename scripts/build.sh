@@ -30,6 +30,10 @@ while [[ $# -gt 0 ]]; do
             CLEAN_BUILD=true
             shift
             ;;
+        --no-tests)
+            BUILD_TESTING="OFF"
+            shift
+            ;;
         -j*)
             # Handle -j8 format (no space)
             PARALLEL_JOBS="${1#-j}"
