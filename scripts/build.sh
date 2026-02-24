@@ -3,6 +3,13 @@
 # build.sh - Build script wrapper for 2D Truss Analysis
 # Usage: ./scripts/build.sh [options]
 #
+# Options:
+#   --debug         Build in Debug mode (default: Release)
+#   --release       Build in Release mode
+#   --clean         Clean build directory before building
+#   --no-tests      Disable test building (BUILD_TESTING=OFF)
+#   -j <N>          Use N parallel jobs (default: number of CPU cores)
+#
 
 set -e
 
