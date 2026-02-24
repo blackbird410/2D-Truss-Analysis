@@ -3,6 +3,13 @@
 # build.sh - Build script wrapper for 2D Truss Analysis
 # Usage: ./scripts/build.sh [options]
 #
+# Options:
+#   --debug         Build in Debug mode (default: Release)
+#   --release       Build in Release mode
+#   --clean         Clean build directory before building
+#   --no-tests      Disable test building (BUILD_TESTING=OFF)
+#   -j <N>          Use N parallel jobs (default: number of CPU cores)
+#
 
 set -e
 
@@ -14,6 +21,7 @@ BUILD_DIR="${PROJECT_DIR}/build"
 BUILD_TYPE="Release"
 PARALLEL_JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 CLEAN_BUILD=false
+BUILD_TESTING="ON"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
@@ -27,6 +35,10 @@ while [[ $# -gt 0 ]]; do
             ;;
         --clean)
             CLEAN_BUILD=true
+            shift
+            ;;
+        --no-tests)
+            BUILD_TESTING="OFF"
             shift
             ;;
         -j*)
@@ -56,9 +68,11 @@ if [ "$CLEAN_BUILD" = true ]; then
 fi
 
 # Configure
-echo "Configuring CMake (${BUILD_TYPE})..."
+echo "Configuring CMake (${BUILD_TYPE}, BUILD_TESTING=${BUILD_TESTING})..."
 cd "$BUILD_DIR"
-cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..
+cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+      -DBUILD_TESTING="$BUILD_TESTING" \
+      ..
 
 # Build
 echo "Building (${PARALLEL_JOBS} jobs)..."

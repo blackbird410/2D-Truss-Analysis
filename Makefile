@@ -190,20 +190,32 @@ rebuild-debug: clean-debug debug ## Clean and rebuild debug version
 # ==============================================================================
 
 .PHONY: test
-test: build ## Run all tests (uses ./scripts/test.sh)
+test: ## Run all tests (uses ./scripts/test.sh)
 	@echo -e "$(BOLD)Running all tests...$(RESET)"
+	@if [ ! -d "$(BUILD_DIR)" ] || grep -q "BUILD_TESTING:BOOL=OFF" "$(BUILD_DIR)/CMakeCache.txt" 2>/dev/null; then \
+		echo -e "$(YELLOW)Tests not configured. Reconfiguring with BUILD_TESTING=ON...$(RESET)"; \
+		$(BUILD_SCRIPT) --clean; \
+	fi
 	@$(TEST_SCRIPT) all
 	@echo -e "$(GREEN)✓ All tests passed$(RESET)"
 
 .PHONY: test-unit
-test-unit: build ## Run unit tests only
+test-unit: ## Run unit tests only
 	@echo -e "$(BOLD)Running unit tests...$(RESET)"
+	@if [ ! -d "$(BUILD_DIR)" ] || grep -q "BUILD_TESTING:BOOL=OFF" "$(BUILD_DIR)/CMakeCache.txt" 2>/dev/null; then \
+		echo -e "$(YELLOW)Tests not configured. Reconfiguring with BUILD_TESTING=ON...$(RESET)"; \
+		$(BUILD_SCRIPT) --clean; \
+	fi
 	@$(TEST_SCRIPT) unit
 	@echo -e "$(GREEN)✓ Unit tests passed$(RESET)"
 
 .PHONY: test-integration
-test-integration: build ## Run integration tests only
+test-integration: ## Run integration tests only
 	@echo -e "$(BOLD)Running integration tests...$(RESET)"
+	@if [ ! -d "$(BUILD_DIR)" ] || grep -q "BUILD_TESTING:BOOL=OFF" "$(BUILD_DIR)/CMakeCache.txt" 2>/dev/null; then \
+		echo -e "$(YELLOW)Tests not configured. Reconfiguring with BUILD_TESTING=ON...$(RESET)"; \
+		$(BUILD_SCRIPT) --clean; \
+	fi
 	@$(TEST_SCRIPT) integration
 	@echo -e "$(GREEN)✓ Integration tests passed$(RESET)"
 
