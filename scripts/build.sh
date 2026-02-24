@@ -61,9 +61,11 @@ if [ "$CLEAN_BUILD" = true ]; then
 fi
 
 # Configure
-echo "Configuring CMake (${BUILD_TYPE})..."
+echo "Configuring CMake (${BUILD_TYPE}, BUILD_TESTING=${BUILD_TESTING})..."
 cd "$BUILD_DIR"
-cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" ..
+cmake -DCMAKE_BUILD_TYPE="$BUILD_TYPE" \
+      -DBUILD_TESTING="$BUILD_TESTING" \
+      ..
 
 # Build
 echo "Building (${PARALLEL_JOBS} jobs)..."
