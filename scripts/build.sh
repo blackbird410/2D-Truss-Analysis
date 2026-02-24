@@ -14,6 +14,7 @@ BUILD_DIR="${PROJECT_DIR}/build"
 BUILD_TYPE="Release"
 PARALLEL_JOBS=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 CLEAN_BUILD=false
+BUILD_TESTING="ON"
 
 while [[ $# -gt 0 ]]; do
     case $1 in
