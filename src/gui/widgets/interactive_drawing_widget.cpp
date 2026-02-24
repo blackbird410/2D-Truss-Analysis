@@ -1,6 +1,10 @@
 /**
- * @file InteractiveDrawingWidget.cpp
- * @brief Implementation of interactive drawing widget for truss design
+ * @file interactive_drawing_widget.cpp
+ * @brief Implements interactive truss drawing and editing interactions.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "interactive_drawing_widget.hpp"

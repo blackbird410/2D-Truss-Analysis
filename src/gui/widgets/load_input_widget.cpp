@@ -1,7 +1,10 @@
 /**
- * @file LoadInputWidget.cpp
- * @brief Implementation of the load input widget
+ * @file load_input_widget.cpp
+ * @brief Implements the load input widget behavior.
+ *
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "load_input_widget.hpp"

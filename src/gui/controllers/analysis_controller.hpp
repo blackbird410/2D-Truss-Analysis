@@ -1,21 +1,10 @@
 /**
- * @file AnalysisController.hpp
- * @brief Controller for coordinating structural analysis workflow
- * @author Civil Engineering Software Solutions
+ * @file analysis_controller.hpp
+ * @brief GUI controller coordinating validation, analysis, and export requests.
+ *
  * @version 3.0.0
- *
- * This controller orchestrates the analysis workflow:
- * 1. Truss validation before analysis
- * 2. Analysis execution
- * 3. Results retrieval and presentation
- * 4. Results export operations
- * 5. Results lifecycle management
- *
- * Uses Qt signal/slot mechanism for asynchronous workflow coordination.
- *
- * Architecture: GUI Controller Layer (MVP Pattern)
- * Dependencies: TrussApplicationService, AnalysisApplicationService,
- *               AnalysisResultsPresenter, ValidationPresenter
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

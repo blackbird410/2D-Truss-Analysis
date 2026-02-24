@@ -1,7 +1,10 @@
 /**
- * @file LoadInputWidget.hpp
- * @brief Widget for applying loads to nodes
+ * @file load_input_widget.hpp
+ * @brief Widget for applying nodal loads.
+ *
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

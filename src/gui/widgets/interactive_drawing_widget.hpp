@@ -1,8 +1,10 @@
 /**
- * @file InteractiveDrawingWidget.hpp
- * @brief Interactive drawing widget for designing truss structures
- * @author Civil Engineering Software Solutions
+ * @file interactive_drawing_widget.hpp
+ * @brief Interactive drawing widget for truss layout editing.
+ *
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

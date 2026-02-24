@@ -1,17 +1,10 @@
 /**
- * @file ValidationPresenter.hpp
- * @brief Presenter for formatting validation results for GUI display
- * @author Civil Engineering Software Solutions
+ * @file validation_presenter.hpp
+ * @brief Presenter that formats validation results for GUI display.
+ *
  * @version 3.0.0
- *
- * This presenter formats validation results into user-friendly display messages:
- * - Groups issues by severity (Fatal, Error, Warning, Info)
- * - Generates validation summary messages
- * - Formats individual validation issues with icons
- * - Provides severity icons for visual feedback
- *
- * Architecture: GUI Presentation Layer (MVP Pattern)
- * Dependencies: Domain validation types (ValidationResult, ValidationIssue)
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

@@ -1,6 +1,10 @@
 /**
- * @file MemberInputWidget.cpp
- * @brief Implementation of the member input widget
+ * @file member_input_widget.cpp
+ * @brief Implements the member input widget behavior.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "member_input_widget.hpp"

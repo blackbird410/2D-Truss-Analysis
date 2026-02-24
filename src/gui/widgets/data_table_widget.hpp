@@ -1,6 +1,10 @@
 /**
- * @file DataTableWidget.hpp
- * @brief Widget for displaying truss data in tables (Clean Architecture compliant)
+ * @file data_table_widget.hpp
+ * @brief Widget for displaying truss data in tabular form.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

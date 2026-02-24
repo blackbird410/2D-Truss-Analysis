@@ -1,10 +1,13 @@
-// tests/unit/controllers/test_TrussEditController_Advanced.cpp
-//
-// Advanced scenario testing for TrussEditController covering edge cases,
-// stress scenarios, and complex multi-operation sequences.
-//
-// Purpose: Extend TrussEditController coverage with advanced scenarios
-// Phase: 8, Task 8.1.1 (Advanced Coverage)
+/**
+ * @file test_truss_edit_controller_advanced.cpp
+ * @brief Unit tests covering advanced TrussEditController interaction scenarios.
+ *
+ * Exercises multi-step edits, rapid sequences, and edge-case behavior using mocks.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
 
 #include "gui/controllers/truss_edit_controller.hpp"
 #include "gui/presenters/truss_data_presenter.hpp"

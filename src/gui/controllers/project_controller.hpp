@@ -1,21 +1,10 @@
 /**
- * @file ProjectController.hpp
- * @brief Controller for managing project file lifecycle
- * @author Civil Engineering Software Solutions
+ * @file project_controller.hpp
+ * @brief GUI controller managing project lifecycle and file operations.
+ *
  * @version 3.0.0
- *
- * This controller manages project file operations:
- * - New project creation
- * - Project file loading (JSON/XML/CSV/etc.)
- * - Project file saving
- * - Save As operations
- * - Unsaved changes tracking
- * - Project close with confirmation
- *
- * Coordinates with TrussApplicationService for file I/O operations.
- *
- * Architecture: GUI Controller Layer (MVP Pattern)
- * Dependencies: TrussApplicationService
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

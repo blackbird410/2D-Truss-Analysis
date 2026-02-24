@@ -1,3 +1,12 @@
+/**
+ * @file analysis_results_presenter.cpp
+ * @brief Formats analysis results for GUI presentation.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
+
 #include "analysis_results_presenter.hpp"
 
 #include <cmath>

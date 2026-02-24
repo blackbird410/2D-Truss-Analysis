@@ -1,3 +1,12 @@
+/**
+ * @file validation_presenter.cpp
+ * @brief Formats validation results for GUI display.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
+
 #include "validation_presenter.hpp"
 
 #include <QList>

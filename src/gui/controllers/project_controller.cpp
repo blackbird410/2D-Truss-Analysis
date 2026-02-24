@@ -1,3 +1,12 @@
+/**
+ * @file project_controller.cpp
+ * @brief GUI controller managing project lifecycle and file operations for truss models.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
+
 #include "project_controller.hpp"
 
 #include <filesystem>

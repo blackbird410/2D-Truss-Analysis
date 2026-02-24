@@ -1,6 +1,10 @@
 /**
- * @file PlotWidget.cpp
- * @brief Implementation of the plot widget
+ * @file plot_widget.cpp
+ * @brief Implements the truss plot widget.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "plot_widget.hpp"
