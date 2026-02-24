@@ -1,0 +1,287 @@
+# Build and Test Workflow
+# Comprehensive build verification across Debug and Release configurations
+# Executes full test suite with validation
+
+name: Build and Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "Build configuration"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - Debug
+          - Release
+          - both
+
+env:
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+
+jobs:
+  # ============================================================================
+  # Build and Test Job
+  # ============================================================================
+
+  build-and-test:
+    name: Build & Test (${{ matrix.build_type }})
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+      fail-fast: false
+
+    steps:
+      # ----------------------------------------------------------------------
+      # Checkout and Setup
+      # ----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Export GitHub Actions cache variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      # ----------------------------------------------------------------------
+      # Install System Dependencies
+      # ----------------------------------------------------------------------
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            build-essential \
+            pkg-config \
+            curl \
+            zip \
+            unzip \
+            tar \
+            git \
+            libgl1-mesa-dev \
+            libxkbcommon-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxrender-dev \
+            libxcb1-dev \
+            libx11-xcb-dev \
+            libxcb-glx0-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-render-util0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-xkb-dev \
+            xvfb
+
+      # ----------------------------------------------------------------------
+      # vcpkg Cache
+      # ----------------------------------------------------------------------
+      - name: Cache vcpkg binary cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cache/vcpkg
+            build/vcpkg_installed
+          key: vcpkg-${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-${{ matrix.build_type }}-
+            vcpkg-${{ runner.os }}-
+
+      # ----------------------------------------------------------------------
+      # Build Configuration
+      # ----------------------------------------------------------------------
+      - name: Clean build directory
+        run: |
+          rm -rf build
+          mkdir -p build
+
+      - name: Configure CMake
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBUILD_TESTING=ON \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            -DCMAKE_TOOLCHAIN_FILE=${VCPKG_INSTALLATION_ROOT}/scripts/buildsystems/vcpkg.cmake \
+            -DVCPKG_MANIFEST_MODE=ON
+
+      - name: Verify BUILD_TESTING is enabled
+        run: |
+          if ! grep -q "BUILD_TESTING:BOOL=ON" build/CMakeCache.txt; then
+            echo "::error::BUILD_TESTING is not enabled in CMake cache!"
+            echo "CMake Cache BUILD_TESTING status:"
+            grep BUILD_TESTING build/CMakeCache.txt || echo "BUILD_TESTING not found in cache"
+            exit 1
+          fi
+          echo "✓ BUILD_TESTING confirmed enabled"
+
+      # ----------------------------------------------------------------------
+      # Build
+      # ----------------------------------------------------------------------
+      - name: Build all targets
+        run: |
+          cmake --build build --parallel $(nproc)
+
+      - name: Verify executables exist
+        run: |
+          echo "Checking for required executables..."
+
+          # CLI executable
+          if [ ! -x "build/TrussAnalysisCLI" ]; then
+            echo "::error::TrussAnalysisCLI executable not found or not executable"
+            exit 1
+          fi
+          echo "✓ TrussAnalysisCLI found"
+
+          # GUI executable
+          if [ ! -x "build/TrussAnalysisGUI" ]; then
+            echo "::error::TrussAnalysisGUI executable not found or not executable"
+            exit 1
+          fi
+          echo "✓ TrussAnalysisGUI found"
+
+          # Test executables
+          if [ ! -x "build/unit_tests" ]; then
+            echo "::error::unit_tests executable not found"
+            exit 1
+          fi
+          echo "✓ unit_tests found"
+
+          if [ ! -x "build/integration_tests" ]; then
+            echo "::error::integration_tests executable not found"
+            exit 1
+          fi
+          echo "✓ integration_tests found"
+
+      # ----------------------------------------------------------------------
+      # Test Execution
+      # ----------------------------------------------------------------------
+      - name: Verify test discovery
+        run: |
+          cd build
+
+          # Count available tests
+          TEST_COUNT=$(ctest -N | grep "Total Tests:" | awk '{print $3}')
+
+          if [ -z "$TEST_COUNT" ] || [ "$TEST_COUNT" -eq 0 ]; then
+            echo "::error::No tests discovered! ctest -N output:"
+            ctest -N
+            exit 1
+          fi
+
+          echo "✓ Discovered $TEST_COUNT tests"
+
+      - name: Run unit tests
+        run: |
+          cd build
+          ctest --output-on-failure \
+                --tests-regex "unit_tests" \
+                --parallel $(nproc)
+
+      - name: Run integration tests
+        run: |
+          cd build
+          ctest --output-on-failure \
+                --tests-regex "integration_tests" \
+                --parallel $(nproc)
+
+      - name: Run GUI integration tests
+        run: |
+          cd build
+          xvfb-run -a ctest --output-on-failure \
+                            --tests-regex "gui_integration_test" \
+                            --parallel $(nproc)
+
+      - name: Run GTest integration tests
+        run: |
+          cd build
+          ctest --output-on-failure \
+                --tests-regex "test_gtest_integration" \
+                --parallel $(nproc)
+
+      # ----------------------------------------------------------------------
+      # Test Results
+      # ----------------------------------------------------------------------
+      - name: Generate test summary
+        if: always()
+        run: |
+          cd build
+
+          echo "## Test Results (${{ matrix.build_type }})" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Count tests
+          TOTAL=$(ctest -N | grep "Total Tests:" | awk '{print $3}' || echo "0")
+          echo "**Total Tests:** $TOTAL" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Test execution summary
+          if [ -f Testing/Temporary/LastTest.log ]; then
+            PASSED=$(grep -c "Test Passed" Testing/Temporary/LastTest.log || echo "0")
+            FAILED=$(grep -c "Test Failed" Testing/Temporary/LastTest.log || echo "0")
+            
+            echo "- ✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
+          else
+            echo "_No test log available_" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.build_type }}
+          path: |
+            build/Testing/
+            build/*_tests
+          retention-days: 7
+
+      - name: Upload build artifacts
+        if: matrix.build_type == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-${{ matrix.build_type }}
+          path: |
+            build/TrussAnalysisCLI
+            build/TrussAnalysisGUI
+          retention-days: 7
+
+  # ============================================================================
+  # Build Status Summary
+  # ============================================================================
+
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-22.04
+    needs: build-and-test
+    if: always()
+
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.build-and-test.result }}" != "success" ]; then
+            echo "::error::One or more build configurations failed"
+            exit 1
+          fi
+          echo "✅ All build configurations passed successfully"
