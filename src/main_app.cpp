@@ -1,8 +1,9 @@
 /**
  * @file main_app.cpp
- * @brief CLI entry point for 2D Truss Analysis
- * @author Civil Engineering Software Solutions
+ * @brief CLI entry point for 2D Truss Analysis.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Implements Command Pattern with dependency injection.
  * Wires Application services to CLI commands and dispatches execution.
