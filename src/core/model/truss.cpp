@@ -1,8 +1,9 @@
 /**
- * @file Truss.cpp
- * @brief Implementation of the Truss class
- * @author Civil Engineering Software Solutions
+ * @file truss.cpp
+ * @brief Implements the Truss class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "truss.hpp"

@@ -1,8 +1,9 @@
 /**
- * @file StiffnessAssembler.cpp
- * @brief Implementation of StiffnessAssembler class
- * @author Civil Engineering Software Solutions
+ * @file stiffness_assembler.cpp
+ * @brief Implements StiffnessAssembler class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "stiffness_assembler.hpp"

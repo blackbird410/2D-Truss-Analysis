@@ -1,6 +1,9 @@
 /**
- * @file TrussAssembler.cpp
- * @brief Implementation of TrussAssembler
+ * @file truss_assembler.cpp
+ * @brief Implements TrussAssembler.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "truss_assembler.hpp"

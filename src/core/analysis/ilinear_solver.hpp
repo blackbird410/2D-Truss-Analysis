@@ -1,8 +1,9 @@
 /**
- * @file ILinearSolver.hpp
- * @brief Interface for linear system solvers
- * @author Civil Engineering Software Solutions
+ * @file ilinear_solver.hpp
+ * @brief Interface for linear system solvers.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

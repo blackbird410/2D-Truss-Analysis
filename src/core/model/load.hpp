@@ -1,8 +1,9 @@
 /**
- * @file Load.hpp
- * @brief Load class representing external forces applied to the truss
- * @author Civil Engineering Software Solutions
+ * @file load.hpp
+ * @brief Load class representing external forces applied to the truss.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

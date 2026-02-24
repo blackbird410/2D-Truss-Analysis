@@ -1,8 +1,9 @@
 /**
- * @file Application.cpp
- * @brief Implementation of core application management class
- * @author Civil Engineering Software Solutions
+ * @file application.cpp
+ * @brief Implements core application management class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "application.hpp"

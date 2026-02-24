@@ -1,9 +1,9 @@
 /**
- * @file TrussAssembler.hpp
- * @brief Utility for assembling Domain objects from DTOs
- * @author Civil Engineering Software Solutions
+ * @file truss_assembler.hpp
+ * @brief Utility for assembling Domain objects from DTOs.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * TrussAssembler converts Data Transfer Objects (DTOs) from Infrastructure
  * layer into fully-formed Domain objects. This enforces DIP by ensuring

@@ -1,8 +1,9 @@
 /**
- * @file SolverFactory.hpp
- * @brief Factory for creating linear solver instances
- * @author Civil Engineering Software Solutions
+ * @file solver_factory.hpp
+ * @brief Factory for creating linear solver instances.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

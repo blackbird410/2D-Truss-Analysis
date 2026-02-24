@@ -1,8 +1,9 @@
 /**
- * @file Truss.hpp
- * @brief Truss class representing the complete structural system
- * @author Civil Engineering Software Solutions
+ * @file truss.hpp
+ * @brief Truss class representing the complete structural system.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

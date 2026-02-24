@@ -1,8 +1,9 @@
 /**
- * @file IterativeSolver.cpp
- * @brief Implementation of IterativeSolver class
- * @author Civil Engineering Software Solutions
+ * @file iterative_solver.cpp
+ * @brief Implements IterativeSolver class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "iterative_solver.hpp"

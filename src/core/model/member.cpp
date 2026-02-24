@@ -1,7 +1,9 @@
 /**
- * @file Member.cpp
- * @brief Implementation of the Member class
+ * @file member.cpp
+ * @brief Implements the Member class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "member.hpp"
