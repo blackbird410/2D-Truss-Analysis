@@ -20,6 +20,14 @@ fi
 
 cd "$BUILD_DIR"
 
+# Check if BUILD_TESTING is enabled
+if grep -q "BUILD_TESTING:BOOL=OFF" "$BUILD_DIR/CMakeCache.txt" 2>/dev/null; then
+    echo "ERROR: Tests are disabled (BUILD_TESTING=OFF)"
+    echo "Please reconfigure with: ./scripts/build.sh --clean"
+    echo "Or manually: cmake -B build -DBUILD_TESTING=ON"
+    exit 1
+fi
+
 case "$TEST_TYPE" in
     all)
         echo "Running all tests..."
