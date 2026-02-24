@@ -7,7 +7,7 @@
   "dependencies": [
     {
       "name": "qt6",
-      "features": ["core", "widgets"]
+      "features": ["widgets"]
     },
     {
       "name": "eigen3"
