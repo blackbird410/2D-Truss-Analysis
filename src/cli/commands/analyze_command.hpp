@@ -1,8 +1,9 @@
 /**
- * @file AnalyzeCommand.hpp
- * @brief Command for file-based truss analysis
- * @author Civil Engineering Software Solutions
+ * @file analyze_command.hpp
+ * @brief Command for file-based truss analysis.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This command implements file-based truss analysis workflow:
  * 1. Load truss from file (JSON/XML/CSV/etc.)

@@ -1,8 +1,9 @@
 /**
  * @file test_console_output_adapter.cpp
- * @brief Unit tests for ConsoleOutputAdapter
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for ConsoleOutputAdapter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Tests verify that ConsoleOutputAdapter correctly implements IApplicationOutput
  * by delegating to the underlying ILogger implementation.

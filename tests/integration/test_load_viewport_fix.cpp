@@ -1,8 +1,9 @@
 /**
  * @file test_load_viewport_fix.cpp
- * @brief Validation test for UI load viewport auto-zoom fix
- * @author Civil Engineering Software Solutions
+ * @brief Validation test for UI load viewport auto-zoom fix.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This test verifies that the viewport fix correctly auto-zooms
  * to fit loaded geometry, ensuring visibility after load.

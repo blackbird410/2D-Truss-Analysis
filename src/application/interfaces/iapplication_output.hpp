@@ -1,8 +1,9 @@
 /**
- * @file IApplicationOutput.hpp
- * @brief Application-level output abstraction
- * @author Civil Engineering Software Solutions
+ * @file iapplication_output.hpp
+ * @brief Application-level output abstraction.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Defines output contract for CLI and other application frontends.
  * Implementations may target console, file, network, or other destinations.

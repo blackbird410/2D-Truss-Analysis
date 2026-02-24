@@ -1,8 +1,9 @@
 /**
- * @file IterativeSolver.hpp
- * @brief Iterative linear solver using Conjugate Gradient method
- * @author Civil Engineering Software Solutions
+ * @file iterative_solver.hpp
+ * @brief Iterative linear solver using Conjugate Gradient method.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

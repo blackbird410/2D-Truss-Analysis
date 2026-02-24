@@ -1,9 +1,9 @@
 /**
  * @file test_e2e_workflows.cpp
- * @brief End-to-end integration tests for complete application workflows
- * @author Civil Engineering Software Solutions
+ * @brief End-to-end integration tests for complete application workflows.
  * @version 3.0.0
- * @date 2026-02-21
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "application/analysis_application_service.hpp"

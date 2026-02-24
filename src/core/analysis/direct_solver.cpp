@@ -1,8 +1,9 @@
 /**
- * @file DirectSolver.cpp
- * @brief Implementation of DirectSolver class
- * @author Civil Engineering Software Solutions
+ * @file direct_solver.cpp
+ * @brief Direct linear equation solver using LU decomposition.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "direct_solver.hpp"

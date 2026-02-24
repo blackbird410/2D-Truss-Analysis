@@ -1,8 +1,9 @@
 /**
- * @file TrussDTO.hpp
- * @brief Data Transfer Objects for Truss serialization/deserialization
- * @author Civil Engineering Software Solutions
+ * @file truss_dto.hpp
+ * @brief Data Transfer Objects for Truss serialization/deserialization.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * DTOs provide Infrastructure layer with simple data structures for
  * file I/O operations, avoiding dependencies on concrete Domain types.

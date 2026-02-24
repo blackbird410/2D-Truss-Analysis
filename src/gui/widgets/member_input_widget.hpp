@@ -1,6 +1,10 @@
 /**
- * @file MemberInputWidget.hpp
- * @brief Widget for member input operations (Clean Architecture compliant)
+ * @file member_input_widget.hpp
+ * @brief Widget for creating and configuring truss members.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

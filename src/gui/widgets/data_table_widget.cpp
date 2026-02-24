@@ -1,6 +1,9 @@
 /**
- * @file DataTableWidget.cpp
- * @brief Implementation of the data table widget
+ * @file data_table_widget.cpp
+ * @brief Table widget displaying analysis results in tabular format.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "data_table_widget.hpp"

@@ -1,8 +1,9 @@
 /**
- * @file ICommand.hpp
- * @brief Command interface for CLI
- * @author Civil Engineering Software Solutions
+ * @file icommand.hpp
+ * @brief Command interface for CLI.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Defines the contract for all CLI commands.
  * Commands delegate business logic to Application services.

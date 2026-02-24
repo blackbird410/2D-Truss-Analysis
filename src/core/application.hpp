@@ -1,8 +1,9 @@
 /**
- * @file Application.hpp
- * @brief Core application management class
- * @author Civil Engineering Software Solutions
+ * @file application.hpp
+ * @brief Core application management class.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

@@ -1,8 +1,9 @@
 /**
- * @file AnalysisOrchestrator.cpp
- * @brief Implementation of the AnalysisOrchestrator class
- * @author Civil Engineering Software Solutions
+ * @file analysis_orchestrator.cpp
+ * @brief Coordinates truss analysis workflow from assembly to solution.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "analysis_orchestrator.hpp"

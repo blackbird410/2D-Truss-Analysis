@@ -1,6 +1,10 @@
 /**
- * @file ResultsWidget.hpp
- * @brief Widget for displaying analysis results (Clean Architecture compliant)
+ * @file results_widget.hpp
+ * @brief Widget for displaying analysis results in tables and summaries.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

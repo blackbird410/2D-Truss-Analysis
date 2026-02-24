@@ -1,8 +1,9 @@
 /**
  * @file test_truss_application_service_gui_methods.cpp
- * @brief Unit tests for TrussApplicationService GUI-facing methods (Phase 3B)
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for TrussApplicationService GUI-facing methods (Phase 3B).
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - addNode() - valid handle, invalid handle, various support types

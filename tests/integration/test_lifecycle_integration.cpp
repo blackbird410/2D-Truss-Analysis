@@ -1,8 +1,9 @@
 /**
  * @file test_lifecycle_integration.cpp
- * @brief Integration tests for application lifecycle (Application layer only)
- * @author Civil Engineering Software Solutions
+ * @brief Integration tests for application lifecycle (Application layer only).
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * These tests verify the Application service layer handles the expected
  * lifecycle flows correctly, independent of GUI controllers.

@@ -1,8 +1,9 @@
 /**
  * @file test_truss_validator.cpp
- * @brief Google Test unit tests for TrussValidator service
- * @author Civil Engineering Software Solutions
+ * @brief Google Test unit tests for TrussValidator service.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "../../src/core/model/member.hpp"

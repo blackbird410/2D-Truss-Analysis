@@ -1,6 +1,9 @@
 /**
  * @file test_displacement_sign_check.cpp
- * @brief Test to verify displacement signs with downward loads
+ * @brief Test to verify displacement signs with downward loads.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Purpose: Confirm that downward loads produce negative (downward) displacements
  * in the analysis results, ruling out computation errors.

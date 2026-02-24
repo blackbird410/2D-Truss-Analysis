@@ -1,8 +1,9 @@
 /**
- * @file BoundaryConditionHandler.hpp
- * @brief Handles boundary condition application for structural analysis
- * @author Civil Engineering Software Solutions
+ * @file boundary_condition_handler.hpp
+ * @brief Handles boundary condition application for structural analysis.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

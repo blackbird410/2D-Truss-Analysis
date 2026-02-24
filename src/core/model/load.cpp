@@ -1,8 +1,9 @@
 /**
- * @file Load.cpp
- * @brief Implementation of the Load class
- * @author Civil Engineering Software Solutions
+ * @file load.cpp
+ * @brief Applied force at a truss node.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "load.hpp"

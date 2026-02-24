@@ -1,8 +1,9 @@
 /**
- * @file TrussValidator.hpp
- * @brief Validation service for truss structural systems
- * @author Civil Engineering Software Solutions
+ * @file truss_validator.hpp
+ * @brief Validation service for truss structural systems.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This service provides comprehensive validation of truss models,
  * separating validation logic from domain entities following

@@ -1,8 +1,9 @@
 /**
- * @file MockAnalysisApplicationService.hpp
- * @brief GoogleMock implementation of IAnalysisService for unit testing
- * @author Civil Engineering Software Solutions
+ * @file mock_analysis_application_service.hpp
+ * @brief GoogleMock for IAnalysisService interface.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This mock enables isolated testing of controllers that depend on
  * IAnalysisService without requiring the full AnalysisApplicationService.
@@ -29,7 +30,7 @@
 #include <gmock/gmock.h>
 
 /**
- * @brief GoogleMock implementation of IAnalysisService
+ * @brief GoogleMock for IAnalysisService interface.
  *
  * Provides mock methods for all IAnalysisService interface methods,
  * enabling behavior verification and isolated unit testing.

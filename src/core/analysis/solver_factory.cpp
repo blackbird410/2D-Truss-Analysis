@@ -1,8 +1,9 @@
 /**
- * @file SolverFactory.cpp
- * @brief Implementation of SolverFactory class
- * @author Civil Engineering Software Solutions
+ * @file solver_factory.cpp
+ * @brief Creates linear solvers based on configuration.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "solver_factory.hpp"

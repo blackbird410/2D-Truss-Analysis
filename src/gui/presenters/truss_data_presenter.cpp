@@ -1,3 +1,12 @@
+/**
+ * @file truss_data_presenter.cpp
+ * @brief Formats truss status and summary data for GUI display.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
+
 #include "truss_data_presenter.hpp"
 
 #include <sstream>

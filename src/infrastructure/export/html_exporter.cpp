@@ -1,8 +1,9 @@
 /**
  * @file html_exporter.cpp
- * @brief HTML format results exporter implementation
- * @author Civil Engineering Software Solutions
+ * @brief Exports analysis results to HTML format with styling.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "html_exporter.hpp"

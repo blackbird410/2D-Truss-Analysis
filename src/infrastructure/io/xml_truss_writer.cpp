@@ -1,9 +1,9 @@
 /**
  * @file xml_truss_writer.cpp
- * @brief XML format truss file writer implementation
- * @author Civil Engineering Software Solutions
+ * @brief Writes truss models to XML files.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "xml_truss_writer.hpp"

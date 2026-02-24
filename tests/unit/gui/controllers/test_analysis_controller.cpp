@@ -1,8 +1,9 @@
 /**
- * @file test_AnalysisController.cpp
- * @brief Unit tests for AnalysisController with dependency injection
- * @author Civil Engineering Software Solutions
+ * @file test_analysis_controller.cpp
+ * @brief Unit tests for AnalysisController with dependency injection.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "gui/controllers/analysis_controller.hpp"

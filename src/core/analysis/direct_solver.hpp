@@ -1,8 +1,9 @@
 /**
- * @file DirectSolver.hpp
- * @brief Direct linear solver using LDLT factorization
- * @author Civil Engineering Software Solutions
+ * @file direct_solver.hpp
+ * @brief Direct linear solver using LDLT factorization.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

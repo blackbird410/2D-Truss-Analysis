@@ -1,8 +1,9 @@
 /**
  * @file test_stiffness_matrix_bug.cpp
- * @brief Test to diagnose stiffness matrix sign error causing upward deformation
- * @author Civil Engineering Software Solutions
+ * @brief Test to diagnose stiffness matrix sign error causing upward deformation.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "../../src/core/model/member.hpp"

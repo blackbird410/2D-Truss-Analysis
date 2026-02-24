@@ -1,8 +1,9 @@
 /**
- * @file IAnalysisResultsView.hpp
- * @brief Read-only view interface for AnalysisResults data
- * @author Civil Engineering Software Solutions
+ * @file ianalysis_results_view.hpp
+ * @brief Read-only view interface for AnalysisResults data.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This interface provides Infrastructure layer with read-only access to
  * analysis results, enforcing Dependency Inversion Principle (DIP).

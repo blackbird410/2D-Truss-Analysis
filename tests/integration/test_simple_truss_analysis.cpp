@@ -1,8 +1,9 @@
 /**
  * @file test_simple_truss_analysis.cpp
- * @brief Google Test integration tests for complete truss analysis workflows
- * @author Civil Engineering Software Solutions
+ * @brief Google Test integration tests for complete truss analysis workflows.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test

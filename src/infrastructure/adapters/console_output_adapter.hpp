@@ -1,8 +1,9 @@
 /**
- * @file ConsoleOutputAdapter.hpp
- * @brief Adapter bridging Application output to Infrastructure logging
- * @author Civil Engineering Software Solutions
+ * @file console_output_adapter.hpp
+ * @brief Adapter bridging Application output to Infrastructure logging.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Implements IApplicationOutput by delegating to Infrastructure logging system.
  * Provides semantic mapping from Application output methods to Logger levels.

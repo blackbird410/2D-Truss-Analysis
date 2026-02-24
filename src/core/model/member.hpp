@@ -1,8 +1,9 @@
 /**
- * @file Member.hpp
- * @brief Member class representing structural elements in the truss
- * @author Civil Engineering Software Solutions
+ * @file member.hpp
+ * @brief Member class representing structural elements in the truss.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

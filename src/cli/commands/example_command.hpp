@@ -1,8 +1,9 @@
 /**
- * @file ExampleCommand.hpp
- * @brief Example command for running hardcoded truss analysis
- * @author Civil Engineering Software Solutions
+ * @file example_command.hpp
+ * @brief Example command for running hardcoded truss analysis.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Executes a hardcoded 3-member truss analysis demonstrating
  * Application service delegation and result presentation.

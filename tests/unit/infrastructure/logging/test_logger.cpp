@@ -1,8 +1,9 @@
 /**
  * @file test_logger.cpp
- * @brief Unit tests for logging infrastructure
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for logging infrastructure.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "infrastructure/logging/console_logger.hpp"

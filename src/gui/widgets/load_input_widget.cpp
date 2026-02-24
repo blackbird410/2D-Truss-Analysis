@@ -1,7 +1,9 @@
 /**
- * @file LoadInputWidget.cpp
- * @brief Implementation of the load input widget
+ * @file load_input_widget.cpp
+ * @brief Widget for creating and editing applied loads.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "load_input_widget.hpp"

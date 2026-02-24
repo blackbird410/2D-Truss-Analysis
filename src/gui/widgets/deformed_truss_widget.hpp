@@ -1,7 +1,10 @@
 /**
- * @file DeformedTrussWidget.hpp
- * @brief Widget for visualizing deformed truss structure with analysis results
- * @version 2.1.0
+ * @file deformed_truss_widget.hpp
+ * @brief Widget for visualizing deformed truss geometry and analysis results.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

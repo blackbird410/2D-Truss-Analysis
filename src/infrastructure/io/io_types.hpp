@@ -1,9 +1,9 @@
 /**
  * @file io_types.hpp
- * @brief File I/O types, formats, and options for truss file operations
- * @author Civil Engineering Software Solutions
+ * @brief File I/O types, formats, and options for truss file operations.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

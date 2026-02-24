@@ -1,8 +1,9 @@
 /**
- * @file test_TrussDataPresenter.cpp
- * @brief Unit tests for TrussDataPresenter
- * @author Civil Engineering Software Solutions
+ * @file test_truss_data_presenter.cpp
+ * @brief Unit tests for TrussDataPresenter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * These tests verify that TrussDataPresenter correctly formats Domain
  * data for GUI display. Presenters are pure formatting logic with no

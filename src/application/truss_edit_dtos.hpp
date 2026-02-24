@@ -1,8 +1,9 @@
 /**
- * @file TrussEditDTOs.hpp
- * @brief Application-layer Data Transfer Objects for GUI operations
- * @author Civil Engineering Software Solutions
+ * @file truss_edit_dtos.hpp
+ * @brief Application-layer Data Transfer Objects for GUI operations.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This file defines DTOs used by the Application layer to decouple GUI
  * Controllers from Domain types. These DTOs provide a stable interface

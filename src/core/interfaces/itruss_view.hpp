@@ -1,8 +1,9 @@
 /**
- * @file ITrussView.hpp
- * @brief Read-only view interface for Truss data
- * @author Civil Engineering Software Solutions
+ * @file itruss_view.hpp
+ * @brief Read-only view interface for Truss data.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This interface provides Infrastructure layer with read-only access to
  * Truss data, enforcing Dependency Inversion Principle (DIP).

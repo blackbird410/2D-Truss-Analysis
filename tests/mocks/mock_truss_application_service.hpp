@@ -1,8 +1,9 @@
 /**
- * @file MockTrussApplicationService.hpp
- * @brief Mock implementation of ITrussService for testing
- * @author Civil Engineering Software Solutions
+ * @file mock_truss_application_service.hpp
+ * @brief GoogleMock for ITrussService interface.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This mock service enables isolated testing of Controllers and Presenters
  * without depending on the actual Application Service implementation.

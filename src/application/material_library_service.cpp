@@ -1,6 +1,9 @@
 /**
- * @file MaterialLibraryService.cpp
- * @brief Implementation of material and section library service
+ * @file material_library_service.cpp
+ * @brief Provides default materials and cross-section definitions.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "material_library_service.hpp"

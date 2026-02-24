@@ -1,6 +1,9 @@
 /**
- * @file ValidateCommand.cpp
- * @brief Implementation of validate command
+ * @file validate_command.cpp
+ * @brief CLI command for truss structure validation.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "validate_command.hpp"

@@ -1,8 +1,9 @@
 /**
  * @file json_exporter.hpp
- * @brief JSON format results exporter implementation
- * @author Civil Engineering Software Solutions
+ * @brief JSON format results exporter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

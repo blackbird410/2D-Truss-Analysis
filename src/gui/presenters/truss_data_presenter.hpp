@@ -1,18 +1,10 @@
 /**
- * @file TrussDataPresenter.hpp
- * @brief Presenter for formatting truss geometry and statistics for GUI display
- * @author Civil Engineering Software Solutions
+ * @file truss_data_presenter.hpp
+ * @brief Presenter that formats truss geometry and status data for GUI display.
+ *
  * @version 3.0.0
- *
- * This presenter formats truss structural data into user-friendly display strings:
- * - Node coordinates with precision formatting
- * - Member properties and connections
- * - Support type descriptions
- * - Truss statistics (node count, member count, etc.)
- * - Status messages for user feedback
- *
- * Architecture: GUI Presentation Layer (MVP Pattern)
- * Dependencies: Domain interfaces (ITrussView), Domain types (Point2D, SupportType)
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

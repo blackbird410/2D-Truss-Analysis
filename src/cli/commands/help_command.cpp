@@ -1,6 +1,9 @@
 /**
- * @file HelpCommand.cpp
- * @brief Implementation of help command
+ * @file help_command.cpp
+ * @brief CLI command for displaying usage information.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "help_command.hpp"

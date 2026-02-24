@@ -1,8 +1,9 @@
 /**
- * @file AnalysisOrchestrator.hpp
- * @brief Orchestrates the structural analysis workflow using decomposed components
- * @author Civil Engineering Software Solutions
+ * @file analysis_orchestrator.hpp
+ * @brief Orchestrates the structural analysis workflow using decomposed components.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

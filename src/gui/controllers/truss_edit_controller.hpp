@@ -1,20 +1,10 @@
 /**
- * @file TrussEditController.hpp
- * @brief Controller for coordinating truss editing operations
- * @author Civil Engineering Software Solutions
+ * @file truss_edit_controller.hpp
+ * @brief GUI controller handling interactive truss editing operations.
+ *
  * @version 3.0.0
- *
- * This controller mediates between GUI views and the Application layer for truss editing:
- * - Node add/remove operations (Phase 3B)
- * - Member add/remove operations (Phase 3B)
- * - Support type modifications (Phase 3B)
- * - Load application/removal (Phase 3B)
- * - Truss clearing operations
- *
- * Uses Qt signal/slot mechanism for loose coupling between UI and business logic.
- *
- * Architecture: GUI Controller Layer (MVP Pattern)
- * Dependencies: TrussApplicationService, TrussDataPresenter
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

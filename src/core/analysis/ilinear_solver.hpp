@@ -1,8 +1,9 @@
 /**
- * @file ILinearSolver.hpp
- * @brief Interface for linear system solvers
- * @author Civil Engineering Software Solutions
+ * @file ilinear_solver.hpp
+ * @brief Interface for linear system solvers.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
@@ -78,7 +79,7 @@ public:
     virtual VectorXd solve(const MatrixXd& A, const VectorXd& b) const = 0;
 
     /**
-     * @brief Get the name of the solver implementation
+     * @brief Get the solver type name.
      *
      * Returns a human-readable identifier for the solver type,
      * useful for logging and debugging purposes.

@@ -1,8 +1,9 @@
 /**
- * @file AnalysisApplicationService.hpp
- * @brief Application facade for structural analysis operations
- * @author Civil Engineering Software Solutions
+ * @file analysis_application_service.hpp
+ * @brief Application facade for structural analysis operations.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This service provides a high-level API for Interface layer (GUI/CLI) to perform
  * structural analysis without direct dependency on Domain analysis implementation.

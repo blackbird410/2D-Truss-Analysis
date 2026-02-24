@@ -1,9 +1,9 @@
 /**
  * @file truss_writer.hpp
- * @brief Abstract interface for writing truss structures to files
- * @author Civil Engineering Software Solutions
+ * @brief Abstract interface for writing truss structures to files.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

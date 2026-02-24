@@ -1,7 +1,9 @@
 /**
- * @file DeformedTrussWidget.cpp
- * @brief Implementation of deformed truss visualization widget
- * @version 2.1.0
+ * @file deformed_truss_widget.cpp
+ * @brief Visualization widget showing deformed truss structure.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "deformed_truss_widget.hpp"

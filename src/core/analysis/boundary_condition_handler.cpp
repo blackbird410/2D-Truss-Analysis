@@ -1,8 +1,9 @@
 /**
- * @file BoundaryConditionHandler.cpp
- * @brief Implementation of boundary condition application
- * @author Civil Engineering Software Solutions
+ * @file boundary_condition_handler.cpp
+ * @brief Applies support constraints to global stiffness matrix.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "boundary_condition_handler.hpp"

@@ -1,8 +1,9 @@
 /**
  * @file test_html_exporter.cpp
- * @brief Unit tests for HTML exporter
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for HTML exporter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "core/analysis/analysis_orchestrator.hpp"

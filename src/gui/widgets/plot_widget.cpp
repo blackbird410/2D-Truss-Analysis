@@ -1,6 +1,9 @@
 /**
- * @file PlotWidget.cpp
- * @brief Implementation of the plot widget
+ * @file plot_widget.cpp
+ * @brief Custom plotting widget using QCustomPlot for visualizations.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "plot_widget.hpp"

@@ -1,8 +1,9 @@
 /**
- * @file Node.cpp
- * @brief Implementation of the Node class
- * @author Civil Engineering Software Solutions
+ * @file node.cpp
+ * @brief Truss node with position and support constraints.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "node.hpp"

@@ -1,6 +1,9 @@
 /**
- * @file NodeInputWidget.cpp
- * @brief Implementation of the node input widget
+ * @file node_input_widget.cpp
+ * @brief Widget for creating and editing truss nodes.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "node_input_widget.hpp"

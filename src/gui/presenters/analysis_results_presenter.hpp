@@ -1,17 +1,10 @@
 /**
- * @file AnalysisResultsPresenter.hpp
- * @brief Presenter for formatting structural analysis results for GUI display
- * @author Civil Engineering Software Solutions
+ * @file analysis_results_presenter.hpp
+ * @brief Presenter that formats analysis results for GUI display.
+ *
  * @version 3.0.0
- *
- * This presenter formats raw analysis results into user-friendly display data:
- * - Unit conversions (Pa → MPa, m → mm)
- * - Precision formatting for displacements, stresses, forces
- * - Summary message generation
- * - Result categorization (max values, critical elements)
- *
- * Architecture: GUI Presentation Layer (MVP Pattern)
- * Dependencies: Domain interfaces (IAnalysisResultsView, ITrussView)
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

@@ -1,8 +1,9 @@
 /**
- * @file Node.hpp
- * @brief Node class representing structural joints in the truss
- * @author Civil Engineering Software Solutions
+ * @file node.hpp
+ * @brief Node class representing structural joints in the truss.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

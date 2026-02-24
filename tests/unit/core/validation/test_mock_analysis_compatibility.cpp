@@ -1,8 +1,9 @@
 /**
  * @file test_mock_analysis_compatibility.cpp
- * @brief Validates MockAnalysisApplicationService interface compliance
- * @author Civil Engineering Software Solutions
+ * @brief Validates MockAnalysisApplicationService interface compliance.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "gui/controllers/analysis_controller.hpp"

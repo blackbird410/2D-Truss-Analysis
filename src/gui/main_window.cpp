@@ -1,6 +1,9 @@
 /**
- * @file MainWindow.cpp
- * @brief Implementation of the main window for the 2D Truss Analysis GUI
+ * @file main_window.cpp
+ * @brief Main application window for truss modeling and analysis.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "main_window.hpp"

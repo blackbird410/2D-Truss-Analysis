@@ -1,8 +1,9 @@
 /**
  * @file text_exporter.cpp
- * @brief Plain text format results exporter implementation
- * @author Civil Engineering Software Solutions
+ * @brief Exports analysis results to plain text format.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "text_exporter.hpp"

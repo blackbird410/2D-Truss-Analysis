@@ -1,8 +1,9 @@
 /**
  * @file test_analysis_application_service.cpp
- * @brief Unit tests for AnalysisApplicationService facade
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for AnalysisApplicationService facade.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Analysis execution (success and failure paths)

@@ -1,8 +1,9 @@
 /**
  * @file test_ui_load_diagnosis.cpp
- * @brief Diagnostic test for UI-triggered project load workflow
- * @author Civil Engineering Software Solutions
+ * @brief Diagnostic test for UI-triggered project load workflow.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This test simulates the exact UI load path to diagnose why
  * geometry doesn't appear on canvas after UI-triggered load.

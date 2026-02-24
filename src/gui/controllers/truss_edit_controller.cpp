@@ -1,3 +1,12 @@
+/**
+ * @file truss_edit_controller.cpp
+ * @brief GUI controller handling interactive edits to truss models.
+ *
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
+
 #include "truss_edit_controller.hpp"
 
 #include <stdexcept>

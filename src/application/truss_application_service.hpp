@@ -1,8 +1,9 @@
 /**
- * @file TrussApplicationService.hpp
- * @brief Application facade for truss model operations
- * @author Civil Engineering Software Solutions
+ * @file truss_application_service.hpp
+ * @brief Application facade for truss model operations.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This service provides a high-level API for Interface layer (GUI/CLI) to interact
  * with truss models without direct dependency on Domain implementation details.

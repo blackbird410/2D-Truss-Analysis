@@ -1,6 +1,9 @@
 /**
- * @file MemberInputWidget.cpp
- * @brief Implementation of the member input widget
+ * @file member_input_widget.cpp
+ * @brief Widget for creating and editing truss members.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "member_input_widget.hpp"

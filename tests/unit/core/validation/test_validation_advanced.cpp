@@ -1,9 +1,9 @@
 /**
  * @file test_validation_advanced.cpp
- * @brief Advanced tests for validation infrastructure - edge cases and complex scenarios
- * @author Civil Engineering Software Solutions
+ * @brief Advanced tests for validation infrastructure - edge cases and complex scenarios.
  * @version 3.0.0
- * @date 2026-02-21
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "core/model/truss.hpp"

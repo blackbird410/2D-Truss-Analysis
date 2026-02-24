@@ -1,9 +1,9 @@
 /**
  * @file logger.hpp
- * @brief Logger interface (Strategy pattern)
- * @author Civil Engineering Software Solutions
+ * @brief Logger interface (Strategy pattern).
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
@@ -29,7 +29,7 @@ enum class LogLevel {
 };
 
 /**
- * @brief Abstract interface for logging implementations
+ * @brief Abstract interface for logging subsystem.
  *
  * Defines the contract for all concrete logger implementations.
  * Supports multiple logging targets (console, file, etc.) and severity levels.
