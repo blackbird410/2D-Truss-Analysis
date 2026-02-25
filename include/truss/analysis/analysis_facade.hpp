@@ -5,8 +5,9 @@
 
 #pragma once
 
-#include <memory>
 #include "analysis_options.hpp"
+
+#include <memory>
 
 namespace truss {
 
@@ -17,13 +18,13 @@ struct AnalysisResults;
 /**
  * @class AnalysisFacade
  * @brief Simplified interface for performing 2D truss structural analysis
- * 
+ *
  * This is the primary entry point for analysis operations:
  * 1. Load truss structure
  * 2. Configure analysis options
  * 3. Execute analysis
  * 4. Retrieve results
- * 
+ *
  * Usage example:
  * @code
  * auto facade = std::make_unique<AnalysisFacade>();
@@ -33,7 +34,7 @@ struct AnalysisResults;
 class AnalysisFacade {
 public:
     virtual ~AnalysisFacade() = default;
-    
+
     /**
      * Perform structural analysis on a truss
      * @param truss The truss structure to analyze
@@ -41,10 +42,7 @@ public:
      * @return Results containing displacements, forces, and stresses
      * @throws std::exception if analysis fails
      */
-    virtual AnalysisResults analyze(
-        const Truss& truss,
-        const AnalysisOptions& options
-    ) = 0;
+    virtual AnalysisResults analyze(const Truss& truss, const AnalysisOptions& options) = 0;
 };
 
-} // namespace truss
+}  // namespace truss

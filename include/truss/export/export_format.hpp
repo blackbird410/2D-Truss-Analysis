@@ -5,8 +5,8 @@
 
 #pragma once
 
-#include <string>
 #include <memory>
+#include <string>
 
 namespace truss {
 
@@ -18,12 +18,12 @@ class AnalysisResults;
  * @brief Supported output formats for analysis results
  */
 enum class ExportFormat {
-    CSV,      ///< Comma-separated values
-    JSON,     ///< JSON format
-    XML,      ///< XML format
-    HTML,     ///< HTML report
-    LaTeX,    ///< LaTeX for academic papers
-    Text      ///< Plain text
+    CSV,    ///< Comma-separated values
+    JSON,   ///< JSON format
+    XML,    ///< XML format
+    HTML,   ///< HTML report
+    LaTeX,  ///< LaTeX for academic papers
+    Text    ///< Plain text
 };
 
 /**
@@ -33,17 +33,14 @@ enum class ExportFormat {
 class Exporter {
 public:
     virtual ~Exporter() = default;
-    
+
     /**
      * Export analysis results to a file
      * @param results The analysis results to export
      * @param filename Output file path
      * @throws std::exception if export fails
      */
-    virtual void export_results(
-        const AnalysisResults& results,
-        const std::string& filename
-    ) = 0;
+    virtual void export_results(const AnalysisResults& results, const std::string& filename) = 0;
 };
 
 /**
@@ -53,4 +50,4 @@ public:
  */
 std::unique_ptr<Exporter> createExporter(ExportFormat format);
 
-} // namespace truss
+}  // namespace truss

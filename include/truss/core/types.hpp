@@ -10,4 +10,4 @@ namespace truss {
 // Forward declarations and key types will be defined here
 // This is the public interface for core types
 
-} // namespace truss
+}  // namespace truss

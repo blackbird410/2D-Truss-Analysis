@@ -14,14 +14,14 @@ namespace truss {
  * @brief Available solver algorithms for linear system solution
  */
 enum class SolverType {
-    Direct,       ///< Direct solver (Gaussian elimination)
-    Iterative     ///< Iterative solver (Conjugate gradient, etc.)
+    Direct,    ///< Direct solver (Gaussian elimination)
+    Iterative  ///< Iterative solver (Conjugate gradient, etc.)
 };
 
 /**
  * @struct AnalysisOptions
  * @brief Configuration for structural analysis parameters
- * 
+ *
  * Controls:
  * - Which solver to use
  * - Convergence tolerance
@@ -31,15 +31,15 @@ enum class SolverType {
 struct AnalysisOptions {
     /// Type of solver to use
     SolverType solverType = SolverType::Direct;
-    
+
     /// Convergence tolerance for iterative solvers
     double tolerance = 1e-8;
-    
+
     /// Maximum iterations for iterative solvers
     int maxIterations = 10000;
-    
+
     /// Enable verbose output
     bool verbose = false;
 };
 
-} // namespace truss
+}  // namespace truss
