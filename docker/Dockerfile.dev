@@ -72,9 +72,10 @@ RUN if [ -d /usr/src/googletest ]; then \
 
 WORKDIR /workspace
 
-# Copy helpful setup script
+# Copy helpful setup script and entrypoint
 COPY scripts/dev-setup.sh /usr/local/bin/setup
-RUN chmod +x /usr/local/bin/setup
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint
+RUN chmod +x /usr/local/bin/setup /usr/local/bin/entrypoint
 
 # Non-root user for development
 # Ubuntu 24.04 creates a default user with UID 1000, so we handle that
@@ -120,7 +121,8 @@ ENV PATH="/workspace/build:${PATH}"
 ENV CC=gcc
 ENV CXX=g++
 
-# Default shell
+# Set up entrypoint and shell
+ENTRYPOINT ["/usr/local/bin/entrypoint"]
 CMD ["/bin/bash"]
 
 # Metadata
