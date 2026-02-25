@@ -99,7 +99,10 @@ jobs:
             zip \
             unzip \
             tar \
-            git
+            git \
+            autoconf \
+            automake \
+            autoconf-archive
 
       - name: Cache vcpkg
         uses: actions/cache@v4

@@ -87,6 +87,9 @@ jobs:
             unzip \
             tar \
             git \
+            autoconf \
+            automake \
+            autoconf-archive \
             libgl1-mesa-dev \
             libxkbcommon-dev \
             libfontconfig1-dev \
