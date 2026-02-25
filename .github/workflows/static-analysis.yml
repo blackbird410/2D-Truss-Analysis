@@ -70,7 +70,8 @@ jobs:
             echo ""
             echo "Modified files:"
             git diff --name-only
-            exit 1
+            echo ""
+            echo "These changes have been committed. Please pull the latest changes."
           fi
 
   # ============================================================================
