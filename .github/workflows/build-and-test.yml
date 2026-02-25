@@ -54,16 +54,27 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        id: vcpkg-cache
+        with:
+          path: |
+            vcpkg
+            ~/.cache/vcpkg
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
       - name: Setup vcpkg
+        if: steps.vcpkg-cache.outputs.cache-hit != 'true'
         run: |
-          if [ ! -d "${GITHUB_WORKSPACE}/vcpkg" ]; then
-            git clone https://github.com/microsoft/vcpkg.git "${GITHUB_WORKSPACE}/vcpkg"
-            "${GITHUB_WORKSPACE}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
-          fi
+          git clone https://github.com/microsoft/vcpkg.git "${GITHUB_WORKSPACE}/vcpkg"
+          "${GITHUB_WORKSPACE}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
+
+      - name: Set vcpkg environment
+        run: |
           echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
-          echo "VCPKG_OVERLAY_TRIPLETS=${GITHUB_WORKSPACE}/vcpkg-triplets" >> $GITHUB_ENV
-          echo "VCPKG_DEFAULT_TRIPLET=x64-linux-pch-off" >> $GITHUB_ENV
           echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
 
       # ----------------------------------------------------------------------
@@ -119,23 +130,19 @@ jobs:
             xvfb
 
       # ----------------------------------------------------------------------
-      # vcpkg Cache
+      # vcpkg Binary Cache
       # ----------------------------------------------------------------------
       - name: Cache vcpkg binary cache
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/vcpkg
-            vcpkg/buildtrees
-            vcpkg/packages
-            vcpkg/downloads
             build/vcpkg_installed
-          key: vcpkg-${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-binaries-${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ runner.os }}-${{ matrix.build_type }}-
-            vcpkg-${{ runner.os }}-
+            vcpkg-binaries-${{ runner.os }}-${{ matrix.build_type }}-
+            vcpkg-binaries-${{ runner.os }}-
 
-      - name: Set vcpkg environment
+      - name: Configure vcpkg binary caching
         run: |
           echo "VCPKG_MAX_CONCURRENCY=2" >> $GITHUB_ENV
           echo "VCPKG_KEEP_ENV_VARS=ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN" >> $GITHUB_ENV
