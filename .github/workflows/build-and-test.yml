@@ -54,6 +54,17 @@ jobs:
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
 
+      - name: Cache vcpkg
+        uses: actions/cache@v4
+        id: vcpkg-cache
+        with:
+          path: |
+            vcpkg
+            ~/.cache/vcpkg
+          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          restore-keys: |
+            vcpkg-${{ runner.os }}-
+
       - name: Setup vcpkg
         run: |
           if [ ! -d "${GITHUB_WORKSPACE}/vcpkg" ]; then
@@ -117,23 +128,19 @@ jobs:
             xvfb
 
       # ----------------------------------------------------------------------
-      # vcpkg Cache
+      # vcpkg Binary Cache
       # ----------------------------------------------------------------------
       - name: Cache vcpkg binary cache
         uses: actions/cache@v4
         with:
           path: |
-            ~/.cache/vcpkg
-            vcpkg/buildtrees
-            vcpkg/packages
-            vcpkg/downloads
             build/vcpkg_installed
-          key: vcpkg-${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('vcpkg.json') }}
+          key: vcpkg-binaries-${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
-            vcpkg-${{ runner.os }}-${{ matrix.build_type }}-
-            vcpkg-${{ runner.os }}-
+            vcpkg-binaries-${{ runner.os }}-${{ matrix.build_type }}-
+            vcpkg-binaries-${{ runner.os }}-
 
-      - name: Set vcpkg environment
+      - name: Configure vcpkg binary caching
         run: |
           echo "VCPKG_MAX_CONCURRENCY=2" >> $GITHUB_ENV
           echo "VCPKG_KEEP_ENV_VARS=ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN" >> $GITHUB_ENV
