@@ -72,11 +72,23 @@ if [ ! -f "CMakeLists.txt" ]; then
     exit 1
 fi
 
-# Remove stale build directory with old CMakeCache.txt to avoid path mismatch
-# This is especially important when running in Docker with different mount paths
-if [ -d "build" ]; then
-    echo "Removing stale build directory..."
-    rm -rf build
+# Remove stale build directory only if there's a path mismatch or running in Docker
+# This prevents CMakeCache.txt issues when Docker mounts change the workspace path
+if [ -d "build" ] && [ -f "build/CMakeCache.txt" ]; then
+    # Check if we're in Docker (/.dockerenv exists) or have DOCKER env var
+    IN_DOCKER=false
+    if [ -f "/.dockerenv" ] || [ -n "${DOCKER:-}" ]; then
+        IN_DOCKER=true
+    fi
+    
+    # Extract CMakeCache source dir and compare with current directory
+    CACHE_SOURCE_DIR=$(grep "CMAKE_HOME_DIRECTORY:" build/CMakeCache.txt 2>/dev/null | cut -d= -f2 || echo "")
+    CURRENT_DIR=$(pwd)
+    
+    if [ "$IN_DOCKER" = "true" ] || [ "$CACHE_SOURCE_DIR" != "$CURRENT_DIR" ]; then
+        echo "Removing stale build directory (path mismatch or Docker environment)..."
+        rm -rf build
+    fi
 fi
 
 # Ask user for build type (non-interactive friendly)
