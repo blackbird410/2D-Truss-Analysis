@@ -318,10 +318,10 @@ void XmlTrussReader::parseSupports(tinyxml2::XMLElement* supportsElement,
             const char* restrainedStr = supportElement->Attribute("restrained");
             if (restrainedStr) {
                 std::string restrainedString(restrainedStr);
-                bool xRestrained = restrainedString.find('x') != std::string::npos ||
-                                   restrainedString.find('X') != std::string::npos;
-                bool yRestrained = restrainedString.find('y') != std::string::npos ||
-                                   restrainedString.find('Y') != std::string::npos;
+                bool xRestrained{restrainedString.find('x') != std::string::npos ||
+                                   restrainedString.find('X') != std::string::npos};
+                bool yRestrained{restrainedString.find('y') != std::string::npos ||
+                                   restrainedString.find('Y') != std::string::npos};
 
                 // Determine support type based on restraints
                 if (xRestrained && yRestrained) {
@@ -364,8 +364,8 @@ core::SupportType XmlTrussReader::parseSupportType(const std::string& str) {
 }
 
 core::Real XmlTrussReader::getDoubleAttribute(tinyxml2::XMLElement* element, const char* name) {
-    double value;
-    tinyxml2::XMLError result = element->QueryDoubleAttribute(name, &value);
+    double value{0.0};
+    const tinyxml2::XMLError result = element->QueryDoubleAttribute(name, &value);
     if (result != tinyxml2::XML_SUCCESS) {
         throw ParseException(std::string("Missing or invalid attribute: ") + name);
     }
@@ -373,8 +373,8 @@ core::Real XmlTrussReader::getDoubleAttribute(tinyxml2::XMLElement* element, con
 }
 
 int XmlTrussReader::getIntAttribute(tinyxml2::XMLElement* element, const char* name) {
-    int value;
-    tinyxml2::XMLError result = element->QueryIntAttribute(name, &value);
+    int value{0};
+    const tinyxml2::XMLError result = element->QueryIntAttribute(name, &value);
     if (result != tinyxml2::XML_SUCCESS) {
         throw ParseException(std::string("Missing or invalid attribute: ") + name);
     }
@@ -384,8 +384,8 @@ int XmlTrussReader::getIntAttribute(tinyxml2::XMLElement* element, const char* n
 core::Real XmlTrussReader::getDoubleAttribute(tinyxml2::XMLElement* element,
                                               const char* name,
                                               core::Real defaultValue) {
-    double value;
-    tinyxml2::XMLError result = element->QueryDoubleAttribute(name, &value);
+    double value{0.0};
+    const tinyxml2::XMLError result = element->QueryDoubleAttribute(name, &value);
     if (result != tinyxml2::XML_SUCCESS) {
         return defaultValue;
     }
