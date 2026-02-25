@@ -301,7 +301,7 @@ if(BUILD_TESTING)
     # ============================================================================
     
     # Unit tests (core functionality tests)
-    add_executable(unit_tests
+    set(UNIT_TEST_SOURCES
         # Domain layer tests - MODEL
         tests/unit/core/model/test_node.cpp
         tests/unit/core/model/test_member.cpp
@@ -311,8 +311,6 @@ if(BUILD_TESTING)
         # Domain layer tests - VALIDATION
         tests/unit/core/validation/test_truss_validator.cpp
         tests/unit/core/validation/test_validation_advanced.cpp
-        tests/unit/core/validation/test_mock_compatibility.cpp
-        tests/unit/core/validation/test_mock_analysis_compatibility.cpp
         # Domain layer tests - ANALYSIS
         tests/unit/core/analysis/test_stiffness_assembler.cpp
         tests/unit/core/analysis/test_boundary_condition_handler.cpp
@@ -346,22 +344,33 @@ if(BUILD_TESTING)
         tests/unit/cli/test_analyze_command.cpp
         tests/unit/cli/test_validate_command.cpp
         tests/unit/cli/test_export_command.cpp
-        # GUI layer tests (Controller API Stabilization)
-        tests/unit/gui/controllers/test_truss_edit_controller.cpp
-        tests/unit/gui/controllers/test_truss_edit_controller_advanced.cpp
-        tests/unit/gui/controllers/test_project_controller.cpp
-        tests/unit/gui/controllers/test_analysis_controller.cpp
-        tests/unit/gui/presenters/test_truss_data_presenter.cpp
-        # GUI source files needed for GUI tests
-        src/gui/presenters/truss_data_presenter.cpp
-        src/gui/presenters/analysis_results_presenter.cpp
-        src/gui/presenters/validation_presenter.cpp
-        src/gui/controllers/truss_edit_controller.cpp
-        src/gui/controllers/analysis_controller.cpp
-        src/gui/controllers/project_controller.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
+    
+    # Conditionally add GUI tests and sources only if BUILD_GUI is enabled
+    if(BUILD_GUI)
+        list(APPEND UNIT_TEST_SOURCES
+            # GUI-dependent validation tests
+            tests/unit/core/validation/test_mock_compatibility.cpp
+            tests/unit/core/validation/test_mock_analysis_compatibility.cpp
+            # GUI layer tests (Controller API Stabilization)
+            tests/unit/gui/controllers/test_truss_edit_controller.cpp
+            tests/unit/gui/controllers/test_truss_edit_controller_advanced.cpp
+            tests/unit/gui/controllers/test_project_controller.cpp
+            tests/unit/gui/controllers/test_analysis_controller.cpp
+            tests/unit/gui/presenters/test_truss_data_presenter.cpp
+            # GUI source files needed for GUI tests
+            src/gui/presenters/truss_data_presenter.cpp
+            src/gui/presenters/analysis_results_presenter.cpp
+            src/gui/presenters/validation_presenter.cpp
+            src/gui/controllers/truss_edit_controller.cpp
+            src/gui/controllers/analysis_controller.cpp
+            src/gui/controllers/project_controller.cpp
+        )
+    endif()
+    
+    add_executable(unit_tests ${UNIT_TEST_SOURCES})
     
     target_link_libraries(unit_tests PRIVATE
         TrussApplication
@@ -369,9 +378,9 @@ if(BUILD_TESTING)
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
-        Qt6::Core
-        Qt6::Widgets
-        Qt6::Test
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Widgets>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
     )
     
     target_include_directories(unit_tests PRIVATE
@@ -393,7 +402,7 @@ if(BUILD_TESTING)
     )
     
     # Integration tests (multi-component workflow tests)
-    add_executable(integration_tests
+    set(INTEGRATION_TEST_SOURCES
         tests/integration/test_simple_truss_analysis.cpp
         tests/integration/test_simple_integration.cpp
         tests/integration/test_working_integration.cpp
@@ -401,24 +410,33 @@ if(BUILD_TESTING)
         tests/integration/test_cli_workflows.cpp
         tests/integration/test_lifecycle_integration.cpp
         tests/integration/test_load_workflow.cpp
-        tests/integration/test_gui_lifecycle.cpp
-        tests/integration/test_ui_load_diagnosis.cpp
-        tests/integration/test_load_viewport_fix.cpp
-        tests/integration/test_gui_file_load.cpp
-        tests/integration/test_e2e_workflows.cpp
-        # GUI controllers needed for GUI lifecycle tests
-        src/gui/controllers/truss_edit_controller.cpp
-        src/gui/controllers/project_controller.cpp
-        src/gui/presenters/truss_data_presenter.cpp
+        # CLI source files needed for integration tests
         ${CLI_SOURCES}
     )
+    
+    # Conditionally add GUI integration tests only if BUILD_GUI is enabled
+    if(BUILD_GUI)
+        list(APPEND INTEGRATION_TEST_SOURCES
+            tests/integration/test_gui_lifecycle.cpp
+            tests/integration/test_ui_load_diagnosis.cpp
+            tests/integration/test_load_viewport_fix.cpp
+            tests/integration/test_gui_file_load.cpp
+            tests/integration/test_e2e_workflows.cpp
+            # GUI controllers needed for GUI lifecycle tests
+            src/gui/controllers/truss_edit_controller.cpp
+            src/gui/controllers/project_controller.cpp
+            src/gui/presenters/truss_data_presenter.cpp
+        )
+    endif()
+    
+    add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
     
     target_link_libraries(integration_tests PRIVATE
         TrussCore
         TrussApplication
-        Qt6::Core
-        Qt6::Widgets
-        Qt6::Test
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Widgets>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
@@ -436,6 +454,18 @@ if(BUILD_TESTING)
         TIMEOUT 60
         LABELS "integration;gtest"
     )
+    
+    # Convenience target to build all new GTest-based tests
+    add_custom_target(all_gtest_tests
+        DEPENDS unit_tests integration_tests test_gtest_integration
+        COMMENT "Building all GTest-based tests"
+    )
+
+endif()
+
+# GUI Integration Tests (Qt Test framework) - only if Qt is available
+if(BUILD_GUI)
+    message(STATUS "Building GUI integration tests")
     
     # GUI Integration Tests (Qt Test framework)
     add_executable(gui_integration_test
@@ -469,11 +499,10 @@ if(BUILD_TESTING)
         LABELS "gui;integration;qt"
     )
     
-    # Convenience target to build all new GTest-based tests
-    add_custom_target(all_gtest_tests
-        DEPENDS unit_tests integration_tests test_gtest_integration
-        COMMENT "Building all GTest-based tests"
-    )
+    # Add GUI tests to all_gtest_tests if they exist
+    if(TARGET all_gtest_tests)
+        add_dependencies(all_gtest_tests gui_integration_test)
+    endif()
     
 endif()
 

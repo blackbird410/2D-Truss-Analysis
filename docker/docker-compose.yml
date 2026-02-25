@@ -2,7 +2,7 @@ services:
   # Production runtime container
   truss-analysis:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile
       target: runtime
     image: truss-analysis:latest
@@ -21,13 +21,13 @@ services:
   # Development container with full toolchain
   truss-dev:
     build:
-      context: .
+      context: ..
       dockerfile: docker/Dockerfile.dev
     image: truss-analysis:dev
     container_name: truss-dev
     volumes:
       # Mount entire workspace for development
-      - .:/workspace:rw
+      - ..:/workspace:rw
       # Use named volume for build cache to improve performance.
       # Note: this overrides /workspace/build from the host, so ./build on the host
       # will not be visible inside the container; /workspace/build is an isolated cache.
