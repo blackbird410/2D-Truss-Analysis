@@ -16,7 +16,7 @@
 namespace truss::infrastructure::logging {
 
 FileLogger::FileLogger(const std::filesystem::path& filePath, LogLevel minLevel, bool append)
-    : m_filePath(filePath), m_minLevel(minLevel) {
+    : m_filePath(filePath), m_minLevel(minLevel), m_file(), m_mutex() {
     // Open file with appropriate mode
     auto mode = std::ios::out;
     if (append) {
