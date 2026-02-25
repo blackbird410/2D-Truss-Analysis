@@ -31,28 +31,7 @@ jobs:
 
       - name: Check code formatting
         run: |
-          echo "Checking C++ code formatting..."
-
-          # Find all C++ files
-          FILES=$(find src include -type f \( -name "*.cpp" -o -name "*.hpp" \) ! -path "*/vcpkg_installed/*" ! -path "*/build/*")
-
-          # Check formatting
-          NEEDS_FORMAT=0
-          for file in $FILES; do
-            if ! clang-format-14 --dry-run --Werror "$file" 2>/dev/null; then
-              echo "::error file=$file::File needs formatting"
-              NEEDS_FORMAT=1
-            fi
-          done
-
-          if [ $NEEDS_FORMAT -eq 1 ]; then
-            echo ""
-            echo "::error::Code formatting issues detected!"
-            echo "Run 'make format' or './scripts/format-code.sh' to fix formatting issues"
-            exit 1
-          fi
-
-          echo "✅ All files are properly formatted"
+          CLANG_FORMAT_BIN=clang-format-14 ./scripts/format-code.sh --check
 
       - name: Generate formatting diff (if failed)
         if: failure()
@@ -63,7 +42,7 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
 
-          FILES=$(find src include -type f \( -name "*.cpp" -o -name "*.hpp" \) ! -path "*/vcpkg_installed/*" ! -path "*/build/*")
+          FILES=$(find src include tests -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) ! -path "*/vcpkg_installed/*" ! -path "*/build/*")
           for file in $FILES; do
             if ! clang-format-14 --dry-run --Werror "$file" 2>/dev/null; then
               echo "$file" >> $GITHUB_STEP_SUMMARY
