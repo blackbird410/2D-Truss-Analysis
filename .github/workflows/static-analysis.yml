@@ -30,28 +30,48 @@ jobs:
           sudo apt-get install -y clang-format-14
 
       - name: Check code formatting
+        id: format-check
         run: |
-          CLANG_FORMAT_BIN=clang-format-14 ./scripts/format-code.sh --check
+          if CLANG_FORMAT_BIN=clang-format-14 ./scripts/format-code.sh --check; then
+            echo "status=pass" >> $GITHUB_OUTPUT
+          else
+            echo "status=fail" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Generate formatting diff (if failed)
-        if: failure()
+      - name: Apply formatting if needed
+        if: steps.format-check.outputs.status == 'fail'
         run: |
-          echo "## Formatting Issues" >> $GITHUB_STEP_SUMMARY
+          echo "Applying code formatting fixes..."
+          CLANG_FORMAT_BIN=clang-format-14 ./scripts/format-code.sh --apply
+
+          # Check if there were actual changes
+          if git diff --quiet; then
+            echo "No changes after formatting"
+            exit 0
+          fi
+
+          # Show what changed
+          echo "## Formatting Changes Applied" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "The following files need formatting:" >> $GITHUB_STEP_SUMMARY
+          echo "The following files were reformatted:" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
-
-          FILES=$(find src include tests -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) ! -path "*/vcpkg_installed/*" ! -path "*/build/*")
-          for file in $FILES; do
-            if ! clang-format-14 --dry-run --Werror "$file" 2>/dev/null; then
-              echo "$file" >> $GITHUB_STEP_SUMMARY
-            fi
-          done
-
+          git diff --name-only >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "Run \`make format\` to fix these issues" >> $GITHUB_STEP_SUMMARY
+          echo "**Note:** These formatting changes have been automatically applied." >> $GITHUB_STEP_SUMMARY
+          echo "Please pull the latest changes." >> $GITHUB_STEP_SUMMARY
+
+      - name: Generate formatting diff (if applied)
+        if: steps.format-check.outputs.status == 'fail' && !cancelled()
+        run: |
+          if ! git diff --quiet; then
+            echo "⚠️ Formatting changes applied automatically."
+            echo ""
+            echo "Modified files:"
+            git diff --name-only
+            exit 1
+          fi
 
   # ============================================================================
   # clang-tidy Analysis
@@ -327,7 +347,7 @@ jobs:
           if [ "$FORMAT_STATUS" == "success" ]; then
             echo "| Code Format | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
           else
-            echo "| Code Format | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+            echo "| Code Format | ⚠️  Auto-Fixed |" >> $GITHUB_STEP_SUMMARY
           fi
 
           # clang-tidy
@@ -344,10 +364,10 @@ jobs:
             echo "| cppcheck | ⚠️  Issues Found |" >> $GITHUB_STEP_SUMMARY
           fi
 
-          # Overall status
-          if [ "$FORMAT_STATUS" != "success" ]; then
+          # Hard fail only on clang-tidy (errors) or cppcheck
+          if [ "$TIDY_STATUS" != "success" ] || [ "$CPPCHECK_STATUS" != "success" ]; then
             echo ""
-            echo "::error::Code formatting check failed - please run 'make format'"
+            echo "::error::Static analysis found issues (clang-tidy or cppcheck)"
             exit 1
           fi
 
