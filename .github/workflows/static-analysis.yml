@@ -102,7 +102,38 @@ jobs:
             git \
             autoconf \
             automake \
-            autoconf-archive
+            autoconf-archive \
+            bison \
+            flex \
+            gperf \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxrender-dev \
+            libxcb1-dev \
+            libx11-xcb-dev \
+            libxcb-glx0-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-render-util0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-xkb-dev \
+            libxcb-cursor-dev \
+            libxcb-util-dev \
+            libdbus-1-dev \
+            libatspi2.0-dev
 
       - name: Setup vcpkg
         run: |
@@ -119,10 +150,18 @@ jobs:
         with:
           path: |
             ~/.cache/vcpkg
+            vcpkg/buildtrees
+            vcpkg/packages
+            vcpkg/downloads
             build/vcpkg_installed
           key: vcpkg-analysis-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
             vcpkg-analysis-${{ runner.os }}-
+
+      - name: Set vcpkg environment
+        run: |
+          echo "VCPKG_MAX_CONCURRENCY=2" >> $GITHUB_ENV
+          echo "VCPKG_KEEP_ENV_VARS=ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN" >> $GITHUB_ENV
 
       - name: Configure CMake (for compile_commands.json)
         run: |

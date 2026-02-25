@@ -83,8 +83,13 @@ jobs:
             autoconf \
             automake \
             autoconf-archive \
+            bison \
+            flex \
+            gperf \
             libgl1-mesa-dev \
+            libglu1-mesa-dev \
             libxkbcommon-dev \
+            libxkbcommon-x11-dev \
             libfontconfig1-dev \
             libfreetype6-dev \
             libx11-dev \
@@ -105,6 +110,10 @@ jobs:
             libxcb-xfixes0-dev \
             libxcb-xinerama0-dev \
             libxcb-xkb-dev \
+            libxcb-cursor-dev \
+            libxcb-util-dev \
+            libdbus-1-dev \
+            libatspi2.0-dev \
             xvfb
 
       # ----------------------------------------------------------------------
@@ -115,11 +124,19 @@ jobs:
         with:
           path: |
             ~/.cache/vcpkg
+            vcpkg/buildtrees
+            vcpkg/packages
+            vcpkg/downloads
             build/vcpkg_installed
           key: vcpkg-${{ runner.os }}-${{ matrix.build_type }}-${{ hashFiles('vcpkg.json') }}
           restore-keys: |
             vcpkg-${{ runner.os }}-${{ matrix.build_type }}-
             vcpkg-${{ runner.os }}-
+
+      - name: Set vcpkg environment
+        run: |
+          echo "VCPKG_MAX_CONCURRENCY=2" >> $GITHUB_ENV
+          echo "VCPKG_KEEP_ENV_VARS=ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN" >> $GITHUB_ENV
 
       # ----------------------------------------------------------------------
       # Build Configuration
