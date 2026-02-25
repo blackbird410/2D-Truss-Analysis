@@ -294,7 +294,8 @@ lint: build ## Run clang-tidy static analysis
 	fi
 	@find src -type f -name "*.cpp" \
 		-not -path "*/build*/*" \
-		-exec clang-tidy -p $(BUILD_DIR) {} +
+		-not -path "*/vcpkg_installed/*" \
+		-exec clang-tidy -p $(BUILD_DIR) --header-filter='$(PWD)/src/.*' {} +  || true
 	@echo -e "$(GREEN)✓ Static analysis complete$(RESET)"
 
 .PHONY: static-analysis

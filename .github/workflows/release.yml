@@ -69,6 +69,8 @@ jobs:
           fi
           echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
           echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_OVERLAY_TRIPLETS=${GITHUB_WORKSPACE}/vcpkg-triplets" >> $GITHUB_ENV
+          echo "VCPKG_DEFAULT_TRIPLET=x64-linux-pch-off" >> $GITHUB_ENV
           echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
 
       - name: Determine version
