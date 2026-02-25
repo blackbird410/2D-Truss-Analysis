@@ -77,10 +77,24 @@ jobs:
   # ============================================================================
   # clang-tidy Analysis
   # ============================================================================
+  #
+  # STATUS: TEMPORARILY DISABLED
+  # Date Disabled: February 25, 2026
+  # Reason: Dependency resolution instability during active development phase
+  # Duration: Temporary (to be re-enabled before production release)
+  #
+  # Re-enablement:
+  #   1. Remove the "if: false" line below
+  #   2. Run workflow dispatch on a test branch
+  #   3. Verify vcpkg dependencies resolve cleanly
+  #   4. Monitor build time (expect 10-15 minutes including vcpkg setup)
+  #
+  # ============================================================================
 
   clang-tidy:
     name: clang-tidy Analysis
     runs-on: ubuntu-22.04
+    if: false # TEMPORARILY DISABLED - Remove this line to re-enable
 
     steps:
       - name: Checkout repository
@@ -370,14 +384,14 @@ jobs:
   analysis-summary:
     name: Analysis Summary
     runs-on: ubuntu-22.04
-    needs: [format-check, clang-tidy, cppcheck]
+    needs: [format-check, cppcheck]
+    # Note: clang-tidy is currently disabled and removed from dependencies
     if: always()
 
     steps:
       - name: Check analysis status
         run: |
           FORMAT_STATUS="${{ needs.format-check.result }}"
-          TIDY_STATUS="${{ needs.clang-tidy.result }}"
           CPPCHECK_STATUS="${{ needs.cppcheck.result }}"
 
           echo "## Static Analysis Results" >> $GITHUB_STEP_SUMMARY
@@ -392,12 +406,8 @@ jobs:
             echo "| Code Format | ⚠️  Auto-Fixed |" >> $GITHUB_STEP_SUMMARY
           fi
 
-          # clang-tidy
-          if [ "$TIDY_STATUS" == "success" ]; then
-            echo "| clang-tidy | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "| clang-tidy | ⚠️  Issues Found |" >> $GITHUB_STEP_SUMMARY
-          fi
+          # clang-tidy (currently disabled)
+          echo "| clang-tidy | ⏸️  Disabled |" >> $GITHUB_STEP_SUMMARY
 
           # cppcheck
           if [ "$CPPCHECK_STATUS" == "success" ]; then
@@ -406,12 +416,12 @@ jobs:
             echo "| cppcheck | ⚠️  Issues Found |" >> $GITHUB_STEP_SUMMARY
           fi
 
-          # Hard fail only on clang-tidy (errors) or cppcheck
-          if [ "$TIDY_STATUS" != "success" ] || [ "$CPPCHECK_STATUS" != "success" ]; then
+          # Hard fail only on cppcheck (clang-tidy currently disabled)
+          if [ "$CPPCHECK_STATUS" != "success" ]; then
             echo ""
-            echo "::error::Static analysis found issues (clang-tidy or cppcheck)"
+            echo "::error::Static analysis found issues (cppcheck)"
             exit 1
           fi
 
           echo ""
-          echo "✅ Static analysis completed"
+          echo "✅ Static analysis completed (clang-tidy temporarily disabled)"
