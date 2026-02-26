@@ -1,0 +1,246 @@
+# Simple Build and Test Workflow
+# Uses project Makefile to build and test without vcpkg dependency management.
+# Installs system packages directly on the GitHub runner (like local development).
+# This is a lightweight alternative to the full vcpkg-based workflow.
+
+name: Simple Build & Test
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  # ============================================================================
+  # Makefile-based Build and Test
+  # ============================================================================
+
+  build-and-test:
+    name: Build & Test (Makefile)
+    runs-on: ubuntu-22.04
+
+    steps:
+      # ----------------------------------------------------------------------
+      # Checkout
+      # ----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ----------------------------------------------------------------------
+      # Install Dependencies via System Packages
+      # ----------------------------------------------------------------------
+      - name: Install system dependencies
+        run: |
+          echo "Installing dependencies from Ubuntu repositories..."
+          sudo apt-get update
+
+          # Core build tools
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            git \
+            pkg-config
+
+          # Project dependencies
+          sudo apt-get install -y \
+            libeigen3-dev \
+            nlohmann-json3-dev \
+            libtinyxml2-dev \
+            qtbase5-dev \
+            libqt5core5a \
+            libqt5widgets5 \
+            qttools5-dev \
+            qttools5-dev-tools \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxrender-dev \
+            libxcb1-dev \
+            libx11-xcb-dev \
+            libxcb-glx0-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-render-util0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-xkb-dev \
+            libxcb-cursor-dev \
+            libxcb-util-dev \
+            libdbus-1-dev \
+            libatspi2.0-dev \
+            xvfb
+
+          # Testing tools
+          sudo apt-get install -y \
+            libgtest-dev \
+            google-mock
+
+      - name: Verify dependencies
+        run: |
+          echo "Verifying installed dependencies..."
+          echo "CMake: $(cmake --version | head -1)"
+          echo "Ninja: $(ninja --version)"
+          echo "GCC: $(g++ --version | head -1)"
+          echo "Qt: $(qmake -query QT_VERSION)"
+          echo "Eigen3: $(pkg-config --modversion eigen3 || echo 'Not found via pkg-config')"
+
+          # Check for key header files
+          if [ -f /usr/include/eigen3/Eigen/Core ]; then
+            echo "✓ Eigen3 headers found"
+          else
+            echo "✗ Eigen3 headers not found"
+          fi
+
+          if [ -f /usr/include/nlohmann/json.hpp ]; then
+            echo "✓ nlohmann-json headers found"
+          else
+            echo "✗ nlohmann-json headers not found"
+          fi
+
+          if [ -f /usr/include/tinyxml2.h ]; then
+            echo "✓ tinyxml2 headers found"
+          else
+            echo "✗ tinyxml2 headers not found"
+          fi
+
+      # ----------------------------------------------------------------------
+      # Build using Makefile
+      # ----------------------------------------------------------------------
+      - name: Build project (make build)
+        run: |
+          echo "Building project with Makefile..."
+          make build
+
+          echo ""
+          echo "=== Build Summary ==="
+          ls -lh build/TrussAnalysisCLI build/TrussAnalysisGUI 2>/dev/null || echo "Binaries not found"
+
+      - name: Verify executables
+        run: |
+          echo "Verifying built executables..."
+
+          if [ ! -x "build/TrussAnalysisCLI" ]; then
+            echo "::error::TrussAnalysisCLI executable not found or not executable"
+            exit 1
+          fi
+          echo "✓ TrussAnalysisCLI found ($(stat -c%s build/TrussAnalysisCLI | numfmt --to=iec-i --suffix=B))"
+
+          if [ ! -x "build/TrussAnalysisGUI" ]; then
+            echo "::error::TrussAnalysisGUI executable not found or not executable"
+            exit 1
+          fi
+          echo "✓ TrussAnalysisGUI found ($(stat -c%s build/TrussAnalysisGUI | numfmt --to=iec-i --suffix=B))"
+
+      # ----------------------------------------------------------------------
+      # Run Tests using Makefile
+      # ----------------------------------------------------------------------
+      - name: Run tests (make test)
+        run: |
+          echo "Running tests with Makefile..."
+          make test
+
+      - name: Generate test summary
+        if: always()
+        run: |
+          cd build
+
+          echo "## Test Results (Makefile)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          # Count tests
+          if [ -f Testing/Temporary/LastTest.log ]; then
+            TOTAL=$(grep -c "Test:" Testing/Temporary/LastTest.log 2>/dev/null || echo "0")
+            PASSED=$(grep -c "Test Passed" Testing/Temporary/LastTest.log 2>/dev/null || echo "0")
+            FAILED=$(grep -c "Test Failed" Testing/Temporary/LastTest.log 2>/dev/null || echo "0")
+            
+            echo "**Total Tests:** $TOTAL" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "- ✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
+            echo "- ❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
+            
+            if [ "$FAILED" -gt 0 ]; then
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "### Failed Tests" >> $GITHUB_STEP_SUMMARY
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+              grep -A 5 "Test Failed" Testing/Temporary/LastTest.log >> $GITHUB_STEP_SUMMARY || true
+              echo "\`\`\`" >> $GITHUB_STEP_SUMMARY
+            fi
+          else
+            echo "_No test log available_" >> $GITHUB_STEP_SUMMARY
+          fi
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: makefile-test-results
+          path: |
+            build/Testing/
+            build/*_tests
+          retention-days: 7
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: makefile-build-binaries
+          path: |
+            build/TrussAnalysisCLI
+            build/TrussAnalysisGUI
+          retention-days: 7
+
+  # ============================================================================
+  # Build Summary
+  # ============================================================================
+
+  summary:
+    name: Summary
+    runs-on: ubuntu-22.04
+    needs: build-and-test
+    if: always()
+
+    steps:
+      - name: Generate workflow summary
+        run: |
+          echo "## Makefile Build & Test Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.build-and-test.result }}" == "success" ]; then
+            echo "✅ **Build and Test: PASSED**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The project built successfully using system packages and passed all tests." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Build and Test: FAILED**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The build or tests failed. Check the logs above for details." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Workflow Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dependencies:** System packages (apt)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build System:** Makefile → CMake → Ninja" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Time:** ~2-3 minutes (no vcpkg)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Benefits:** Fast, simple, uses pre-compiled packages" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check final status
+        run: |
+          if [ "${{ needs.build-and-test.result }}" != "success" ]; then
+            echo "::error::Build and test workflow failed"
+            exit 1
+          fi
+          echo "✅ Makefile-based build and test completed successfully"
