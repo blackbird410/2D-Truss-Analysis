@@ -9,7 +9,7 @@
   "materials": {
     "default": {
       "type": "timber",
-      "youngModulus": 12000,
+      "youngModulus": 12000000000,
       "density": 600
     }
   },
