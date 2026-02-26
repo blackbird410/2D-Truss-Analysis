@@ -50,6 +50,10 @@ jobs:
             target: "TrussAnalysisGUI"
             artifact: "truss-gui"
 
+    env:
+      # Release workflow only needs release configuration
+      VCPKG_BUILD_TYPE: release
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
@@ -197,6 +201,10 @@ jobs:
   build-deb:
     name: Build Debian Package
     runs-on: ubuntu-22.04
+
+    env:
+      # Debian packages only need release configuration
+      VCPKG_BUILD_TYPE: release
 
     steps:
       - name: Checkout repository

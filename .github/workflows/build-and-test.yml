@@ -43,6 +43,11 @@ jobs:
         build_type: [Debug, Release]
       fail-fast: false
 
+    env:
+      # Critical: Only build vcpkg dependencies for the current configuration
+      # Without this, vcpkg builds BOTH debug and release for every package
+      VCPKG_BUILD_TYPE: ${{ matrix.build_type == 'Debug' && 'debug' || 'release' }}
+
     steps:
       # ----------------------------------------------------------------------
       # Checkout and Setup
@@ -193,7 +198,7 @@ jobs:
         run: |
           # Limit parallel jobs to prevent memory exhaustion
           cmake --build build --parallel 2
-          
+
           echo "=== Post-build Resource Status ==="
           df -h
           free -h

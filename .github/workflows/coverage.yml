@@ -29,6 +29,10 @@ jobs:
     name: Generate Coverage Report
     runs-on: ubuntu-22.04
 
+    env:
+      # Only build debug configuration for coverage (no need for release)
+      VCPKG_BUILD_TYPE: debug
+
     steps:
       # ----------------------------------------------------------------------
       # Checkout and Setup

@@ -102,6 +102,10 @@ jobs:
     runs-on: ubuntu-22.04
     if: false # TEMPORARILY DISABLED - Remove this line to re-enable
 
+    env:
+      # Static analysis only needs debug configuration
+      VCPKG_BUILD_TYPE: debug
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
