@@ -24,8 +24,10 @@ on:
 
 env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
-  VCPKG_MAX_CONCURRENCY: "2"
+  VCPKG_MAX_CONCURRENCY: "1"
   VCPKG_KEEP_ENV_VARS: "ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN"
+  # Reduce pressure on runner to prevent communication loss
+  CMAKE_BUILD_PARALLEL_LEVEL: "2"
 
 jobs:
   # ============================================================================
@@ -55,11 +57,18 @@ jobs:
 
       - name: Free disk space
         run: |
+          echo "Removing unnecessary preinstalled software..."
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker system prune -af || true
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
 
       - name: Disk usage (post-clean)
         run: df -h
@@ -136,8 +145,18 @@ jobs:
           echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
           echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
 
+      - name: Monitor resources during vcpkg install
+        run: |
+          echo "=== Pre-install Resource Status ==="
+          df -h
+          free -h
+          echo "Memory available: $(free -m | awk 'NR==2{printf \"%d MB\\n\", $7}')"
+
       - name: Disk usage (post-vcpkg)
-        run: df -h
+        run: |
+          echo "=== Post-vcpkg Resource Status ==="
+          df -h
+          free -h
 
       # ----------------------------------------------------------------------
       # Build Configuration
@@ -172,7 +191,12 @@ jobs:
       # ----------------------------------------------------------------------
       - name: Build all targets
         run: |
-          cmake --build build --parallel $(nproc)
+          # Limit parallel jobs to prevent memory exhaustion
+          cmake --build build --parallel 2
+          
+          echo "=== Post-build Resource Status ==="
+          df -h
+          free -h
 
       - name: Verify executables exist
         run: |

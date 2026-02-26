@@ -27,8 +27,9 @@ on:
 
 env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
-  VCPKG_MAX_CONCURRENCY: "2"
+  VCPKG_MAX_CONCURRENCY: "1"
   VCPKG_KEEP_ENV_VARS: "ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN"
+  CMAKE_BUILD_PARALLEL_LEVEL: "2"
 
 jobs:
   # ============================================================================
@@ -165,7 +166,7 @@ jobs:
 
       - name: Build ${{ matrix.config.name }}
         run: |
-          cmake --build build --target ${{ matrix.config.target }} --parallel $(nproc)
+          cmake --build build --target ${{ matrix.config.target }} --parallel 2
 
       - name: Strip binary
         run: |
@@ -209,11 +210,18 @@ jobs:
 
       - name: Free disk space
         run: |
+          echo "Removing unnecessary preinstalled software..."
           sudo rm -rf /usr/share/dotnet
           sudo rm -rf /usr/local/lib/android
           sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker system prune -af || true
           sudo apt-get clean
           sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
 
       - name: Disk usage (post-clean)
         run: df -h
