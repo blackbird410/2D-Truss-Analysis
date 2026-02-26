@@ -27,6 +27,8 @@ on:
 
 env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+  VCPKG_MAX_CONCURRENCY: "2"
+  VCPKG_KEEP_ENV_VARS: "ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN"
 
 jobs:
   # ============================================================================
@@ -54,35 +56,26 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Disk usage (pre-clean)
+        run: df -h
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Disk usage (post-clean)
+        run: df -h
+
       - name: Export GitHub Actions cache variables
         uses: actions/github-script@v7
         with:
           script: |
             core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
             core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
-      - name: Cache vcpkg
-        uses: actions/cache@v4
-        id: vcpkg-cache
-        with:
-          path: |
-            vcpkg
-            ~/.cache/vcpkg
-          key: vcpkg-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-            vcpkg-${{ runner.os }}-
-
-      - name: Setup vcpkg
-        if: steps.vcpkg-cache.outputs.cache-hit != 'true'
-        run: |
-          git clone https://github.com/microsoft/vcpkg.git "${GITHUB_WORKSPACE}/vcpkg"
-          "${GITHUB_WORKSPACE}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
-
-      - name: Set vcpkg environment
-        run: |
-          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
-          echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
-          echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
 
       - name: Determine version
         id: version
@@ -145,19 +138,21 @@ jobs:
             libdbus-1-dev \
             libatspi2.0-dev
 
-      - name: Cache vcpkg binary cache
-        uses: actions/cache@v4
+      - name: Setup vcpkg (manifest + binary cache)
+        uses: lukka/run-vcpkg@v11
         with:
-          path: |
-            build/vcpkg_installed
-          key: vcpkg-binaries-release-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
-          restore-keys: |
-            vcpkg-binaries-release-${{ runner.os }}-
+          vcpkgDirectory: ${{ github.workspace }}/vcpkg
+          vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
+          vcpkgJsonGlob: "**/vcpkg.json"
 
-      - name: Configure vcpkg binary caching
+      - name: Set vcpkg environment
         run: |
-          echo "VCPKG_MAX_CONCURRENCY=2" >> $GITHUB_ENV
-          echo "VCPKG_KEEP_ENV_VARS=ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN" >> $GITHUB_ENV
+          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
+
+      - name: Disk usage (post-vcpkg)
+        run: df -h
 
       - name: Configure CMake (Release)
         run: |
@@ -209,6 +204,27 @@ jobs:
           submodules: recursive
           fetch-depth: 0
 
+      - name: Disk usage (pre-clean)
+        run: df -h
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Disk usage (post-clean)
+        run: df -h
+
+      - name: Export GitHub Actions cache variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
       - name: Determine version
         id: version
         run: |
@@ -241,13 +257,21 @@ jobs:
             libfreetype6-dev \
             libx11-dev
 
-      - name: Cache vcpkg
-        uses: actions/cache@v4
+      - name: Setup vcpkg (manifest + binary cache)
+        uses: lukka/run-vcpkg@v11
         with:
-          path: |
-            ~/.cache/vcpkg
-            build/vcpkg_installed
-          key: vcpkg-deb-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}
+          vcpkgDirectory: ${{ github.workspace }}/vcpkg
+          vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
+          vcpkgJsonGlob: "**/vcpkg.json"
+
+      - name: Set vcpkg environment
+        run: |
+          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
+
+      - name: Disk usage (post-vcpkg)
+        run: df -h
 
       - name: Build and create package
         run: |
