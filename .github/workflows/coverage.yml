@@ -1,14 +1,29 @@
 # Code Coverage Workflow
 # Generates comprehensive code coverage reports and enforces coverage thresholds
 # Uploads results to Codecov for tracking and visualization
+#
+# STATUS: TEMPORARILY DISABLED FOR AUTOMATIC EXECUTION
+# This workflow uses vcpkg which has been experiencing resource exhaustion issues on GitHub Actions runners.
+#
+# Current trigger strategy:
+# - Manual dispatch only via GitHub Actions UI (Workflow Dispatch)
+# - Scheduled weekly runs continue for CI metrics
+#
+# Re-enablement Instructions (when vcpkg stability confirmed):
+# 1. Uncomment push and pull_request triggers below
+# 2. Monitor runner resource usage for 3-5 consecutive runs
+# 3. Verify disk cleanup effectiveness and binary cache hit rates
+# 4. Ensure no "runner lost communication" or "no space left" errors
+#
+# TO RE-ENABLE: Uncomment the 'on:' section below with push/pull_request triggers
 
 name: Code Coverage
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  # DISABLED: push:
+  #   branches: [main, develop]
+  # DISABLED: pull_request:
+  #   branches: [main, develop]
   workflow_dispatch:
   schedule:
     # Run weekly on Monday at 00:00 UTC
