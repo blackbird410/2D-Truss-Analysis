@@ -87,7 +87,14 @@ jobs:
           # Testing tools
           sudo apt-get install -y \
             libgtest-dev \
-            google-mock
+            libgmock-dev
+
+          # Build and install gtest/gmock (Ubuntu packages only provide sources)
+          echo "Building and installing Google Test..."
+          cd /usr/src/googletest
+          sudo cmake .
+          sudo cmake --build . --target install
+          cd -
 
       - name: Verify dependencies
         run: |
