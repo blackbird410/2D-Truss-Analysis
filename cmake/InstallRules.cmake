@@ -29,7 +29,8 @@ function(setup_installation)
     # Install documentation
     install(DIRECTORY "${CMAKE_SOURCE_DIR}/docs/"
             DESTINATION share/doc/truss-analysis
-            PATTERN ".md"
+            FILES_MATCHING
+            PATTERN "*.md"
     )
     
     # Install configuration files
