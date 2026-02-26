@@ -2,14 +2,32 @@
 # Verifies project builds and all tests execute successfully across Debug
 # and Release configurations. Validates vcpkg dependencies, test discovery,
 # and executable generation. Artifacts stored for Debug/Release binaries.
+#
+# STATUS: TEMPORARILY DISABLED FOR AUTOMATIC EXECUTION
+# Date Disabled: February 26, 2026
+# Reason: vcpkg dependency resolution issues causing runner instability
+# Duration: Until vcpkg configuration is stabilized
+#
+# CURRENT TRIGGER STRATEGY:
+#   - Does NOT run on: push or pull requests
+#   - ONLY runs on: manual dispatch (workflow_dispatch)
+#   - Location: GitHub UI → Actions → Build and Test → Run workflow
+#
+# To Re-Enable:
+#   1. Uncomment push and/or pull_request triggers below
+#   2. Verify vcpkg caching and binary sources are working
+#   3. Test on a feature branch before re-enabling
 
 name: Build and Test
 
 on:
-  push:
-    branches: [main, develop]
-  pull_request:
-    branches: [main, develop]
+  # Triggers disabled until vcpkg issues resolved:
+  # push:
+  #   branches: [main, develop]
+  # pull_request:
+  #   branches: [main, develop]
+
+  # Manual execution only
   workflow_dispatch:
     inputs:
       build_type:
