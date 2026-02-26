@@ -15,32 +15,4 @@
 
 #pragma once
 
-// Core domain types
-#include "core/analysis_results.hpp"
-#include "core/member.hpp"
-#include "core/node.hpp"
-#include "core/truss.hpp"
-#include "core/types.hpp"
-
-// Analysis interface
-#include "analysis/analysis_facade.hpp"
-#include "analysis/analysis_options.hpp"
-
-// Export interface
-#include "export/export_format.hpp"
-
-/**
- * @namespace truss
- * @brief Main namespace for the 2D Truss Analysis library
- *
- * All public API classes and functions are in this namespace.
- */
-namespace truss {
-
-// Version information
-constexpr const char* VERSION = "3.0.0";
-constexpr int VERSION_MAJOR = 3;
-constexpr int VERSION_MINOR = 0;
-constexpr int VERSION_PATCH = 0;
-
-}  // namespace truss
+#include "truss/truss.hpp"

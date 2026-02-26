@@ -13,8 +13,8 @@ BUILD_DIR="${PROJECT_DIR}/build"
 echo "Creating AppImage package..."
 
 # Check if linuxdeploy is installed
-if ! command -v linuxdeploy &> /dev/null; then
-    echo "Error: linuxdeploy not found. Please install it from https://github.com/linuxdeploy/linuxdeploy"
+if ! command -v linuxdeploy-x86_64.AppImage &> /dev/null; then
+    echo "Error: linuxdeploy-x86_64.AppImage not found. Please install it from https://github.com/linuxdeploy/linuxdeploy"
     exit 1
 fi
 

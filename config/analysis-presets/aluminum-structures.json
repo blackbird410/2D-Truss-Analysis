@@ -9,7 +9,7 @@
   "materials": {
     "default": {
       "type": "aluminum",
-      "youngModulus": 70000,
+      "youngModulus": 7e10,
       "density": 2700
     }
   },
