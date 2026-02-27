@@ -46,6 +46,9 @@
 
 namespace truss::interface {
 
+class FacadeTrussServiceAdapter;
+class FacadeAnalysisServiceAdapter;
+
 /**
  * @brief Result of a complete analysis workflow
  *
@@ -79,21 +82,29 @@ struct AnalysisWorkflowResult {
  * analysis workflows, hiding the complexity of coordinating multiple
  * application services.
  *
+ * **Design Pattern:** Facade (with proper encapsulation)  
+ * - Provides complete workflow methods (analyzeFromFile, analyzeInteractive, etc.)
+ * - Exposes service operations via public methods (NOT friend access)
+ * - Allows adapters to implement service interfaces by delegating to Facade public API
+ * - Maintains clear encapsulation and SOLID principles
+ *
  * Key Features:
  * - One-call complete workflows (load → validate → analyze → export)
  * - Automatic resource management
  * - Clear error reporting
  * - Builder pattern integration
  * - Validation before analysis
+ * - Polymorphic service interface implementation via adapters
  *
- * Design:
- * - Delegates to TrussApplicationService for truss lifecycle
- * - Delegates to AnalysisApplicationService for analysis/export
- * - Owns application service instances (no external dependencies)
+ * Architecture:
+ * - Owns application service instances (m_trussService, m_analysisService)
+ * - Provides public methods for all service operations (satisfying ITrussService/IAnalysisService)
+ * - Adapters delegate to these public methods (NO friend declarations needed)
+ * - GUI uses Facade polymorphically via adapters implementing service interfaces
  *
  * Thread Safety: Not thread-safe (intended for single-threaded use)
  */
-class TrussAnalysisFacade {
+class TrussAnalysisFacade final {
 public:
     /**
      * @brief Construct a new facade with default services
@@ -111,8 +122,75 @@ public:
     ~TrussAnalysisFacade() = default;
 
     // ============================================================
-    // Complete Workflow Methods (Simplified API)
+    // Public Service Operations (for adapter delegation)
     // ============================================================
+    // These public methods satisfy ITrussService and IAnalysisService contracts
+    // Adapters delegate to these methods (NOT via friend access)
+
+    // ITrussService operations
+    application::Result<application::TrussHandle> createTruss(const std::string& name);
+    application::Result<application::TrussHandle> loadTruss(const std::filesystem::path& filepath);
+    application::Result<bool> saveTruss(application::TrussHandle handle,
+                                        const std::filesystem::path& filepath,
+                                        bool overwrite = false);
+    bool clearTruss(application::TrussHandle handle);
+    bool isValidTrussHandle(application::TrussHandle handle) const;
+
+    const core::interfaces::ITrussView& getTrussView(application::TrussHandle handle) const;
+    core::Truss& getTrussMutable(application::TrussHandle handle);
+
+    application::Result<core::validation::ValidationResult>
+    validateTruss(application::TrussHandle handle);
+
+    application::Result<core::NodeId>
+    addNode(application::TrussHandle handle,
+            const core::Point2D& position,
+            core::SupportType supportType = core::SupportType::Free);
+
+    application::Result<core::MemberId> addMember(application::TrussHandle handle,
+                                                  core::NodeId startNodeId,
+                                                  core::NodeId endNodeId,
+                                                  const application::MaterialSpec& material,
+                                                  const application::SectionSpec& section);
+
+    application::Result<bool> removeNode(application::TrussHandle handle,
+                                         core::NodeId nodeId);
+    application::Result<bool> removeMember(application::TrussHandle handle,
+                                           core::MemberId memberId);
+
+    application::Result<bool> setNodeSupport(application::TrussHandle handle,
+                                             core::NodeId nodeId,
+                                             core::SupportType supportType);
+
+    application::Result<bool> applyNodeLoad(application::TrussHandle handle,
+                                            core::NodeId nodeId,
+                                            const core::Force2D& force);
+
+    application::Result<bool> clearNodeLoad(application::TrussHandle handle,
+                                            core::NodeId nodeId);
+
+    // IAnalysisService operations
+    application::Result<application::ResultsHandle>
+    analyze(const core::Truss& truss, const core::analysis::AnalysisOptions& options = {});
+
+    const core::interfaces::IAnalysisResultsView&
+    getResultsView(application::ResultsHandle handle) const;
+
+    application::Result<bool> exportResults(application::ResultsHandle handle,
+                                           infrastructure::export_::ExportFormat format,
+                                           const std::filesystem::path& filepath,
+                                           const core::Truss& truss,
+                                           const infrastructure::export_::ExportOptions& options =
+                                               {});
+
+    application::Result<bool> exportResults(application::ResultsHandle handle,
+                                           const std::filesystem::path& filepath,
+                                           const core::Truss& truss,
+                                           const infrastructure::export_::ExportOptions& options =
+                                               {});
+
+    bool clearResults(application::ResultsHandle handle);
+    bool isValidResultsHandle(application::ResultsHandle handle) const;
 
     /**
      * @brief Complete workflow: load → validate → analyze
@@ -198,75 +276,15 @@ public:
                        const infrastructure::export_::ExportOptions& options = {});
 
     // ============================================================
-    // Resource Access Methods
+    // Resource Management (for adapter delegation)
     // ============================================================
 
-    /**
-     * @brief Get read-only view of truss structure
-     * @param trussHandle Handle from workflow result
-     * @return Reference to ITrussView interface
-     * @throws std::invalid_argument if handle is invalid
-     */
-    const core::interfaces::ITrussView& getTrussView(application::TrussHandle trussHandle) const;
-
-    /**
-     * @brief Get read-only view of analysis results
-     * @param resultsHandle Handle from workflow result
-     * @return Reference to IAnalysisResultsView interface
-     * @throws std::invalid_argument if handle is invalid
-     */
-    const core::interfaces::IAnalysisResultsView&
-    getResultsView(application::ResultsHandle resultsHandle) const;
-
-    /**
-     * @brief Get mutable access to truss (for modifications)
-     * @param trussHandle Handle from workflow result
-     * @return Reference to Truss model
-     * @throws std::invalid_argument if handle is invalid
-     *
-     * @warning Use sparingly - prefer getTrussView() when possible
-     */
-    core::Truss& getTrussMutable(application::TrussHandle trussHandle);
-
-    // ============================================================
-    // Resource Management
-    // ============================================================
-
-    /**
-     * @brief Clear specific workflow results
-     * @param trussHandle Truss handle to clear (0 = don't clear)
-     * @param resultsHandle Results handle to clear (0 = don't clear)
-     *
-     * Allows selective cleanup of resources. Pass 0 for handles
-     * you want to keep.
-     */
+    void clearAll();
     void clearWorkflow(application::TrussHandle trussHandle,
                        application::ResultsHandle resultsHandle);
 
-    /**
-     * @brief Clear all managed resources
-     *
-     * Clears all trusses and results managed by the facade.
-     * After calling this, all previous handles are invalid.
-     */
-    void clearAll();
-
-    /**
-     * @brief Check if truss handle is valid
-     * @param handle Handle to check
-     * @return true if handle references existing truss
-     */
-    bool isValidTrussHandle(application::TrussHandle handle) const;
-
-    /**
-     * @brief Check if results handle is valid
-     * @param handle Handle to check
-     * @return true if handle references existing results
-     */
-    bool isValidResultsHandle(application::ResultsHandle handle) const;
-
     // ============================================================
-    // Workflow Helpers
+    // Helper Methods (lower-level operations)
     // ============================================================
 
     /**

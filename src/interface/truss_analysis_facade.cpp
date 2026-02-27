@@ -15,8 +15,125 @@ namespace truss::interface {
 TrussAnalysisFacade::TrussAnalysisFacade() = default;
 
 // ============================================================
-// Complete Workflow Methods
+// ITrussService Interface Implementation
 // ============================================================
+
+application::Result<application::TrussHandle>
+TrussAnalysisFacade::createTruss(const std::string& name) {
+    return m_trussService.createTruss(name);
+}
+
+application::Result<application::TrussHandle>
+TrussAnalysisFacade::loadTruss(const std::filesystem::path& filepath) {
+    return m_trussService.loadTruss(filepath);
+}
+
+application::Result<bool> TrussAnalysisFacade::saveTruss(application::TrussHandle handle,
+                                                         const std::filesystem::path& filepath,
+                                                         bool overwrite) {
+    return m_trussService.saveTruss(handle, filepath, overwrite);
+}
+
+bool TrussAnalysisFacade::clearTruss(application::TrussHandle handle) {
+    return m_trussService.clearTruss(handle);
+}
+
+void TrussAnalysisFacade::clearAll() {
+    m_trussService.clearAll();
+    m_analysisService.clearAll();
+    m_lastTrussHandle = 0;
+}
+
+const core::interfaces::ITrussView&
+TrussAnalysisFacade::getTrussView(application::TrussHandle handle) const {
+    return m_trussService.getTrussView(handle);
+}
+
+core::Truss& TrussAnalysisFacade::getTrussMutable(application::TrussHandle handle) {
+    return m_trussService.getTrussMutable(handle);
+}
+
+application::Result<core::validation::ValidationResult>
+TrussAnalysisFacade::validateTruss(application::TrussHandle handle) {
+    return m_trussService.validateTruss(handle);
+}
+
+application::Result<core::NodeId> TrussAnalysisFacade::addNode(
+    application::TrussHandle handle, const core::Point2D& position, core::SupportType supportType) {
+    return m_trussService.addNode(handle, position, supportType);
+}
+
+application::Result<core::MemberId> TrussAnalysisFacade::addMember(
+    application::TrussHandle handle,
+    core::NodeId startNodeId,
+    core::NodeId endNodeId,
+    const application::MaterialSpec& material,
+    const application::SectionSpec& section) {
+    return m_trussService.addMember(handle, startNodeId, endNodeId, material, section);
+}
+
+application::Result<bool> TrussAnalysisFacade::removeNode(application::TrussHandle handle,
+                                                           core::NodeId nodeId) {
+    return m_trussService.removeNode(handle, nodeId);
+}
+
+application::Result<bool> TrussAnalysisFacade::removeMember(application::TrussHandle handle,
+                                                             core::MemberId memberId) {
+    return m_trussService.removeMember(handle, memberId);
+}
+
+application::Result<bool> TrussAnalysisFacade::setNodeSupport(application::TrussHandle handle,
+                                                               core::NodeId nodeId,
+                                                               core::SupportType supportType) {
+    return m_trussService.setNodeSupport(handle, nodeId, supportType);
+}
+
+application::Result<bool> TrussAnalysisFacade::applyNodeLoad(application::TrussHandle handle,
+                                                              core::NodeId nodeId,
+                                                              const core::Force2D& force) {
+    return m_trussService.applyNodeLoad(handle, nodeId, force);
+}
+
+application::Result<bool> TrussAnalysisFacade::clearNodeLoad(application::TrussHandle handle,
+                                                              core::NodeId nodeId) {
+    return m_trussService.clearNodeLoad(handle, nodeId);
+}
+
+// ============================================================
+// IAnalysisService Interface Implementation
+// ============================================================
+
+application::Result<application::ResultsHandle>
+TrussAnalysisFacade::analyze(const core::Truss& truss,
+                              const core::analysis::AnalysisOptions& options) {
+    return m_analysisService.analyze(truss, options);
+}
+
+const core::interfaces::IAnalysisResultsView&
+TrussAnalysisFacade::getResultsView(application::ResultsHandle handle) const {
+    return m_analysisService.getResultsView(handle);
+}
+
+application::Result<bool>
+TrussAnalysisFacade::exportResults(application::ResultsHandle handle,
+                                    infrastructure::export_::ExportFormat format,
+                                    const std::filesystem::path& filepath,
+                                    const core::Truss& truss,
+                                    const infrastructure::export_::ExportOptions& options) {
+    return m_analysisService.exportResults(handle, format, filepath, truss, options);
+}
+
+application::Result<bool>
+TrussAnalysisFacade::exportResults(application::ResultsHandle handle,
+                                    const std::filesystem::path& filepath,
+                                    const core::Truss& truss,
+                                    const infrastructure::export_::ExportOptions& options) {
+    return m_analysisService.exportResults(handle, filepath, truss, options);
+}
+
+bool TrussAnalysisFacade::clearResults(application::ResultsHandle handle) {
+    return m_analysisService.clearResults(handle);
+}
 
 AnalysisWorkflowResult
 TrussAnalysisFacade::analyzeFromFile(const std::filesystem::path& filepath,
@@ -184,25 +301,7 @@ bool TrussAnalysisFacade::exportResults(application::ResultsHandle resultsHandle
 }
 
 // ============================================================
-// Resource Access Methods
-// ============================================================
-
-const core::interfaces::ITrussView&
-TrussAnalysisFacade::getTrussView(application::TrussHandle trussHandle) const {
-    return m_trussService.getTrussView(trussHandle);
-}
-
-const core::interfaces::IAnalysisResultsView&
-TrussAnalysisFacade::getResultsView(application::ResultsHandle resultsHandle) const {
-    return m_analysisService.getResultsView(resultsHandle);
-}
-
-core::Truss& TrussAnalysisFacade::getTrussMutable(application::TrussHandle trussHandle) {
-    return m_trussService.getTrussMutable(trussHandle);
-}
-
-// ============================================================
-// Resource Management
+// Resource Management (Facade-specific methods)
 // ============================================================
 
 void TrussAnalysisFacade::clearWorkflow(application::TrussHandle trussHandle,
@@ -216,12 +315,6 @@ void TrussAnalysisFacade::clearWorkflow(application::TrussHandle trussHandle,
     if (resultsHandle != 0) {
         m_analysisService.clearResults(resultsHandle);
     }
-}
-
-void TrussAnalysisFacade::clearAll() {
-    m_trussService.clearAll();
-    m_analysisService.clearAll();
-    m_lastTrussHandle = 0;
 }
 
 bool TrussAnalysisFacade::isValidTrussHandle(application::TrussHandle handle) const {
