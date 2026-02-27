@@ -248,6 +248,10 @@ add_library(TrussInterface STATIC
     src/interface/truss_builder.hpp
     src/interface/truss_analysis_facade.cpp
     src/interface/truss_analysis_facade.hpp
+    src/interface/facade_truss_service_adapter.cpp
+    src/interface/facade_truss_service_adapter.hpp
+    src/interface/facade_analysis_service_adapter.cpp
+    src/interface/facade_analysis_service_adapter.hpp
 )
 
 target_include_directories(TrussInterface PUBLIC
