@@ -23,10 +23,10 @@
  * Target: 80%+ line coverage with focused test scenarios
  */
 
-#include "../../../src/application/analysis_application_service.hpp"
-#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/application/interfaces/iapplication_output.hpp"
 #include "../../../src/cli/commands/analyze_command.hpp"
 #include "../../../src/cli/presenters/console_presenter.hpp"
+#include "../../../src/interface/truss_analysis_facade.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -44,13 +44,12 @@ using ::testing::Return;
  * Provides:
  * - Valid truss file creation for testing
  * - Test file cleanup management
- * - Application service instances
+ * - Interface facade instance
  * - Simplified output interface for focused testing
  */
 class AnalyzeCommandTest : public ::testing::Test {
 protected:
-    truss::application::TrussApplicationService trussService;
-    truss::application::AnalysisApplicationService analysisService;
+    truss::interface::TrussAnalysisFacade facade;
 
     void SetUp() override {
         // Create valid test truss file
@@ -124,8 +123,7 @@ protected:
 TEST_F(AnalyzeCommandTest, GetName_ReturnsAnalyze) {
     // This test doesn't need real services or presenter
     // We'll use a nullptr-based approach just for metadata testing
-    truss::application::TrussApplicationService dummyTruss;
-    truss::application::AnalysisApplicationService dummyAnalysis;
+    truss::interface::TrussAnalysisFacade dummyFacade;
 
     // Create a minimal mock output for presenter
     class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
@@ -139,7 +137,7 @@ TEST_F(AnalyzeCommandTest, GetName_ReturnsAnalyze) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(dummyTruss, dummyAnalysis, presenter, "dummy.json");
+    AnalyzeCommand cmd(dummyFacade, presenter, "dummy.json");
     EXPECT_EQ(cmd.getName(), "analyze");
 }
 
@@ -162,7 +160,7 @@ TEST_F(AnalyzeCommandTest, GetDescription_ReturnsNonEmptyDescription) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(trussService, analysisService, presenter, "test.json");
+    AnalyzeCommand cmd(facade, presenter, "test.json");
     std::string desc = cmd.getDescription();
     EXPECT_FALSE(desc.empty());
     EXPECT_TRUE(desc.find("analyze") != std::string::npos ||
@@ -189,7 +187,7 @@ TEST_F(AnalyzeCommandTest, Execute_WithNonExistentFile_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(trussService, analysisService, presenter, "non_existent_12345.json");
+    AnalyzeCommand cmd(facade, presenter, "non_existent_12345.json");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -220,7 +218,7 @@ TEST_F(AnalyzeCommandTest, Execute_WithInvalidJSON_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(trussService, analysisService, presenter, "test_invalid.json");
+    AnalyzeCommand cmd(facade, presenter, "test_invalid.json");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -250,14 +248,14 @@ TEST_F(AnalyzeCommandTest, Execute_ExportFormatParsing_JSONCaseInsensitive) {
 
     // Test lowercase
     AnalyzeCommand cmd1(
-        trussService, analysisService, presenter, "test_simple.json", "out1.json", "json");
+        facade, presenter, "test_simple.json", "out1.json", "json");
     // Just verifying it doesn't crash and returns some exit code
     int code1 = cmd1.execute();
     EXPECT_TRUE(code1 == 0 || code1 == 1);  // May succeed or fail depending on validation
 
     // Test uppercase
     AnalyzeCommand cmd2(
-        trussService, analysisService, presenter, "test_simple.json", "out2.json", "JSON");
+        facade, presenter, "test_simple.json", "out2.json", "JSON");
     int code2 = cmd2.execute();
     EXPECT_TRUE(code2 == 0 || code2 == 1);
 
@@ -285,8 +283,7 @@ TEST_F(AnalyzeCommandTest, Execute_WithInvalidExportFormat_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(trussService,
-                       analysisService,
+    AnalyzeCommand cmd(facade,
                        presenter,
                        "test_simple.json",
                        "output.xyz",
@@ -315,8 +312,7 @@ TEST_F(AnalyzeCommandTest, Execute_VerboseMode_DoesNotCrash) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(trussService,
-                       analysisService,
+    AnalyzeCommand cmd(facade,
                        presenter,
                        "test_simple.json",
                        std::nullopt,
@@ -350,12 +346,11 @@ TEST_F(AnalyzeCommandTest, SupportedFormats_AllRecognized) {
     std::vector<std::string> formats = {"JSON", "XML", "CSV", "TSV", "TXT", "LaTeX", "HTML"};
 
     for (const auto& format : formats) {
-        AnalyzeCommand cmd(trussService,
-                           analysisService,
-                           presenter,
-                           "test_simple.json",
-                           "output." + format,
-                           format);
+        AnalyzeCommand cmd(facade,
+                   presenter,
+                   "test_simple.json",
+                   "output." + format,
+                   format);
         // Just verify format parsing doesn't cause immediate failure
         // (actual execution may fail due to validation issues)
         int code = cmd.execute();
@@ -384,7 +379,7 @@ TEST_F(AnalyzeCommandTest, Execute_LaTeXAlias_Works) {
     truss::cli::presenters::ConsolePresenter presenter(output);
 
     AnalyzeCommand cmd(
-        trussService, analysisService, presenter, "test_simple.json", "output.tex", "TEX");
+        facade, presenter, "test_simple.json", "output.tex", "TEX");
     int exitCode = cmd.execute();
 
     // Just verify it recognizes TEX as valid format
@@ -412,7 +407,7 @@ TEST_F(AnalyzeCommandTest, Execute_ExportFormatDefault_HTML) {
     truss::cli::presenters::ConsolePresenter presenter(output);
 
     // No explicit format, should detect from .html extension
-    AnalyzeCommand cmd(trussService, analysisService, presenter, "test_simple.json", "output.html");
+    AnalyzeCommand cmd(facade, presenter, "test_simple.json", "output.html");
     int exitCode = cmd.execute();
 
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
