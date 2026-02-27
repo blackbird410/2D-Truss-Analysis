@@ -582,6 +582,7 @@ if(BUILD_GUI)
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
+    TrussInterface
     TrussApplication
     TrussCore
     Qt6::Core
