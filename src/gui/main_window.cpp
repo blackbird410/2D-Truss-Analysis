@@ -18,8 +18,8 @@
 
 namespace truss::gui {
 
-MainWindow::MainWindow(application::TrussApplicationService& trussService,
-                       application::AnalysisApplicationService& analysisService,
+MainWindow::MainWindow(application::ITrussService& trussService,
+                       application::IAnalysisService& analysisService,
                        truss_controllers::AnalysisController& analysisController,
                        truss_controllers::ProjectController& projectController,
                        truss_controllers::TrussEditController& trussEditController,
