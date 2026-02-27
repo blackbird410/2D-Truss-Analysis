@@ -288,6 +288,7 @@ add_executable(TrussAnalysisCLI
 )
 
 target_link_libraries(TrussAnalysisCLI PRIVATE
+    TrussInterface
     TrussApplication
     TrussCore
 )
@@ -463,6 +464,7 @@ if(BUILD_TESTING)
     add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
     
     target_link_libraries(integration_tests PRIVATE
+        TrussInterface
         TrussCore
         TrussApplication
         $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
