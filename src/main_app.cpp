@@ -15,9 +15,8 @@
 #include "infrastructure/adapters/console_output_adapter.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
 
-// Application Layer includes
-#include "application/analysis_application_service.hpp"
-#include "application/truss_application_service.hpp"
+// Interface Layer includes
+#include "interface/truss_analysis_facade.hpp"
 
 // CLI Layer includes
 #include "cli/argument_parser.hpp"
@@ -58,12 +57,12 @@ int executeCommand(const truss::cli::ParsedArgs& args,
  *
  * Wires dependencies and dispatches command execution:
  * 1. Creates Infrastructure logger and output adapter
- * 2. Creates Application services and presenters
+ * 2. Creates Interface layer facade (encapsulates application services)
  * 3. Parses command-line arguments
  * 4. Registers commands with dependency injection
  * 5. Routes to appropriate command and executes
  *
- * Phase 5A.4: Complete DI chain - Logger → Adapter → Presenter → Commands
+ * Phase 2A: Updated to use TrussAnalysisFacade instead of raw application services
  */
 int main(int argc, char* argv[]) {
     // Create Infrastructure dependencies (innermost layer)
@@ -79,9 +78,8 @@ int main(int argc, char* argv[]) {
     truss::cli::presenters::ConsolePresenter presenter(consoleOutput);
     presenter.displayHeader();
 
-    // Create Application services
-    truss::application::TrussApplicationService trussService;
-    truss::application::AnalysisApplicationService analysisService;
+    // Create Interface layer facade (encapsulates Application services)
+    truss::interface::TrussAnalysisFacade facade;
 
     // Parse command-line arguments
     truss::cli::ParsedArgs args = truss::cli::ArgumentParser::parse(argc, argv);
@@ -94,10 +92,7 @@ int main(int argc, char* argv[]) {
 
     // ExampleCommand (always available)
     auto exampleCmd = std::make_unique<truss::cli::commands::ExampleCommand>(
-        trussService,
-        analysisService,
-        presenter,
-        args.verbose  // Use parsed verbose flag
+        facade, presenter, args.verbose  // Use parsed verbose flag
     );
     commandPtrs.push_back(exampleCmd.get());
     commands["example"] = std::move(exampleCmd);
@@ -111,24 +106,15 @@ int main(int argc, char* argv[]) {
         auto outputFileOpt = truss::cli::ArgumentParser::getOption(args, "output", "o");
         auto formatOpt = truss::cli::ArgumentParser::getOption(args, "format", "f");
 
-        auto analyzeCmd = std::make_unique<truss::cli::commands::AnalyzeCommand>(trussService,
-                                                                                 analysisService,
-                                                                                 presenter,
-                                                                                 inputFile,
-                                                                                 outputFileOpt,
-                                                                                 formatOpt,
-                                                                                 args.verbose);
+        auto analyzeCmd = std::make_unique<truss::cli::commands::AnalyzeCommand>(
+            facade, presenter, inputFile, outputFileOpt, formatOpt, args.verbose);
         commandPtrs.push_back(analyzeCmd.get());
         commands["analyze"] = std::move(analyzeCmd);
     } else {
         // Create placeholder for help display (will show error if executed without proper args)
         auto analyzeCmd = std::make_unique<truss::cli::commands::AnalyzeCommand>(
-            trussService,
-            analysisService,
-            presenter,
-            "",  // Empty file will trigger validation error with helpful message
-            std::nullopt,
-            std::nullopt,
+            facade, presenter, "",  // Empty file will trigger validation error with helpful message
+            std::nullopt, std::nullopt,
             false  // Default verbose for help display
         );
         commandPtrs.push_back(analyzeCmd.get());
@@ -140,16 +126,13 @@ int main(int argc, char* argv[]) {
         std::string inputFile = inputFileOpt.value();
 
         auto validateCmd = std::make_unique<truss::cli::commands::ValidateCommand>(
-            trussService, presenter, inputFile, args.verbose);
+            facade, presenter, inputFile, args.verbose);
         commandPtrs.push_back(validateCmd.get());
         commands["validate"] = std::move(validateCmd);
     } else {
         // Create placeholder for help display
         auto validateCmd = std::make_unique<truss::cli::commands::ValidateCommand>(
-            trussService,
-            presenter,
-            "",
-            args.verbose  // Use parsed verbose flag
+            facade, presenter, "", args.verbose  // Use parsed verbose flag
         );
         commandPtrs.push_back(validateCmd.get());
         commands["validate"] = std::move(validateCmd);
@@ -168,27 +151,15 @@ int main(int argc, char* argv[]) {
 
         auto exportFormatOpt = truss::cli::ArgumentParser::getOption(args, "format", "f");
 
-        auto exportCmd = std::make_unique<truss::cli::commands::ExportCommand>(trussService,
-                                                                               analysisService,
-                                                                               presenter,
-                                                                               trussFile,
-                                                                               resultsFile,
-                                                                               exportOutput,
-                                                                               exportFormatOpt,
-                                                                               args.verbose);
+        auto exportCmd = std::make_unique<truss::cli::commands::ExportCommand>(
+            facade, presenter, trussFile, resultsFile, exportOutput, exportFormatOpt,
+            args.verbose);
         commandPtrs.push_back(exportCmd.get());
         commands["export"] = std::move(exportCmd);
     } else {
         // Create placeholder for help display
         auto exportCmd = std::make_unique<truss::cli::commands::ExportCommand>(
-            trussService,
-            analysisService,
-            presenter,
-            "",
-            "",
-            "",
-            std::nullopt,
-            args.verbose  // Use parsed verbose flag
+            facade, presenter, "", "", "", std::nullopt, args.verbose  // Use parsed verbose flag
         );
         commandPtrs.push_back(exportCmd.get());
         commands["export"] = std::move(exportCmd);
