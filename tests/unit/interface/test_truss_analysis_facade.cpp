@@ -248,6 +248,21 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveInvalidBuilder) {
 }
 
 /**
+ * @test Facade reports validation errors for unstable truss
+ */
+TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveValidationFailureReports) {
+    TrussBuilder builder;
+    builder.addNode(0.0, 0.0, SupportType::Free);
+    builder.addNode(1.0, 0.0, SupportType::Free);
+    builder.addMember(NodeId(1), NodeId(2));
+
+    auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
+
+    EXPECT_FALSE(result.success);
+    EXPECT_NE(result.errorMessage.find("Validation FAILED"), std::string::npos);
+}
+
+/**
  * @test Facade analyzes simple two-node truss from builder
  */
 TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveSimpleTruss) {
@@ -398,6 +413,22 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsUsesLastHandle) {
     EXPECT_TRUE(success);
 }
 
+/**
+ * @test Facade export fails when last truss handle is invalid
+ */
+TEST_F(TrussAnalysisFacadeTest, ExportResultsFailsWithoutTrussContext) {
+    auto builder = createTriangularBuilder();
+    auto analysisResult = facade->analyzeInteractive(builder, AnalysisOptions{});
+    ASSERT_TRUE(analysisResult.success);
+
+    facade->clearWorkflow(analysisResult.trussHandle, ResultsHandle{0});
+
+    fs::path outputFile = tempDir / "results.json";
+    bool success = facade->exportResults(analysisResult.resultsHandle, outputFile);
+
+    EXPECT_FALSE(success);
+}
+
 // =============================================================================
 // RESOURCE ACCESS TESTS
 // =============================================================================
@@ -502,6 +533,20 @@ TEST_F(TrussAnalysisFacadeTest, ManageMultipleTrusses) {
     );
 }
 
+/**
+ * @test Facade validates handle state
+ */
+TEST_F(TrussAnalysisFacadeTest, HandleValidation) {
+    auto builder = createSimpleBuilder();
+    auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
+    ASSERT_TRUE(result.success);
+
+    EXPECT_TRUE(facade->isValidTrussHandle(result.trussHandle));
+    EXPECT_TRUE(facade->isValidResultsHandle(result.resultsHandle));
+    EXPECT_FALSE(facade->isValidTrussHandle(TrussHandle{0}));
+    EXPECT_FALSE(facade->isValidResultsHandle(ResultsHandle{0}));
+}
+
 // =============================================================================
 // LOWER-LEVEL HELPER TESTS
 // =============================================================================
@@ -541,6 +586,14 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeOnly) {
     auto resultsHandle = facade->analyzeOnly(trussHandle, options);
     
     EXPECT_NE(resultsHandle, ResultsHandle{0});
+}
+
+/**
+ * @test Facade returns 0 for analysis on invalid handle
+ */
+TEST_F(TrussAnalysisFacadeTest, AnalyzeOnlyInvalidHandle) {
+    auto resultsHandle = facade->analyzeOnly(TrussHandle{999}, AnalysisOptions{});
+    EXPECT_EQ(resultsHandle, ResultsHandle{0});
 }
 
 // =============================================================================

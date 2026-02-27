@@ -92,6 +92,20 @@ TEST_F(TrussBuilderTest, FluentApiChaining) {
     EXPECT_EQ(&result, &builder);  // Should return reference to self
 }
 
+/**
+ * @test TrussBuilder setName updates truss name
+ */
+TEST_F(TrussBuilderTest, SetNameUpdatesTrussName) {
+    builder.setName("Test Truss")
+           .addNode(0.0, 0.0, SupportType::Pinned)
+           .addNode(1.0, 0.0, SupportType::RollerX)
+           .addMember(NodeId(1), NodeId(2));
+
+    auto truss = builder.build();
+    ASSERT_NE(truss, nullptr);
+    EXPECT_EQ(truss->getName(), "Test Truss");
+}
+
 // =============================================================================
 // MEMBER ADDITION TESTS
 // =============================================================================
