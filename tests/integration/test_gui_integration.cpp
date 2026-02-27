@@ -1,8 +1,9 @@
 /**
  * @file test_gui_integration.cpp
- * @brief Qt Test framework integration tests for GUI components
- * @author Civil Engineering Software Solutions
+ * @brief Qt Test framework integration tests for GUI components.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * @details
  * Comprehensive GUI integration tests using Qt Test framework.
@@ -12,14 +13,14 @@
  * Purpose: Verify full workflow from UI → Controller → Application → Domain
  */
 
-#include "application/TrussApplicationService.hpp"
-#include "application/TrussEditDTOs.hpp"
-#include "core/model/Types.hpp"
-#include "gui/controllers/AnalysisController.hpp"
-#include "gui/controllers/ProjectController.hpp"
-#include "gui/controllers/TrussEditController.hpp"
-#include "gui/presenters/AnalysisResultsPresenter.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "application/truss_application_service.hpp"
+#include "application/truss_edit_dtos.hpp"
+#include "core/model/types.hpp"
+#include "gui/controllers/analysis_controller.hpp"
+#include "gui/controllers/project_controller.hpp"
+#include "gui/controllers/truss_edit_controller.hpp"
+#include "gui/presenters/analysis_results_presenter.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 
 #include <QSignalSpy>
 #include <QtTest/QtTest>

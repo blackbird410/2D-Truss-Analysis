@@ -1,9 +1,9 @@
 /**
  * @file logger_factory.hpp
- * @brief Factory for creating logger instances
- * @author Civil Engineering Software Solutions
+ * @brief Factory for creating logger instances.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
@@ -123,7 +123,7 @@ private:
     };
 
     /**
-     * @brief Internal null logger implementation
+     * @brief Null logger that discards all messages.
      *
      * Discards all log messages. The getLevel() method returns Trace level
      * (most permissive) because NullLogger accepts all messages for processing,

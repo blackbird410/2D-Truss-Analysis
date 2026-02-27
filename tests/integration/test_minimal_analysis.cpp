@@ -1,8 +1,9 @@
 /**
  * @file test_minimal_analysis.cpp
- * @brief Google Test minimal integration test for basic analysis workflow
- * @author Civil Engineering Software Solutions
+ * @brief Google Test minimal integration test for basic analysis workflow.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Migration Notes:
  * - Converted from minimal console application to GTest format
@@ -11,9 +12,9 @@
  * - Tests absolute minimal successful analysis workflow
  */
 
-#include "../../src/core/analysis/AnalysisOrchestrator.hpp"
-#include "../../src/core/analysis/DirectSolver.hpp"
-#include "../../src/core/model/Truss.hpp"
+#include "../../src/core/analysis/analysis_orchestrator.hpp"
+#include "../../src/core/analysis/direct_solver.hpp"
+#include "../../src/core/model/truss.hpp"
 
 #include <gtest/gtest.h>
 

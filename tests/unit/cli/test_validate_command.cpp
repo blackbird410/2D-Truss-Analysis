@@ -1,8 +1,9 @@
 /**
  * @file test_validate_command.cpp
- * @brief Comprehensive unit tests for ValidateCommand
- * @author Civil Engineering Software Solutions
+ * @brief Comprehensive unit tests for ValidateCommand.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Command execution with valid truss structure
@@ -17,9 +18,9 @@
  * Target: 80%+ line coverage with focused test scenarios
  */
 
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/cli/commands/ValidateCommand.hpp"
-#include "../../../src/cli/presenters/ConsolePresenter.hpp"
+#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/cli/commands/validate_command.hpp"
+#include "../../../src/cli/presenters/console_presenter.hpp"
 
 #include <filesystem>
 #include <fstream>

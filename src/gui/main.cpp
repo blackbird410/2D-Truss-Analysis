@@ -3,16 +3,16 @@
  * @brief Main entry point for the 2D Truss Analysis GUI application
  */
 
-#include "MainWindow.hpp"
-#include "application/AnalysisApplicationService.hpp"
-#include "application/TrussApplicationService.hpp"
-#include "controllers/AnalysisController.hpp"
-#include "controllers/ProjectController.hpp"
-#include "controllers/TrussEditController.hpp"
+#include "application/analysis_application_service.hpp"
+#include "application/truss_application_service.hpp"
+#include "controllers/analysis_controller.hpp"
+#include "controllers/project_controller.hpp"
+#include "controllers/truss_edit_controller.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
-#include "presenters/AnalysisResultsPresenter.hpp"
-#include "presenters/TrussDataPresenter.hpp"
-#include "presenters/ValidationPresenter.hpp"
+#include "main_window.hpp"
+#include "presenters/analysis_results_presenter.hpp"
+#include "presenters/truss_data_presenter.hpp"
+#include "presenters/validation_presenter.hpp"
 
 #include <QtCore/QDir>
 #include <QtCore/QLoggingCategory>

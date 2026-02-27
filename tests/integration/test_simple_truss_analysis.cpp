@@ -1,8 +1,9 @@
 /**
  * @file test_simple_truss_analysis.cpp
- * @brief Google Test integration tests for complete truss analysis workflows
- * @author Civil Engineering Software Solutions
+ * @brief Google Test integration tests for complete truss analysis workflows.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test
@@ -11,10 +12,10 @@
  * - Removed manual test registration (GTest auto-discovers tests)
  */
 
-#include "../../src/core/analysis/AnalysisOrchestrator.hpp"
-#include "../../src/core/analysis/DirectSolver.hpp"
-#include "../../src/core/model/Truss.hpp"
-#include "../../src/core/validation/TrussValidator.hpp"
+#include "../../src/core/analysis/analysis_orchestrator.hpp"
+#include "../../src/core/analysis/direct_solver.hpp"
+#include "../../src/core/model/truss.hpp"
+#include "../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 

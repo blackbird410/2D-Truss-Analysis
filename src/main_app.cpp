@@ -1,8 +1,9 @@
 /**
  * @file main_app.cpp
- * @brief CLI entry point for 2D Truss Analysis
- * @author Civil Engineering Software Solutions
+ * @brief CLI entry point for 2D Truss Analysis.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Implements Command Pattern with dependency injection.
  * Wires Application services to CLI commands and dispatches execution.
@@ -11,21 +12,21 @@
  */
 
 // Infrastructure Layer includes
-#include "infrastructure/adapters/ConsoleOutputAdapter.hpp"
+#include "infrastructure/adapters/console_output_adapter.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
 
 // Application Layer includes
-#include "application/AnalysisApplicationService.hpp"
-#include "application/TrussApplicationService.hpp"
+#include "application/analysis_application_service.hpp"
+#include "application/truss_application_service.hpp"
 
 // CLI Layer includes
-#include "cli/ArgumentParser.hpp"
-#include "cli/commands/AnalyzeCommand.hpp"
-#include "cli/commands/ExampleCommand.hpp"
-#include "cli/commands/ExportCommand.hpp"
-#include "cli/commands/HelpCommand.hpp"
-#include "cli/commands/ICommand.hpp"
-#include "cli/commands/ValidateCommand.hpp"
+#include "cli/argument_parser.hpp"
+#include "cli/commands/analyze_command.hpp"
+#include "cli/commands/example_command.hpp"
+#include "cli/commands/export_command.hpp"
+#include "cli/commands/help_command.hpp"
+#include "cli/commands/icommand.hpp"
+#include "cli/commands/validate_command.hpp"
 
 #include <map>
 #include <memory>

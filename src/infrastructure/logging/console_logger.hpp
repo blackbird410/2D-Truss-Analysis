@@ -1,9 +1,9 @@
 /**
  * @file console_logger.hpp
- * @brief Console logger implementation
- * @author Civil Engineering Software Solutions
+ * @brief Logs messages to standard output with level filtering.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
@@ -51,7 +51,7 @@ public:
 
 private:
     /**
-     * @brief Core logging implementation
+     * @brief Logs message to console output.
      * @param level Severity level
      * @param message Message to log
      */

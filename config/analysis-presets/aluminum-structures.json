@@ -1,0 +1,21 @@
+{
+  "name": "Aluminum Structures",
+  "description": "Analysis preset optimized for aluminum structures",
+  "analysis": {
+    "solverType": "direct",
+    "tolerance": 1e-8,
+    "maxIterations": 1000
+  },
+  "materials": {
+    "default": {
+      "type": "aluminum",
+      "youngModulus": 7e10,
+      "density": 2700
+    }
+  },
+  "export": {
+    "precision": 5,
+    "includeStress": true,
+    "includeStrain": true
+  }
+}

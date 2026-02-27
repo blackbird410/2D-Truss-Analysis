@@ -1,8 +1,9 @@
 /**
  * @file latex_exporter.hpp
- * @brief LaTeX format results exporter implementation
- * @author Civil Engineering Software Solutions
+ * @brief LaTeX format results exporter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
@@ -44,11 +45,13 @@ using core::interfaces::ITrussView;
  * 8. Analysis metadata
  *
  * LaTeX Output Structure:
+ * @verbatim
  * - Complete document with \documentclass, \begin{document}, \end{document}
  * - Tabular environments for data tables
  * - Section headings with \section{}
  * - Proper escaping of special LaTeX characters
  * - Floating-point values formatted according to ExportOptions
+ * @endverbatim
  */
 class LaTeXExporter : public IResultsExporter {
 public:
@@ -92,34 +95,49 @@ private:
 
     /**
      * @brief Write LaTeX document preamble
+     * @param os Output stream
+     * @param truss Truss structure being documented
      */
     static void writePreamble(std::ostream& os, const ITrussView& truss);
 
     /**
      * @brief Write document closing
+     * @param os Output stream
      */
     [[maybe_unused]] static void writeClosing(std::ostream& os);
 
     /**
      * @brief Write geometry section (nodes + members)
+     * @param os Output stream
+     * @param truss Truss structure
+     * @param options Export formatting options
      */
     static void
     writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write material properties section
+     * @param os Output stream
+     * @param truss Truss structure
+     * @param options Export formatting options
      */
     static void
     writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write applied loads section
+     * @param os Output stream
+     * @param truss Truss structure
+     * @param options Export formatting options
      */
     static void
     writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
 
     /**
      * @brief Write displacements section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
      */
     static void writeDisplacementsSection(std::ostream& os,
                                           const IAnalysisResultsView& results,
@@ -127,6 +145,9 @@ private:
 
     /**
      * @brief Write member forces section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
      */
     static void writeMemberForcesSection(std::ostream& os,
                                          const IAnalysisResultsView& results,
@@ -134,6 +155,9 @@ private:
 
     /**
      * @brief Write reactions section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
      */
     static void writeReactionsSection(std::ostream& os,
                                       const IAnalysisResultsView& results,
@@ -141,6 +165,9 @@ private:
 
     /**
      * @brief Write analysis metadata section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
      */
     static void writeMetadataSection(std::ostream& os,
                                      const IAnalysisResultsView& results,

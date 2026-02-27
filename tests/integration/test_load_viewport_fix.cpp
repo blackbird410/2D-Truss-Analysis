@@ -1,16 +1,17 @@
 /**
  * @file test_load_viewport_fix.cpp
- * @brief Validation test for UI load viewport auto-zoom fix
- * @author Civil Engineering Software Solutions
+ * @brief Validation test for UI load viewport auto-zoom fix.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This test verifies that the viewport fix correctly auto-zooms
  * to fit loaded geometry, ensuring visibility after load.
  */
 
-#include "application/TrussApplicationService.hpp"
-#include "gui/controllers/ProjectController.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "application/truss_application_service.hpp"
+#include "gui/controllers/project_controller.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 
 #include <QDir>
 #include <QFile>

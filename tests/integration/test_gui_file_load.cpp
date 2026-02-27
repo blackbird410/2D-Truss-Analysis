@@ -1,15 +1,16 @@
 /**
  * @file test_gui_file_load.cpp
- * @brief Diagnostic test for GUI file loading regression
- * @author Civil Engineering Software Solutions
+ * @brief Diagnostic test for GUI file loading regression.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This test diagnoses why files selected via QFileDialog
  * are not being loaded into the application.
  */
 
-#include "application/TrussApplicationService.hpp"
-#include "gui/controllers/ProjectController.hpp"
+#include "application/truss_application_service.hpp"
+#include "gui/controllers/project_controller.hpp"
 
 #include <QDebug>
 #include <QDir>

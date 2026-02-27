@@ -1,9 +1,9 @@
 /**
  * @file console_logger.cpp
- * @brief Console logger implementation
- * @author Civil Engineering Software Solutions
+ * @brief Logs messages to standard output with level filtering.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "console_logger.hpp"
@@ -16,7 +16,7 @@
 namespace truss::infrastructure::logging {
 
 ConsoleLogger::ConsoleLogger(LogLevel minLevel, bool useColors)
-    : m_minLevel(minLevel), m_useColors(useColors) {}
+    : m_minLevel(minLevel), m_useColors(useColors), m_mutex() {}
 
 void ConsoleLogger::trace(const std::string& message) {
     log(LogLevel::Trace, message);

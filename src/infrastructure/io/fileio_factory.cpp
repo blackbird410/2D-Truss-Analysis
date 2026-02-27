@@ -1,9 +1,9 @@
 /**
  * @file fileio_factory.cpp
- * @brief Factory for creating file I/O readers and writers implementation
- * @author Civil Engineering Software Solutions
+ * @brief Creates readers and writers based on file format.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "fileio_factory.hpp"

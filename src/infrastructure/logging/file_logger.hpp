@@ -1,9 +1,9 @@
 /**
  * @file file_logger.hpp
- * @brief File logger implementation
- * @author Civil Engineering Software Solutions
+ * @brief Logs messages to rotating log files.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
@@ -47,6 +47,12 @@ public:
 
     ~FileLogger() override;
 
+    // Rule of Five: FileLogger manages file handle resource
+    FileLogger(const FileLogger&) = delete;            // No copy - file handle unique
+    FileLogger& operator=(const FileLogger&) = delete;
+    FileLogger(FileLogger&&) = delete;                 // No move - simplify lifetime
+    FileLogger& operator=(FileLogger&&) = delete;
+
     // ILogger interface implementation
     void trace(const std::string& message) override;
     void debug(const std::string& message) override;
@@ -75,7 +81,7 @@ public:
 
 private:
     /**
-     * @brief Core logging implementation
+     * @brief Logs message to file output.
      * @param level Severity level
      * @param message Message to log
      */

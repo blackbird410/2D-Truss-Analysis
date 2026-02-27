@@ -1,8 +1,9 @@
 /**
  * @file test_simple_integration.cpp
- * @brief Google Test integration tests for truss creation without analysis
- * @author Civil Engineering Software Solutions
+ * @brief Google Test integration tests for truss creation without analysis.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Migration Notes:
  * - Converted from custom TestFramework.hpp to Google Test
@@ -10,8 +11,8 @@
  * - Tests structural properties without running analysis
  */
 
-#include "../../src/core/model/Truss.hpp"
-#include "../../src/core/validation/TrussValidator.hpp"
+#include "../../src/core/model/truss.hpp"
+#include "../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 

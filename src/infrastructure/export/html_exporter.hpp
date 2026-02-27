@@ -1,8 +1,9 @@
 /**
  * @file html_exporter.hpp
- * @brief HTML format results exporter implementation
- * @author Civil Engineering Software Solutions
+ * @brief HTML format results exporter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

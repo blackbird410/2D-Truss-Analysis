@@ -3,23 +3,21 @@
 # ==============================================================================
 #
 # A professional build system wrapper for CMake-based C++ projects.
-# Provides intuitive targets for development, testing, and deployment.
+# Delegates to helper scripts in ./scripts/ for build, test, and code quality tasks.
 #
-# NOTE: You may see a warning about overriding the 'build' target. This is
-#       harmless and occurs because CMake generates its own Makefile in build/
-#       with its own 'build' target. The top-level Makefile's target takes
-#       precedence, which is the correct behavior. To suppress: make -w help
-#
-# Prerequisites:
-#   - CMake 3.20+
-#   - C++20 compatible compiler (GCC 10+, Clang 12+, MSVC 2019+)
-#   - Qt6, Eigen3, nlohmann_json, tinyxml2, GoogleTest
+# This Makefile serves as a convenient interface for common development tasks.
+# For more advanced usage, invoke the scripts directly:
+#   - ./scripts/build.sh [options]
+#   - ./scripts/test.sh [test-type]
+#   - ./scripts/format-code.sh
+#   - ./scripts/run-static-analysis.sh
+#   - ./scripts/generate-docs.sh
 #
 # Quick Start:
 #   make              # Show help
 #   make build        # Build release version
 #   make test         # Run all tests
-#   make coverage     # Generate coverage report
+#   make format       # Format code
 #
 # ==============================================================================
 
@@ -34,7 +32,6 @@ MAKEFLAGS += --no-builtin-rules --no-print-directory
 .SUFFIXES:
 
 # Tell Make to ignore CMake's generated Makefiles in build directories
-# This prevents warnings about overriding the 'build' target
 MAKEFLAGS += --include-dir=.
 
 # Default target
@@ -69,17 +66,20 @@ endif
 # Compiler detection
 CXX ?= $(shell command -v clang++ 2>/dev/null || command -v g++ 2>/dev/null || echo c++)
 
+# Script paths
+SCRIPT_DIR := scripts
+BUILD_SCRIPT := $(SCRIPT_DIR)/build.sh
+TEST_SCRIPT := $(SCRIPT_DIR)/test.sh
+FORMAT_SCRIPT := $(SCRIPT_DIR)/format-code.sh
+ANALYSIS_SCRIPT := $(SCRIPT_DIR)/run-static-analysis.sh
+DOCS_SCRIPT := $(SCRIPT_DIR)/generate-docs.sh
+COVERAGE_SCRIPT := $(SCRIPT_DIR)/generate_coverage.sh
+INSTALL_UBUNTU_SCRIPT := $(SCRIPT_DIR)/install-deps-ubuntu.sh
+INSTALL_FEDORA_SCRIPT := $(SCRIPT_DIR)/install-deps-fedora.sh
+
 # Coverage tools
 LCOV := $(shell command -v lcov 2>/dev/null)
 GENHTML := $(shell command -v genhtml 2>/dev/null)
-
-# Formatting tools
-CLANG_FORMAT := $(shell command -v clang-format 2>/dev/null)
-PRETTIER := $(shell command -v prettier 2>/dev/null)
-
-# Static analysis tools
-CLANG_TIDY := $(shell command -v clang-tidy 2>/dev/null)
-CPPCHECK := $(shell command -v cppcheck 2>/dev/null)
 
 # Output styling
 BOLD := \033[1m
@@ -99,43 +99,65 @@ help: ## Show this help message
 	@echo -e "$(BOLD)Usage:$(RESET) make [target]"
 	@echo ""
 	@echo -e "$(BOLD)Build Targets:$(RESET)"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/ {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}' | \
-		grep -E "build|clean|configure"
+	@echo -e "  $(BLUE)build$(RESET)           Build release version (uses ./scripts/build.sh)"
+	@echo -e "  $(BLUE)debug$(RESET)           Build debug version"
+	@echo -e "  $(BLUE)rebuild$(RESET)         Clean and rebuild release version"
+	@echo -e "  $(BLUE)rebuild-debug$(RESET)   Clean and rebuild debug version"
+	@echo -e "  $(BLUE)clean$(RESET)           Clean release build artifacts"
+	@echo -e "  $(BLUE)clean-debug$(RESET)     Clean debug build artifacts"
+	@echo -e "  $(BLUE)clean-coverage$(RESET)  Clean coverage build artifacts"
+	@echo -e "  $(BLUE)clean-all$(RESET)       Clean all build artifacts"
+	@echo -e "  $(BLUE)distclean$(RESET)       Deep clean (including CMake caches)"
 	@echo ""
 	@echo -e "$(BOLD)Test Targets:$(RESET)"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/ {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}' | \
-		grep -E "test|coverage"
+	@echo -e "  $(BLUE)test$(RESET)            Run all tests (uses ./scripts/test.sh)"
+	@echo -e "  $(BLUE)test-unit$(RESET)       Run unit tests only"
+	@echo -e "  $(BLUE)test-integration$(RESET) Run integration tests"
+	@echo -e "  $(BLUE)test-gui$(RESET)        Run GUI integration tests"
+	@echo -e "  $(BLUE)test-verbose$(RESET)    Run tests with verbose output"
+	@echo -e "  $(BLUE)test-debug$(RESET)      Run tests in debug mode"
 	@echo ""
 	@echo -e "$(BOLD)Code Quality:$(RESET)"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/ {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}' | \
-		grep -E "format|lint|static"
+	@echo -e "  $(BLUE)format$(RESET)          Format C++ code (uses ./scripts/format-code.sh)"
+	@echo -e "  $(BLUE)format-check$(RESET)    Check if code needs formatting (CI-friendly)"
+	@echo -e "  $(BLUE)lint$(RESET)            Run clang-tidy static analysis"
+	@echo -e "  $(BLUE)static-analysis$(RESET) Run cppcheck analysis (uses ./scripts/run-static-analysis.sh)"
+	@echo -e "  $(BLUE)coverage$(RESET)        Generate code coverage report"
+	@echo -e "  $(BLUE)coverage-open$(RESET)   Generate and open coverage in browser"
+	@echo ""
+	@echo -e "$(BOLD)Documentation:$(RESET)"
+	@echo -e "  $(BLUE)docs$(RESET)            Generate API documentation (uses ./scripts/generate-docs.sh)"
 	@echo ""
 	@echo -e "$(BOLD)Development:$(RESET)"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/ {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}' | \
-		grep -E "run|debug|install|info"
+	@echo -e "  $(BLUE)run-cli$(RESET)         Run CLI application"
+	@echo -e "  $(BLUE)run-gui$(RESET)         Run GUI application"
+	@echo -e "  $(BLUE)install$(RESET)         Install to system (requires sudo)"
+	@echo -e "  $(BLUE)info$(RESET)            Show build system information"
+	@echo ""
+	@echo -e "$(BOLD)Dependencies:$(RESET)"
+	@echo -e "  $(BLUE)install-ubuntu$(RESET)  Install dependencies (Ubuntu/Debian)"
+	@echo -e "  $(BLUE)install-fedora$(RESET)  Install dependencies (Fedora/RHEL)"
 	@echo ""
 	@echo -e "$(BOLD)Docker/Containers:$(RESET)"
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | \
-		awk 'BEGIN {FS = ":.*?## "}; /^[a-zA-Z_-]+:.*?## .*$$/ {printf "  $(BLUE)%-20s$(RESET) %s\n", $$1, $$2}' | \
-		grep -E "docker"
+	@echo -e "  $(BLUE)docker-build$(RESET)    Build production Docker image"
+	@echo -e "  $(BLUE)docker-build-dev$(RESET) Build development Docker image"
+	@echo -e "  $(BLUE)docker-run$(RESET)      Run analysis in Docker container"
+	@echo -e "  $(BLUE)docker-dev$(RESET)      Start interactive development container"
+	@echo -e "  $(BLUE)docker-shell$(RESET)    Open shell in running container"
+	@echo -e "  $(BLUE)docker-test$(RESET)     Test Docker container"
+	@echo -e "  $(BLUE)docker-clean$(RESET)    Remove Docker images and containers"
+	@echo ""
+	@echo -e "$(BOLD)CI/CD:$(RESET)"
+	@echo -e "  $(BLUE)ci$(RESET)              Run CI pipeline (build + test + format-check)"
+	@echo -e "  $(BLUE)ci-full$(RESET)         Run full CI pipeline (+ coverage)"
 	@echo ""
 	@echo -e "$(BOLD)Examples:$(RESET)"
 	@echo "  make build test        # Build and test (release mode)"
 	@echo "  make debug             # Build debug version"
+	@echo "  make format            # Format code"
 	@echo "  make coverage          # Generate coverage report"
 	@echo "  make docker-build      # Build Docker container"
-	@echo "  make clean-all         # Clean all build artifacts"
-	@echo ""
-	@echo -e "$(BOLD)Environment:$(RESET)"
-	@echo "  CXX:           $(CXX)"
-	@echo "  CPU Cores:     $(NPROC)"
-	@echo "  CMake Gen:     $(CMAKE_GENERATOR)"
-	@echo ""
-	@echo -e "$(BOLD)Note:$(RESET) Warnings about 'build' target override are harmless (CMake-generated Makefile)"
+	@echo "  make clean-all         # Clean all artifacts"
 	@echo ""
 
 # ==============================================================================
@@ -146,52 +168,16 @@ help: ## Show this help message
 all: build ## Build everything (alias for 'build')
 
 .PHONY: build
-build: configure-release ## Build release version (optimized)
+build: ## Build release version (optimized, uses ./scripts/build.sh)
 	@echo -e "$(BOLD)Building release version...$(RESET)"
-	@cmake --build $(BUILD_DIR) --parallel $(NPROC)
+	@$(BUILD_SCRIPT) --release -j$(NPROC)
 	@echo -e "$(GREEN)✓ Build complete$(RESET)"
 
 .PHONY: debug
-debug: configure-debug ## Build debug version (with symbols)
+debug: ## Build debug version (with symbols)
 	@echo -e "$(BOLD)Building debug version...$(RESET)"
-	@cmake --build $(BUILD_DEBUG_DIR) --parallel $(NPROC)
+	@$(BUILD_SCRIPT) --debug -j$(NPROC)
 	@echo -e "$(GREEN)✓ Debug build complete$(RESET)"
-
-.PHONY: configure-release
-configure-release:
-	@mkdir -p $(BUILD_DIR)
-	@if [ ! -f $(BUILD_DIR)/CMakeCache.txt ]; then \
-		echo -e "$(BOLD)Configuring release build...$(RESET)"; \
-		cd $(BUILD_DIR) && cmake -G "$(CMAKE_GENERATOR)" \
-			-DCMAKE_BUILD_TYPE=Release \
-			-DCMAKE_CXX_COMPILER=$(CXX) \
-			-DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-			..; \
-	fi
-
-.PHONY: configure-debug
-configure-debug:
-	@mkdir -p $(BUILD_DEBUG_DIR)
-	@if [ ! -f $(BUILD_DEBUG_DIR)/CMakeCache.txt ]; then \
-		echo -e "$(BOLD)Configuring debug build...$(RESET)"; \
-		cd $(BUILD_DEBUG_DIR) && cmake -G "$(CMAKE_GENERATOR)" \
-			-DCMAKE_BUILD_TYPE=Debug \
-			-DCMAKE_CXX_COMPILER=$(CXX) \
-			-DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-			..; \
-	fi
-
-.PHONY: configure-coverage
-configure-coverage:
-	@mkdir -p $(BUILD_COVERAGE_DIR)
-	@if [ ! -f $(BUILD_COVERAGE_DIR)/CMakeCache.txt ]; then \
-		echo -e "$(BOLD)Configuring coverage build...$(RESET)"; \
-		cd $(BUILD_COVERAGE_DIR) && cmake -G "$(CMAKE_GENERATOR)" \
-			-DCMAKE_BUILD_TYPE=Debug \
-			-DENABLE_COVERAGE=ON \
-			-DCMAKE_CXX_COMPILER=$(CXX) \
-			..; \
-	fi
 
 .PHONY: rebuild
 rebuild: clean build ## Clean and rebuild release version
@@ -204,10 +190,40 @@ rebuild-debug: clean-debug debug ## Clean and rebuild debug version
 # ==============================================================================
 
 .PHONY: test
-test: build ## Run all tests (release build)
+test: ## Run all tests (uses ./scripts/test.sh)
 	@echo -e "$(BOLD)Running all tests...$(RESET)"
-	@cd $(BUILD_DIR) && ctest --output-on-failure --parallel $(NPROC)
+	@if [ ! -d "$(BUILD_DIR)" ] || grep -q "BUILD_TESTING:BOOL=OFF" "$(BUILD_DIR)/CMakeCache.txt" 2>/dev/null; then \
+		echo -e "$(YELLOW)Tests not configured. Reconfiguring with BUILD_TESTING=ON...$(RESET)"; \
+		$(BUILD_SCRIPT) --clean; \
+	fi
+	@$(TEST_SCRIPT) all
 	@echo -e "$(GREEN)✓ All tests passed$(RESET)"
+
+.PHONY: test-unit
+test-unit: ## Run unit tests only
+	@echo -e "$(BOLD)Running unit tests...$(RESET)"
+	@if [ ! -d "$(BUILD_DIR)" ] || grep -q "BUILD_TESTING:BOOL=OFF" "$(BUILD_DIR)/CMakeCache.txt" 2>/dev/null; then \
+		echo -e "$(YELLOW)Tests not configured. Reconfiguring with BUILD_TESTING=ON...$(RESET)"; \
+		$(BUILD_SCRIPT) --clean; \
+	fi
+	@$(TEST_SCRIPT) unit
+	@echo -e "$(GREEN)✓ Unit tests passed$(RESET)"
+
+.PHONY: test-integration
+test-integration: ## Run integration tests only
+	@echo -e "$(BOLD)Running integration tests...$(RESET)"
+	@if [ ! -d "$(BUILD_DIR)" ] || grep -q "BUILD_TESTING:BOOL=OFF" "$(BUILD_DIR)/CMakeCache.txt" 2>/dev/null; then \
+		echo -e "$(YELLOW)Tests not configured. Reconfiguring with BUILD_TESTING=ON...$(RESET)"; \
+		$(BUILD_SCRIPT) --clean; \
+	fi
+	@$(TEST_SCRIPT) integration
+	@echo -e "$(GREEN)✓ Integration tests passed$(RESET)"
+
+.PHONY: test-gui
+test-gui: build ## Run GUI integration tests
+	@echo -e "$(BOLD)Running GUI integration tests...$(RESET)"
+	@$(TEST_SCRIPT) gui
+	@echo -e "$(GREEN)✓ GUI tests passed$(RESET)"
 
 .PHONY: test-verbose
 test-verbose: build ## Run tests with verbose output
@@ -219,39 +235,19 @@ test-debug: debug ## Run tests in debug mode
 	@echo -e "$(BOLD)Running tests (debug build)...$(RESET)"
 	@cd $(BUILD_DEBUG_DIR) && ctest --output-on-failure --parallel $(NPROC)
 
-.PHONY: test-unit
-test-unit: build ## Run unit tests only
-	@echo -e "$(BOLD)Running unit tests...$(RESET)"
-	@cd $(BUILD_DIR) && ctest -R UnitTests --output-on-failure
-
-.PHONY: test-integration
-test-integration: build ## Run integration tests only
-	@echo -e "$(BOLD)Running integration tests...$(RESET)"
-	@cd $(BUILD_DIR) && ctest -R IntegrationTests --output-on-failure
-
-.PHONY: test-gui
-test-gui: build ## Run GUI integration tests
-	@echo -e "$(BOLD)Running GUI integration tests...$(RESET)"
-	@cd $(BUILD_DIR) && ctest -R GUIIntegrationTests --output-on-failure
-
 # ==============================================================================
 # Coverage Targets
 # ==============================================================================
 
 .PHONY: coverage
-coverage: configure-coverage ## Generate coverage report
-	@echo -e "$(BOLD)Building with coverage instrumentation...$(RESET)"
-	@cmake --build $(BUILD_COVERAGE_DIR) --parallel $(NPROC)
-	@echo -e "$(BOLD)Running tests with coverage...$(RESET)"
-	@cd $(BUILD_COVERAGE_DIR) && ctest --output-on-failure --parallel $(NPROC)
-	@if [ -z "$(LCOV)" ] || [ -z "$(GENHTML)" ]; then \
-		echo -e "$(YELLOW)⚠ lcov/genhtml not found, skipping report generation$(RESET)"; \
-		echo "  Install: brew install lcov (macOS) or apt install lcov (Linux)"; \
+coverage: ## Generate code coverage report
+	@echo -e "$(BOLD)Generating coverage report...$(RESET)"
+	@if [ ! -x "$(COVERAGE_SCRIPT)" ]; then \
+		echo -e "$(YELLOW)⚠ Coverage script not executable$(RESET)"; \
 		exit 1; \
 	fi
-	@echo -e "$(BOLD)Generating coverage report...$(RESET)"
-	@cmake --build $(BUILD_COVERAGE_DIR) --target coverage
-	@echo -e "$(GREEN)✓ Coverage report: $(BUILD_COVERAGE_DIR)/coverage_html/index.html$(RESET)"
+	@$(COVERAGE_SCRIPT)
+	@echo -e "$(GREEN)✓ Coverage report generated$(RESET)"
 
 .PHONY: coverage-open
 coverage-open: coverage ## Generate and open coverage report in browser
@@ -268,28 +264,19 @@ coverage-open: coverage ## Generate and open coverage report in browser
 # ==============================================================================
 
 .PHONY: format
-format: ## Format C++ code with clang-format
-	@if [ -z "$(CLANG_FORMAT)" ]; then \
-		echo -e "$(YELLOW)⚠ clang-format not found$(RESET)"; \
-		echo "  Install: brew install llvm (macOS) or apt install clang-format (Linux)"; \
-		exit 1; \
-	fi
+format: ## Format C++ code (uses ./scripts/format-code.sh)
 	@echo -e "$(BOLD)Formatting C++ code...$(RESET)"
-	@find src tests -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
-		-not -path "*/build*/*" \
-		-exec $(CLANG_FORMAT) -i -style=file {} +
+	@$(FORMAT_SCRIPT)
 	@echo -e "$(GREEN)✓ Code formatted$(RESET)"
 
 .PHONY: format-check
 format-check: ## Check if code needs formatting (CI-friendly)
-	@if [ -z "$(CLANG_FORMAT)" ]; then \
-		echo -e "$(YELLOW)⚠ clang-format not found, skipping check$(RESET)"; \
-		exit 0; \
-	fi
 	@echo -e "$(BOLD)Checking code formatting...$(RESET)"
+	@command -v clang-format >/dev/null 2>&1 || \
+		(echo -e "$(YELLOW)⚠ clang-format not found$(RESET)"; exit 1)
 	@if find src tests -type f \( -name "*.cpp" -o -name "*.hpp" -o -name "*.h" \) \
 		-not -path "*/build*/*" \
-		-exec $(CLANG_FORMAT) --dry-run -Werror -style=file {} + 2>/dev/null; then \
+		-exec clang-format --dry-run -Werror -style=file {} + 2>/dev/null; then \
 		echo -e "$(GREEN)✓ Code is properly formatted$(RESET)"; \
 	else \
 		echo -e "$(YELLOW)⚠ Code needs formatting. Run 'make format'$(RESET)"; \
@@ -297,94 +284,35 @@ format-check: ## Check if code needs formatting (CI-friendly)
 	fi
 
 .PHONY: lint
-lint: ## Run clang-tidy static analysis
-	@if [ -z "$(CLANG_TIDY)" ]; then \
-		echo -e "$(YELLOW)⚠ clang-tidy not found$(RESET)"; \
-		echo "  Install: brew install llvm (macOS) or apt install clang-tidy (Linux)"; \
-		exit 1; \
-	fi
+lint: build ## Run clang-tidy static analysis
+	@echo -e "$(BOLD)Running clang-tidy...$(RESET)"
+	@command -v clang-tidy >/dev/null 2>&1 || \
+		(echo -e "$(YELLOW)⚠ clang-tidy not found$(RESET)"; exit 1)
 	@if [ ! -f $(BUILD_DIR)/compile_commands.json ]; then \
 		echo -e "$(YELLOW)⚠ compile_commands.json not found. Run 'make build' first$(RESET)"; \
 		exit 1; \
 	fi
-	@echo -e "$(BOLD)Running clang-tidy...$(RESET)"
-	@find src -type f \( -name "*.cpp" \) \
+	@find src -type f -name "*.cpp" \
 		-not -path "*/build*/*" \
-		-exec $(CLANG_TIDY) -p $(BUILD_DIR) {} +
+		-not -path "*/vcpkg_installed/*" \
+		-exec clang-tidy -p $(BUILD_DIR) --header-filter='$(PWD)/src/.*' {} +  || true
 	@echo -e "$(GREEN)✓ Static analysis complete$(RESET)"
 
 .PHONY: static-analysis
-static-analysis: ## Run cppcheck static analysis
-	@if [ -z "$(CPPCHECK)" ]; then \
-		echo -e "$(YELLOW)⚠ cppcheck not found$(RESET)"; \
-		echo "  Install: brew install cppcheck (macOS) or apt install cppcheck (Linux)"; \
-		exit 1; \
-	fi
-	@echo -e "$(BOLD)Running cppcheck...$(RESET)"
-	@$(CPPCHECK) --enable=all --inconclusive --std=c++20 --inline-suppr \
-		--suppress=missingIncludeSystem \
-		--suppress=missingInclude \
-		-i src/gui/PlotWidget_corrupted.cpp \
-		-Dslots= -Dsignals= -DQ_OBJECT= -Demit= \
-		-I src \
-		src/ 2>&1 | tee cppcheck-report.txt
-	@echo -e "$(GREEN)✓ Static analysis complete (see cppcheck-report.txt)$(RESET)"
+static-analysis: ## Run cppcheck static analysis (uses ./scripts/run-static-analysis.sh)
+	@echo -e "$(BOLD)Running static analysis...$(RESET)"
+	@$(ANALYSIS_SCRIPT)
+	@echo -e "$(GREEN)✓ Static analysis complete$(RESET)"
 
-.PHONY: format-docs
-format-docs: ## Format Markdown documentation with Prettier
-	@if [ -z "$(PRETTIER)" ]; then \
-		echo -e "$(YELLOW)⚠ Prettier not found$(RESET)"; \
-		echo "  Install: npm install -g prettier"; \
-		exit 1; \
-	fi
-	@echo -e "$(BOLD)Formatting Markdown documentation...$(RESET)"
-	@$(PRETTIER) --write "**/*.md" --ignore-path .prettierignore
-	@echo -e "$(GREEN)✓ Documentation formatted$(RESET)"
+# ==============================================================================
+# Documentation Targets
+# ==============================================================================
 
-.PHONY: format-yaml
-format-yaml: ## Format YAML configuration files with Prettier
-	@if [ -z "$(PRETTIER)" ]; then \
-		echo -e "$(YELLOW)⚠ Prettier not found$(RESET)"; \
-		echo "  Install: npm install -g prettier"; \
-		exit 1; \
-	fi
-	@echo -e "$(BOLD)Formatting YAML files...$(RESET)"
-	@$(PRETTIER) --write "**/*.{yml,yaml}" --ignore-path .prettierignore
-	@echo -e "$(GREEN)✓ YAML files formatted$(RESET)"
-
-.PHONY: format-all
-format-all: format format-docs format-yaml ## Format all code (C++, docs, YAML)
-	@echo -e "$(GREEN)✓ All files formatted$(RESET)"
-
-.PHONY: format-check-docs
-format-check-docs: ## Check if documentation needs formatting (CI-friendly)
-	@if [ -z "$(PRETTIER)" ]; then \
-		echo -e "$(YELLOW)⚠ Prettier not found, skipping check$(RESET)"; \
-		exit 0; \
-	fi
-	@echo -e "$(BOLD)Checking documentation formatting...$(RESET)"
-	@if ! $(PRETTIER) --check "**/*.md" --ignore-path .prettierignore 2>/dev/null; then \
-		echo -e "$(YELLOW)❌ Documentation needs formatting. Run 'make format-docs'$(RESET)"; \
-		exit 1; \
-	fi
-	@echo -e "$(GREEN)✓ Documentation is properly formatted$(RESET)"
-
-.PHONY: format-check-yaml
-format-check-yaml: ## Check if YAML files need formatting (CI-friendly)
-	@if [ -z "$(PRETTIER)" ]; then \
-		echo -e "$(YELLOW)⚠ Prettier not found, skipping check$(RESET)"; \
-		exit 0; \
-	fi
-	@echo -e "$(BOLD)Checking YAML formatting...$(RESET)"
-	@if ! $(PRETTIER) --check "**/*.{yml,yaml}" --ignore-path .prettierignore 2>/dev/null; then \
-		echo -e "$(YELLOW)❌ YAML files need formatting. Run 'make format-yaml'$(RESET)"; \
-		exit 1; \
-	fi
-	@echo -e "$(GREEN)✓ YAML files are properly formatted$(RESET)"
-
-.PHONY: format-check-all
-format-check-all: format-check format-check-docs format-check-yaml ## Check all formatting (CI-friendly)
-	@echo -e "$(GREEN)✓ All files are properly formatted$(RESET)"
+.PHONY: docs
+docs: ## Generate API documentation (uses ./scripts/generate-docs.sh)
+	@echo -e "$(BOLD)Generating API documentation...$(RESET)"
+	@$(DOCS_SCRIPT)
+	@echo -e "$(GREEN)✓ Documentation generated$(RESET)"
 
 # ==============================================================================
 # Development Targets
@@ -406,6 +334,16 @@ install: build ## Install to system (requires sudo)
 	@cd $(BUILD_DIR) && sudo cmake --install .
 	@echo -e "$(GREEN)✓ Installation complete$(RESET)"
 
+.PHONY: install-ubuntu
+install-ubuntu: ## Install dependencies (Ubuntu/Debian, uses ./scripts/install-deps-ubuntu.sh)
+	@echo -e "$(BOLD)Installing Ubuntu/Debian dependencies...$(RESET)"
+	@$(INSTALL_UBUNTU_SCRIPT)
+
+.PHONY: install-fedora
+install-fedora: ## Install dependencies (Fedora/RHEL, uses ./scripts/install-deps-fedora.sh)
+	@echo -e "$(BOLD)Installing Fedora/RHEL dependencies...$(RESET)"
+	@$(INSTALL_FEDORA_SCRIPT)
+
 .PHONY: info
 info: ## Show build system information
 	@echo -e "$(BOLD)Build System Information$(RESET)"
@@ -421,13 +359,12 @@ info: ## Show build system information
 	@echo "  Debug:         $(BUILD_DEBUG_DIR)"
 	@echo "  Coverage:      $(BUILD_COVERAGE_DIR)"
 	@echo ""
-	@echo -e "$(BOLD)Available Tools:$(RESET)"
-	@echo "  lcov:          $(if $(LCOV),✓ $(LCOV),✗ not found)"
-	@echo "  genhtml:       $(if $(GENHTML),✓ $(GENHTML),✗ not found)"
-	@echo "  clang-format:  $(if $(CLANG_FORMAT),✓ $(CLANG_FORMAT),✗ not found)"
-	@echo "  prettier:      $(if $(PRETTIER),✓ $(PRETTIER),✗ not found - run 'npm install')"
-	@echo "  clang-tidy:    $(if $(CLANG_TIDY),✓ $(CLANG_TIDY),✗ not found)"
-	@echo "  cppcheck:      $(if $(CPPCHECK),✓ $(CPPCHECK),✗ not found)"
+	@echo -e "$(BOLD)Scripts:$(RESET)"
+	@echo "  Build:         $(BUILD_SCRIPT)"
+	@echo "  Test:          $(TEST_SCRIPT)"
+	@echo "  Format:        $(FORMAT_SCRIPT)"
+	@echo "  Analysis:      $(ANALYSIS_SCRIPT)"
+	@echo "  Docs:          $(DOCS_SCRIPT)"
 	@echo ""
 	@if [ -d $(BUILD_DIR) ]; then \
 		echo -e "$(BOLD)Build Status (Release):$(RESET)"; \
@@ -507,7 +444,7 @@ docker-run: ## Run analysis in Docker container
 .PHONY: docker-dev
 docker-dev: ## Start interactive development container
 	@echo -e "$(BOLD)Starting development container...$(RESET)"
-	@docker compose run --rm truss-dev
+	@docker compose -f docker/docker-compose.yml run --rm truss-dev
 
 .PHONY: docker-shell
 docker-shell: ## Open shell in running container
@@ -534,7 +471,7 @@ docker-push: ## Push Docker image to registry
 docker-clean: ## Remove project Docker images, containers, and volumes
 	@echo -e "$(BOLD)Cleaning project Docker artifacts...$(RESET)"
 	@echo "Stopping and removing project containers..."
-	@docker compose down -v 2>/dev/null || true
+	@docker compose -f docker/docker-compose.yml down -v 2>/dev/null || true
 	@docker stop truss-analysis truss-dev 2>/dev/null || true
 	@docker rm truss-analysis truss-dev 2>/dev/null || true
 	@echo "Removing project images..."
@@ -559,20 +496,16 @@ ci: build test format-check ## CI pipeline (build + test + format check)
 	@echo -e "$(GREEN)✓ CI pipeline passed$(RESET)"
 
 .PHONY: ci-full
-ci-full: ci coverage format-check-all ## Full CI pipeline (build + test + coverage + all format checks)
+ci-full: ci coverage lint static-analysis ## Full CI pipeline (build + test + coverage + analysis)
 	@echo -e "$(GREEN)✓ Full CI pipeline passed$(RESET)"
 
 # ==============================================================================
 # Phony Target Declaration
 # ==============================================================================
-# Note: Directory creation is handled inline in configure-* targets
 
-.PHONY: all build debug configure-release configure-debug configure-coverage \
-        rebuild rebuild-debug test test-verbose test-debug test-unit \
-        test-integration test-gui coverage coverage-open format format-check \
-        format-docs format-yaml format-all format-check-docs format-check-yaml \
-        format-check-all lint static-analysis run-cli run-gui install info \
-        clean clean-debug clean-coverage clean-all distclean \
+.PHONY: help all build debug rebuild rebuild-debug test test-unit test-integration \
+        test-gui test-verbose test-debug coverage coverage-open format format-check \
+        lint static-analysis docs run-cli run-gui install install-ubuntu install-fedora \
+        info clean clean-debug clean-coverage clean-all distclean \
         docker-build docker-build-dev docker-run docker-dev docker-shell \
-        docker-test docker-push docker-clean docker-size \
-        ci ci-full help
+        docker-test docker-push docker-clean docker-size ci ci-full

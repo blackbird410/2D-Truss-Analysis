@@ -1,9 +1,9 @@
 /**
  * @file file_logger.cpp
- * @brief File logger implementation
- * @author Civil Engineering Software Solutions
+ * @brief Logs messages to rotating log files.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "file_logger.hpp"
@@ -16,7 +16,7 @@
 namespace truss::infrastructure::logging {
 
 FileLogger::FileLogger(const std::filesystem::path& filePath, LogLevel minLevel, bool append)
-    : m_filePath(filePath), m_minLevel(minLevel) {
+    : m_filePath(filePath), m_minLevel(minLevel), m_file(), m_mutex() {
     // Open file with appropriate mode
     auto mode = std::ios::out;
     if (append) {

@@ -1,8 +1,9 @@
 /**
  * @file json_exporter.cpp
- * @brief JSON format results exporter implementation
- * @author Civil Engineering Software Solutions
+ * @brief Exports analysis results to JSON format.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "json_exporter.hpp"

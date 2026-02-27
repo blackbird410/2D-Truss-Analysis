@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Warren Truss Bridge - XML Format
+  
+  This example demonstrates:
+  - Material library referencing
+  - Section library referencing
+  - Support definitions via separate section
+  - Real-world bridge structure
+-->
+<truss>
+  <metadata name="Warren Truss Bridge" description="Two-span Warren truss bridge structure"/>
+  
+  <!-- Material Library -->
+  <materials>
+    <material id="steel" 
+              youngModulus="2.0e11" 
+              poissonRatio="0.3"
+              density="7850"
+              yieldStrength="2.5e8"/>
+  </materials>
+  
+  <!-- Section Library -->
+  <sections>
+    <section id="channel_100" 
+             name="100mm Channel"
+             crossSectionalArea="0.00135"/>
+  </sections>
+  
+  <!-- Node Definitions -->
+  <nodes>
+    <node id="1" x="0.0"  y="0.0"   label="Left Support"/>
+    <node id="2" x="2.5"  y="2.165" label="Top L1"/>
+    <node id="3" x="5.0"  y="0.0"   label="Center Bottom"/>
+    <node id="4" x="7.5"  y="2.165" label="Top L2"/>
+    <node id="5" x="10.0" y="0.0"   label="Center Support"/>
+    <node id="6" x="12.5" y="2.165" label="Top R1"/>
+    <node id="7" x="15.0" y="0.0"   label="Center Bottom R"/>
+    <node id="8" x="17.5" y="2.165" label="Top R2"/>
+    <node id="9" x="20.0" y="0.0"   label="Right Support"/>
+  </nodes>
+  
+  <!-- Member Definitions with Material/Section References -->
+  <members>
+    <member id="1"  startNode="1" endNode="2" material="steel" section="channel_100"/>
+    <member id="2"  startNode="2" endNode="3" material="steel" section="channel_100"/>
+    <member id="3"  startNode="1" endNode="3" material="steel" section="channel_100"/>
+    <member id="4"  startNode="3" endNode="4" material="steel" section="channel_100"/>
+    <member id="5"  startNode="4" endNode="5" material="steel" section="channel_100"/>
+    <member id="6"  startNode="3" endNode="5" material="steel" section="channel_100"/>
+    <member id="7"  startNode="2" endNode="4" material="steel" section="channel_100"/>
+    <member id="8"  startNode="5" endNode="6" material="steel" section="channel_100"/>
+    <member id="9"  startNode="6" endNode="7" material="steel" section="channel_100"/>
+    <member id="10" startNode="5" endNode="7" material="steel" section="channel_100"/>
+    <member id="11" startNode="7" endNode="8" material="steel" section="channel_100"/>
+    <member id="12" startNode="8" endNode="9" material="steel" section="channel_100"/>
+    <member id="13" startNode="7" endNode="9" material="steel" section="channel_100"/>
+    <member id="14" startNode="6" endNode="8" material="steel" section="channel_100"/>
+  </members>
+  
+  <!-- Support Definitions -->
+  <supports>
+    <support nodeId="1" type="pinned" restrained="x y"/>
+    <support nodeId="5" type="roller" restrained="y"/>
+    <support nodeId="9" type="pinned" restrained="x y"/>
+  </supports>
+  
+  <!-- Load Definitions -->
+  <loads>
+    <load nodeId="2" fx="0.0" fy="-30000.0"/>
+    <load nodeId="3" fx="0.0" fy="-40000.0"/>
+    <load nodeId="4" fx="0.0" fy="-30000.0"/>
+    <load nodeId="6" fx="0.0" fy="-30000.0"/>
+    <load nodeId="7" fx="0.0" fy="-40000.0"/>
+    <load nodeId="8" fx="0.0" fy="-30000.0"/>
+  </loads>
+</truss>

@@ -1,11 +1,14 @@
 /**
  * @file test_argument_parser.cpp
- * @brief Unit tests for ArgumentParser
+ * @brief Unit tests for ArgumentParser.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Tests all parsing logic, edge cases, and control flow branches
  */
 
-#include "../../../src/cli/ArgumentParser.hpp"
+#include "../../../src/cli/argument_parser.hpp"
 
 #include <cstring>
 #include <gtest/gtest.h>

@@ -1,8 +1,9 @@
 /**
  * @file test_truss_application_service.cpp
- * @brief Unit tests for TrussApplicationService facade
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for TrussApplicationService facade.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Lifecycle management (create, clear)
@@ -13,8 +14,8 @@
  * - Interface abstraction (ITrussView access)
  */
 
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/core/model/Truss.hpp"
+#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/core/model/truss.hpp"
 #include "../../../src/infrastructure/io/fileio_factory.hpp"
 
 #include <chrono>

@@ -1,18 +1,19 @@
 /**
  * @file test_ui_load_diagnosis.cpp
- * @brief Diagnostic test for UI-triggered project load workflow
- * @author Civil Engineering Software Solutions
+ * @brief Diagnostic test for UI-triggered project load workflow.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * This test simulates the exact UI load path to diagnose why
  * geometry doesn't appear on canvas after UI-triggered load.
  */
 
-#include "application/TrussApplicationService.hpp"
-#include "core/model/Types.hpp"
-#include "gui/controllers/ProjectController.hpp"
-#include "gui/controllers/TrussEditController.hpp"
-#include "gui/presenters/TrussDataPresenter.hpp"
+#include "application/truss_application_service.hpp"
+#include "core/model/types.hpp"
+#include "gui/controllers/project_controller.hpp"
+#include "gui/controllers/truss_edit_controller.hpp"
+#include "gui/presenters/truss_data_presenter.hpp"
 
 #include <QDir>
 #include <QFile>

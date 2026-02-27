@@ -1,9 +1,9 @@
 /**
  * @file json_truss_writer.hpp
- * @brief JSON format truss file writer
- * @author Civil Engineering Software Solutions
+ * @brief JSON format truss file writer.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
@@ -15,7 +15,7 @@
 namespace truss::infrastructure::io {
 
 /**
- * @brief Concrete implementation of ITrussWriter for JSON format
+ * @brief Writes truss structures to JSON format files.
  *
  * Writes truss structures to JSON files with a structured format
  * including metadata, nodes, members, and loads.

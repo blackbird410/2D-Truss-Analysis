@@ -1,8 +1,9 @@
 /**
  * @file test_analyze_command.cpp
- * @brief Comprehensive unit tests for AnalyzeCommand
- * @author Civil Engineering Software Solutions
+ * @brief Comprehensive unit tests for AnalyzeCommand.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Command execution with valid input file
@@ -22,10 +23,10 @@
  * Target: 80%+ line coverage with focused test scenarios
  */
 
-#include "../../../src/application/AnalysisApplicationService.hpp"
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/cli/commands/AnalyzeCommand.hpp"
-#include "../../../src/cli/presenters/ConsolePresenter.hpp"
+#include "../../../src/application/analysis_application_service.hpp"
+#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/cli/commands/analyze_command.hpp"
+#include "../../../src/cli/presenters/console_presenter.hpp"
 
 #include <filesystem>
 #include <fstream>

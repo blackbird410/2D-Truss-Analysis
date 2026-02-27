@@ -1,0 +1,226 @@
+# Simple Build Workflow (System Packages)
+# Builds project using system packages (apt) without vcpkg dependency management.
+# Uses pre-compiled Qt6, Eigen3, etc. from Ubuntu repositories for fast CI validation.
+# Note: Tests require vcpkg-managed dependencies for full compatibility.
+# This workflow validates that core build process works with system packages.
+
+name: Simple Build (System Packages)
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+
+jobs:
+  # ============================================================================
+  # Makefile-based Build and Test
+  # ============================================================================
+
+  build:
+    name: Build (System Packages)
+    runs-on: ubuntu-22.04
+
+    steps:
+      # ----------------------------------------------------------------------
+      # Checkout
+      # ----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ----------------------------------------------------------------------
+      # Install Dependencies via System Packages
+      # ----------------------------------------------------------------------
+      - name: Install system dependencies
+        run: |
+          echo "Installing dependencies from Ubuntu repositories..."
+          sudo apt-get update
+
+          # Core build tools
+          sudo apt-get install -y \
+            build-essential \
+            cmake \
+            ninja-build \
+            git \
+            pkg-config
+
+          # Project dependencies
+          sudo apt-get install -y \
+            libeigen3-dev \
+            nlohmann-json3-dev \
+            libtinyxml2-dev \
+            qt6-base-dev \
+            qt6-tools-dev \
+            qt6-tools-dev-tools \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxrender-dev \
+            libxcb1-dev \
+            libx11-xcb-dev \
+            libxcb-glx0-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-render-util0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-xkb-dev \
+            libxcb-cursor-dev \
+            libxcb-util-dev \
+            libdbus-1-dev \
+            libatspi2.0-dev \
+            xvfb
+
+          # Testing tools
+          sudo apt-get install -y \
+            libgtest-dev \
+            libgmock-dev
+
+          # Build and install gtest/gmock (Ubuntu packages only provide sources)
+          echo "Building and installing Google Test..."
+          cd /usr/src/googletest
+          sudo cmake .
+          sudo cmake --build . --target install
+          cd -
+
+      - name: Verify dependencies
+        run: |
+          echo "Verifying installed dependencies..."
+          echo "CMake: $(cmake --version | head -1)"
+          echo "Ninja: $(ninja --version)"
+          echo "GCC: $(g++ --version | head -1)"
+          echo "Qt: $(qmake6 -query QT_VERSION 2>/dev/null || echo 'Qt6 not found')"
+          echo "Eigen3: $(pkg-config --modversion eigen3 || echo 'Not found via pkg-config')"
+
+          # Check for key header files
+          if [ -f /usr/include/eigen3/Eigen/Core ]; then
+            echo "✓ Eigen3 headers found"
+          else
+            echo "✗ Eigen3 headers not found"
+          fi
+
+          if [ -f /usr/include/nlohmann/json.hpp ]; then
+            echo "✓ nlohmann-json headers found"
+          else
+            echo "✗ nlohmann-json headers not found"
+          fi
+
+          if [ -f /usr/include/tinyxml2.h ]; then
+            echo "✓ tinyxml2 headers found"
+          else
+            echo "✗ tinyxml2 headers not found"
+          fi
+
+          # Verify Qt6
+          if [ -d /usr/lib/x86_64-linux-gnu/cmake/Qt6 ]; then
+            echo "✓ Qt6 CMake config found"
+          else
+            echo "✗ Qt6 CMake config not found"
+          fi
+
+      # ----------------------------------------------------------------------
+      # Build using Makefile (without tests)
+      # ----------------------------------------------------------------------
+      - name: Build project (make build, no tests)
+        run: |
+          echo "Building project with Makefile (BUILD_TESTING=OFF)..."
+          # Build without tests to avoid test-specific dependencies
+          cd build 2>/dev/null && rm -rf * || mkdir -p build
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=OFF
+          cmake --build build --parallel 2
+
+          echo ""
+          echo "=== Build Summary ==="
+          ls -lh build/TrussAnalysisCLI build/TrussAnalysisGUI 2>/dev/null || echo "Binaries not found"
+
+      - name: Verify executables
+        run: |
+          echo "Verifying built executables..."
+
+          if [ ! -x "build/TrussAnalysisCLI" ]; then
+            echo "::error::TrussAnalysisCLI executable not found or not executable"
+            exit 1
+          fi
+          echo "✓ TrussAnalysisCLI found ($(stat -c%s build/TrussAnalysisCLI | numfmt --to=iec-i --suffix=B))"
+
+          if [ ! -x "build/TrussAnalysisGUI" ]; then
+            echo "::error::TrussAnalysisGUI executable not found or not executable"
+            exit 1
+          fi
+          echo "✓ TrussAnalysisGUI found ($(stat -c%s build/TrussAnalysisGUI | numfmt --to=iec-i --suffix=B))"
+
+      # ----------------------------------------------------------------------
+      # Note: Tests Skipped
+      # ----------------------------------------------------------------------
+      # Tests are not run in this workflow because they require vcpkg-managed
+      # dependencies for full compatibility. Use the full build-and-test.yml
+      # workflow for complete test coverage.
+
+      - name: Upload binaries
+        uses: actions/upload-artifact@v4
+        with:
+          name: makefile-build-binaries
+          path: |
+            build/TrussAnalysisCLI
+            build/TrussAnalysisGUI
+          retention-days: 7
+
+  # ============================================================================
+  # Build Summary
+  # ============================================================================
+
+  summary:
+    name: Summary
+    runs-on: ubuntu-22.04
+    needs: build
+    if: always()
+
+    steps:
+      - name: Generate workflow summary
+        run: |
+          echo "## System Package Build Summary" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          if [ "${{ needs.build.result }}" == "success" ]; then
+            echo "✅ **Build: PASSED**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The project built successfully using system packages (Qt6, Eigen3, etc.)." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "❌ **Build: FAILED**" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The build failed. Check the logs above for details." >> $GITHUB_STEP_SUMMARY
+          fi
+
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "### Workflow Details" >> $GITHUB_STEP_SUMMARY
+          echo "- **Dependencies:** System packages (apt)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Type:** Release (binaries only)" >> $GITHUB_STEP_SUMMARY
+          echo "- **Build Time:** ~2-3 minutes" >> $GITHUB_STEP_SUMMARY
+          echo "- **Tests:** Skipped (requires vcpkg dependencies)" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "_For full test coverage, see the vcpkg-based build-and-test workflow._" >> $GITHUB_STEP_SUMMARY
+
+      - name: Check final status
+        run: |
+          if [ "${{ needs.build.result }}" != "success" ]; then
+            echo "::error::Build workflow failed"
+            exit 1
+          fi
+          echo "✅ System package build completed successfully"

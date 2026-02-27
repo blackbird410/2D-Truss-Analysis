@@ -1,6 +1,9 @@
 cmake_minimum_required(VERSION 3.20)
 project(TrussAnalysis VERSION 3.0.0 LANGUAGES CXX)
 
+# Export compile commands for tools like clang-tidy
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
 # Set C++ standard
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -111,38 +114,37 @@ endif()
 
 # Create library for core functionality
 add_library(TrussCore STATIC
-    src/core/Application.cpp
-    src/core/Application.hpp
+    src/core/application.hpp
     # Domain model in model/ subdirectory
-    src/core/model/Types.hpp
-    src/core/model/Node.cpp
-    src/core/model/Node.hpp
-    src/core/model/Member.cpp
-    src/core/model/Member.hpp
-    src/core/model/Truss.cpp
-    src/core/model/Truss.hpp
-    src/core/model/Load.cpp
-    src/core/model/Load.hpp
+    src/core/model/types.hpp
+    src/core/model/node.cpp
+    src/core/model/node.hpp
+    src/core/model/member.cpp
+    src/core/model/member.hpp
+    src/core/model/truss.cpp
+    src/core/model/truss.hpp
+    src/core/model/load.cpp
+    src/core/model/load.hpp
     # Domain assembly utilities
-    src/core/assembly/TrussAssembler.cpp
-    src/core/assembly/TrussAssembler.hpp
+    src/core/assembly/truss_assembler.cpp
+    src/core/assembly/truss_assembler.hpp
     # Domain validation services
-    src/core/validation/TrussValidator.cpp
-    src/core/validation/TrussValidator.hpp
+    src/core/validation/truss_validator.cpp
+    src/core/validation/truss_validator.hpp
     # Phase 2 - Analysis decomposition
-    src/core/analysis/StiffnessAssembler.cpp
-    src/core/analysis/StiffnessAssembler.hpp
-    src/core/analysis/BoundaryConditionHandler.cpp
-    src/core/analysis/BoundaryConditionHandler.hpp
-    src/core/analysis/ILinearSolver.hpp
-    src/core/analysis/DirectSolver.cpp
-    src/core/analysis/DirectSolver.hpp
-    src/core/analysis/IterativeSolver.cpp
-    src/core/analysis/IterativeSolver.hpp
-    src/core/analysis/SolverFactory.cpp
-    src/core/analysis/SolverFactory.hpp
-    src/core/analysis/AnalysisOrchestrator.cpp
-    src/core/analysis/AnalysisOrchestrator.hpp
+    src/core/analysis/stiffness_assembler.cpp
+    src/core/analysis/stiffness_assembler.hpp
+    src/core/analysis/boundary_condition_handler.cpp
+    src/core/analysis/boundary_condition_handler.hpp
+    src/core/analysis/ilinear_solver.hpp
+    src/core/analysis/direct_solver.cpp
+    src/core/analysis/direct_solver.hpp
+    src/core/analysis/iterative_solver.cpp
+    src/core/analysis/iterative_solver.hpp
+    src/core/analysis/solver_factory.cpp
+    src/core/analysis/solver_factory.hpp
+    src/core/analysis/analysis_orchestrator.cpp
+    src/core/analysis/analysis_orchestrator.hpp
     # Phase 3 - Infrastructure layer (export subsystem)
     src/infrastructure/export/export_types.hpp
     src/infrastructure/export/exporter.hpp
@@ -169,8 +171,8 @@ add_library(TrussCore STATIC
     src/infrastructure/logging/logger_factory.cpp
     src/infrastructure/logging/logger_factory.hpp
     # Phase 5A - Infrastructure adapters
-    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
-    src/infrastructure/adapters/ConsoleOutputAdapter.hpp
+    src/infrastructure/adapters/console_output_adapter.cpp
+    src/infrastructure/adapters/console_output_adapter.hpp
     # Phase 2 (Infrastructure Refactoring) - File I/O subsystem
     src/infrastructure/io/io_types.hpp
     src/infrastructure/io/truss_reader.hpp
@@ -214,12 +216,12 @@ set_target_properties(TrussCore PROPERTIES
 # ============================================================================
 
 add_library(TrussApplication STATIC
-    src/application/TrussApplicationService.cpp
-    src/application/TrussApplicationService.hpp
-    src/application/AnalysisApplicationService.cpp
-    src/application/AnalysisApplicationService.hpp
-    src/application/MaterialLibraryService.cpp
-    src/application/MaterialLibraryService.hpp
+    src/application/truss_application_service.cpp
+    src/application/truss_application_service.hpp
+    src/application/analysis_application_service.cpp
+    src/application/analysis_application_service.hpp
+    src/application/material_library_service.cpp
+    src/application/material_library_service.hpp
 )
 
 target_include_directories(TrussApplication PUBLIC
@@ -243,14 +245,14 @@ set_target_properties(TrussApplication PROPERTIES
 
 # CLI source files
 set(CLI_SOURCES
-    src/cli/ArgumentParser.cpp
-    src/cli/commands/ExampleCommand.cpp
-    src/cli/commands/HelpCommand.cpp
-    src/cli/commands/AnalyzeCommand.cpp
-    src/cli/commands/ValidateCommand.cpp
-    src/cli/commands/ExportCommand.cpp
-    src/cli/presenters/ConsolePresenter.cpp
-    src/infrastructure/adapters/ConsoleOutputAdapter.cpp
+    src/cli/argument_parser.cpp
+    src/cli/commands/example_command.cpp
+    src/cli/commands/help_command.cpp
+    src/cli/commands/analyze_command.cpp
+    src/cli/commands/validate_command.cpp
+    src/cli/commands/export_command.cpp
+    src/cli/presenters/console_presenter.cpp
+    src/infrastructure/adapters/console_output_adapter.cpp
 )
 
 # Main application CLI executable
@@ -299,21 +301,23 @@ if(BUILD_TESTING)
     # ============================================================================
     
     # Unit tests (core functionality tests)
-    add_executable(unit_tests
-        # Domain layer tests
-        tests/unit/core/test_node.cpp
-        tests/unit/core/test_member.cpp
-        tests/unit/core/test_truss.cpp
-        tests/unit/core/test_load.cpp
-        tests/unit/core/test_truss_validator.cpp
-        tests/unit/core/test_validation_advanced.cpp
-        tests/unit/core/test_stiffness_assembler.cpp
-        tests/unit/core/test_boundary_condition_handler.cpp
-        tests/unit/core/test_linear_solvers.cpp
-        tests/unit/core/test_analysis_orchestrator.cpp
-        tests/unit/test_stiffness_matrix_bug.cpp
-        tests/unit/test_displacement_sign_check.cpp
-        tests/unit/test_warren_displacement.cpp
+    set(UNIT_TEST_SOURCES
+        # Domain layer tests - MODEL
+        tests/unit/core/model/test_node.cpp
+        tests/unit/core/model/test_member.cpp
+        tests/unit/core/model/test_truss.cpp
+        tests/unit/core/model/test_load.cpp
+        tests/unit/core/model/test_stiffness_matrix_bug.cpp
+        # Domain layer tests - VALIDATION
+        tests/unit/core/validation/test_truss_validator.cpp
+        tests/unit/core/validation/test_validation_advanced.cpp
+        # Domain layer tests - ANALYSIS
+        tests/unit/core/analysis/test_stiffness_assembler.cpp
+        tests/unit/core/analysis/test_boundary_condition_handler.cpp
+        tests/unit/core/analysis/test_linear_solvers.cpp
+        tests/unit/core/analysis/test_analysis_orchestrator.cpp
+        tests/unit/core/analysis/test_displacement_sign_check.cpp
+        tests/unit/core/analysis/test_warren_displacement.cpp
         # Infrastructure layer tests
         tests/unit/infrastructure/export/test_csv_exporter.cpp
         tests/unit/infrastructure/export/test_html_exporter.cpp
@@ -327,7 +331,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/logging/test_logger_advanced.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
         tests/unit/infrastructure/io/test_fileio_advanced.cpp
-        tests/unit/infrastructure/test_console_output_adapter.cpp
+        tests/unit/infrastructure/adapters/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_truss_application_service_gui_methods.cpp
@@ -340,25 +344,33 @@ if(BUILD_TESTING)
         tests/unit/cli/test_analyze_command.cpp
         tests/unit/cli/test_validate_command.cpp
         tests/unit/cli/test_export_command.cpp
-        # GUI layer tests (Controller API Stabilization)
-        tests/unit/controllers/test_TrussEditController.cpp
-        tests/unit/controllers/test_TrussEditController_Advanced.cpp
-        tests/unit/controllers/test_ProjectController.cpp
-        tests/unit/controllers/test_AnalysisController.cpp
-        tests/unit/presenters/test_TrussDataPresenter.cpp
-        # Mock compatibility tests (Phase 6: Dependency Inversion validation)
-        tests/unit/test_mock_compatibility.cpp
-        tests/unit/test_mock_analysis_compatibility.cpp
-        # GUI source files needed for GUI tests
-        src/gui/presenters/TrussDataPresenter.cpp
-        src/gui/presenters/AnalysisResultsPresenter.cpp
-        src/gui/presenters/ValidationPresenter.cpp
-        src/gui/controllers/TrussEditController.cpp
-        src/gui/controllers/AnalysisController.cpp
-        src/gui/controllers/ProjectController.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
+    
+    # Conditionally add GUI tests and sources only if BUILD_GUI is enabled
+    if(BUILD_GUI)
+        list(APPEND UNIT_TEST_SOURCES
+            # GUI-dependent validation tests
+            tests/unit/core/validation/test_mock_compatibility.cpp
+            tests/unit/core/validation/test_mock_analysis_compatibility.cpp
+            # GUI layer tests (Controller API Stabilization)
+            tests/unit/gui/controllers/test_truss_edit_controller.cpp
+            tests/unit/gui/controllers/test_truss_edit_controller_advanced.cpp
+            tests/unit/gui/controllers/test_project_controller.cpp
+            tests/unit/gui/controllers/test_analysis_controller.cpp
+            tests/unit/gui/presenters/test_truss_data_presenter.cpp
+            # GUI source files needed for GUI tests
+            src/gui/presenters/truss_data_presenter.cpp
+            src/gui/presenters/analysis_results_presenter.cpp
+            src/gui/presenters/validation_presenter.cpp
+            src/gui/controllers/truss_edit_controller.cpp
+            src/gui/controllers/analysis_controller.cpp
+            src/gui/controllers/project_controller.cpp
+        )
+    endif()
+    
+    add_executable(unit_tests ${UNIT_TEST_SOURCES})
     
     target_link_libraries(unit_tests PRIVATE
         TrussApplication
@@ -366,9 +378,9 @@ if(BUILD_TESTING)
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
-        Qt6::Core
-        Qt6::Widgets
-        Qt6::Test
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Widgets>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
     )
     
     target_include_directories(unit_tests PRIVATE
@@ -390,7 +402,7 @@ if(BUILD_TESTING)
     )
     
     # Integration tests (multi-component workflow tests)
-    add_executable(integration_tests
+    set(INTEGRATION_TEST_SOURCES
         tests/integration/test_simple_truss_analysis.cpp
         tests/integration/test_simple_integration.cpp
         tests/integration/test_working_integration.cpp
@@ -398,24 +410,33 @@ if(BUILD_TESTING)
         tests/integration/test_cli_workflows.cpp
         tests/integration/test_lifecycle_integration.cpp
         tests/integration/test_load_workflow.cpp
-        tests/integration/test_gui_lifecycle.cpp
-        tests/integration/test_ui_load_diagnosis.cpp
-        tests/integration/test_load_viewport_fix.cpp
-        tests/integration/test_gui_file_load.cpp
-        tests/integration/test_e2e_workflows.cpp
-        # GUI controllers needed for GUI lifecycle tests
-        src/gui/controllers/TrussEditController.cpp
-        src/gui/controllers/ProjectController.cpp
-        src/gui/presenters/TrussDataPresenter.cpp
+        # CLI source files needed for integration tests
         ${CLI_SOURCES}
     )
+    
+    # Conditionally add GUI integration tests only if BUILD_GUI is enabled
+    if(BUILD_GUI)
+        list(APPEND INTEGRATION_TEST_SOURCES
+            tests/integration/test_gui_lifecycle.cpp
+            tests/integration/test_ui_load_diagnosis.cpp
+            tests/integration/test_load_viewport_fix.cpp
+            tests/integration/test_gui_file_load.cpp
+            tests/integration/test_e2e_workflows.cpp
+            # GUI controllers needed for GUI lifecycle tests
+            src/gui/controllers/truss_edit_controller.cpp
+            src/gui/controllers/project_controller.cpp
+            src/gui/presenters/truss_data_presenter.cpp
+        )
+    endif()
+    
+    add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
     
     target_link_libraries(integration_tests PRIVATE
         TrussCore
         TrussApplication
-        Qt6::Core
-        Qt6::Widgets
-        Qt6::Test
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Widgets>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
         GTest::gtest
         GTest::gtest_main
         GTest::gmock
@@ -434,16 +455,28 @@ if(BUILD_TESTING)
         LABELS "integration;gtest"
     )
     
+    # Convenience target to build all new GTest-based tests
+    add_custom_target(all_gtest_tests
+        DEPENDS unit_tests integration_tests test_gtest_integration
+        COMMENT "Building all GTest-based tests"
+    )
+
+endif()
+
+# GUI Integration Tests (Qt Test framework) - only if Qt is available
+if(BUILD_GUI)
+    message(STATUS "Building GUI integration tests")
+    
     # GUI Integration Tests (Qt Test framework)
     add_executable(gui_integration_test
         tests/integration/test_gui_integration.cpp
         # GUI source files needed for integration tests
-        src/gui/presenters/TrussDataPresenter.cpp
-        src/gui/presenters/AnalysisResultsPresenter.cpp
-        src/gui/presenters/ValidationPresenter.cpp
-        src/gui/controllers/TrussEditController.cpp
-        src/gui/controllers/AnalysisController.cpp
-        src/gui/controllers/ProjectController.cpp
+        src/gui/presenters/truss_data_presenter.cpp
+        src/gui/presenters/analysis_results_presenter.cpp
+        src/gui/presenters/validation_presenter.cpp
+        src/gui/controllers/truss_edit_controller.cpp
+        src/gui/controllers/analysis_controller.cpp
+        src/gui/controllers/project_controller.cpp
     )
     
     target_link_libraries(gui_integration_test PRIVATE
@@ -466,11 +499,10 @@ if(BUILD_TESTING)
         LABELS "gui;integration;qt"
     )
     
-    # Convenience target to build all new GTest-based tests
-    add_custom_target(all_gtest_tests
-        DEPENDS unit_tests integration_tests test_gtest_integration
-        COMMENT "Building all GTest-based tests"
-    )
+    # Add GUI tests to all_gtest_tests if they exist
+    if(TARGET all_gtest_tests)
+        add_dependencies(all_gtest_tests gui_integration_test)
+    endif()
     
 endif()
 
@@ -483,32 +515,33 @@ if(BUILD_GUI)
     # GUI executable
     add_executable(TrussAnalysisGUI
     src/gui/main.cpp
-    src/gui/MainWindow.cpp
-    src/gui/MainWindow.hpp
-    src/gui/NodeInputWidget.cpp
-    src/gui/NodeInputWidget.hpp
-    src/gui/MemberInputWidget.cpp
-    src/gui/MemberInputWidget.hpp
-    src/gui/LoadInputWidget.cpp
-    src/gui/LoadInputWidget.hpp
-    src/gui/DataTableWidget.cpp
-    src/gui/DataTableWidget.hpp
-    src/gui/ResultsWidget.cpp
-    src/gui/ResultsWidget.hpp
-    src/gui/PlotWidget.cpp
-    src/gui/PlotWidget.hpp
-    src/gui/InteractiveDrawingWidget.cpp
-    src/gui/InteractiveDrawingWidget.hpp
-    src/gui/DeformedTrussWidget.cpp
-    src/gui/DeformedTrussWidget.hpp
+    src/gui/main_window.cpp
+    src/gui/main_window.hpp
+    # Widgets
+    src/gui/widgets/node_input_widget.cpp
+    src/gui/widgets/node_input_widget.hpp
+    src/gui/widgets/member_input_widget.cpp
+    src/gui/widgets/member_input_widget.hpp
+    src/gui/widgets/load_input_widget.cpp
+    src/gui/widgets/load_input_widget.hpp
+    src/gui/widgets/data_table_widget.cpp
+    src/gui/widgets/data_table_widget.hpp
+    src/gui/widgets/results_widget.cpp
+    src/gui/widgets/results_widget.hpp
+    src/gui/widgets/plot_widget.cpp
+    src/gui/widgets/plot_widget.hpp
+    src/gui/widgets/interactive_drawing_widget.cpp
+    src/gui/widgets/interactive_drawing_widget.hpp
+    src/gui/widgets/deformed_truss_widget.cpp
+    src/gui/widgets/deformed_truss_widget.hpp
     # Phase 3A - Presenters
-    src/gui/presenters/AnalysisResultsPresenter.cpp
-    src/gui/presenters/TrussDataPresenter.cpp
-    src/gui/presenters/ValidationPresenter.cpp
+    src/gui/presenters/analysis_results_presenter.cpp
+    src/gui/presenters/truss_data_presenter.cpp
+    src/gui/presenters/validation_presenter.cpp
     # Phase 3A - Controllers
-    src/gui/controllers/TrussEditController.cpp
-    src/gui/controllers/AnalysisController.cpp
-    src/gui/controllers/ProjectController.cpp
+    src/gui/controllers/truss_edit_controller.cpp
+    src/gui/controllers/analysis_controller.cpp
+    src/gui/controllers/project_controller.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
@@ -624,6 +657,51 @@ set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 
 include(CPack)
+
+# ============================================================================
+# Documentation Generation (Doxygen)
+# ============================================================================
+
+find_package(Doxygen OPTIONAL_COMPONENTS dot)
+
+if(DOXYGEN_FOUND)
+    # Set project description for Doxyfile
+    set(PROJECT_DESCRIPTION "Professional 2D truss structural analysis software")
+    
+    # Configure Doxyfile with project metadata
+    configure_file(
+        ${CMAKE_SOURCE_DIR}/Doxyfile.in
+        ${CMAKE_BINARY_DIR}/Doxyfile
+        @ONLY
+    )
+    
+    # Add custom target for generating documentation
+    add_custom_target(docs
+        COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Generating API documentation with Doxygen"
+        VERBATIM
+    )
+    
+    # Optional: Add install target for documentation
+    install(DIRECTORY ${PROJECT_SOURCE_DIR}/docs/api/html
+        DESTINATION share/doc/${PROJECT_NAME}
+        OPTIONAL
+        COMPONENT documentation
+    )
+    
+    message(STATUS "Doxygen found - 'make docs' target available")
+    if(DOXYGEN_DOT_FOUND)
+        message(STATUS "  - Graphviz (dot) found - diagrams enabled")
+    else()
+        message(STATUS "  - Graphviz (dot) not found - diagrams disabled")
+        message(STATUS "    Install graphviz for call graphs and class diagrams")
+    endif()
+    message(STATUS "  Output: ${PROJECT_SOURCE_DIR}/docs/api/html/index.html")
+else()
+    message(STATUS "Doxygen not found - 'make docs' target unavailable")
+    message(STATUS "  Install doxygen to generate API documentation")
+endif()
 
 # ============================================================================
 # Phase 7 Coverage Analysis Enhancement Targets

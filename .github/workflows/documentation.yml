@@ -1,0 +1,224 @@
+name: Documentation
+
+# ==============================================================================
+# Triggers
+# ==============================================================================
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+    paths:
+      - "src/**"
+      - "include/**"
+      - "Doxyfile.in"
+      - "CMakeLists.txt"
+      - ".github/workflows/documentation.yml"
+      - "README.md"
+      - "CONTRIBUTING.md"
+  pull_request:
+    branches:
+      - main
+    paths:
+      - "src/**"
+      - "include/**"
+      - "Doxyfile.in"
+      - "CMakeLists.txt"
+      - ".github/workflows/documentation.yml"
+  workflow_dispatch:
+    inputs:
+      deploy_pages:
+        description: "Deploy to GitHub Pages"
+        required: false
+        default: false
+        type: boolean
+
+# ==============================================================================
+# Permissions
+# ==============================================================================
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+# Ensure only one deployment runs at a time
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+# ==============================================================================
+# Jobs
+# ==============================================================================
+
+jobs:
+  build-documentation:
+    name: Build Doxygen Documentation
+    runs-on: ubuntu-22.04
+
+    steps:
+      # ----------------------------------------------------------------------
+      # Checkout
+      # ----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Full history for accurate git metadata
+
+      # ----------------------------------------------------------------------
+      # Install Dependencies
+      # ----------------------------------------------------------------------
+      - name: Install Doxygen and Graphviz
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y doxygen graphviz
+          doxygen --version
+          dot -V
+
+      - name: Install CMake
+        run: |
+          sudo apt-get install -y cmake ninja-build
+          cmake --version
+
+      # ----------------------------------------------------------------------
+      # Configure Project (to generate Doxyfile)
+      # ----------------------------------------------------------------------
+      - name: Configure CMake
+        run: |
+          cmake -B build -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_GUI=OFF
+
+      # ----------------------------------------------------------------------
+      # Generate Documentation
+      # ----------------------------------------------------------------------
+      - name: Generate Doxygen Documentation
+        run: |
+          cd build
+          cmake --build . --target docs
+
+      # ----------------------------------------------------------------------
+      # Validate Documentation
+      # ----------------------------------------------------------------------
+      - name: Check for undocumented APIs
+        run: |
+          if [ -f build/doxygen_warnings.log ]; then
+            echo "::warning::Doxygen warnings found:"
+            cat build/doxygen_warnings.log
+
+            # Count critical warnings (undocumented members/classes)
+            CRITICAL_WARNINGS=$(grep -c "not documented" build/doxygen_warnings.log || true)
+
+            if [ "$CRITICAL_WARNINGS" -gt 0 ]; then
+              echo "::error::Found $CRITICAL_WARNINGS undocumented API(s)"
+              echo "Please document all public APIs before merging"
+              # Uncomment to enforce zero undocumented APIs:
+              # exit 1
+            fi
+          else
+            echo "No Doxygen warnings file found - documentation generated successfully"
+          fi
+
+      - name: Verify HTML output
+        run: |
+          if [ ! -f build/docs/html/index.html ]; then
+            echo "::error::Documentation index.html not found!"
+            exit 1
+          fi
+
+          echo "Documentation generated successfully:"
+          echo "  - HTML files: $(find build/docs/html -name "*.html" | wc -l)"
+          echo "  - Total size: $(du -sh build/docs/html | cut -f1)"
+
+          # Check for broken links (basic check)
+          if command -v linkchecker &> /dev/null; then
+            linkchecker --check-extern build/docs/html/index.html || true
+          fi
+
+      # ----------------------------------------------------------------------
+      # Upload Artifacts
+      # ----------------------------------------------------------------------
+      - name: Upload documentation artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: doxygen-documentation
+          path: build/docs/html/
+          retention-days: 90
+          if-no-files-found: error
+
+      - name: Upload Pages artifact
+        if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: build/docs/html/
+
+  # ============================================================================
+  # Deploy to GitHub Pages (Optional)
+  # ============================================================================
+
+  deploy-pages:
+    name: Deploy to GitHub Pages
+    runs-on: ubuntu-22.04
+    needs: build-documentation
+    if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
+
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+      - name: Comment deployment URL on PR
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Documentation deployed to: ${{ steps.deployment.outputs.page_url }}`
+            })
+
+  # ============================================================================
+  # Documentation Quality Check (Optional - for strict enforcement)
+  # ============================================================================
+
+  quality-check:
+    name: Documentation Quality Check
+    runs-on: ubuntu-22.04
+    if: github.event_name == 'pull_request'
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check for TODOs in public headers
+        run: |
+          TODO_COUNT=$(grep -r "TODO\|FIXME\|XXX" include/ --include="*.hpp" --include="*.h" || true)
+          if [ -n "$TODO_COUNT" ]; then
+            echo "::warning::Found TODOs in public headers:"
+            echo "$TODO_COUNT"
+          fi
+
+      - name: Check for missing @brief tags
+        run: |
+          # Check that all public classes/functions have @brief
+          MISSING_BRIEF=$(grep -r "^class\|^struct" include/ --include="*.hpp" --include="*.h" | \
+                          while read line; do
+                            file=$(echo "$line" | cut -d: -f1)
+                            # Check if @brief exists in preceding 5 lines
+                            if ! grep -B5 "$line" "$file" | grep -q "@brief\|///" ; then
+                              echo "$line"
+                            fi
+                          done || true)
+
+          if [ -n "$MISSING_BRIEF" ]; then
+            echo "::warning::Classes/structs without @brief documentation:"
+            echo "$MISSING_BRIEF"
+          fi

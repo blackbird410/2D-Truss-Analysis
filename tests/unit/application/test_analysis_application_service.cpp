@@ -1,8 +1,9 @@
 /**
  * @file test_analysis_application_service.cpp
- * @brief Unit tests for AnalysisApplicationService facade
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for AnalysisApplicationService facade.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Analysis execution (success and failure paths)
@@ -13,11 +14,11 @@
  * - Pre-analysis validation
  */
 
-#include "../../../src/application/AnalysisApplicationService.hpp"
-#include "../../../src/application/TrussApplicationService.hpp"
-#include "../../../src/core/model/Member.hpp"
-#include "../../../src/core/model/Node.hpp"
-#include "../../../src/core/model/Truss.hpp"
+#include "../../../src/application/analysis_application_service.hpp"
+#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/core/model/member.hpp"
+#include "../../../src/core/model/node.hpp"
+#include "../../../src/core/model/truss.hpp"
 #include "../../../src/infrastructure/export/exporter_factory.hpp"
 
 #include <filesystem>

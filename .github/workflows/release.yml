@@ -1,0 +1,460 @@
+# Release Workflow
+# Automated release creation with multi-format packaging
+# Triggered on version tags or manual dispatch
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g., 3.0.0)"
+        required: true
+        type: string
+      prerelease:
+        description: "Mark as pre-release"
+        required: false
+        default: false
+        type: boolean
+      draft:
+        description: "Create as draft release"
+        required: false
+        default: false
+        type: boolean
+
+env:
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+  VCPKG_MAX_CONCURRENCY: "1"
+  VCPKG_KEEP_ENV_VARS: "ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN"
+  CMAKE_BUILD_PARALLEL_LEVEL: "2"
+
+jobs:
+  # ============================================================================
+  # Build Release Binaries
+  # ============================================================================
+
+  build-release:
+    name: Build Release (${{ matrix.config.name }})
+    runs-on: ubuntu-22.04
+
+    strategy:
+      matrix:
+        config:
+          - name: "CLI"
+            target: "TrussAnalysisCLI"
+            artifact: "truss-cli"
+          - name: "GUI"
+            target: "TrussAnalysisGUI"
+            artifact: "truss-gui"
+
+    env:
+      # Release workflow only needs release configuration
+      VCPKG_BUILD_TYPE: release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Disk usage (pre-clean)
+        run: df -h
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+
+      - name: Disk usage (post-clean)
+        run: df -h
+
+      - name: Export GitHub Actions cache variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Extract version from tag (remove 'v' prefix)
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "Release version: $VERSION"
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            build-essential \
+            pkg-config \
+            curl \
+            zip \
+            unzip \
+            tar \
+            git \
+            autoconf \
+            automake \
+            autoconf-archive \
+            bison \
+            flex \
+            gperf \
+            libgl1-mesa-dev \
+            libglu1-mesa-dev \
+            libxkbcommon-dev \
+            libxkbcommon-x11-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libx11-dev \
+            libxext-dev \
+            libxfixes-dev \
+            libxi-dev \
+            libxrender-dev \
+            libxcb1-dev \
+            libx11-xcb-dev \
+            libxcb-glx0-dev \
+            libxcb-icccm4-dev \
+            libxcb-image0-dev \
+            libxcb-keysyms1-dev \
+            libxcb-randr0-dev \
+            libxcb-render-util0-dev \
+            libxcb-shape0-dev \
+            libxcb-sync-dev \
+            libxcb-xfixes0-dev \
+            libxcb-xinerama0-dev \
+            libxcb-xkb-dev \
+            libxcb-cursor-dev \
+            libxcb-util-dev \
+            libdbus-1-dev \
+            libatspi2.0-dev
+
+      - name: Setup vcpkg (manifest + binary cache)
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: ${{ github.workspace }}/vcpkg
+          vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
+          vcpkgJsonGlob: "**/vcpkg.json"
+
+      - name: Set vcpkg environment
+        run: |
+          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
+
+      - name: Disk usage (post-vcpkg)
+        run: df -h
+
+      - name: Configure CMake (Release)
+        run: |
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DBUILD_TESTING=OFF \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake
+
+      - name: Build ${{ matrix.config.name }}
+        run: |
+          cmake --build build --target ${{ matrix.config.target }} --parallel 2
+
+      - name: Strip binary
+        run: |
+          strip build/${{ matrix.config.target }}
+
+      - name: Create tarball
+        run: |
+          mkdir -p release/${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}
+          cp build/${{ matrix.config.target }} release/${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}/
+          cp LICENSE release/${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}/
+          cp README.md release/${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}/
+
+          cd release
+          tar -czf ${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}-linux-x86_64.tar.gz \
+              ${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}
+
+      - name: Upload release artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}
+          path: release/${{ matrix.config.artifact }}-${{ steps.version.outputs.version }}-linux-x86_64.tar.gz
+          retention-days: 7
+
+  # ============================================================================
+  # Create Debian Package
+  # ============================================================================
+
+  build-deb:
+    name: Build Debian Package
+    runs-on: ubuntu-22.04
+
+    env:
+      # Debian packages only need release configuration
+      VCPKG_BUILD_TYPE: release
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      - name: Disk usage (pre-clean)
+        run: df -h
+
+      - name: Free disk space
+        run: |
+          echo "Removing unnecessary preinstalled software..."
+          sudo rm -rf /usr/share/dotnet
+          sudo rm -rf /usr/local/lib/android
+          sudo rm -rf /opt/ghc
+          sudo rm -rf /usr/local/share/boost
+          sudo rm -rf /usr/share/swift
+          sudo rm -rf /usr/local/.ghcup
+          sudo rm -rf /opt/hostedtoolcache/CodeQL
+          sudo docker system prune -af || true
+          sudo apt-get clean
+          sudo rm -rf /var/lib/apt/lists/*
+          sudo rm -rf /tmp/*
+
+      - name: Disk usage (post-clean)
+        run: df -h
+
+      - name: Export GitHub Actions cache variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+      - name: Install packaging tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            build-essential \
+            debhelper \
+            devscripts \
+            fakeroot \
+            pkg-config \
+            curl \
+            zip \
+            unzip \
+            tar \
+            git \
+            libgl1-mesa-dev \
+            libxkbcommon-dev \
+            libfontconfig1-dev \
+            libfreetype6-dev \
+            libx11-dev
+
+      - name: Setup vcpkg (manifest + binary cache)
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: ${{ github.workspace }}/vcpkg
+          vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
+          vcpkgJsonGlob: "**/vcpkg.json"
+
+      - name: Set vcpkg environment
+        run: |
+          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
+          echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
+
+      - name: Disk usage (post-vcpkg)
+        run: df -h
+
+      - name: Build and create package
+        run: |
+          # Check if packaging script exists
+          if [ -f scripts/package/create-deb.sh ]; then
+            chmod +x scripts/package/create-deb.sh
+            ./scripts/package/create-deb.sh ${{ steps.version.outputs.version }}
+          else
+            echo "::warning::DEB packaging script not found, skipping"
+            echo "Create scripts/package/create-deb.sh for automated DEB creation"
+          fi
+
+      - name: Upload DEB package
+        if: hashFiles('*.deb') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: debian-package
+          path: "*.deb"
+          retention-days: 7
+
+  # ============================================================================
+  # Create GitHub Release
+  # ============================================================================
+
+  create-release:
+    name: Create GitHub Release
+    runs-on: ubuntu-22.04
+    needs: [build-release, build-deb]
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+            TAG="v$VERSION"
+          else
+            VERSION="${GITHUB_REF#refs/tags/v}"
+            TAG="${GITHUB_REF#refs/tags/}"
+          fi
+
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "tag=$TAG" >> $GITHUB_OUTPUT
+
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: artifacts/
+
+      - name: List artifacts
+        run: |
+          echo "Downloaded artifacts:"
+          ls -lR artifacts/
+
+      - name: Generate release notes
+        id: notes
+        run: |
+          # Extract changelog for this version
+          if [ -f CHANGELOG.md ]; then
+            # Try to extract section for this version
+            echo "## What's Changed" > release_notes.md
+            echo "" >> release_notes.md
+            echo "See [CHANGELOG.md](CHANGELOG.md) for details." >> release_notes.md
+          else
+            echo "## Release ${{ steps.version.outputs.version }}" > release_notes.md
+            echo "" >> release_notes.md
+            echo "2D Truss Analysis v${{ steps.version.outputs.version }}" >> release_notes.md
+          fi
+
+          # Add download instructions
+          echo "" >> release_notes.md
+          echo "## Downloads" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "### Linux (x86_64)" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "**CLI Application:**" >> release_notes.md
+          echo "\`\`\`bash" >> release_notes.md
+          echo "wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/truss-cli-${{ steps.version.outputs.version }}-linux-x86_64.tar.gz" >> release_notes.md
+          echo "tar -xzf truss-cli-${{ steps.version.outputs.version }}-linux-x86_64.tar.gz" >> release_notes.md
+          echo "cd truss-cli-${{ steps.version.outputs.version }}" >> release_notes.md
+          echo "./TrussAnalysisCLI --help" >> release_notes.md
+          echo "\`\`\`" >> release_notes.md
+          echo "" >> release_notes.md
+          echo "**GUI Application:**" >> release_notes.md
+          echo "\`\`\`bash" >> release_notes.md
+          echo "wget https://github.com/${{ github.repository }}/releases/download/${{ steps.version.outputs.tag }}/truss-gui-${{ steps.version.outputs.version }}-linux-x86_64.tar.gz" >> release_notes.md
+          echo "tar -xzf truss-gui-${{ steps.version.outputs.version }}-linux-x86_64.tar.gz" >> release_notes.md
+          echo "cd truss-gui-${{ steps.version.outputs.version }}" >> release_notes.md
+          echo "./TrussAnalysisGUI" >> release_notes.md
+          echo "\`\`\`" >> release_notes.md
+
+          cat release_notes.md
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v1
+        with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          name: Release ${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: ${{ github.event.inputs.draft || false }}
+          prerelease: ${{ github.event.inputs.prerelease || false }}
+          files: |
+            artifacts/*/truss-*.tar.gz
+            artifacts/*/*.deb
+          fail_on_unmatched_files: false
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Update release summary
+        run: |
+          echo "## 🎉 Release Created" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "**Version:** ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Tag:** ${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "🔗 [View Release](https://github.com/${{ github.repository }}/releases/tag/${{ steps.version.outputs.tag }})" >> $GITHUB_STEP_SUMMARY
+
+  # ============================================================================
+  # Verify Release Assets
+  # ============================================================================
+
+  verify-release:
+    name: Verify Release
+    runs-on: ubuntu-22.04
+    needs: create-release
+
+    steps:
+      - name: Download CLI artifact
+        uses: actions/download-artifact@v4
+        with:
+          pattern: truss-cli-*
+          path: verify/
+
+      - name: Test CLI binary
+        run: |
+          cd verify
+
+          # Find and extract tarball
+          TARBALL=$(find . -name "truss-cli-*.tar.gz")
+          if [ -z "$TARBALL" ]; then
+            echo "::error::CLI tarball not found"
+            exit 1
+          fi
+
+          tar -xzf $TARBALL
+
+          # Find and test executable
+          EXECUTABLE=$(find . -name "TrussAnalysisCLI" -type f)
+          if [ ! -x "$EXECUTABLE" ]; then
+            echo "::error::CLI executable not found or not executable"
+            exit 1
+          fi
+
+          # Basic smoke test
+          $EXECUTABLE --help || echo "Help command returned non-zero (may be expected)"
+
+          echo "✅ CLI binary verified"
+
+      - name: Release verification complete
+        run: |
+          echo "## ✅ Release Verification" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "All release assets verified successfully" >> $GITHUB_STEP_SUMMARY

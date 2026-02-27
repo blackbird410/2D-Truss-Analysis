@@ -1,13 +1,14 @@
 /**
  * @file test_json_exporter.cpp
- * @brief Unit tests for JSON exporter
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for JSON exporter.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
-#include "core/analysis/AnalysisOrchestrator.hpp"
-#include "core/analysis/SolverFactory.hpp"
-#include "core/model/Truss.hpp"
+#include "core/analysis/analysis_orchestrator.hpp"
+#include "core/analysis/solver_factory.hpp"
+#include "core/model/truss.hpp"
 #include "infrastructure/export/json_exporter.hpp"
 
 #include <filesystem>

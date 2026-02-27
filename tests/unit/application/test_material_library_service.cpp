@@ -1,8 +1,9 @@
 /**
  * @file test_material_library_service.cpp
- * @brief Unit tests for MaterialLibraryService
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for MaterialLibraryService.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Test Coverage:
  * - Default materials (Steel, Aluminum, Concrete, Timber)
@@ -21,8 +22,8 @@
  * Target Coverage: >95%
  */
 
-#include "../../../src/application/MaterialLibraryService.hpp"
-#include "../../../src/core/model/Types.hpp"
+#include "../../../src/application/material_library_service.hpp"
+#include "../../../src/core/model/types.hpp"
 
 #include <algorithm>
 #include <gtest/gtest.h>

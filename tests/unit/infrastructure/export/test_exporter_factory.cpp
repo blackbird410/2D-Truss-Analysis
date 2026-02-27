@@ -1,8 +1,9 @@
 /**
  * @file test_exporter_factory.cpp
- * @brief Unit tests for ExporterFactory
- * @author Civil Engineering Software Solutions
+ * @brief Unit tests for ExporterFactory.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "infrastructure/export/csv_exporter.hpp"

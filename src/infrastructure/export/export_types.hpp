@@ -1,9 +1,9 @@
 /**
  * @file export_types.hpp
- * @brief Export format types and options for results exporters
- * @author Civil Engineering Software Solutions
+ * @brief Export format types and options for results exporters.
  * @version 3.0.0
- * @date 2026-02-07
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once

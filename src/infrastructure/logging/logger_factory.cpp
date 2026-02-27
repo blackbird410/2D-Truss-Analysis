@@ -1,9 +1,9 @@
 /**
  * @file logger_factory.cpp
- * @brief Factory for creating logger instances
- * @author Civil Engineering Software Solutions
+ * @brief Creates logger instances based on configuration.
  * @version 3.0.0
- * @date 2026-02-09
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #include "logger_factory.hpp"
@@ -48,7 +48,7 @@ LoggerPtr LoggerFactory::createDefaultLogger(const std::filesystem::path& filePa
 // ===== CompositeLogger Implementation =====
 
 LoggerFactory::CompositeLogger::CompositeLogger(std::vector<LoggerPtr> loggers)
-    : m_loggers(std::move(loggers)), m_minLevel(LogLevel::Critical) {
+    : m_loggers(std::move(loggers)), m_minLevel(LogLevel::Critical), m_mutex() {
     // Set minimum level to the most permissive (lowest enum value) among child loggers
     for (const auto& logger : m_loggers) {
         if (static_cast<int>(logger->getLevel()) < static_cast<int>(m_minLevel)) {

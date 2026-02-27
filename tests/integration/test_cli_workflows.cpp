@@ -1,8 +1,9 @@
 /**
  * @file test_cli_workflows.cpp
- * @brief Integration tests for CLI workflows with real dependencies
- * @author Civil Engineering Software Solutions
+ * @brief Integration tests for CLI workflows with real dependencies.
  * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  *
  * Tests verify complete CLI execution paths using real dependencies
  * (not mocks) to validate end-to-end functionality.
@@ -17,13 +18,13 @@
  * and real Infrastructure components to verify the complete dependency chain.
  */
 
-#include "../../src/application/AnalysisApplicationService.hpp"
-#include "../../src/application/TrussApplicationService.hpp"
-#include "../../src/cli/ArgumentParser.hpp"
-#include "../../src/cli/commands/ExampleCommand.hpp"
-#include "../../src/cli/commands/HelpCommand.hpp"
-#include "../../src/cli/presenters/ConsolePresenter.hpp"
-#include "../../src/infrastructure/adapters/ConsoleOutputAdapter.hpp"
+#include "../../src/application/analysis_application_service.hpp"
+#include "../../src/application/truss_application_service.hpp"
+#include "../../src/cli/argument_parser.hpp"
+#include "../../src/cli/commands/example_command.hpp"
+#include "../../src/cli/commands/help_command.hpp"
+#include "../../src/cli/presenters/console_presenter.hpp"
+#include "../../src/infrastructure/adapters/console_output_adapter.hpp"
 #include "../../src/infrastructure/logging/logger_factory.hpp"
 
 #include <gtest/gtest.h>

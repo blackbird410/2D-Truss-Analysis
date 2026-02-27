@@ -1,15 +1,15 @@
 /**
  * @file exporter.hpp
- * @brief Results exporter interface (Strategy pattern)
- * @author Civil Engineering Software Solutions
+ * @brief Results exporter interface (Strategy pattern).
  * @version 3.0.0
- * @date 2026-02-07
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
 
-#include "../../core/interfaces/IAnalysisResultsView.hpp"
-#include "../../core/interfaces/ITrussView.hpp"
+#include "../../core/interfaces/ianalysis_results_view.hpp"
+#include "../../core/interfaces/itruss_view.hpp"
 #include "export_types.hpp"
 
 #include <filesystem>

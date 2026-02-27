@@ -68,13 +68,23 @@ Checks: >
   -cppcoreguidelines-pro-type-reinterpret-cast,
   modernize-*,
   -modernize-use-trailing-return-type,
+  -modernize-use-nodiscard,
   performance-*,
+  -performance-enum-size,
   readability-*,
   -readability-magic-numbers,
   -readability-identifier-length,
   -readability-function-cognitive-complexity,
+  -readability-convert-member-functions-to-static,
+  -readability-implicit-bool-conversion,
+  -readability-identifier-naming,
+  -readability-named-parameter,
+  -readability-braces-around-statements,
   misc-*,
-  -misc-non-private-member-variables-in-classes
+  -misc-non-private-member-variables-in-classes,
+  -misc-include-cleaner,
+  -misc-const-correctness,
+  -misc-use-internal-linkage
 
 # ==============================================================================
 # Disabled Checks - Rationale
@@ -129,6 +139,74 @@ Checks: >
 #   Reason: Conflicts with data-oriented design and Qt property system
 #   Impact: Would prevent usage of Qt's Q_PROPERTY and public data members
 #   Alternative: Use private members with getters/setters where encapsulation needed
+#
+# ==============================================================================
+# Temporarily Disabled Checks (Technical Debt - To Be Fixed)
+# ==============================================================================
+#
+# The following checks are temporarily disabled due to existing codebase patterns.
+# These represent technical debt and should be addressed systematically:
+#
+# modernize-use-nodiscard:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: ~30+ functions need [[nodiscard]] attribute
+#   Action: Add [[nodiscard]] to all query functions that return values
+#   Priority: Medium (improves API safety, prevents ignored return values)
+#
+# readability-convert-member-functions-to-static:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: ~20+ methods can be static (don't use 'this')
+#   Action: Review each case, convert to static where appropriate
+#   Priority: Low-Medium (improves API clarity, slight performance benefit)
+#
+# readability-implicit-bool-conversion:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: ~30+ implicit pointer-to-bool conversions (tinyxml2 API)
+#   Action: Add explicit nullptr comparisons: if (ptr != nullptr)
+#   Priority: Medium (improves readability, slight correctness benefit)
+#
+# misc-include-cleaner:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: ~50+ missing direct includes (relying on transitive includes)
+#   Action: Add direct includes for all used types
+#   Priority: Medium (fragile code, breaks if indirect includes change)
+#   Note: May have false positives with forward declarations
+#
+# misc-const-correctness:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: ~20+ variables/pointers can be const
+#   Action: Add const where appropriate (pointees, local variables)
+#   Priority: Low-Medium (better const-correctness, prevents modification)
+#
+# readability-identifier-naming:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: enum class uses PascalCase instead of UPPER_CASE
+#   Action: Decide on enum naming convention (may keep PascalCase)
+#   Priority: Low (style consistency, may be intentional design)
+#
+# readability-named-parameter:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: ~15+ unused parameters in override implementations
+#   Action: Add /*unused*/ comments or [[maybe_unused]]
+#   Priority: Low (documentation clarity)
+#
+# readability-braces-around-statements:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: ~10+ single-line if statements without braces
+#   Action: Add braces to all control flow statements
+#   Priority: Low (consistency, maintenance safety)
+#
+# performance-enum-size:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: LogLevel enum uses int (4 bytes) instead of uint8_t (1 byte)
+#   Action: Review and optimize enum base types where beneficial
+#   Priority: Very Low (minor memory saving)
+#
+# misc-use-internal-linkage:
+#   Status: TEMPORARY disable (2026-02-25)
+#   Reason: Helper functions can be static or moved to anonymous namespace
+#   Action: Review and add static or anonymous namespace where appropriate
+#   Priority: Low (minor code organization improvement)
 #
 # ==============================================================================
 

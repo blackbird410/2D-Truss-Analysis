@@ -1,14 +1,14 @@
 /**
  * @file truss_reader.hpp
- * @brief Abstract interface for reading truss structures from files
- * @author Civil Engineering Software Solutions
+ * @brief Abstract interface for reading truss structures from files.
  * @version 3.0.0
- * @date 2026-02-13
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
  */
 
 #pragma once
 
-#include "../../core/interfaces/TrussDTO.hpp"
+#include "../../core/interfaces/truss_dto.hpp"
 #include "io_types.hpp"
 
 #include <filesystem>
