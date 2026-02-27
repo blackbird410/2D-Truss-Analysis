@@ -240,6 +240,32 @@ set_target_properties(TrussApplication PROPERTIES
 )
 
 # ============================================================================
+# INTERFACE LAYER (Public API - Facade + Builder patterns)
+# ============================================================================
+
+add_library(TrussInterface STATIC
+    src/interface/truss_builder.cpp
+    src/interface/truss_builder.hpp
+    src/interface/truss_analysis_facade.cpp
+    src/interface/truss_analysis_facade.hpp
+)
+
+target_include_directories(TrussInterface PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+    ${CMAKE_SOURCE_DIR}/src/interface
+)
+
+target_link_libraries(TrussInterface PUBLIC
+    TrussApplication
+)
+
+set_target_properties(TrussInterface PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    POSITION_INDEPENDENT_CODE ON
+)
+
+# ============================================================================
 # CLI APPLICATION
 # ============================================================================
 
