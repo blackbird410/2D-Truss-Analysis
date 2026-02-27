@@ -138,11 +138,7 @@ TEST_F(ExportCommandTest, GetName_ReturnsExport) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "test_truss.json",
-                      "test_results.json",
-                      "output.json");
+    ExportCommand cmd(facade, presenter, "test_truss.json", "test_results.json", "output.json");
     EXPECT_EQ(cmd.getName(), "export");
 }
 
@@ -165,11 +161,7 @@ TEST_F(ExportCommandTest, GetDescription_ReturnsNonEmptyDescription) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "test_truss.json",
-                      "test_results.json",
-                      "output.json");
+    ExportCommand cmd(facade, presenter, "test_truss.json", "test_results.json", "output.json");
     std::string desc = cmd.getDescription();
     EXPECT_FALSE(desc.empty());
     EXPECT_TRUE(desc.find("export") != std::string::npos ||
@@ -196,11 +188,8 @@ TEST_F(ExportCommandTest, Execute_TrussFileNotFound_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "non_existent_truss.json",
-                      "test_results.json",
-                      "output.json");
+    ExportCommand cmd(
+        facade, presenter, "non_existent_truss.json", "test_results.json", "output.json");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -226,11 +215,8 @@ TEST_F(ExportCommandTest, Execute_ResultsFileNotFound_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "test_truss.json",
-                      "non_existent_results.json",
-                      "output.json");
+    ExportCommand cmd(
+        facade, presenter, "test_truss.json", "non_existent_results.json", "output.json");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -288,22 +274,14 @@ TEST_F(ExportCommandTest, Execute_FormatParsing_CaseInsensitive) {
     truss::cli::presenters::ConsolePresenter presenter(output);
 
     // Test lowercase
-    ExportCommand cmd1(facade,
-                       presenter,
-                       "test_truss.json",
-                       "test_results.json",
-                       "output1.json",
-                       "json");
+    ExportCommand cmd1(
+        facade, presenter, "test_truss.json", "test_results.json", "output1.json", "json");
     int code1 = cmd1.execute();
     EXPECT_TRUE(code1 == 0 || code1 == 1);
 
     // Test uppercase
-    ExportCommand cmd2(facade,
-                       presenter,
-                       "test_truss.json",
-                       "test_results.json",
-                       "output2.json",
-                       "JSON");
+    ExportCommand cmd2(
+        facade, presenter, "test_truss.json", "test_results.json", "output2.json", "JSON");
     int code2 = cmd2.execute();
     EXPECT_TRUE(code2 == 0 || code2 == 1);
 
@@ -331,12 +309,8 @@ TEST_F(ExportCommandTest, Execute_InvalidExportFormat_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "test_truss.json",
-                      "test_results.json",
-                      "output.xyz",
-                      "INVALID");
+    ExportCommand cmd(
+        facade, presenter, "test_truss.json", "test_results.json", "output.xyz", "INVALID");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -361,11 +335,8 @@ TEST_F(ExportCommandTest, Execute_DefaultFormatFromExtension_JSON) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "test_truss.json",
-                      "test_results.json",
-                      "export_output.json");
+    ExportCommand cmd(
+        facade, presenter, "test_truss.json", "test_results.json", "export_output.json");
     int exitCode = cmd.execute();
 
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
@@ -390,11 +361,8 @@ TEST_F(ExportCommandTest, Execute_DefaultFormatFromExtension_HTML) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "test_truss.json",
-                      "test_results.json",
-                      "export_output.html");
+    ExportCommand cmd(
+        facade, presenter, "test_truss.json", "test_results.json", "export_output.html");
     int exitCode = cmd.execute();
 
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
@@ -419,12 +387,8 @@ TEST_F(ExportCommandTest, Execute_LaTeXAlias_TEX_Works) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ExportCommand cmd(facade,
-                      presenter,
-                      "test_truss.json",
-                      "test_results.json",
-                      "export_output.tex",
-                      "TEX");
+    ExportCommand cmd(
+        facade, presenter, "test_truss.json", "test_results.json", "export_output.tex", "TEX");
     int exitCode = cmd.execute();
 
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
@@ -455,12 +419,8 @@ TEST_F(ExportCommandTest, Execute_AllExportFormats_Recognized) {
 
     for (size_t i = 0; i < formats.size(); ++i) {
         std::string outputFile = "test_out." + extensions[i];
-        ExportCommand cmd(facade,
-                  presenter,
-                  "test_truss.json",
-                  "test_results.json",
-                  outputFile,
-                  formats[i]);
+        ExportCommand cmd(
+            facade, presenter, "test_truss.json", "test_results.json", outputFile, formats[i]);
         int code = cmd.execute();
         EXPECT_TRUE(code == 0 || code == 1) << "Format " << formats[i] << " failed unexpectedly";
         std::filesystem::remove(outputFile);

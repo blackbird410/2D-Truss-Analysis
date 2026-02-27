@@ -113,8 +113,11 @@ int main(int argc, char* argv[]) {
     } else {
         // Create placeholder for help display (will show error if executed without proper args)
         auto analyzeCmd = std::make_unique<truss::cli::commands::AnalyzeCommand>(
-            facade, presenter, "",  // Empty file will trigger validation error with helpful message
-            std::nullopt, std::nullopt,
+            facade,
+            presenter,
+            "",  // Empty file will trigger validation error with helpful message
+            std::nullopt,
+            std::nullopt,
             false  // Default verbose for help display
         );
         commandPtrs.push_back(analyzeCmd.get());
@@ -152,8 +155,7 @@ int main(int argc, char* argv[]) {
         auto exportFormatOpt = truss::cli::ArgumentParser::getOption(args, "format", "f");
 
         auto exportCmd = std::make_unique<truss::cli::commands::ExportCommand>(
-            facade, presenter, trussFile, resultsFile, exportOutput, exportFormatOpt,
-            args.verbose);
+            facade, presenter, trussFile, resultsFile, exportOutput, exportFormatOpt, args.verbose);
         commandPtrs.push_back(exportCmd.get());
         commands["export"] = std::move(exportCmd);
     } else {

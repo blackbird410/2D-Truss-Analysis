@@ -18,10 +18,9 @@ TrussAnalysisFacade::TrussAnalysisFacade() = default;
 // Complete Workflow Methods
 // ============================================================
 
-AnalysisWorkflowResult TrussAnalysisFacade::analyzeFromFile(
-    const std::filesystem::path& filepath,
-    const core::analysis::AnalysisOptions& options) {
-    
+AnalysisWorkflowResult
+TrussAnalysisFacade::analyzeFromFile(const std::filesystem::path& filepath,
+                                     const core::analysis::AnalysisOptions& options) {
     // Step 1: Load truss from file
     auto loadResult = m_trussService.loadTruss(filepath);
     if (!loadResult) {
@@ -50,18 +49,16 @@ AnalysisWorkflowResult TrussAnalysisFacade::analyzeFromFile(
     auto analysisResult = m_analysisService.analyze(truss, options);
     if (!analysisResult) {
         m_trussService.clearTruss(trussHandle);
-        return AnalysisWorkflowResult::Failure("Analysis failed: " +
-                                               analysisResult.errorMessage);
+        return AnalysisWorkflowResult::Failure("Analysis failed: " + analysisResult.errorMessage);
     }
 
     // Success: return both handles
     return AnalysisWorkflowResult::Success(trussHandle, analysisResult.value);
 }
 
-AnalysisWorkflowResult TrussAnalysisFacade::analyzeInteractive(
-    TrussBuilder& builder,
-    const core::analysis::AnalysisOptions& options) {
-    
+AnalysisWorkflowResult
+TrussAnalysisFacade::analyzeInteractive(TrussBuilder& builder,
+                                        const core::analysis::AnalysisOptions& options) {
     // Step 1: Build truss from builder
     std::shared_ptr<core::Truss> trussPtr;
     try {
@@ -73,8 +70,7 @@ AnalysisWorkflowResult TrussAnalysisFacade::analyzeInteractive(
     // Step 2: Create truss handle via application service
     auto createResult = m_trussService.createTruss(trussPtr->getName());
     if (!createResult) {
-        return AnalysisWorkflowResult::Failure("Create truss failed: " +
-                                               createResult.errorMessage);
+        return AnalysisWorkflowResult::Failure("Create truss failed: " + createResult.errorMessage);
     }
     application::TrussHandle trussHandle = createResult.value;
     m_lastTrussHandle = trussHandle;
@@ -100,8 +96,7 @@ AnalysisWorkflowResult TrussAnalysisFacade::analyzeInteractive(
     auto analysisResult = m_analysisService.analyze(managedTruss, options);
     if (!analysisResult) {
         m_trussService.clearTruss(trussHandle);
-        return AnalysisWorkflowResult::Failure("Analysis failed: " +
-                                               analysisResult.errorMessage);
+        return AnalysisWorkflowResult::Failure("Analysis failed: " + analysisResult.errorMessage);
     }
 
     // Success: return both handles
@@ -115,12 +110,10 @@ TrussAnalysisFacade::validateFromFile(const std::filesystem::path& filepath) {
     if (!loadResult) {
         // Return validation result with error
         core::validation::ValidationResult result;
-        core::validation::ValidationIssue issue(
-            core::validation::ValidationSeverity::Fatal,
-            "File I/O Error",
-            loadResult.errorMessage,
-            "Failed to load truss from file"
-        );
+        core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
+                                                "File I/O Error",
+                                                loadResult.errorMessage,
+                                                "Failed to load truss from file");
         result.addIssue(issue);
         return result;
     }
@@ -131,12 +124,10 @@ TrussAnalysisFacade::validateFromFile(const std::filesystem::path& filepath) {
 
     if (!validationResult) {
         core::validation::ValidationResult result;
-        core::validation::ValidationIssue issue(
-            core::validation::ValidationSeverity::Fatal,
-            "Validation Error",
-            validationResult.errorMessage,
-            "Validation service failed unexpectedly"
-        );
+        core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
+                                                "Validation Error",
+                                                validationResult.errorMessage,
+                                                "Validation service failed unexpectedly");
         result.addIssue(issue);
         return result;
     }
@@ -151,12 +142,10 @@ core::validation::ValidationResult TrussAnalysisFacade::validateBuilder(TrussBui
         trussPtr = builder.build();
     } catch (const std::exception& e) {
         core::validation::ValidationResult result;
-        core::validation::ValidationIssue issue(
-            core::validation::ValidationSeverity::Fatal,
-            "Build Error",
-            std::string("Failed to build truss: ") + e.what(),
-            "Builder validation failed during construction"
-        );
+        core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
+                                                "Build Error",
+                                                std::string("Failed to build truss: ") + e.what(),
+                                                "Builder validation failed during construction");
         result.addIssue(issue);
         return result;
     }
@@ -166,22 +155,18 @@ core::validation::ValidationResult TrussAnalysisFacade::validateBuilder(TrussBui
     return validator.validate(*trussPtr);
 }
 
-bool TrussAnalysisFacade::exportResults(
-    application::ResultsHandle resultsHandle,
-    const std::filesystem::path& filepath,
-    const infrastructure::export_::ExportOptions& options) {
-    
+bool TrussAnalysisFacade::exportResults(application::ResultsHandle resultsHandle,
+                                        const std::filesystem::path& filepath,
+                                        const infrastructure::export_::ExportOptions& options) {
     // Auto-detect format from extension
     auto format = infrastructure::export_::ExporterFactory::detectFormat(filepath);
     return exportResults(resultsHandle, format, filepath, options);
 }
 
-bool TrussAnalysisFacade::exportResults(
-    application::ResultsHandle resultsHandle,
-    infrastructure::export_::ExportFormat format,
-    const std::filesystem::path& filepath,
-    const infrastructure::export_::ExportOptions& options) {
-    
+bool TrussAnalysisFacade::exportResults(application::ResultsHandle resultsHandle,
+                                        infrastructure::export_::ExportFormat format,
+                                        const std::filesystem::path& filepath,
+                                        const infrastructure::export_::ExportOptions& options) {
     // Validate handles
     if (!m_analysisService.isValidHandle(resultsHandle)) {
         return false;
@@ -260,8 +245,7 @@ application::TrussHandle TrussAnalysisFacade::createEmptyTruss(const std::string
     return 0;
 }
 
-application::TrussHandle
-TrussAnalysisFacade::loadTrussOnly(const std::filesystem::path& filepath) {
+application::TrussHandle TrussAnalysisFacade::loadTrussOnly(const std::filesystem::path& filepath) {
     auto result = m_trussService.loadTruss(filepath);
     if (result) {
         m_lastTrussHandle = result.value;
@@ -291,7 +275,6 @@ TrussAnalysisFacade::analyzeOnly(application::TrussHandle trussHandle,
 
 std::string TrussAnalysisFacade::formatValidationErrors(
     const core::validation::ValidationResult& result) const {
-    
     std::ostringstream oss;
     oss << result.getSummary() << "\n";
 

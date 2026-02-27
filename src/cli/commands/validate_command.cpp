@@ -16,8 +16,7 @@ ValidateCommand::ValidateCommand(truss::interface::TrussAnalysisFacade& facade,
                                  truss::cli::presenters::ConsolePresenter& presenter,
                                  const std::string& inputFile,
                                  bool verbose)
-    : m_facade(facade), m_presenter(presenter), m_inputFile(inputFile),
-      m_verbose(verbose) {}
+    : m_facade(facade), m_presenter(presenter), m_inputFile(inputFile), m_verbose(verbose) {}
 
 int ValidateCommand::execute() {
     m_presenter.displayHeader();
@@ -68,9 +67,12 @@ int ValidateCommand::execute() {
         // Provide suggestions based on issues
         bool hasSupport = false, hasMember = false, hasLoad = false;
         for (const auto& issue : issues) {
-            if (issue.category.find("support") != std::string::npos) hasSupport = true;
-            if (issue.category.find("member") != std::string::npos) hasMember = true;
-            if (issue.category.find("load") != std::string::npos) hasLoad = true;
+            if (issue.category.find("support") != std::string::npos)
+                hasSupport = true;
+            if (issue.category.find("member") != std::string::npos)
+                hasMember = true;
+            if (issue.category.find("load") != std::string::npos)
+                hasLoad = true;
         }
 
         if (hasSupport) {

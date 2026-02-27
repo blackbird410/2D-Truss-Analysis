@@ -247,15 +247,13 @@ TEST_F(AnalyzeCommandTest, Execute_ExportFormatParsing_JSONCaseInsensitive) {
     truss::cli::presenters::ConsolePresenter presenter(output);
 
     // Test lowercase
-    AnalyzeCommand cmd1(
-        facade, presenter, "test_simple.json", "out1.json", "json");
+    AnalyzeCommand cmd1(facade, presenter, "test_simple.json", "out1.json", "json");
     // Just verifying it doesn't crash and returns some exit code
     int code1 = cmd1.execute();
     EXPECT_TRUE(code1 == 0 || code1 == 1);  // May succeed or fail depending on validation
 
     // Test uppercase
-    AnalyzeCommand cmd2(
-        facade, presenter, "test_simple.json", "out2.json", "JSON");
+    AnalyzeCommand cmd2(facade, presenter, "test_simple.json", "out2.json", "JSON");
     int code2 = cmd2.execute();
     EXPECT_TRUE(code2 == 0 || code2 == 1);
 
@@ -283,11 +281,7 @@ TEST_F(AnalyzeCommandTest, Execute_WithInvalidExportFormat_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(facade,
-                       presenter,
-                       "test_simple.json",
-                       "output.xyz",
-                       "INVALID_FORMAT");
+    AnalyzeCommand cmd(facade, presenter, "test_simple.json", "output.xyz", "INVALID_FORMAT");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -312,12 +306,7 @@ TEST_F(AnalyzeCommandTest, Execute_VerboseMode_DoesNotCrash) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(facade,
-                       presenter,
-                       "test_simple.json",
-                       std::nullopt,
-                       std::nullopt,
-                       true);
+    AnalyzeCommand cmd(facade, presenter, "test_simple.json", std::nullopt, std::nullopt, true);
     int exitCode = cmd.execute();
 
     // Just verify it doesn't crash - may succeed or fail depending on file
@@ -346,11 +335,7 @@ TEST_F(AnalyzeCommandTest, SupportedFormats_AllRecognized) {
     std::vector<std::string> formats = {"JSON", "XML", "CSV", "TSV", "TXT", "LaTeX", "HTML"};
 
     for (const auto& format : formats) {
-        AnalyzeCommand cmd(facade,
-                   presenter,
-                   "test_simple.json",
-                   "output." + format,
-                   format);
+        AnalyzeCommand cmd(facade, presenter, "test_simple.json", "output." + format, format);
         // Just verify format parsing doesn't cause immediate failure
         // (actual execution may fail due to validation issues)
         int code = cmd.execute();
@@ -378,8 +363,7 @@ TEST_F(AnalyzeCommandTest, Execute_LaTeXAlias_Works) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    AnalyzeCommand cmd(
-        facade, presenter, "test_simple.json", "output.tex", "TEX");
+    AnalyzeCommand cmd(facade, presenter, "test_simple.json", "output.tex", "TEX");
     int exitCode = cmd.execute();
 
     // Just verify it recognizes TEX as valid format

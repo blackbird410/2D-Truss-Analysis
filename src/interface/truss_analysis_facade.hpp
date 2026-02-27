@@ -69,9 +69,7 @@ struct AnalysisWorkflowResult {
         return {true, "", th, rh};
     }
 
-    static AnalysisWorkflowResult Failure(const std::string& error) {
-        return {false, error, 0, 0};
-    }
+    static AnalysisWorkflowResult Failure(const std::string& error) { return {false, error, 0, 0}; }
 };
 
 /**
@@ -130,9 +128,8 @@ public:
      *
      * On failure, cleans up any partially created resources.
      */
-    AnalysisWorkflowResult analyzeFromFile(
-        const std::filesystem::path& filepath,
-        const core::analysis::AnalysisOptions& options = {});
+    AnalysisWorkflowResult analyzeFromFile(const std::filesystem::path& filepath,
+                                           const core::analysis::AnalysisOptions& options = {});
 
     /**
      * @brief Complete workflow: build → validate → analyze
@@ -148,9 +145,8 @@ public:
      *
      * The builder is not modified by this call.
      */
-    AnalysisWorkflowResult analyzeInteractive(
-        TrussBuilder& builder,
-        const core::analysis::AnalysisOptions& options = {});
+    AnalysisWorkflowResult analyzeInteractive(TrussBuilder& builder,
+                                              const core::analysis::AnalysisOptions& options = {});
 
     /**
      * @brief Complete workflow: load → validate (no analysis)

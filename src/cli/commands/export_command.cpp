@@ -21,9 +21,8 @@ ExportCommand::ExportCommand(truss::interface::TrussAnalysisFacade& facade,
                              const std::string& outputFile,
                              const std::optional<std::string>& exportFormat,
                              bool verbose)
-    : m_facade(facade), m_presenter(presenter), m_trussFile(trussFile),
-      m_resultsFile(resultsFile), m_outputFile(outputFile),
-      m_exportFormat(exportFormat), m_verbose(verbose) {}
+    : m_facade(facade), m_presenter(presenter), m_trussFile(trussFile), m_resultsFile(resultsFile),
+      m_outputFile(outputFile), m_exportFormat(exportFormat), m_verbose(verbose) {}
 
 int ExportCommand::execute() {
     using namespace truss::infrastructure::export_;
@@ -104,8 +103,8 @@ int ExportCommand::execute() {
     m_presenter.displayInfo("\nExporting results...\n");
     if (!m_facade.exportResults(analysisResult.resultsHandle, format, m_outputFile)) {
         m_presenter.displayError("Export failed: Check output directory is writable.");
-        m_presenter.displayInfo(
-            "Suggestion: Verify that the output directory exists and you have write permissions.\n");
+        m_presenter.displayInfo("Suggestion: Verify that the output directory exists and you have "
+                                "write permissions.\n");
         return 1;
     }
 

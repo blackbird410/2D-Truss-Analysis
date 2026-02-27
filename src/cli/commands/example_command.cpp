@@ -2,7 +2,7 @@
  * @file example_command.cpp
  * @brief CLI command for generating example truss models.
  * @version 3.0.0
- * @date 2026-02-24
+ * @date 2026-02-27
  * @author Neil Taison Rigaud
  *
  * REFACTORING NOTE:
@@ -31,13 +31,13 @@ int ExampleCommand::execute() {
     // Build truss using fluent interface (no direct core API usage)
     TrussBuilder builder("Example 3-Member Truss");
     builder.setName("Example 3-Member Truss")
-        .addNode(0.0, 0.0, SupportType::Pinned)       // Node 1: Fixed support
-        .addNode(4.0, 0.0, SupportType::RollerX)      // Node 2: Roller support
-        .addNode(2.0, 3.0, SupportType::Free)         // Node 3: Free node
-        .addMember(NodeId(1), NodeId(2))              // Member 1-2
-        .addMember(NodeId(1), NodeId(3))              // Member 1-3
-        .addMember(NodeId(2), NodeId(3))              // Member 2-3
-        .applyForce(NodeId(3), 0.0, -50000.0);        // 50 kN downward load
+        .addNode(0.0, 0.0, SupportType::Pinned)   // Node 1: Fixed support
+        .addNode(4.0, 0.0, SupportType::RollerX)  // Node 2: Roller support
+        .addNode(2.0, 3.0, SupportType::Free)     // Node 3: Free node
+        .addMember(NodeId(1), NodeId(2))          // Member 1-2
+        .addMember(NodeId(1), NodeId(3))          // Member 1-3
+        .addMember(NodeId(2), NodeId(3))          // Member 2-3
+        .applyForce(NodeId(3), 0.0, -50000.0);    // 50 kN downward load
 
     if (m_verbose) {
         m_presenter.displayInfo("Truss structure created using fluent builder API.\n");
