@@ -317,8 +317,8 @@ if(BUILD_TESTING)
     # GTest integration validation test
     add_executable(test_gtest_integration tests/test_gtest_integration.cpp)
     target_link_libraries(test_gtest_integration PRIVATE GTest::gtest GTest::gtest_main)
-    add_test(NAME GTestIntegration COMMAND test_gtest_integration)
-    set_tests_properties(GTestIntegration PROPERTIES
+    add_test(NAME gtest_integration COMMAND test_gtest_integration)
+    set_tests_properties(gtest_integration PROPERTIES
         TIMEOUT 10
         LABELS "gtest;integration"
     )
@@ -426,13 +426,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/tests  # For mocks directory
     )
     
-    add_test(NAME UnitTests COMMAND unit_tests)
     add_test(NAME unit_tests COMMAND unit_tests)
-    set_tests_properties(UnitTests PROPERTIES
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        TIMEOUT 30
-        LABELS "unit;gtest"
-    )
     set_tests_properties(unit_tests PROPERTIES
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         TIMEOUT 30
@@ -488,8 +482,8 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
     )
     
-    add_test(NAME IntegrationTests COMMAND integration_tests)
-    set_tests_properties(IntegrationTests PROPERTIES
+    add_test(NAME integration_tests COMMAND integration_tests)
+    set_tests_properties(integration_tests PROPERTIES
         TIMEOUT 60
         LABELS "integration;gtest"
     )
@@ -532,8 +526,8 @@ if(BUILD_GUI)
         ${CMAKE_SOURCE_DIR}/src/application
     )
     
-    add_test(NAME GUIIntegrationTests COMMAND gui_integration_test)
-    set_tests_properties(GUIIntegrationTests PROPERTIES
+    add_test(NAME gui_integration_tests COMMAND gui_integration_test)
+    set_tests_properties(gui_integration_tests PROPERTIES
         TIMEOUT 120
         LABELS "gui;integration;qt"
     )
