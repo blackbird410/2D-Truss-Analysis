@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "application/truss_application_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
 #include "core/model/types.hpp"
 
 #include <QtGui/QPainter>
@@ -36,8 +36,7 @@ public:
      * @param trussService Application service for truss operations
      * @param parent Parent widget
      */
-    explicit PlotWidget(truss::application::TrussApplicationService& trussService,
-                        QWidget* parent = nullptr);
+    explicit PlotWidget(truss::application::ITrussService& trussService, QWidget* parent = nullptr);
 
 public slots:
     /**
@@ -100,7 +99,7 @@ private:
     void calculateViewport();
 
     // Dependencies (Clean Architecture)
-    truss::application::TrussApplicationService& m_trussService;
+    truss::application::ITrussService& m_trussService;
     truss::application::TrussHandle m_currentTrussHandle;
 
     // Display state

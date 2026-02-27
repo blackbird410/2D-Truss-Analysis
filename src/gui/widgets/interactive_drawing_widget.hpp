@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "application/truss_application_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
 #include "application/truss_edit_dtos.hpp"
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
@@ -92,8 +92,7 @@ public:
      * @param trussService Application service for truss operations
      * @param parent Qt parent widget
      */
-    explicit DrawingCanvas(application::TrussApplicationService& trussService,
-                           QWidget* parent = nullptr);
+    explicit DrawingCanvas(application::ITrussService& trussService, QWidget* parent = nullptr);
     ~DrawingCanvas() override = default;
 
     // Drawing mode management
@@ -121,7 +120,7 @@ public:
     void clearTruss();
 
     // Service accessor for PropertyPanel
-    application::TrussApplicationService& getTrussService() { return m_trussService; }
+    application::ITrussService& getTrussService() { return m_trussService; }
 
     // Coordinate conversion
     truss::core::Point2D screenToWorld(const QPoint& screenPoint) const;
@@ -196,7 +195,7 @@ private:
     void deleteSelectedElements();
 
     // Injected dependencies
-    application::TrussApplicationService& m_trussService;
+    application::ITrussService& m_trussService;
 
     // State variables
     DrawingMode m_drawingMode;
@@ -323,7 +322,7 @@ public:
      * @param trussService Application service for truss operations
      * @param parent Qt parent widget
      */
-    explicit InteractiveDrawingWidget(application::TrussApplicationService& trussService,
+    explicit InteractiveDrawingWidget(application::ITrussService& trussService,
                                       QWidget* parent = nullptr);
     ~InteractiveDrawingWidget() override = default;
 
@@ -357,7 +356,7 @@ private:
     PropertyPanel* m_propertyPanel;
 
     // Dependency
-    application::TrussApplicationService& m_trussService;
+    application::ITrussService& m_trussService;
 
     // Toolbar
     QToolBar* m_toolbar;

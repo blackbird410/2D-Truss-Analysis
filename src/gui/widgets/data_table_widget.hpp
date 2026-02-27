@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "application/truss_application_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
 
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QWidget>
@@ -34,8 +34,7 @@ public:
      * @param trussService Application service for truss data
      * @param parent Qt parent widget
      */
-    explicit DataTableWidget(application::TrussApplicationService& trussService,
-                             QWidget* parent = nullptr);
+    explicit DataTableWidget(application::ITrussService& trussService, QWidget* parent = nullptr);
 
 public slots:
     /**
@@ -56,7 +55,7 @@ private:
     void updateLoadsTable(application::TrussHandle trussHandle);
 
     // Service dependency (injected)
-    application::TrussApplicationService& m_trussService;
+    application::ITrussService& m_trussService;
 
     // Current state
     application::TrussHandle m_currentTrussHandle;
