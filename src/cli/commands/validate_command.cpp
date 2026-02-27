@@ -12,16 +12,14 @@
 
 namespace truss::cli::commands {
 
-ValidateCommand::ValidateCommand(truss::application::TrussApplicationService& trussService,
+ValidateCommand::ValidateCommand(truss::interface::TrussAnalysisFacade& facade,
                                  truss::cli::presenters::ConsolePresenter& presenter,
                                  const std::string& inputFile,
                                  bool verbose)
-    : m_trussService(trussService), m_presenter(presenter), m_inputFile(inputFile),
+    : m_facade(facade), m_presenter(presenter), m_inputFile(inputFile),
       m_verbose(verbose) {}
 
 int ValidateCommand::execute() {
-    using namespace truss::application;
-
     m_presenter.displayHeader();
     m_presenter.displayInfo("Validating truss structure from file...\n");
 
@@ -37,72 +35,70 @@ int ValidateCommand::execute() {
         m_presenter.displayInfo("Input file: " + m_inputFile + "\n");
     }
 
-    // Load truss from file
-    auto loadResult = m_trussService.loadTruss(m_inputFile);
-    if (!loadResult) {
-        m_presenter.displayError("Failed to load truss: " + loadResult.errorMessage);
-        m_presenter.displayInfo(
-            "Suggestion: Verify the file format is valid (JSON, XML, CSV, etc.).\n");
-        m_presenter.displayInfo("Supported formats: JSON, XML, CSV, TSV, TXT, YAML\n");
-        return 1;
-    }
-    TrussHandle trussHandle = loadResult.value;
+    // Use facade to validate from file (single call replaces 4+ service calls)
+    auto validateResult = m_facade.validateFromFile(m_inputFile);
 
-    if (m_verbose) {
-        m_presenter.displaySuccess("Truss loaded successfully.");
-    }
+    if (!validateResult.isValid()) {
+        m_presenter.displayError("Validation failed!");
 
-    // Display truss statistics
-    const auto& trussView = m_trussService.getTrussView(trussHandle);
-    m_presenter.displayTrussStatistics(trussView);
+        // Display validation issues
+        const auto& issues = validateResult.getIssues();
+        if (!issues.empty()) {
+            m_presenter.displayInfo("\nValidation issues found:");
+            for (const auto& issue : issues) {
+                std::string severity;
+                switch (issue.severity) {
+                    case truss::core::validation::ValidationSeverity::Fatal:
+                        severity = "[FATAL]";
+                        break;
+                    case truss::core::validation::ValidationSeverity::Error:
+                        severity = "[ERROR]";
+                        break;
+                    case truss::core::validation::ValidationSeverity::Warning:
+                        severity = "[WARNING]";
+                        break;
+                    case truss::core::validation::ValidationSeverity::Info:
+                        severity = "[INFO]";
+                        break;
+                }
+                m_presenter.displayInfo("  " + severity + " " + issue.message);
+            }
+        }
 
-    // Validate truss structure
-    m_presenter.displayInfo("\nRunning validation checks...\n");
-    auto validateResult = m_trussService.validateTruss(trussHandle);
+        // Provide suggestions based on issues
+        bool hasSupport = false, hasMember = false, hasLoad = false;
+        for (const auto& issue : issues) {
+            if (issue.category.find("support") != std::string::npos) hasSupport = true;
+            if (issue.category.find("member") != std::string::npos) hasMember = true;
+            if (issue.category.find("load") != std::string::npos) hasLoad = true;
+        }
 
-    if (!validateResult) {
-        m_presenter.displayError("Validation failed: " + validateResult.errorMessage);
-
-        // Provide detailed suggestions based on error message
-        std::string errorMsg = validateResult.errorMessage;
-        if (errorMsg.find("support") != std::string::npos) {
+        if (hasSupport) {
             m_presenter.displayInfo("\nSuggestions for support issues:");
             m_presenter.displayInfo("  - Ensure at least one node has a pinned support");
             m_presenter.displayInfo(
                 "  - Check that supports are adequate to prevent rigid body motion");
             m_presenter.displayInfo("  - Verify support types are correctly specified\n");
-        } else if (errorMsg.find("member") != std::string::npos) {
+        }
+        if (hasMember) {
             m_presenter.displayInfo("\nSuggestions for member issues:");
             m_presenter.displayInfo("  - Verify all members connect valid nodes");
             m_presenter.displayInfo("  - Check for zero-length or degenerate members");
             m_presenter.displayInfo("  - Ensure member properties are positive\n");
-        } else if (errorMsg.find("load") != std::string::npos) {
+        }
+        if (hasLoad) {
             m_presenter.displayInfo("\nSuggestions for loading issues:");
             m_presenter.displayInfo("  - Verify loads are applied to existing nodes");
             m_presenter.displayInfo("  - Check load magnitudes are reasonable");
             m_presenter.displayInfo("  - Ensure at least one load is applied\n");
-        } else if (errorMsg.find("material") != std::string::npos) {
-            m_presenter.displayInfo("\nSuggestions for material issues:");
-            m_presenter.displayInfo("  - Check Young's modulus is positive");
-            m_presenter.displayInfo("  - Verify density is positive");
-            m_presenter.displayInfo("  - Ensure yield strength is positive\n");
-        } else if (errorMsg.find("section") != std::string::npos) {
-            m_presenter.displayInfo("\nSuggestions for section issues:");
-            m_presenter.displayInfo("  - Verify cross-sectional area is positive");
-            m_presenter.displayInfo("  - Check section properties are consistent\n");
-        } else if (errorMsg.find("geometry") != std::string::npos) {
-            m_presenter.displayInfo("\nSuggestions for geometry issues:");
-            m_presenter.displayInfo("  - Check for coincident nodes");
-            m_presenter.displayInfo("  - Verify node coordinates are valid");
-            m_presenter.displayInfo("  - Ensure geometry is planar (2D)\n");
-        } else {
+        }
+        if (!hasSupport && !hasMember && !hasLoad) {
             m_presenter.displayInfo("\nGeneral suggestions:");
             m_presenter.displayInfo("  - Review truss geometry and connectivity");
             m_presenter.displayInfo("  - Verify all required properties are specified");
             m_presenter.displayInfo("  - Check for numerical issues (very small/large values)\n");
         }
 
-        m_trussService.clearTruss(trussHandle);
         return 1;
     }
 
@@ -125,9 +121,7 @@ int ValidateCommand::execute() {
     m_presenter.displayInfo("Use 'TrussAnalysisCLI analyze --file " + m_inputFile +
                             "' to run analysis.\n");
 
-    // Cleanup
-    m_trussService.clearTruss(trussHandle);
-
+    // Automatic cleanup via facade (no manual clearTruss needed)
     return 0;
 }
 
