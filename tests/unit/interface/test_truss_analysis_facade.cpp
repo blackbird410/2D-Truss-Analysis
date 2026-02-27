@@ -15,17 +15,17 @@
  * - Workflow state management
  */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-#include <filesystem>
-#include <fstream>
-
+#include "application/analysis_application_service.hpp"
+#include "application/truss_application_service.hpp"
+#include "core/analysis/analysis_orchestrator.hpp"
+#include "core/model/truss.hpp"
 #include "interface/truss_analysis_facade.hpp"
 #include "interface/truss_builder.hpp"
-#include "core/model/truss.hpp"
-#include "core/analysis/analysis_orchestrator.hpp"
-#include "application/truss_application_service.hpp"
-#include "application/analysis_application_service.hpp"
+
+#include <filesystem>
+#include <fstream>
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace truss;
 using namespace truss::interface;
@@ -49,12 +49,12 @@ protected:
     void SetUp() override {
         // Create facade
         facade = std::make_unique<TrussAnalysisFacade>();
-        
+
         // Set up test directories
         testDataDir = fs::path(__FILE__).parent_path().parent_path().parent_path() / "fixtures";
         tempDir = fs::temp_directory_path() / "truss_facade_test";
         fs::create_directories(tempDir);
-        
+
         // Create test JSON file
         createTestJsonFile();
     }
@@ -64,7 +64,7 @@ protected:
         if (fs::exists(tempDir)) {
             fs::remove_all(tempDir);
         }
-        
+
         // Clear facade state
         if (facade) {
             facade->clearAll();
@@ -147,9 +147,9 @@ protected:
         builder.addNode(2.0, 0.0, SupportType::Pinned);
         builder.addNode(1.0, 1.5, SupportType::Free);
         builder.addMember(NodeId(1), NodeId(2))
-               .addMember(NodeId(2), NodeId(3))
-               .addMember(NodeId(3), NodeId(1))
-               .applyForce(NodeId(3), 0.0, -10000.0);
+            .addMember(NodeId(2), NodeId(3))
+            .addMember(NodeId(3), NodeId(1))
+            .applyForce(NodeId(3), 0.0, -10000.0);
         return builder;
     }
 };
@@ -164,9 +164,9 @@ protected:
 TEST_F(TrussAnalysisFacadeTest, AnalyzeFromFileSuccess) {
     fs::path jsonFile = tempDir / "simple_truss.json";
     AnalysisOptions options;
-    
+
     auto result = facade->analyzeFromFile(jsonFile, options);
-    
+
     ASSERT_TRUE(result.success) << result.errorMessage;
     EXPECT_TRUE(result.errorMessage.empty());
     EXPECT_NE(result.trussHandle, TrussHandle{0});
@@ -179,9 +179,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeFromFileSuccess) {
 TEST_F(TrussAnalysisFacadeTest, AnalyzeFromFileNotFound) {
     fs::path nonExistent = tempDir / "does_not_exist.json";
     AnalysisOptions options;
-    
+
     auto result = facade->analyzeFromFile(nonExistent, options);
-    
+
     EXPECT_FALSE(result.success);
     EXPECT_FALSE(result.errorMessage.empty());
 }
@@ -193,9 +193,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeFromFileInvalidJson) {
     createInvalidJsonFile();
     fs::path jsonFile = tempDir / "invalid.json";
     AnalysisOptions options;
-    
+
     auto result = facade->analyzeFromFile(jsonFile, options);
-    
+
     EXPECT_FALSE(result.success);
     EXPECT_FALSE(result.errorMessage.empty());
 }
@@ -207,9 +207,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeFromFileValidationFails) {
     createInvalidTrussFile();
     fs::path jsonFile = tempDir / "invalid_truss.json";
     AnalysisOptions options;
-    
+
     auto result = facade->analyzeFromFile(jsonFile, options);
-    
+
     EXPECT_FALSE(result.success);
     EXPECT_FALSE(result.errorMessage.empty());
 }
@@ -224,9 +224,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeFromFileValidationFails) {
 TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveSuccess) {
     auto builder = createTriangularBuilder();
     AnalysisOptions options;
-    
+
     auto result = facade->analyzeInteractive(builder, options);
-    
+
     ASSERT_TRUE(result.success) << result.errorMessage;
     EXPECT_TRUE(result.errorMessage.empty());
     EXPECT_NE(result.trussHandle, TrussHandle{0});
@@ -240,9 +240,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveInvalidBuilder) {
     TrussBuilder builder;
     builder.addNode(0.0, 0.0, SupportType::Free);  // Insufficient nodes/members
     AnalysisOptions options;
-    
+
     auto result = facade->analyzeInteractive(builder, options);
-    
+
     EXPECT_FALSE(result.success);
     EXPECT_FALSE(result.errorMessage.empty());
 }
@@ -268,9 +268,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveValidationFailureReports) {
 TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveSimpleTruss) {
     auto builder = createSimpleBuilder();
     AnalysisOptions options;
-    
+
     auto result = facade->analyzeInteractive(builder, options);
-    
+
     EXPECT_TRUE(result.success);
 }
 
@@ -283,9 +283,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractiveSimpleTruss) {
  */
 TEST_F(TrussAnalysisFacadeTest, ValidateFromFileSuccess) {
     fs::path jsonFile = tempDir / "simple_truss.json";
-    
+
     auto result = facade->validateFromFile(jsonFile);
-    
+
     EXPECT_TRUE(result.isValid());
     EXPECT_FALSE(result.hasErrors());
 }
@@ -296,9 +296,9 @@ TEST_F(TrussAnalysisFacadeTest, ValidateFromFileSuccess) {
 TEST_F(TrussAnalysisFacadeTest, ValidateFromFileDetectsErrors) {
     createInvalidTrussFile();
     fs::path jsonFile = tempDir / "invalid_truss.json";
-    
+
     auto result = facade->validateFromFile(jsonFile);
-    
+
     EXPECT_FALSE(result.isValid());
     EXPECT_TRUE(result.hasErrors() || result.hasFatal());
 }
@@ -308,9 +308,9 @@ TEST_F(TrussAnalysisFacadeTest, ValidateFromFileDetectsErrors) {
  */
 TEST_F(TrussAnalysisFacadeTest, ValidateBuilderSuccess) {
     auto builder = createTriangularBuilder();
-    
+
     auto result = facade->validateBuilder(builder);
-    
+
     EXPECT_TRUE(result.isValid());
     EXPECT_FALSE(result.hasErrors());
 }
@@ -321,9 +321,9 @@ TEST_F(TrussAnalysisFacadeTest, ValidateBuilderSuccess) {
 TEST_F(TrussAnalysisFacadeTest, ValidateBuilderDetectsErrors) {
     TrussBuilder builder;
     builder.addNode(0.0, 0.0, SupportType::Free);  // Invalid configuration
-    
+
     auto result = facade->validateBuilder(builder);
-    
+
     EXPECT_FALSE(result.isValid());
 }
 
@@ -338,12 +338,12 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsAutoDetectJson) {
     auto builder = createTriangularBuilder();
     auto analysisResult = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(analysisResult.success);
-    
+
     fs::path outputFile = tempDir / "results.json";
     ExportOptions options;
-    
+
     bool success = facade->exportResults(analysisResult.resultsHandle, outputFile, options);
-    
+
     EXPECT_TRUE(success);
     EXPECT_TRUE(fs::exists(outputFile));
 }
@@ -355,12 +355,12 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsAutoDetectCsv) {
     auto builder = createTriangularBuilder();
     auto analysisResult = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(analysisResult.success);
-    
+
     fs::path outputFile = tempDir / "results.csv";
     ExportOptions options;
-    
+
     bool success = facade->exportResults(analysisResult.resultsHandle, outputFile, options);
-    
+
     EXPECT_TRUE(success);
     EXPECT_TRUE(fs::exists(outputFile));
 }
@@ -372,15 +372,15 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsExplicitFormat) {
     auto builder = createTriangularBuilder();
     auto analysisResult = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(analysisResult.success);
-    
+
     fs::path outputFile = tempDir / "results.xml";
     ExportOptions options;
-    
-    bool success = facade->exportResults(analysisResult.resultsHandle, 
-                                        infrastructure::export_::ExportFormat::XML,
-                                        outputFile, 
-                                        options);
-    
+
+    bool success = facade->exportResults(analysisResult.resultsHandle,
+                                         infrastructure::export_::ExportFormat::XML,
+                                         outputFile,
+                                         options);
+
     EXPECT_TRUE(success);
     EXPECT_TRUE(fs::exists(outputFile));
 }
@@ -391,9 +391,9 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsExplicitFormat) {
 TEST_F(TrussAnalysisFacadeTest, ExportResultsInvalidHandle) {
     fs::path outputFile = tempDir / "results.json";
     ExportOptions options;
-    
+
     bool success = facade->exportResults(ResultsHandle{999}, outputFile, options);
-    
+
     EXPECT_FALSE(success);
 }
 
@@ -404,12 +404,12 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsUsesLastHandle) {
     auto builder = createTriangularBuilder();
     auto analysisResult = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(analysisResult.success);
-    
+
     fs::path outputFile = tempDir / "results.json";
-    
+
     // Should use last results handle automatically
     bool success = facade->exportResults(analysisResult.resultsHandle, outputFile);
-    
+
     EXPECT_TRUE(success);
 }
 
@@ -440,9 +440,9 @@ TEST_F(TrussAnalysisFacadeTest, GetTrussView) {
     auto builder = createSimpleBuilder();
     auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(result.success) << result.errorMessage;
-    
+
     const auto& trussView = facade->getTrussView(result.trussHandle);
-    
+
     EXPECT_EQ(trussView.getNodeCount(), 2);
     EXPECT_EQ(trussView.getMemberCount(), 1);
 }
@@ -454,9 +454,9 @@ TEST_F(TrussAnalysisFacadeTest, GetResultsView) {
     auto builder = createTriangularBuilder();
     auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(result.success) << result.errorMessage;
-    
+
     const auto& resultsView = facade->getResultsView(result.resultsHandle);
-    
+
     // Should have displacement and force results
     auto displacements = resultsView.getDisplacements();
     EXPECT_GT(displacements.size(), 0);
@@ -469,9 +469,9 @@ TEST_F(TrussAnalysisFacadeTest, GetTrussMutable) {
     auto builder = createSimpleBuilder();
     auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(result.success);
-    
+
     auto& mutableTruss = facade->getTrussMutable(result.trussHandle);
-    
+
     // Should be able to modify
     size_t originalNodeCount = mutableTruss.getNodeCount();
     EXPECT_GT(originalNodeCount, 0);
@@ -488,9 +488,9 @@ TEST_F(TrussAnalysisFacadeTest, ClearWorkflow) {
     auto builder = createTriangularBuilder();
     auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(result.success);
-    
+
     facade->clearWorkflow(result.trussHandle, result.resultsHandle);
-    
+
     // After clearing workflow, handles should be invalid
     EXPECT_THROW(facade->getTrussView(result.trussHandle), std::exception);
 }
@@ -502,9 +502,9 @@ TEST_F(TrussAnalysisFacadeTest, ClearAll) {
     auto builder = createTriangularBuilder();
     auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
     ASSERT_TRUE(result.success);
-    
+
     facade->clearAll();
-    
+
     // After clearing all, handles should be invalid
     EXPECT_THROW(facade->getTrussView(result.trussHandle), std::exception);
     EXPECT_THROW(facade->getResultsView(result.resultsHandle), std::exception);
@@ -517,20 +517,18 @@ TEST_F(TrussAnalysisFacadeTest, ManageMultipleTrusses) {
     auto builder1 = createSimpleBuilder();
     auto result1 = facade->analyzeInteractive(builder1, AnalysisOptions{});
     ASSERT_TRUE(result1.success) << result1.errorMessage;
-    
+
     auto builder2 = createTriangularBuilder();
     auto result2 = facade->analyzeInteractive(builder2, AnalysisOptions{});
     ASSERT_TRUE(result2.success);
-    
+
     // Both should be accessible
     EXPECT_NO_THROW(facade->getTrussView(result1.trussHandle));
     EXPECT_NO_THROW(facade->getTrussView(result2.trussHandle));
-    
+
     // Should have different node counts
-    EXPECT_NE(
-        facade->getTrussView(result1.trussHandle).getNodeCount(),
-        facade->getTrussView(result2.trussHandle).getNodeCount()
-    );
+    EXPECT_NE(facade->getTrussView(result1.trussHandle).getNodeCount(),
+              facade->getTrussView(result2.trussHandle).getNodeCount());
 }
 
 /**
@@ -556,9 +554,9 @@ TEST_F(TrussAnalysisFacadeTest, HandleValidation) {
  */
 TEST_F(TrussAnalysisFacadeTest, CreateEmptyTruss) {
     auto handle = facade->createEmptyTruss("TestTruss");
-    
+
     EXPECT_NE(handle, TrussHandle{0});
-    
+
     const auto& truss = facade->getTrussView(handle);
     EXPECT_EQ(truss.getNodeCount(), 0);
 }
@@ -568,9 +566,9 @@ TEST_F(TrussAnalysisFacadeTest, CreateEmptyTruss) {
  */
 TEST_F(TrussAnalysisFacadeTest, LoadTrussOnly) {
     fs::path jsonFile = tempDir / "simple_truss.json";
-    
+
     auto trussHandle = facade->loadTrussOnly(jsonFile);
-    
+
     EXPECT_NE(trussHandle, TrussHandle{0});
 }
 
@@ -581,10 +579,10 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeOnly) {
     fs::path jsonFile = tempDir / "simple_truss.json";
     auto trussHandle = facade->loadTrussOnly(jsonFile);
     ASSERT_NE(trussHandle, TrussHandle{0});
-    
+
     AnalysisOptions options;
     auto resultsHandle = facade->analyzeOnly(trussHandle, options);
-    
+
     EXPECT_NE(resultsHandle, ResultsHandle{0});
 }
 
@@ -606,9 +604,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeOnlyInvalidHandle) {
 TEST_F(TrussAnalysisFacadeTest, ErrorPropagationFromServices) {
     TrussBuilder invalidBuilder;
     invalidBuilder.addNode(0.0, 0.0, SupportType::Free);
-    
+
     auto result = facade->analyzeInteractive(invalidBuilder, AnalysisOptions{});
-    
+
     EXPECT_FALSE(result.success);
     EXPECT_FALSE(result.errorMessage.empty());
 }
@@ -619,9 +617,9 @@ TEST_F(TrussAnalysisFacadeTest, ErrorPropagationFromServices) {
 TEST_F(TrussAnalysisFacadeTest, StructuredValidationErrors) {
     createInvalidTrussFile();
     fs::path jsonFile = tempDir / "invalid_truss.json";
-    
+
     auto result = facade->validateFromFile(jsonFile);
-    
+
     EXPECT_FALSE(result.isValid());
     auto errors = result.getErrorMessages();
     EXPECT_GT(errors.size(), 0);

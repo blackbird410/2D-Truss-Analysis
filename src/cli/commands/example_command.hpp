@@ -6,13 +6,13 @@
  * @author Neil Taison Rigaud
  *
  * Executes a hardcoded 3-member truss analysis demonstrating
- * Application service delegation and result presentation.
+ * Interface layer facade and fluent builder pattern usage.
  */
 
 #pragma once
 
-#include "../../application/analysis_application_service.hpp"
-#include "../../application/truss_application_service.hpp"
+#include "../../interface/truss_analysis_facade.hpp"
+#include "../../interface/truss_builder.hpp"
 #include "../presenters/console_presenter.hpp"
 #include "icommand.hpp"
 
@@ -21,23 +21,22 @@ namespace truss::cli::commands {
 /**
  * @brief Command to run hardcoded example truss analysis
  *
- * Demonstrates proper Application service usage:
- * - Creates truss via TrussApplicationService
- * - Performs analysis via AnalysisApplicationService
+ * Demonstrates proper Interface layer usage:
+ * - Creates truss via TrussBuilder fluent API
+ * - Performs analysis via TrussAnalysisFacade
  * - Displays results via ConsolePresenter
  * - Uses Result<T> for error handling
+ * - NO direct core API usage
  */
 class ExampleCommand : public ICommand {
 public:
     /**
      * @brief Constructor with dependency injection
-     * @param trussService Injected truss application service
-     * @param analysisService Injected analysis application service
+     * @param facade Injected truss analysis facade
      * @param presenter Injected console presenter
      * @param verbose Enable verbose output
      */
-    ExampleCommand(truss::application::TrussApplicationService& trussService,
-                   truss::application::AnalysisApplicationService& analysisService,
+    ExampleCommand(truss::interface::TrussAnalysisFacade& facade,
                    truss::cli::presenters::ConsolePresenter& presenter,
                    bool verbose = false);
 
@@ -51,8 +50,7 @@ public:
     }
 
 private:
-    truss::application::TrussApplicationService& m_trussService;
-    truss::application::AnalysisApplicationService& m_analysisService;
+    truss::interface::TrussAnalysisFacade& m_facade;
     truss::cli::presenters::ConsolePresenter& m_presenter;
     bool m_verbose;
 };

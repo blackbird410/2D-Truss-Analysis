@@ -14,12 +14,12 @@
  * - Error handling and validation
  */
 
-#include <gtest/gtest.h>
-#include <gmock/gmock.h>
-
-#include "interface/truss_builder.hpp"
-#include "core/model/truss.hpp"
 #include "application/truss_edit_dtos.hpp"
+#include "core/model/truss.hpp"
+#include "interface/truss_builder.hpp"
+
+#include <gmock/gmock.h>
+#include <gtest/gtest.h>
 
 using namespace truss;
 using namespace truss::interface;
@@ -75,8 +75,7 @@ TEST_F(TrussBuilderTest, NodeIdAssignmentSequential) {
  * @test TrussBuilder allows adding multiple nodes with different support types
  */
 TEST_F(TrussBuilderTest, AddMultipleNodesWithDifferentSupports) {
-    builder
-        .addNode(0.0, 0.0, SupportType::Pinned)
+    builder.addNode(0.0, 0.0, SupportType::Pinned)
         .addNode(1.0, 0.0, SupportType::Pinned)
         .addNode(2.0, 0.0, SupportType::RollerY)
         .addNode(1.0, 1.0, SupportType::Free);
@@ -97,9 +96,9 @@ TEST_F(TrussBuilderTest, FluentApiChaining) {
  */
 TEST_F(TrussBuilderTest, SetNameUpdatesTrussName) {
     builder.setName("Test Truss")
-           .addNode(0.0, 0.0, SupportType::Pinned)
-           .addNode(1.0, 0.0, SupportType::RollerX)
-           .addMember(NodeId(1), NodeId(2));
+        .addNode(0.0, 0.0, SupportType::Pinned)
+        .addNode(1.0, 0.0, SupportType::RollerX)
+        .addMember(NodeId(1), NodeId(2));
 
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
@@ -116,9 +115,9 @@ TEST_F(TrussBuilderTest, SetNameUpdatesTrussName) {
 TEST_F(TrussBuilderTest, AddMemberWithDefaults) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
-    
+
     builder.addMember(NodeId(1), NodeId(2));
-    
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getMemberCount(), 1);
@@ -130,11 +129,11 @@ TEST_F(TrussBuilderTest, AddMemberWithDefaults) {
 TEST_F(TrussBuilderTest, AddMemberWithCustomMaterial) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
-    
+
     MaterialSpec aluminum = MaterialSpec::Aluminum();
     SectionSpec section = SectionSpec::Circular(0.01);
     builder.addMember(NodeId(1), NodeId(2), aluminum, section);
-    
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getMemberCount(), 1);
@@ -146,12 +145,12 @@ TEST_F(TrussBuilderTest, AddMemberWithCustomMaterial) {
 TEST_F(TrussBuilderTest, AddMemberWithCustomMaterialAndSection) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
-    
+
     MaterialSpec concrete = MaterialSpec::Concrete();
     SectionSpec square = SectionSpec::Square(0.1);  // 10cm x 10cm
-    
+
     builder.addMember(NodeId(1), NodeId(2), concrete, square);
-    
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getMemberCount(), 1);
@@ -164,11 +163,11 @@ TEST_F(TrussBuilderTest, AddMultipleMembers) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
     builder.addNode(0.5, 1.0, SupportType::Free);
-    
+
     builder.addMember(NodeId(1), NodeId(2))
-           .addMember(NodeId(2), NodeId(3))
-           .addMember(NodeId(3), NodeId(1));
-    
+        .addMember(NodeId(2), NodeId(3))
+        .addMember(NodeId(3), NodeId(1));
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getMemberCount(), 3);
@@ -183,11 +182,8 @@ TEST_F(TrussBuilderTest, AddMultipleMembers) {
  */
 TEST_F(TrussBuilderTest, AddMemberInvalidStartNode) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
-    
-    EXPECT_THROW(
-        builder.addMember(NodeId(999), NodeId(1)),
-        std::invalid_argument
-    );
+
+    EXPECT_THROW(builder.addMember(NodeId(999), NodeId(1)), std::invalid_argument);
 }
 
 /**
@@ -195,21 +191,15 @@ TEST_F(TrussBuilderTest, AddMemberInvalidStartNode) {
  */
 TEST_F(TrussBuilderTest, AddMemberInvalidEndNode) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
-    
-    EXPECT_THROW(
-        builder.addMember(NodeId(1), NodeId(999)),
-        std::invalid_argument
-    );
+
+    EXPECT_THROW(builder.addMember(NodeId(1), NodeId(999)), std::invalid_argument);
 }
 
 /**
  * @test TrussBuilder throws when adding member before any nodes
  */
 TEST_F(TrussBuilderTest, AddMemberBeforeNodes) {
-    EXPECT_THROW(
-        builder.addMember(NodeId(1), NodeId(2)),
-        std::invalid_argument
-    );
+    EXPECT_THROW(builder.addMember(NodeId(1), NodeId(2)), std::invalid_argument);
 }
 
 /**
@@ -217,11 +207,8 @@ TEST_F(TrussBuilderTest, AddMemberBeforeNodes) {
  */
 TEST_F(TrussBuilderTest, AddMemberSelfLoop) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
-    
-    EXPECT_THROW(
-        builder.addMember(NodeId(1), NodeId(1)),
-        std::invalid_argument
-    );
+
+    EXPECT_THROW(builder.addMember(NodeId(1), NodeId(1)), std::invalid_argument);
 }
 
 // =============================================================================
@@ -234,10 +221,9 @@ TEST_F(TrussBuilderTest, AddMemberSelfLoop) {
 TEST_F(TrussBuilderTest, ApplyForceToNode) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
-    
-    builder.addMember(NodeId(1), NodeId(2))
-           .applyForce(NodeId(2), 1000.0, -500.0);
-    
+
+    builder.addMember(NodeId(1), NodeId(2)).applyForce(NodeId(2), 1000.0, -500.0);
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
 }
@@ -249,12 +235,12 @@ TEST_F(TrussBuilderTest, ApplyMultipleForces) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Free);
     builder.addNode(0.5, 1.0, SupportType::Free);
-    
+
     builder.addMember(NodeId(1), NodeId(2))
-           .addMember(NodeId(2), NodeId(3))
-           .applyForce(NodeId(2), 1000.0, 0.0)
-           .applyForce(NodeId(3), 0.0, -1500.0);
-    
+        .addMember(NodeId(2), NodeId(3))
+        .applyForce(NodeId(2), 1000.0, 0.0)
+        .applyForce(NodeId(3), 0.0, -1500.0);
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
 }
@@ -264,11 +250,8 @@ TEST_F(TrussBuilderTest, ApplyMultipleForces) {
  */
 TEST_F(TrussBuilderTest, ApplyForceInvalidNode) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
-    
-    EXPECT_THROW(
-        builder.applyForce(NodeId(999), 100.0, 0.0),
-        std::invalid_argument
-    );
+
+    EXPECT_THROW(builder.applyForce(NodeId(999), 100.0, 0.0), std::invalid_argument);
 }
 
 // =============================================================================
@@ -281,11 +264,11 @@ TEST_F(TrussBuilderTest, ApplyForceInvalidNode) {
 TEST_F(TrussBuilderTest, SetSupportType) {
     builder.addNode(0.0, 0.0, SupportType::Free);
     builder.addNode(1.0, 0.0, SupportType::Free);
-    
+
     builder.setSupport(NodeId(1), SupportType::Pinned)
-           .setSupport(NodeId(2), SupportType::RollerY)
-           .addMember(NodeId(1), NodeId(2));
-    
+        .setSupport(NodeId(2), SupportType::RollerY)
+        .addMember(NodeId(1), NodeId(2));
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
 }
@@ -295,11 +278,8 @@ TEST_F(TrussBuilderTest, SetSupportType) {
  */
 TEST_F(TrussBuilderTest, SetSupportInvalidNode) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
-    
-    EXPECT_THROW(
-        builder.setSupport(NodeId(999), SupportType::Pinned),
-        std::invalid_argument
-    );
+
+    EXPECT_THROW(builder.setSupport(NodeId(999), SupportType::Pinned), std::invalid_argument);
 }
 
 // =============================================================================
@@ -311,7 +291,7 @@ TEST_F(TrussBuilderTest, SetSupportInvalidNode) {
  */
 TEST_F(TrussBuilderTest, BuildInsufficientNodes) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
-    
+
     EXPECT_THROW(builder.build(), std::runtime_error);
 }
 
@@ -319,9 +299,8 @@ TEST_F(TrussBuilderTest, BuildInsufficientNodes) {
  * @test TrussBuilder throws when building with no members
  */
 TEST_F(TrussBuilderTest, BuildNoMembers) {
-    builder.addNode(0.0, 0.0, SupportType::Pinned)
-           .addNode(1.0, 0.0, SupportType::Pinned);
-    
+    builder.addNode(0.0, 0.0, SupportType::Pinned).addNode(1.0, 0.0, SupportType::Pinned);
+
     EXPECT_THROW(builder.build(), std::runtime_error);
 }
 
@@ -332,7 +311,7 @@ TEST_F(TrussBuilderTest, BuildValid) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
     builder.addMember(NodeId(1), NodeId(2));
-    
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getNodeCount(), 2);
@@ -350,9 +329,9 @@ TEST_F(TrussBuilderTest, ResetClearsState) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
     builder.addMember(NodeId(1), NodeId(2));
-    
+
     builder.reset();
-    
+
     // After reset, should throw when building (no nodes/members)
     EXPECT_THROW(builder.build(), std::runtime_error);
 }
@@ -366,14 +345,14 @@ TEST_F(TrussBuilderTest, ReuseAfterReset) {
     builder.addNode(1.0, 0.0, SupportType::Pinned);
     builder.addMember(NodeId(1), NodeId(2));
     auto truss1 = builder.build();
-    
+
     // Reset and build second truss
     builder.reset();
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(2.0, 0.0, SupportType::Pinned);
     builder.addMember(NodeId(1), NodeId(2));
     auto truss2 = builder.build();
-    
+
     ASSERT_NE(truss1, nullptr);
     ASSERT_NE(truss2, nullptr);
     EXPECT_NE(truss1, truss2);  // Different truss instances
@@ -385,9 +364,9 @@ TEST_F(TrussBuilderTest, ReuseAfterReset) {
 TEST_F(TrussBuilderTest, NodeIdRestartAfterReset) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
-    
+
     builder.reset();
-    
+
     builder.addNode(0.0, 0.0, SupportType::Pinned);
 
     EXPECT_EQ(builder.getNodeCount(), 1);
@@ -404,12 +383,12 @@ TEST_F(TrussBuilderTest, NodeIdRestartAfterReset) {
 TEST_F(TrussBuilderTest, DefaultMaterialIsSteel) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
-    
+
     builder.addMember(NodeId(1), NodeId(2));  // No material specified
-    
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
-    
+
     // Verify default material properties (Steel: E = 200 GPa)
     auto members = truss->getMembers();
     ASSERT_EQ(members.size(), 1);
@@ -422,12 +401,12 @@ TEST_F(TrussBuilderTest, DefaultMaterialIsSteel) {
 TEST_F(TrussBuilderTest, DefaultSectionIsCircular) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Pinned);
-    
+
     builder.addMember(NodeId(1), NodeId(2));  // No section specified
-    
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
-    
+
     // Verify default section has reasonable area
     auto members = truss->getMembers();
     ASSERT_EQ(members.size(), 1);
@@ -445,12 +424,12 @@ TEST_F(TrussBuilderTest, BuildSimpleTriangularTruss) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(2.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 1.5, SupportType::Free);
-    
+
     builder.addMember(NodeId(1), NodeId(2))
-           .addMember(NodeId(2), NodeId(3))
-           .addMember(NodeId(3), NodeId(1))
-           .applyForce(NodeId(3), 0.0, -10000.0);
-    
+        .addMember(NodeId(2), NodeId(3))
+        .addMember(NodeId(3), NodeId(1))
+        .applyForce(NodeId(3), 0.0, -10000.0);
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getNodeCount(), 3);
@@ -465,28 +444,26 @@ TEST_F(TrussBuilderTest, BuildWarrenTruss) {
     builder.addNode(0.0, 0.0, SupportType::Pinned);
     builder.addNode(1.0, 0.0, SupportType::Free);
     builder.addNode(2.0, 0.0, SupportType::Pinned);
-    
+
     // Top nodes
     builder.addNode(0.5, 1.0, SupportType::Free);
     builder.addNode(1.5, 1.0, SupportType::Free);
-    
+
     // Bottom chord
-    builder.addMember(NodeId(1), NodeId(2))
-           .addMember(NodeId(2), NodeId(3));
-    
+    builder.addMember(NodeId(1), NodeId(2)).addMember(NodeId(2), NodeId(3));
+
     // Top chord
     builder.addMember(NodeId(4), NodeId(5));
-    
+
     // Diagonals
     builder.addMember(NodeId(1), NodeId(4))
-           .addMember(NodeId(4), NodeId(2))
-           .addMember(NodeId(2), NodeId(5))
-           .addMember(NodeId(5), NodeId(3));
-    
+        .addMember(NodeId(4), NodeId(2))
+        .addMember(NodeId(2), NodeId(5))
+        .addMember(NodeId(5), NodeId(3));
+
     // Apply loads
-    builder.applyForce(NodeId(4), 0.0, -5000.0)
-           .applyForce(NodeId(5), 0.0, -5000.0);
-    
+    builder.applyForce(NodeId(4), 0.0, -5000.0).applyForce(NodeId(5), 0.0, -5000.0);
+
     auto truss = builder.build();
     ASSERT_NE(truss, nullptr);
     EXPECT_EQ(truss->getNodeCount(), 5);

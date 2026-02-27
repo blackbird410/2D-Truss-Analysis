@@ -5,17 +5,16 @@
  * @date 2026-02-24
  * @author Neil Taison Rigaud
  *
- * This command exports previously generated analysis results to different
- * file formats. Requires both input truss file and results file.
+ * This command exports analysis results to different file formats.
+ * Re-analyzes if results file is not available.
  *
  * Architecture: CLI Layer (Command Pattern)
- * Dependencies: Application services (TrussApplicationService, AnalysisApplicationService)
+ * Dependencies: Interface Layer (TrussAnalysisFacade)
  */
 
 #pragma once
 
-#include "../../application/analysis_application_service.hpp"
-#include "../../application/truss_application_service.hpp"
+#include "../../interface/truss_analysis_facade.hpp"
 #include "../presenters/console_presenter.hpp"
 #include "icommand.hpp"
 
@@ -51,8 +50,7 @@ namespace truss::cli::commands {
  */
 class ExportCommand : public ICommand {
 private:
-    truss::application::TrussApplicationService& m_trussService;
-    truss::application::AnalysisApplicationService& m_analysisService;
+    truss::interface::TrussAnalysisFacade& m_facade;
     truss::cli::presenters::ConsolePresenter& m_presenter;
 
     std::string m_trussFile;
@@ -65,17 +63,15 @@ public:
     /**
      * @brief Construct ExportCommand with dependencies
      *
-     * @param trussService Application service for truss operations
-     * @param analysisService Application service for analysis operations
+     * @param facade Interface facade for analysis operations
      * @param presenter Console presenter for output formatting
      * @param trussFile Path to input truss file
-     * @param resultsFile Path to input results file
+     * @param resultsFile Path to input results file (currently ignored, re-analyzes)
      * @param outputFile Path to output export file
      * @param exportFormat Optional export format (defaults to format from file extension)
      * @param verbose Enable verbose output
      */
-    ExportCommand(truss::application::TrussApplicationService& trussService,
-                  truss::application::AnalysisApplicationService& analysisService,
+    ExportCommand(truss::interface::TrussAnalysisFacade& facade,
                   truss::cli::presenters::ConsolePresenter& presenter,
                   const std::string& trussFile,
                   const std::string& resultsFile,

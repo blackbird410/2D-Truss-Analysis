@@ -93,17 +93,18 @@ std::shared_ptr<core::Truss> TrussBuilder::build() {
         // Convert application DTOs to domain types (following TrussApplicationService pattern)
         core::MaterialProperties material{
             memberData.material.youngsModulusPa,            // E
-            7850.0,                                        // density (default for steel)
-            memberData.material.youngsModulusPa * 0.00125, // yield strength (estimate)
-            memberData.material.youngsModulusPa * 0.002,   // ultimate strength (estimate)
-            memberData.material.name                       // name
+            7850.0,                                         // density (default for steel)
+            memberData.material.youngsModulusPa * 0.00125,  // yield strength (estimate)
+            memberData.material.youngsModulusPa * 0.002,    // ultimate strength (estimate)
+            memberData.material.name                        // name
         };
 
         core::SectionProperties section{
-            memberData.section.areaM2,                              // area
-            memberData.section.areaM2 * memberData.section.areaM2 / 12.0,  // moment of inertia (estimate)
-            memberData.section.areaM2,                              // shear area
-            memberData.section.profile                              // designation
+            memberData.section.areaM2,  // area
+            memberData.section.areaM2 * memberData.section.areaM2 /
+                12.0,                   // moment of inertia (estimate)
+            memberData.section.areaM2,  // shear area
+            memberData.section.profile  // designation
         };
 
         truss->addMember(memberData.startNodeId, memberData.endNodeId, material, section);
@@ -134,8 +135,7 @@ bool TrussBuilder::isValidNodeId(core::NodeId nodeId) const noexcept {
     return nodeId >= 1 && nodeId < m_nextNodeId;
 }
 
-void TrussBuilder::validateNodeReference(core::NodeId nodeId,
-                                          const std::string& context) const {
+void TrussBuilder::validateNodeReference(core::NodeId nodeId, const std::string& context) const {
     if (!isValidNodeId(nodeId)) {
         std::ostringstream oss;
         oss << "Invalid node reference in " << context << ": node ID " << nodeId;
