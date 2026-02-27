@@ -363,6 +363,9 @@ if(BUILD_TESTING)
         tests/unit/application/test_truss_application_service_gui_methods.cpp
         tests/unit/application/test_material_library_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
+        # Interface layer tests (Public API)
+        tests/unit/interface/test_truss_builder.cpp
+        tests/unit/interface/test_truss_analysis_facade.cpp
         # CLI layer tests (Phase 5A & 5B & Phase 6)
         tests/unit/cli/test_console_presenter.cpp
         tests/unit/cli/test_help_command.cpp
@@ -399,6 +402,7 @@ if(BUILD_TESTING)
     add_executable(unit_tests ${UNIT_TEST_SOURCES})
     
     target_link_libraries(unit_tests PRIVATE
+        TrussInterface
         TrussApplication
         TrussCore
         GTest::gtest
@@ -413,6 +417,7 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/core
         ${CMAKE_SOURCE_DIR}/src/application
+        ${CMAKE_SOURCE_DIR}/src/interface
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
         ${CMAKE_SOURCE_DIR}/src/infrastructure/io
