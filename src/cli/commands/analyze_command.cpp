@@ -14,19 +14,16 @@
 
 namespace truss::cli::commands {
 
-AnalyzeCommand::AnalyzeCommand(truss::application::TrussApplicationService& trussService,
-                               truss::application::AnalysisApplicationService& analysisService,
+AnalyzeCommand::AnalyzeCommand(truss::interface::TrussAnalysisFacade& facade,
                                truss::cli::presenters::ConsolePresenter& presenter,
                                const std::string& inputFile,
                                const std::optional<std::string>& outputFile,
                                const std::optional<std::string>& exportFormat,
                                bool verbose)
-    : m_trussService(trussService), m_analysisService(analysisService), m_presenter(presenter),
-      m_inputFile(inputFile), m_outputFile(outputFile), m_exportFormat(exportFormat),
-      m_verbose(verbose) {}
+    : m_facade(facade), m_presenter(presenter), m_inputFile(inputFile),
+      m_outputFile(outputFile), m_exportFormat(exportFormat), m_verbose(verbose) {}
 
 int AnalyzeCommand::execute() {
-    using namespace truss::application;
     using namespace truss::infrastructure::export_;
 
     m_presenter.displayHeader();
@@ -43,59 +40,29 @@ int AnalyzeCommand::execute() {
         m_presenter.displayInfo("Input file: " + m_inputFile + "\n");
     }
 
-    // Load truss from file
-    auto loadResult = m_trussService.loadTruss(m_inputFile);
-    if (!loadResult) {
-        m_presenter.displayError("Failed to load truss: " + loadResult.errorMessage);
-        m_presenter.displayInfo(
-            "Suggestion: Verify the file format is valid (JSON, XML, CSV, etc.).\n");
-        return 1;
-    }
-    TrussHandle trussHandle = loadResult.value;
+    // ===== SINGLE FACADE CALL REPLACES 5+ SERVICE CALLS =====
+    // Old approach: loadTruss(), getTrussView(), getTrussMutable(),
+    //               validateTruss(), analyze()
+    // New approach: analyzeFromFile() does all of the above
+    auto analysisResult = m_facade.analyzeFromFile(m_inputFile);
 
-    if (m_verbose) {
-        m_presenter.displaySuccess("Truss loaded successfully.");
-    }
-
-    // Display truss statistics
-    const auto& trussView = m_trussService.getTrussView(trussHandle);
-    m_presenter.displayTrussStatistics(trussView);
-
-    // Validate truss
-    auto validateResult = m_trussService.validateTruss(trussHandle);
-    if (!validateResult) {
-        m_presenter.displayError("Truss validation failed: " + validateResult.errorMessage);
-        m_presenter.displayInfo(
-            "Suggestion: Check truss geometry, supports, and loading conditions.\n");
-        m_trussService.clearTruss(trussHandle);
-        return 1;
-    }
-
-    if (m_verbose) {
-        m_presenter.displaySuccess("Truss validation passed.");
-    }
-
-    // Get mutable truss for analysis
-    const auto& truss = m_trussService.getTrussMutable(trussHandle);
-
-    // Run analysis
-    m_presenter.displayInfo("\nRunning structural analysis...\n");
-    auto analysisResult = m_analysisService.analyze(truss);
     if (!analysisResult) {
         m_presenter.displayError("Analysis failed: " + analysisResult.errorMessage);
-        m_presenter.displayInfo("Suggestion: Check that the truss is statically determinate and "
-                                "properly constrained.\n");
-        m_trussService.clearTruss(trussHandle);
+        m_presenter.displayInfo(
+            "Suggestion: Check the file format and ensure the structure is valid.\n");
         return 1;
     }
-    ResultsHandle resultsHandle = analysisResult.value;
 
     if (m_verbose) {
         m_presenter.displaySuccess("Analysis completed successfully.");
     }
 
+    // Display truss statistics
+    const auto& trussView = m_facade.getTrussView(analysisResult.trussHandle);
+    m_presenter.displayTrussStatistics(trussView);
+
     // Display results
-    const auto& resultsView = m_analysisService.getResultsView(resultsHandle);
+    const auto& resultsView = m_facade.getResultsView(analysisResult.resultsHandle);
     m_presenter.displayAnalysisResults(resultsView);
 
     // Export results if requested
@@ -108,8 +75,6 @@ int AnalyzeCommand::execute() {
             if (!parsedFormat.has_value()) {
                 m_presenter.displayError("Invalid export format: " + m_exportFormat.value());
                 m_presenter.displayInfo("Valid formats: JSON, XML, CSV, TSV, TXT, LaTeX, HTML\n");
-                m_analysisService.clearResults(resultsHandle);
-                m_trussService.clearTruss(trussHandle);
                 return 1;
             }
             format = parsedFormat.value();
@@ -121,26 +86,19 @@ int AnalyzeCommand::execute() {
             m_presenter.displayInfo("\nExporting results to: " + m_outputFile.value() + "\n");
         }
 
-        // Export via Application service
-        auto exportResult = m_analysisService.exportResults(
-            resultsHandle, format, m_outputFile.value(), truss, {}  // Default export options
-        );
-
-        if (!exportResult) {
-            m_presenter.displayError("Export failed: " + exportResult.errorMessage);
+        // Use facade export method
+        if (!m_facade.exportResults(analysisResult.resultsHandle, format, m_outputFile.value())) {
+            m_presenter.displayError("Export failed: Check output directory is writable.");
             m_presenter.displayInfo(
-                "Suggestion: Check that the output directory exists and is writable.\n");
-            m_analysisService.clearResults(resultsHandle);
-            m_trussService.clearTruss(trussHandle);
+                "Suggestion: Verify that the output directory exists and you have write permissions.\n");
             return 1;
         }
 
         m_presenter.displaySuccess("Results exported to " + m_outputFile.value());
     }
 
-    // Cleanup
-    m_analysisService.clearResults(resultsHandle);
-    m_trussService.clearTruss(trussHandle);
+    // Automatic cleanup via RAII (resources held by facade)
+    // No manual clearResults() or clearTruss() needed
 
     m_presenter.displaySuccess("\nAnalysis complete!");
     return 0;
