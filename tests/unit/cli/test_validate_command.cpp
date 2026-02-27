@@ -18,9 +18,10 @@
  * Target: 80%+ line coverage with focused test scenarios
  */
 
-#include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/application/interfaces/iapplication_output.hpp"
 #include "../../../src/cli/commands/validate_command.hpp"
 #include "../../../src/cli/presenters/console_presenter.hpp"
+#include "../../../src/interface/truss_analysis_facade.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -34,12 +35,12 @@ using namespace truss::cli::commands;
  * Provides:
  * - Valid truss file creation for testing
  * - Test file cleanup management
- * - Application service instances
+ * - Interface facade instance
  * - Simplified output interface for focused testing
  */
 class ValidateCommandTest : public ::testing::Test {
 protected:
-    truss::application::TrussApplicationService trussService;
+    truss::interface::TrussAnalysisFacade facade;
 
     void SetUp() override { createSimpleTrussFile("test_valid.json"); }
 
@@ -115,7 +116,7 @@ TEST_F(ValidateCommandTest, GetName_ReturnsValidate) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ValidateCommand cmd(trussService, presenter, "test.json");
+    ValidateCommand cmd(facade, presenter, "test.json");
     EXPECT_EQ(cmd.getName(), "validate");
 }
 
@@ -138,7 +139,7 @@ TEST_F(ValidateCommandTest, GetDescription_ReturnsNonEmptyDescription) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ValidateCommand cmd(trussService, presenter, "test.json");
+    ValidateCommand cmd(facade, presenter, "test.json");
     std::string desc = cmd.getDescription();
     EXPECT_FALSE(desc.empty());
     EXPECT_TRUE(desc.find("validate") != std::string::npos ||
@@ -165,7 +166,7 @@ TEST_F(ValidateCommandTest, Execute_WithNonExistentFile_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ValidateCommand cmd(trussService, presenter, "non_existent_98765.json");
+    ValidateCommand cmd(facade, presenter, "non_existent_98765.json");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -195,7 +196,7 @@ TEST_F(ValidateCommandTest, Execute_WithInvalidJSON_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ValidateCommand cmd(trussService, presenter, "test_invalid.json");
+    ValidateCommand cmd(facade, presenter, "test_invalid.json");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
@@ -220,7 +221,7 @@ TEST_F(ValidateCommandTest, Execute_VerboseMode_DoesNotCrash) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ValidateCommand cmd(trussService, presenter, "test_valid.json", true);
+    ValidateCommand cmd(facade, presenter, "test_valid.json", true);
     int exitCode = cmd.execute();
 
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
@@ -245,7 +246,7 @@ TEST_F(ValidateCommandTest, Execute_NonVerboseMode_DoesNotCrash) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ValidateCommand cmd(trussService, presenter, "test_valid.json", false);
+    ValidateCommand cmd(facade, presenter, "test_valid.json", false);
     int exitCode = cmd.execute();
 
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
@@ -271,12 +272,12 @@ TEST_F(ValidateCommandTest, Execute_ValidatesFileExistence) {
     truss::cli::presenters::ConsolePresenter presenter(output);
 
     // Test with actual valid file
-    ValidateCommand cmd1(trussService, presenter, "test_valid.json");
+    ValidateCommand cmd1(facade, presenter, "test_valid.json");
     int code1 = cmd1.execute();
     EXPECT_TRUE(code1 == 0 || code1 == 1);
 
     // Test with non-existent file
-    ValidateCommand cmd2(trussService, presenter, "does_not_exist.json");
+    ValidateCommand cmd2(facade, presenter, "does_not_exist.json");
     int code2 = cmd2.execute();
     EXPECT_EQ(code2, 1);
 }
@@ -300,7 +301,7 @@ TEST_F(ValidateCommandTest, Execute_WithEmptyPath_ReturnsError) {
     MinimalOutput output;
     truss::cli::presenters::ConsolePresenter presenter(output);
 
-    ValidateCommand cmd(trussService, presenter, "");
+    ValidateCommand cmd(facade, presenter, "");
     int exitCode = cmd.execute();
 
     EXPECT_EQ(exitCode, 1);
