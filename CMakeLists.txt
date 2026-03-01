@@ -409,6 +409,9 @@ if(BUILD_TESTING)
         tests/unit/cli/test_analyze_command.cpp
         tests/unit/cli/test_validate_command.cpp
         tests/unit/cli/test_export_command.cpp
+        # Utility layer tests
+        tests/unit/utilities/test_math_utils.cpp
+        tests/unit/utilities/test_string_utils.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
