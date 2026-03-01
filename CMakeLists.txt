@@ -205,6 +205,8 @@ add_library(TrussCore STATIC
     src/infrastructure/io/xml_truss_reader.hpp
     src/infrastructure/io/xml_truss_writer.cpp
     src/infrastructure/io/xml_truss_writer.hpp
+    src/infrastructure/io/support_type_serializer.cpp
+    src/infrastructure/io/support_type_serializer.hpp
     src/infrastructure/io/fileio_factory.cpp
     src/infrastructure/io/fileio_factory.hpp
 )
