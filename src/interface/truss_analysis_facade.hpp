@@ -187,7 +187,7 @@ public:
      * On failure, cleans up any partially created resources.
      */
     AnalysisWorkflowResult analyzeFromFile(const std::filesystem::path& filepath,
-                                           const core::analysis::AnalysisOptions& options = {});
+                                           const core::analysis::AnalysisOptions& options = {}) override;
 
     /**
      * @brief Complete workflow: build → validate → analyze
@@ -204,7 +204,7 @@ public:
      * The builder is not modified by this call.
      */
     AnalysisWorkflowResult analyzeInteractive(TrussBuilder& builder,
-                                              const core::analysis::AnalysisOptions& options = {});
+                                              const core::analysis::AnalysisOptions& options = {}) override;
 
     /**
      * @brief Complete workflow: load → validate (no analysis)
@@ -215,7 +215,7 @@ public:
      * without running structural analysis. Useful for checking
      * model validity before committing to expensive analysis.
      */
-    core::validation::ValidationResult validateFromFile(const std::filesystem::path& filepath);
+    core::validation::ValidationResult validateFromFile(const std::filesystem::path& filepath) override;
 
     /**
      * @brief Validate a builder configuration without building
@@ -240,7 +240,7 @@ public:
      */
     bool exportResults(application::ResultsHandle resultsHandle,
                        const std::filesystem::path& filepath,
-                       const infrastructure::export_::ExportOptions& options = {});
+                       const infrastructure::export_::ExportOptions& options = {}) override;
 
     /**
      * @brief Export analysis results with explicit format
@@ -253,7 +253,7 @@ public:
     bool exportResults(application::ResultsHandle resultsHandle,
                        truss::ExportFormat format,
                        const std::filesystem::path& filepath,
-                       const infrastructure::export_::ExportOptions& options = {});
+                       const infrastructure::export_::ExportOptions& options = {}) override;
 
     // ============================================================
     // Resource Management (for adapter delegation)
