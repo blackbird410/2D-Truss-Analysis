@@ -1,42 +1,41 @@
 /**
- * @file mock_truss_application_service.hpp
- * @brief GoogleMock for ITrussService interface.
+ * @file mock_truss_analysis_facade.hpp
+ * @brief GoogleMock for TrussAnalysisFacade
  * @version 3.0.0
- * @date 2026-02-24
+ * @date 2026-02-28
  * @author Neil Taison Rigaud
  *
- * This mock service enables isolated testing of Controllers and Presenters
- * without depending on the actual Application Service implementation.
- *
- * Architecture: Testing Infrastructure (MVP Pattern)
- * Purpose: Enable unit testing of GUI Controllers with mocked Application layer
- *
- * GoogleMock Integration: Inherits from ITrussService interface to enable
- * polymorphic dependency injection in Controller tests.
+ * Mock facade for testing adapters in isolation.
+ * This allows verifying that adapters correctly delegate to the facade
+ * without needing the full facade implementation.
  */
 
 #pragma once
 
+// Must be included before mock methods so MockTrussAnalysisFacade can inherit.
+#include "interface/itruss_analysis_facade.hpp"
+
+#include "application/result.hpp"
+#include "application/interfaces/ianalysis_service.hpp"
 #include "application/interfaces/itruss_service.hpp"
 
 #include <gmock/gmock.h>
+#include <filesystem>
+#include <string>
 
 namespace truss::test {
 
 /**
- * @brief Mock TrussApplicationService for Controller testing
+ * @brief Mock TrussAnalysisFacade for adapter testing
  *
- * This mock allows testing Controllers in isolation by providing
- * controllable, predictable responses from the Application layer.
- *
- * Inherits from ITrussService to ensure type compatibility with Controllers
- * that depend on the interface abstraction (Dependency Inversion Principle).
+ * Provides mocked versions of all public Facade methods to enable
+ * isolated testing of FacadeTrussServiceAdapter and FacadeAnalysisServiceAdapter.
  */
-class MockTrussApplicationService : public truss::application::ITrussService {
+class MockTrussAnalysisFacade : public truss::interface::ITrussAnalysisFacade {
 public:
-    ~MockTrussApplicationService() override = default;
+    ~MockTrussAnalysisFacade() override = default;
 
-    // Mock lifecycle operations
+    // ---- ITrussService operations ----
     MOCK_METHOD(application::Result<application::TrussHandle>,
                 createTruss,
                 (const std::string& name),
@@ -56,11 +55,8 @@ public:
 
     MOCK_METHOD(bool, clearTruss, (application::TrussHandle handle), (override));
 
-    MOCK_METHOD(void, clearAll, (), (override));
-
     MOCK_METHOD(bool, isValidTrussHandle, (application::TrussHandle handle), (const, override));
 
-    // Mock view access (required by ITrussService interface)
     MOCK_METHOD(const core::interfaces::ITrussView&,
                 getTrussView,
                 (application::TrussHandle handle),
@@ -68,13 +64,11 @@ public:
 
     MOCK_METHOD(core::Truss&, getTrussMutable, (application::TrussHandle handle), (override));
 
-    // Mock validation (required by ITrussService interface)
     MOCK_METHOD(application::Result<core::validation::ValidationResult>,
                 validateTruss,
                 (application::TrussHandle handle),
                 (override));
 
-    // Mock editing operations with Application DTOs
     MOCK_METHOD(application::Result<core::NodeId>,
                 addNode,
                 (application::TrussHandle handle,
@@ -110,7 +104,9 @@ public:
 
     MOCK_METHOD(application::Result<bool>,
                 applyNodeLoad,
-                (application::TrussHandle handle, core::NodeId nodeId, const core::Force2D& force),
+                (application::TrussHandle handle,
+                 core::NodeId nodeId,
+                 const core::Force2D& force),
                 (override));
 
     MOCK_METHOD(application::Result<bool>,
@@ -118,10 +114,46 @@ public:
                 (application::TrussHandle handle, core::NodeId nodeId),
                 (override));
 
-    // Additional helper methods (not in ITrussService but useful for testing)
-    MOCK_METHOD(bool, hasUnsavedChanges, (application::TrussHandle handle), (const));
-    MOCK_METHOD(void, markAsSaved, (application::TrussHandle handle), ());
-    MOCK_METHOD(void, markAsModified, (application::TrussHandle handle), ());
+    // ---- IAnalysisService operations ----
+    MOCK_METHOD(application::Result<application::ResultsHandle>,
+                analyze,
+                (const core::Truss& truss, const core::analysis::AnalysisOptions& options),
+                (override));
+
+    MOCK_METHOD(const core::interfaces::IAnalysisResultsView&,
+                getResultsView,
+                (application::ResultsHandle handle),
+                (const, override));
+
+    MOCK_METHOD(application::Result<bool>,
+                exportResults,
+                (application::ResultsHandle handle,
+                 truss::ExportFormat format,
+                 const std::filesystem::path& filepath,
+                 const core::Truss& truss,
+                 const infrastructure::export_::ExportOptions& options),
+                (override));
+
+    MOCK_METHOD(application::Result<bool>,
+                exportResults,
+                (application::ResultsHandle handle,
+                 const std::filesystem::path& filepath,
+                 const core::Truss& truss,
+                 const infrastructure::export_::ExportOptions& options),
+                (override));
+
+    MOCK_METHOD(bool, clearResults, (application::ResultsHandle handle), (override));
+
+    MOCK_METHOD(bool, isValidResultsHandle, (application::ResultsHandle handle), (const, override));
+
+    // ---- ITrussAnalysisFacade-only operation ----
+    // clearAll() resolves the diamond-inheritance ambiguity from ITrussService
+    // and IAnalysisService; it is the only additional pure virtual declared by
+    // ITrussAnalysisFacade itself.
+    MOCK_METHOD(void, clearAll, (), (override));
+
+    // NOTE: clearWorkflow is a concrete helper on TrussAnalysisFacade only —
+    // it is NOT part of ITrussAnalysisFacade and must NOT be mocked here.
 };
 
 }  // namespace truss::test

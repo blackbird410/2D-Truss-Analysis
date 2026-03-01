@@ -10,6 +10,7 @@
 #include "core/analysis/solver_factory.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/xml_exporter.hpp"
+#include "truss/export/export_format.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -587,7 +588,7 @@ TEST_F(XMLExporterTest, InvalidFilePath) {
  * @brief Test getFormat method
  */
 TEST_F(XMLExporterTest, GetFormat) {
-    EXPECT_EQ(exporter->getFormat(), ExportFormat::XML);
+    EXPECT_EQ(exporter->getFormat(), truss::ExportFormat::XML);
 }
 
 /**

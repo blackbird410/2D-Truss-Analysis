@@ -74,7 +74,7 @@ public:
      * @return Result<bool> true on success, error on failure
      */
     virtual Result<bool> exportResults(ResultsHandle handle,
-                                       infrastructure::export_::ExportFormat format,
+                                       truss::ExportFormat format,
                                        const std::filesystem::path& filepath,
                                        const core::Truss& truss,
                                        const infrastructure::export_::ExportOptions& options =
@@ -114,7 +114,7 @@ public:
      * @param handle Handle to check
      * @return true if handle is valid
      */
-    virtual bool isValidHandle(ResultsHandle handle) const = 0;
+    virtual bool isValidResultsHandle(ResultsHandle handle) const = 0;
 };
 
 }  // namespace truss::application

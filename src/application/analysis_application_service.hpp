@@ -62,7 +62,7 @@ namespace truss::application {
  *         const auto& results = analysisService.getResultsView(analysisResult.value);
  *         analysisService.exportResults(
  *             analysisResult.value,
- *             infrastructure::export_::ExportFormat::CSV,
+ *             truss::ExportFormat::CSV,
  *             "results.csv",
  *             truss,
  *             {}
@@ -120,7 +120,7 @@ public:
      * @return Result indicating success/failure
      */
     Result<bool> exportResults(ResultsHandle handle,
-                               infrastructure::export_::ExportFormat format,
+                               truss::ExportFormat format,
                                const std::filesystem::path& filepath,
                                const core::Truss& truss,
                                const infrastructure::export_::ExportOptions& options = {}) override;
@@ -155,7 +155,7 @@ public:
      * @param handle Results handle to check
      * @return true if handle references existing results
      */
-    bool isValidHandle(ResultsHandle handle) const override;
+    bool isValidResultsHandle(ResultsHandle handle) const override;
 
     /**
      * @brief Get count of stored results

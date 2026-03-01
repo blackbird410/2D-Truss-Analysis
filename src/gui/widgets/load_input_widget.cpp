@@ -17,7 +17,7 @@
 
 namespace truss::gui {
 
-LoadInputWidget::LoadInputWidget(application::TrussApplicationService& trussService,
+LoadInputWidget::LoadInputWidget(application::ITrussService& trussService,
                                  truss_controllers::TrussEditController& editController,
                                  QWidget* parent)
     : QWidget(parent), m_trussService(trussService), m_editController(editController),

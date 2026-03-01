@@ -190,6 +190,8 @@ add_library(TrussCore STATIC
 )
 
 target_include_directories(TrussCore PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/truss
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/analysis
@@ -248,11 +250,18 @@ add_library(TrussInterface STATIC
     src/interface/truss_builder.hpp
     src/interface/truss_analysis_facade.cpp
     src/interface/truss_analysis_facade.hpp
+    src/interface/facade_truss_service_adapter.cpp
+    src/interface/facade_truss_service_adapter.hpp
+    src/interface/facade_analysis_service_adapter.cpp
+    src/interface/facade_analysis_service_adapter.hpp
 )
 
 target_include_directories(TrussInterface PUBLIC
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/interface
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/export
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/truss
 )
 
 target_link_libraries(TrussInterface PUBLIC
@@ -367,6 +376,8 @@ if(BUILD_TESTING)
         # Interface layer tests (Public API)
         tests/unit/interface/test_truss_builder.cpp
         tests/unit/interface/test_truss_analysis_facade.cpp
+        tests/unit/interface/test_facade_truss_service_adapter.cpp
+        tests/unit/interface/test_facade_analysis_service_adapter.cpp
         # CLI layer tests (Phase 5A & 5B & Phase 6)
         tests/unit/cli/test_console_presenter.cpp
         tests/unit/cli/test_help_command.cpp
@@ -442,6 +453,7 @@ if(BUILD_TESTING)
         tests/integration/test_cli_workflows.cpp
         tests/integration/test_lifecycle_integration.cpp
         tests/integration/test_load_workflow.cpp
+        tests/integration/test_facade_adapters_integration.cpp
         # CLI source files needed for integration tests
         ${CLI_SOURCES}
     )
@@ -578,6 +590,7 @@ if(BUILD_GUI)
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
+    TrussInterface
     TrussApplication
     TrussCore
     Qt6::Core

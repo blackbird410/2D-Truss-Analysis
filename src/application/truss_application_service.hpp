@@ -158,7 +158,7 @@ public:
      * @param handle Truss handle to check
      * @return true if handle references an existing truss
      */
-    bool isValidHandle(TrussHandle handle) const override;
+    bool isValidTrussHandle(TrussHandle handle) const override;
 
     /**
      * @brief Get count of active truss models

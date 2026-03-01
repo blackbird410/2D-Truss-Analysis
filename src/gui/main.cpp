@@ -3,12 +3,13 @@
  * @brief Main entry point for the 2D Truss Analysis GUI application
  */
 
-#include "application/analysis_application_service.hpp"
-#include "application/truss_application_service.hpp"
 #include "controllers/analysis_controller.hpp"
 #include "controllers/project_controller.hpp"
 #include "controllers/truss_edit_controller.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
+#include "interface/facade_analysis_service_adapter.hpp"
+#include "interface/facade_truss_service_adapter.hpp"
+#include "interface/truss_analysis_facade.hpp"
 #include "main_window.hpp"
 #include "presenters/analysis_results_presenter.hpp"
 #include "presenters/truss_data_presenter.hpp"
@@ -56,9 +57,14 @@ int main(int argc, char* argv[]) {
     auto logger = createGuiLogger();
 
     try {
-        // Create Application Services (no Qt dependencies)
-        truss::application::TrussApplicationService trussService;
-        truss::application::AnalysisApplicationService analysisService;
+        // Create Interface Layer Facade
+        // NOTE: Facade owns the application services
+        // Adapters provide ITrussService/IAnalysisService interfaces via public Facade APIs
+        truss::interface::TrussAnalysisFacade facade;
+
+        // Create adapters (implement service interfaces via public Facade methods)
+        truss::interface::FacadeTrussServiceAdapter trussService(facade);
+        truss::interface::FacadeAnalysisServiceAdapter analysisService(facade);
 
         // Create Presenters (formatting layer)
         truss_presenters::AnalysisResultsPresenter analysisPresenter;

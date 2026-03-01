@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "application/truss_application_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
 
@@ -42,7 +42,7 @@ public:
      * @param editController Controller for load operations
      * @param parent Qt parent widget
      */
-    explicit LoadInputWidget(application::TrussApplicationService& trussService,
+    explicit LoadInputWidget(application::ITrussService& trussService,
                              truss_controllers::TrussEditController& editController,
                              QWidget* parent = nullptr);
 
@@ -88,7 +88,7 @@ private:
     void setupUI();
 
     // Dependencies
-    application::TrussApplicationService& m_trussService;
+    application::ITrussService& m_trussService;
     truss_controllers::TrussEditController& m_editController;
 
     // Current state

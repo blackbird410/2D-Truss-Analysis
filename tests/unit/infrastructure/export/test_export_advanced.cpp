@@ -176,12 +176,12 @@ TEST_F(ExportAdvancedTest, InvalidPathHandling) {
 }
 
 TEST_F(ExportAdvancedTest, FactoryCreatesAllFormats) {
-    std::vector<ExportFormat> formats = {ExportFormat::CSV,
-                                         ExportFormat::JSON,
-                                         ExportFormat::XML,
-                                         ExportFormat::HTML,
-                                         ExportFormat::LaTeX,
-                                         ExportFormat::TXT};
+    std::vector<truss::ExportFormat> formats = {truss::ExportFormat::CSV,
+                                         truss::ExportFormat::JSON,
+                                         truss::ExportFormat::XML,
+                                         truss::ExportFormat::HTML,
+                                         truss::ExportFormat::LaTeX,
+                                         truss::ExportFormat::TXT};
 
     for (const auto& format : formats) {
         auto exporter = ExporterFactory::create(format);
@@ -190,8 +190,8 @@ TEST_F(ExportAdvancedTest, FactoryCreatesAllFormats) {
 }
 
 TEST_F(ExportAdvancedTest, FormatDetectionFromExtension) {
-    EXPECT_EQ(ExporterFactory::detectFormat("test.csv"), ExportFormat::CSV);
-    EXPECT_EQ(ExporterFactory::detectFormat("test.json"), ExportFormat::JSON);
-    EXPECT_EQ(ExporterFactory::detectFormat("test.xml"), ExportFormat::XML);
-    EXPECT_EQ(ExporterFactory::detectFormat("test.html"), ExportFormat::HTML);
+    EXPECT_EQ(ExporterFactory::detectFormat("test.csv"), truss::ExportFormat::CSV);
+    EXPECT_EQ(ExporterFactory::detectFormat("test.json"), truss::ExportFormat::JSON);
+    EXPECT_EQ(ExporterFactory::detectFormat("test.xml"), truss::ExportFormat::XML);
+    EXPECT_EQ(ExporterFactory::detectFormat("test.html"), truss::ExportFormat::HTML);
 }

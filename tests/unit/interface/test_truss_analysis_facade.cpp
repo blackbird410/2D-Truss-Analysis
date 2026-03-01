@@ -27,12 +27,12 @@
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace truss;
 using namespace truss::interface;
 using namespace truss::core;
 using namespace truss::application;
 using AnalysisOptions = truss::core::analysis::AnalysisOptions;
 using ExportOptions = truss::infrastructure::export_::ExportOptions;
+using ExportFormat = truss::ExportFormat;
 namespace fs = std::filesystem;
 
 namespace {
@@ -377,7 +377,7 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsExplicitFormat) {
     ExportOptions options;
 
     bool success = facade->exportResults(analysisResult.resultsHandle,
-                                         infrastructure::export_::ExportFormat::XML,
+                                         truss::ExportFormat::XML,
                                          outputFile,
                                          options);
 
