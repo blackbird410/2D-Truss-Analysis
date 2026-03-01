@@ -37,20 +37,20 @@ namespace {
  */
 class FacadeAdaptersIntegrationTest : public ::testing::Test {
 protected:
-    std::unique_ptr<TrussAnalysisFacade> facade;
-    std::unique_ptr<FacadeTrussServiceAdapter> trussAdapter;
-    std::unique_ptr<FacadeAnalysisServiceAdapter> analysisAdapter;
+    std::unique_ptr<truss::interface::TrussAnalysisFacade> facade;
+    std::unique_ptr<truss::interface::FacadeTrussServiceAdapter> trussAdapter;
+    std::unique_ptr<truss::interface::FacadeAnalysisServiceAdapter> analysisAdapter;
 
     fs::path tempDir;
     fs::path testJsonFile;
 
     void SetUp() override {
         // Create real facade
-        facade = std::make_unique<TrussAnalysisFacade>();
+        facade = std::make_unique<truss::interface::TrussAnalysisFacade>();
 
         // Create adapters backed by real facade
-        trussAdapter = std::make_unique<FacadeTrussServiceAdapter>(*facade);
-        analysisAdapter = std::make_unique<FacadeAnalysisServiceAdapter>(*facade);
+        trussAdapter = std::make_unique<truss::interface::FacadeTrussServiceAdapter>(*facade);
+        analysisAdapter = std::make_unique<truss::interface::FacadeAnalysisServiceAdapter>(*facade);
 
         // Set up test directory
         tempDir = fs::temp_directory_path() / "facade_adapters_integration_test";
