@@ -37,7 +37,7 @@ void FacadeTrussServiceAdapter::clearAll() {
     m_facade.clearAll();
 }
 
-bool FacadeTrussServiceAdapter::isValidHandle(application::TrussHandle handle) const {
+bool FacadeTrussServiceAdapter::isValidTrussHandle(application::TrussHandle handle) const {
     return m_facade.isValidTrussHandle(handle);
 }
 

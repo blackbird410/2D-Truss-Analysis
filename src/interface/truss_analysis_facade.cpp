@@ -285,7 +285,7 @@ bool TrussAnalysisFacade::exportResults(application::ResultsHandle resultsHandle
                                         const std::filesystem::path& filepath,
                                         const infrastructure::export_::ExportOptions& options) {
     // Validate handles
-    if (!m_analysisService.isValidHandle(resultsHandle)) {
+    if (!m_analysisService.isValidResultsHandle(resultsHandle)) {
         return false;
     }
     if (m_lastTrussHandle == 0 || !m_trussService.isValidHandle(m_lastTrussHandle)) {
@@ -318,11 +318,11 @@ void TrussAnalysisFacade::clearWorkflow(application::TrussHandle trussHandle,
 }
 
 bool TrussAnalysisFacade::isValidTrussHandle(application::TrussHandle handle) const {
-    return m_trussService.isValidHandle(handle);
+    return m_trussService.isValidTrussHandle(handle);
 }
 
 bool TrussAnalysisFacade::isValidResultsHandle(application::ResultsHandle handle) const {
-    return m_analysisService.isValidHandle(handle);
+    return m_analysisService.isValidResultsHandle(handle);
 }
 
 // ============================================================
@@ -350,7 +350,7 @@ application::TrussHandle TrussAnalysisFacade::loadTrussOnly(const std::filesyste
 application::ResultsHandle
 TrussAnalysisFacade::analyzeOnly(application::TrussHandle trussHandle,
                                  const core::analysis::AnalysisOptions& options) {
-    if (!m_trussService.isValidHandle(trussHandle)) {
+    if (!m_trussService.isValidTrussHandle(trussHandle)) {
         return 0;
     }
 
