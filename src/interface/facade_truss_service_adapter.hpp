@@ -45,7 +45,7 @@ public:
                                         bool overwrite = false) override;
     bool clearTruss(application::TrussHandle handle) override;
     void clearAll() override;
-    bool isValidHandle(application::TrussHandle handle) const override;
+    bool isValidTrussHandle(application::TrussHandle handle) const override;
 
     const core::interfaces::ITrussView&
     getTrussView(application::TrussHandle handle) const override;

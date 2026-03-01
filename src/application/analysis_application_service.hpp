@@ -155,7 +155,7 @@ public:
      * @param handle Results handle to check
      * @return true if handle references existing results
      */
-    bool isValidHandle(ResultsHandle handle) const override;
+    bool isValidResultsHandle(ResultsHandle handle) const override;
 
     /**
      * @brief Get count of stored results

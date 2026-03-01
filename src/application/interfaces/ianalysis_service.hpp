@@ -114,7 +114,7 @@ public:
      * @param handle Handle to check
      * @return true if handle is valid
      */
-    virtual bool isValidHandle(ResultsHandle handle) const = 0;
+    virtual bool isValidResultsHandle(ResultsHandle handle) const = 0;
 };
 
 }  // namespace truss::application

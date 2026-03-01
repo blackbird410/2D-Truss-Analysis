@@ -286,7 +286,7 @@ private slots:
         controller->onClearTrussRequested();
 
         // THEN: Handle invalidated (service removes truss)
-        QVERIFY(!service->isValidHandle(testHandle));
+        QVERIFY(!service->isValidTrussHandle(testHandle));
     }
 };
 
@@ -427,7 +427,7 @@ private slots:
 
         QCOMPARE(projectCreatedSpy.count(), 1);
         TrussHandle handle = projectCreatedSpy.at(0).at(0).value<TrussHandle>();
-        QVERIFY(service->isValidHandle(handle));
+        QVERIFY(service->isValidTrussHandle(handle));
     }
 
     /**

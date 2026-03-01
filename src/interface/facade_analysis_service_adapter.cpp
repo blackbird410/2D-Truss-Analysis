@@ -50,7 +50,7 @@ void FacadeAnalysisServiceAdapter::clearAll() {
     m_facade.clearAll();
 }
 
-bool FacadeAnalysisServiceAdapter::isValidHandle(application::ResultsHandle handle) const {
+bool FacadeAnalysisServiceAdapter::isValidResultsHandle(application::ResultsHandle handle) const {
     return m_facade.isValidResultsHandle(handle);
 }
 

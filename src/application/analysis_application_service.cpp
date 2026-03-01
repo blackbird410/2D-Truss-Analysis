@@ -87,7 +87,7 @@ AnalysisApplicationService::exportResults(ResultsHandle handle,
                                           const infrastructure::export_::ExportOptions& options) {
     try {
         // Validate handle
-        if (!isValidHandle(handle)) {
+        if (!isValidResultsHandle(handle)) {
             return Result<bool>::Failure("Invalid results handle: " + std::to_string(handle));
         }
 
@@ -139,7 +139,7 @@ void AnalysisApplicationService::clearAll() {
     m_nextHandle = 1;
 }
 
-bool AnalysisApplicationService::isValidHandle(ResultsHandle handle) const {
+bool AnalysisApplicationService::isValidResultsHandle(ResultsHandle handle) const {
     return m_results.find(handle) != m_results.end();
 }
 

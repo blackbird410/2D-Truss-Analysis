@@ -133,7 +133,7 @@ TEST_F(FacadeAdaptersIntegrationTest, TrussAdapterCreateTrussWorks) {
     EXPECT_GT(result.value, 0u);
 
     // Verify handle is valid
-    EXPECT_TRUE(trussAdapter->isValidHandle(result.value));
+    EXPECT_TRUE(trussAdapter->isValidTrussHandle(result.value));
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, TrussAdapterLoadTrussWorks) {
@@ -368,7 +368,7 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterClearResultsWorks) {
 
     // Assert
     EXPECT_TRUE(cleared);
-    EXPECT_FALSE(analysisAdapter->isValidHandle(resultsHandle));
+    EXPECT_FALSE(analysisAdapter->isValidResultsHandle(resultsHandle));
 }
 
 // ============================================================
@@ -449,17 +449,17 @@ TEST_F(FacadeAdaptersIntegrationTest, MultipleSequentialWorkflows) {
     ASSERT_TRUE(result2.success);
 
     // Verify both workflows are independent
-    EXPECT_TRUE(trussAdapter->isValidHandle(result1.value));
-    EXPECT_TRUE(trussAdapter->isValidHandle(result2.value));
-    EXPECT_TRUE(analysisAdapter->isValidHandle(analyze1.value));
+    EXPECT_TRUE(trussAdapter->isValidTrussHandle(result1.value));
+    EXPECT_TRUE(trussAdapter->isValidTrussHandle(result2.value));
+    EXPECT_TRUE(analysisAdapter->isValidResultsHandle(analyze1.value));
 
     // Clean up
     trussAdapter->clearAll();
     analysisAdapter->clearAll();
 
-    EXPECT_FALSE(trussAdapter->isValidHandle(result1.value));
-    EXPECT_FALSE(trussAdapter->isValidHandle(result2.value));
-    EXPECT_FALSE(analysisAdapter->isValidHandle(analyze1.value));
+    EXPECT_FALSE(trussAdapter->isValidTrussHandle(result1.value));
+    EXPECT_FALSE(trussAdapter->isValidTrussHandle(result2.value));
+    EXPECT_FALSE(analysisAdapter->isValidResultsHandle(analyze1.value));
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, AdaptersShareSameFacadeState) {
@@ -487,12 +487,12 @@ TEST_F(FacadeAdaptersIntegrationTest, AdaptersShareSameFacadeState) {
     ASSERT_TRUE(analyzeResult.success);
 
     // Verify analysis adapter can access the results
-    EXPECT_TRUE(analysisAdapter->isValidHandle(analyzeResult.value));
+    EXPECT_TRUE(analysisAdapter->isValidResultsHandle(analyzeResult.value));
 
     // Clear through one adapter should affect both
     trussAdapter->clearAll();
-    EXPECT_FALSE(trussAdapter->isValidHandle(handle));
-    EXPECT_FALSE(analysisAdapter->isValidHandle(analyzeResult.value));
+    EXPECT_FALSE(trussAdapter->isValidTrussHandle(handle));
+    EXPECT_FALSE(analysisAdapter->isValidResultsHandle(analyzeResult.value));
 }
 
 // ============================================================
@@ -503,8 +503,8 @@ TEST_F(FacadeAdaptersIntegrationTest, InvalidHandlesAreRejected) {
     application::TrussHandle invalidTrussHandle = 99999;
     application::ResultsHandle invalidResultsHandle = 99999;
 
-    EXPECT_FALSE(trussAdapter->isValidHandle(invalidTrussHandle));
-    EXPECT_FALSE(analysisAdapter->isValidHandle(invalidResultsHandle));
+    EXPECT_FALSE(trussAdapter->isValidTrussHandle(invalidTrussHandle));
+    EXPECT_FALSE(analysisAdapter->isValidResultsHandle(invalidResultsHandle));
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, ErrorsPropagateThroughAdapters) {

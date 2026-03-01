@@ -44,7 +44,7 @@ public:
 
     bool clearResults(application::ResultsHandle handle) override;
     void clearAll() override;
-    bool isValidHandle(application::ResultsHandle handle) const override;
+    bool isValidResultsHandle(application::ResultsHandle handle) const override;
 
 private:
     TrussAnalysisFacade& m_facade;
