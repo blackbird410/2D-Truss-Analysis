@@ -144,7 +144,7 @@ TEST_F(FacadeTrussServiceAdapterTest, IsValidHandleDelegatesToFacade) {
     EXPECT_CALL(mockFacade, isValidTrussHandle(testHandle)).WillOnce(Return(true));
 
     // Act
-    bool result = adapter->isValidHandle(testHandle);
+    bool result = adapter->isValidTrussHandle(testHandle);
 
     // Assert
     EXPECT_TRUE(result);

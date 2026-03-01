@@ -235,7 +235,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, IsValidHandleDelegatesToFacade) {
     EXPECT_CALL(mockFacade, isValidResultsHandle(testHandle)).WillOnce(Return(true));
 
     // Act
-    bool result = adapter->isValidHandle(testHandle);
+    bool result = adapter->isValidResultsHandle(testHandle);
 
     // Assert
     EXPECT_TRUE(result);
@@ -248,7 +248,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, IsValidHandleReturnsFalseForInvalid) {
     EXPECT_CALL(mockFacade, isValidResultsHandle(testHandle)).WillOnce(Return(false));
 
     // Act
-    bool result = adapter->isValidHandle(testHandle);
+    bool result = adapter->isValidResultsHandle(testHandle);
 
     // Assert
     EXPECT_FALSE(result);
@@ -296,8 +296,8 @@ TEST_F(FacadeAnalysisServiceAdapterTest, ParallelHandlesWork) {
     EXPECT_CALL(mockFacade, clearResults(handle1)).WillOnce(Return(true));
     EXPECT_CALL(mockFacade, clearResults(handle2)).WillOnce(Return(true));
 
-    EXPECT_TRUE(adapter->isValidHandle(handle1));
-    EXPECT_TRUE(adapter->isValidHandle(handle2));
+    EXPECT_TRUE(adapter->isValidResultsHandle(handle1));
+    EXPECT_TRUE(adapter->isValidResultsHandle(handle2));
     EXPECT_TRUE(adapter->clearResults(handle1));
     EXPECT_TRUE(adapter->clearResults(handle2));
 }
@@ -312,7 +312,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, HandlesZeroResultsHandle) {
 
     EXPECT_CALL(mockFacade, isValidResultsHandle(invalidHandle)).WillOnce(Return(false));
 
-    bool result = adapter->isValidHandle(invalidHandle);
+    bool result = adapter->isValidResultsHandle(invalidHandle);
     EXPECT_FALSE(result);
 }
 
