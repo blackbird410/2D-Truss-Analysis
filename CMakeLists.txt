@@ -117,6 +117,8 @@ endif()
 # ============================================================================
 
 add_library(TrussUtils STATIC
+    src/utilities/string_utils.cpp
+    src/utilities/string_utils.hpp
     src/utilities/math_utils.hpp
 )
 
