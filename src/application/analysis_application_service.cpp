@@ -81,7 +81,7 @@ core::analysis::AnalysisResults& AnalysisApplicationService::getResults(ResultsH
 
 Result<bool>
 AnalysisApplicationService::exportResults(ResultsHandle handle,
-                                          infrastructure::export_::ExportFormat format,
+                                          truss::ExportFormat format,
                                           const std::filesystem::path& filepath,
                                           const core::Truss& truss,
                                           const infrastructure::export_::ExportOptions& options) {

@@ -190,6 +190,8 @@ add_library(TrussCore STATIC
 )
 
 target_include_directories(TrussCore PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/truss
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/analysis
@@ -257,6 +259,9 @@ add_library(TrussInterface STATIC
 target_include_directories(TrussInterface PUBLIC
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/interface
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/export
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/truss
 )
 
 target_link_libraries(TrussInterface PUBLIC

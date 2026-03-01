@@ -343,7 +343,7 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterExportWithExplicitFormatWor
     // Act - export CSV explicitly
     fs::path exportPath = tempDir / "results.csv";
     auto exportResult = analysisAdapter->exportResults(resultsHandle,
-                                                       infrastructure::export_::ExportFormat::CSV,
+                                                       truss::ExportFormat::CSV,
                                                        exportPath,
                                                        truss,
                                                        {});

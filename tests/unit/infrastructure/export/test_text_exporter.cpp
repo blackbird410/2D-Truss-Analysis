@@ -10,6 +10,7 @@
  */
 
 #include "core/analysis/analysis_orchestrator.hpp"
+#include "truss/export/export_format.hpp"
 #include "core/analysis/solver_factory.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/text_exporter.hpp"
@@ -337,7 +338,7 @@ TEST_F(TextExporterTest, NumberFormatting) {
  * @brief Test format identification
  */
 TEST_F(TextExporterTest, FormatIdentification) {
-    EXPECT_EQ(exporter->getFormat(), ExportFormat::TXT);
+    EXPECT_EQ(exporter->getFormat(), truss::ExportFormat::TXT);
 }
 
 // ============================================================================

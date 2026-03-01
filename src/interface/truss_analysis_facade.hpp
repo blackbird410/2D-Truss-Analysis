@@ -177,7 +177,7 @@ public:
     getResultsView(application::ResultsHandle handle) const;
 
     application::Result<bool> exportResults(application::ResultsHandle handle,
-                                           infrastructure::export_::ExportFormat format,
+                                           truss::ExportFormat format,
                                            const std::filesystem::path& filepath,
                                            const core::Truss& truss,
                                            const infrastructure::export_::ExportOptions& options =
@@ -271,7 +271,7 @@ public:
      * @return true on success, false on failure
      */
     bool exportResults(application::ResultsHandle resultsHandle,
-                       infrastructure::export_::ExportFormat format,
+                       truss::ExportFormat format,
                        const std::filesystem::path& filepath,
                        const infrastructure::export_::ExportOptions& options = {});
 

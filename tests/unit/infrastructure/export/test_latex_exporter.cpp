@@ -10,6 +10,7 @@
  */
 
 #include "core/analysis/analysis_orchestrator.hpp"
+#include "truss/export/export_format.hpp"
 #include "core/analysis/solver_factory.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/latex_exporter.hpp"
@@ -445,7 +446,7 @@ TEST_F(LaTeXExporterTest, LatexEscaping) {
  * @brief Test: Export format identification
  */
 TEST_F(LaTeXExporterTest, FormatIdentification) {
-    EXPECT_EQ(exporter->getFormat(), ExportFormat::LaTeX);
+    EXPECT_EQ(exporter->getFormat(), truss::ExportFormat::LaTeX);
 }
 
 /**
