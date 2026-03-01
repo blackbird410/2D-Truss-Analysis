@@ -146,16 +146,14 @@ public:
 
     MOCK_METHOD(bool, isValidResultsHandle, (application::ResultsHandle handle), (const, override));
 
-    MOCK_METHOD(void,
-                clearWorkflow,
-                (application::TrussHandle trussHandle, application::ResultsHandle resultsHandle),
-                ());
     // ---- ITrussAnalysisFacade-only operation ----
     // clearAll() resolves the diamond-inheritance ambiguity from ITrussService
     // and IAnalysisService; it is the only additional pure virtual declared by
     // ITrussAnalysisFacade itself.
     MOCK_METHOD(void, clearAll, (), (override));
 
+    // NOTE: clearWorkflow is a concrete helper on TrussAnalysisFacade only —
+    // it is NOT part of ITrussAnalysisFacade and must NOT be mocked here.
 };
 
 }  // namespace truss::test
