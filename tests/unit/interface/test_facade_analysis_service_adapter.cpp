@@ -123,6 +123,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, GetResultsViewDelegatesToFacade) {
 
     // Assert - just verify we got a reference back
     // (In real testing, you'd verify specific properties)
+    [[maybe_unused]] const auto& unused_view = view;
     SUCCEED();
 }
 
