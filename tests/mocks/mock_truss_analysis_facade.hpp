@@ -28,7 +28,7 @@ namespace truss::test {
  * Provides mocked versions of all public Facade methods to enable
  * isolated testing of FacadeTrussServiceAdapter and FacadeAnalysisServiceAdapter.
  */
-class MockTrussAnalysisFacade {
+class MockTrussAnalysisFacade : public truss::interface::ITrussAnalysisFacade {
 public:
     virtual ~MockTrussAnalysisFacade() = default;
 
