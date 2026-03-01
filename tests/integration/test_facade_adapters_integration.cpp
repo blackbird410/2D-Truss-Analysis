@@ -330,18 +330,16 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterAnalyzeWorks) {
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterGetResultsViewWorks) {
-    // Arrange - perform analysis
+    // Arrange - perform analysis using the well-defined 3-node / 3-member test truss
     auto loadResult = trussAdapter->loadTruss(testJsonFile);
-    if (!loadResult.success) {
-        GTEST_SKIP() << "Load failed: " << loadResult.errorMessage;
-    }
+    // Hard failure: if load fails the test is broken, not to be silently skipped.
+    ASSERT_TRUE(loadResult.success) << "Load failed: " << loadResult.errorMessage;
     auto& truss = trussAdapter->getTrussMutable(loadResult.value);
 
     core::analysis::AnalysisOptions options;
     auto analyzeResult = analysisAdapter->analyze(truss, options);
-    if (!analyzeResult.success) {
-        GTEST_SKIP() << "Analysis failed: " << analyzeResult.errorMessage;
-    }
+    // Hard failure: analysis failure is a real error that must surface.
+    ASSERT_TRUE(analyzeResult.success) << "Analysis failed: " << analyzeResult.errorMessage;
     application::ResultsHandle resultsHandle = analyzeResult.value;
 
     // Act
