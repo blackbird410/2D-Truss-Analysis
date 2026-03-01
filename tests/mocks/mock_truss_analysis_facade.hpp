@@ -12,6 +12,9 @@
 
 #pragma once
 
+// Must be included before mock methods so MockTrussAnalysisFacade can inherit.
+#include "interface/itruss_analysis_facade.hpp"
+
 #include "application/result.hpp"
 #include "application/interfaces/ianalysis_service.hpp"
 #include "application/interfaces/itruss_service.hpp"
