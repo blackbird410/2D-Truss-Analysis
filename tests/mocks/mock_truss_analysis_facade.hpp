@@ -149,6 +149,41 @@ public:
     // ITrussAnalysisFacade itself.
     MOCK_METHOD(void, clearAll, (), (override));
 
+    // ---- Workflow methods declared on ITrussAnalysisFacade ----
+    // These are the high-level orchestration methods consumed by CLI commands.
+    // Mocking them here enables full isolation of CLI command tests.
+    MOCK_METHOD(truss::interface::AnalysisWorkflowResult,
+                analyzeFromFile,
+                (const std::filesystem::path& filepath,
+                 const core::analysis::AnalysisOptions& options),
+                (override));
+
+    MOCK_METHOD(truss::interface::AnalysisWorkflowResult,
+                analyzeInteractive,
+                (truss::interface::TrussBuilder& builder,
+                 const core::analysis::AnalysisOptions& options),
+                (override));
+
+    MOCK_METHOD(core::validation::ValidationResult,
+                validateFromFile,
+                (const std::filesystem::path& filepath),
+                (override));
+
+    MOCK_METHOD(bool,
+                exportResults,
+                (application::ResultsHandle resultsHandle,
+                 truss::ExportFormat format,
+                 const std::filesystem::path& filepath,
+                 const infrastructure::export_::ExportOptions& options),
+                (override));
+
+    MOCK_METHOD(bool,
+                exportResults,
+                (application::ResultsHandle resultsHandle,
+                 const std::filesystem::path& filepath,
+                 const infrastructure::export_::ExportOptions& options),
+                (override));
+
     // NOTE: clearWorkflow is a concrete helper on TrussAnalysisFacade only —
     // it is NOT part of ITrussAnalysisFacade and must NOT be mocked here.
 };
