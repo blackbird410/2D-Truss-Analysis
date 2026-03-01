@@ -8,14 +8,15 @@
 
 #pragma once
 
-#include "application/interfaces/itruss_service.hpp"
 #include "application/interfaces/ianalysis_service.hpp"
-#include "core/interfaces/itruss_view.hpp"
+#include "application/interfaces/itruss_service.hpp"
+#include "application/result.hpp"
 #include "core/interfaces/ianalysis_results_view.hpp"
+#include "core/interfaces/itruss_view.hpp"
 #include "core/model/truss.hpp"
 #include "truss/analysis/analysis_options.hpp"
-#include "application/result.hpp"
 #include "truss/export/export_format.hpp"
+
 #include <filesystem>
 #include <string>
 
@@ -23,16 +24,16 @@ namespace truss::interface {
 
 /**
  * @brief Combined interface for truss and analysis services
- * 
+ *
  * This interface combines ITrussService and IAnalysisService into a single
  * unified interface. It resolves the diamond inheritance problem by
  * explicitly declaring the clearAll() method once.
- * 
+ *
  * Note: isValidTrussHandle and isValidResultsHandle are already inherited
  * from the respective base interfaces and do not need redeclaration.
  */
 class ITrussAnalysisFacade : public truss::application::ITrussService,
-                            public truss::application::IAnalysisService {
+                             public truss::application::IAnalysisService {
 public:
     virtual ~ITrussAnalysisFacade() = default;
 
@@ -44,10 +45,10 @@ public:
     // All other methods are inherited from base interfaces:
     // - ITrussService: createTruss, loadTruss, saveTruss, clearTruss,
     //                  isValidTrussHandle, getTrussView, getTrussMutable,
-    //                  validateTruss, addNode, addMember, removeNode, 
+    //                  validateTruss, addNode, addMember, removeNode,
     //                  removeMember, setNodeSupport, applyNodeLoad, clearNodeLoad
-    // - IAnalysisService: analyze, getResultsView, exportResults, 
+    // - IAnalysisService: analyze, getResultsView, exportResults,
     //                     clearResults, isValidResultsHandle
 };
 
-} // namespace truss::interface
+}  // namespace truss::interface

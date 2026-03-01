@@ -73,5 +73,8 @@ public:
 
     MOCK_METHOD(void, clearAll, (), (override));
 
-    MOCK_METHOD(bool, isValidResultsHandle, (truss::application::ResultsHandle handle), (const, override));
+    MOCK_METHOD(bool,
+                isValidResultsHandle,
+                (truss::application::ResultsHandle handle),
+                (const, override));
 };

@@ -133,12 +133,12 @@ TEST_F(ExporterFactoryTest, UniquenessOfCreatedExporters) {
  */
 TEST_F(ExporterFactoryTest, AllExportersImplementInterface) {
     std::vector<truss::ExportFormat> formats = {truss::ExportFormat::CSV,
-                                         truss::ExportFormat::TSV,
-                                         truss::ExportFormat::JSON,
-                                         truss::ExportFormat::XML,
-                                         truss::ExportFormat::HTML,
-                                         truss::ExportFormat::LaTeX,
-                                         truss::ExportFormat::TXT};
+                                                truss::ExportFormat::TSV,
+                                                truss::ExportFormat::JSON,
+                                                truss::ExportFormat::XML,
+                                                truss::ExportFormat::HTML,
+                                                truss::ExportFormat::LaTeX,
+                                                truss::ExportFormat::TXT};
 
     for (const auto& format : formats) {
         auto exporter = ExporterFactory::create(format);
@@ -235,7 +235,8 @@ TEST_F(ExporterFactoryTest, DetectUnknownFormatDefaultsToCSV) {
 TEST_F(ExporterFactoryTest, DetectFormatWithComplexPaths) {
     EXPECT_EQ(ExporterFactory::detectFormat("/home/user/project.name/results.json"),
               truss::ExportFormat::JSON);
-    EXPECT_EQ(ExporterFactory::detectFormat("../relative/path/to/results.xml"), truss::ExportFormat::XML);
+    EXPECT_EQ(ExporterFactory::detectFormat("../relative/path/to/results.xml"),
+              truss::ExportFormat::XML);
     EXPECT_EQ(ExporterFactory::detectFormat("./results.html"), truss::ExportFormat::HTML);
 }
 
@@ -274,12 +275,12 @@ TEST_F(ExporterFactoryTest, GetExtensionForAllFormats) {
  */
 TEST_F(ExporterFactoryTest, ExtensionsStartWithDot) {
     std::vector<truss::ExportFormat> formats = {truss::ExportFormat::CSV,
-                                         truss::ExportFormat::TSV,
-                                         truss::ExportFormat::JSON,
-                                         truss::ExportFormat::XML,
-                                         truss::ExportFormat::HTML,
-                                         truss::ExportFormat::LaTeX,
-                                         truss::ExportFormat::TXT};
+                                                truss::ExportFormat::TSV,
+                                                truss::ExportFormat::JSON,
+                                                truss::ExportFormat::XML,
+                                                truss::ExportFormat::HTML,
+                                                truss::ExportFormat::LaTeX,
+                                                truss::ExportFormat::TXT};
 
     for (const auto& format : formats) {
         std::string ext = ExporterFactory::getExtension(format);
@@ -298,9 +299,12 @@ TEST_F(ExporterFactoryTest, ExtensionsStartWithDot) {
 TEST_F(ExporterFactoryTest, GetFormatNameForAllFormats) {
     EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::CSV), "Comma-Separated Values");
     EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::TSV), "Tab-Separated Values");
-    EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::JSON), "JavaScript Object Notation");
-    EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::XML), "Extensible Markup Language");
-    EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::HTML), "HyperText Markup Language");
+    EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::JSON),
+              "JavaScript Object Notation");
+    EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::XML),
+              "Extensible Markup Language");
+    EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::HTML),
+              "HyperText Markup Language");
     EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::LaTeX), "LaTeX Document");
     EXPECT_EQ(ExporterFactory::getFormatName(truss::ExportFormat::TXT), "Plain Text");
 }
@@ -310,12 +314,12 @@ TEST_F(ExporterFactoryTest, GetFormatNameForAllFormats) {
  */
 TEST_F(ExporterFactoryTest, FormatNamesAreNonEmpty) {
     std::vector<truss::ExportFormat> formats = {truss::ExportFormat::CSV,
-                                         truss::ExportFormat::TSV,
-                                         truss::ExportFormat::JSON,
-                                         truss::ExportFormat::XML,
-                                         truss::ExportFormat::HTML,
-                                         truss::ExportFormat::LaTeX,
-                                         truss::ExportFormat::TXT};
+                                                truss::ExportFormat::TSV,
+                                                truss::ExportFormat::JSON,
+                                                truss::ExportFormat::XML,
+                                                truss::ExportFormat::HTML,
+                                                truss::ExportFormat::LaTeX,
+                                                truss::ExportFormat::TXT};
 
     for (const auto& format : formats) {
         std::string name = ExporterFactory::getFormatName(format);
@@ -353,12 +357,12 @@ TEST_F(ExporterFactoryTest, CompleteWorkflowDetectCreateVerify) {
  */
 TEST_F(ExporterFactoryTest, RoundTripFormatExtensionDetect) {
     std::vector<truss::ExportFormat> formats = {truss::ExportFormat::CSV,
-                                         truss::ExportFormat::TSV,
-                                         truss::ExportFormat::JSON,
-                                         truss::ExportFormat::XML,
-                                         truss::ExportFormat::HTML,
-                                         truss::ExportFormat::LaTeX,
-                                         truss::ExportFormat::TXT};
+                                                truss::ExportFormat::TSV,
+                                                truss::ExportFormat::JSON,
+                                                truss::ExportFormat::XML,
+                                                truss::ExportFormat::HTML,
+                                                truss::ExportFormat::LaTeX,
+                                                truss::ExportFormat::TXT};
 
     for (const auto& originalFormat : formats) {
         // Get extension
@@ -385,11 +389,11 @@ TEST_F(ExporterFactoryTest, FactoryProducesWorkingExporters) {
     // exporter test suites.
 
     std::vector<truss::ExportFormat> formats = {truss::ExportFormat::CSV,
-                                         truss::ExportFormat::JSON,
-                                         truss::ExportFormat::XML,
-                                         truss::ExportFormat::HTML,
-                                         truss::ExportFormat::LaTeX,
-                                         truss::ExportFormat::TXT};
+                                                truss::ExportFormat::JSON,
+                                                truss::ExportFormat::XML,
+                                                truss::ExportFormat::HTML,
+                                                truss::ExportFormat::LaTeX,
+                                                truss::ExportFormat::TXT};
 
     for (const auto& format : formats) {
         EXPECT_NO_THROW({

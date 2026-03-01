@@ -7,9 +7,10 @@
  */
 
 #include "truss_analysis_facade.hpp"
-#include "truss/analysis/analysis_options.hpp"
-#include <sstream>
 
+#include "truss/analysis/analysis_options.hpp"
+
+#include <sstream>
 
 namespace truss::interface {
 
@@ -17,14 +18,14 @@ namespace truss::interface {
 // Constructor
 // ============================================================
 
-TrussAnalysisFacade::TrussAnalysisFacade() 
+TrussAnalysisFacade::TrussAnalysisFacade()
     : m_trussService(), m_analysisService(), m_lastTrussHandle(0) {}
 
 // ============================================================
 // ITrussService Operations (delegate to m_trussService)
 // ============================================================
 
-application::Result<application::TrussHandle> 
+application::Result<application::TrussHandle>
 TrussAnalysisFacade::createTruss(const std::string& name) {
     auto result = m_trussService.createTruss(name);
     if (result) {
@@ -33,7 +34,7 @@ TrussAnalysisFacade::createTruss(const std::string& name) {
     return result;
 }
 
-application::Result<application::TrussHandle> 
+application::Result<application::TrussHandle>
 TrussAnalysisFacade::loadTruss(const std::filesystem::path& filepath) {
     auto result = m_trussService.loadTruss(filepath);
     if (result) {
@@ -42,10 +43,9 @@ TrussAnalysisFacade::loadTruss(const std::filesystem::path& filepath) {
     return result;
 }
 
-application::Result<bool> 
-TrussAnalysisFacade::saveTruss(application::TrussHandle handle,
-                               const std::filesystem::path& filepath,
-                               bool overwrite) {
+application::Result<bool> TrussAnalysisFacade::saveTruss(application::TrussHandle handle,
+                                                         const std::filesystem::path& filepath,
+                                                         bool overwrite) {
     return m_trussService.saveTruss(handle, filepath, overwrite);
 }
 
@@ -57,13 +57,12 @@ bool TrussAnalysisFacade::clearTruss(application::TrussHandle handle) {
     return result;
 }
 
-const core::interfaces::ITrussView& 
+const core::interfaces::ITrussView&
 TrussAnalysisFacade::getTrussView(application::TrussHandle handle) const {
     return m_trussService.getTrussView(handle);
 }
 
-core::Truss& 
-TrussAnalysisFacade::getTrussMutable(application::TrussHandle handle) {
+core::Truss& TrussAnalysisFacade::getTrussMutable(application::TrussHandle handle) {
     return m_trussService.getTrussMutable(handle);
 }
 
@@ -72,14 +71,13 @@ TrussAnalysisFacade::validateTruss(application::TrussHandle handle) {
     return m_trussService.validateTruss(handle);
 }
 
-application::Result<core::NodeId>
-TrussAnalysisFacade::addNode(application::TrussHandle handle,
-                             const core::Point2D& position,
-                             core::SupportType supportType) {
+application::Result<core::NodeId> TrussAnalysisFacade::addNode(application::TrussHandle handle,
+                                                               const core::Point2D& position,
+                                                               core::SupportType supportType) {
     return m_trussService.addNode(handle, position, supportType);
 }
 
-application::Result<core::MemberId> 
+application::Result<core::MemberId>
 TrussAnalysisFacade::addMember(application::TrussHandle handle,
                                core::NodeId startNodeId,
                                core::NodeId endNodeId,
@@ -88,35 +86,30 @@ TrussAnalysisFacade::addMember(application::TrussHandle handle,
     return m_trussService.addMember(handle, startNodeId, endNodeId, material, section);
 }
 
-application::Result<bool> 
-TrussAnalysisFacade::removeNode(application::TrussHandle handle,
-                                core::NodeId nodeId) {
+application::Result<bool> TrussAnalysisFacade::removeNode(application::TrussHandle handle,
+                                                          core::NodeId nodeId) {
     return m_trussService.removeNode(handle, nodeId);
 }
 
-application::Result<bool> 
-TrussAnalysisFacade::removeMember(application::TrussHandle handle,
-                                  core::MemberId memberId) {
+application::Result<bool> TrussAnalysisFacade::removeMember(application::TrussHandle handle,
+                                                            core::MemberId memberId) {
     return m_trussService.removeMember(handle, memberId);
 }
 
-application::Result<bool> 
-TrussAnalysisFacade::setNodeSupport(application::TrussHandle handle,
-                                    core::NodeId nodeId,
-                                    core::SupportType supportType) {
+application::Result<bool> TrussAnalysisFacade::setNodeSupport(application::TrussHandle handle,
+                                                              core::NodeId nodeId,
+                                                              core::SupportType supportType) {
     return m_trussService.setNodeSupport(handle, nodeId, supportType);
 }
 
-application::Result<bool> 
-TrussAnalysisFacade::applyNodeLoad(application::TrussHandle handle,
-                                   core::NodeId nodeId,
-                                   const core::Force2D& force) {
+application::Result<bool> TrussAnalysisFacade::applyNodeLoad(application::TrussHandle handle,
+                                                             core::NodeId nodeId,
+                                                             const core::Force2D& force) {
     return m_trussService.applyNodeLoad(handle, nodeId, force);
 }
 
-application::Result<bool> 
-TrussAnalysisFacade::clearNodeLoad(application::TrussHandle handle,
-                                   core::NodeId nodeId) {
+application::Result<bool> TrussAnalysisFacade::clearNodeLoad(application::TrussHandle handle,
+                                                             core::NodeId nodeId) {
     return m_trussService.clearNodeLoad(handle, nodeId);
 }
 
@@ -125,7 +118,7 @@ TrussAnalysisFacade::clearNodeLoad(application::TrussHandle handle,
 // ============================================================
 
 application::Result<application::ResultsHandle>
-TrussAnalysisFacade::analyze(const core::Truss& truss, 
+TrussAnalysisFacade::analyze(const core::Truss& truss,
                              const core::analysis::AnalysisOptions& options) {
     return m_analysisService.analyze(truss, options);
 }
@@ -135,7 +128,7 @@ TrussAnalysisFacade::getResultsView(application::ResultsHandle handle) const {
     return m_analysisService.getResultsView(handle);
 }
 
-application::Result<bool> 
+application::Result<bool>
 TrussAnalysisFacade::exportResults(application::ResultsHandle handle,
                                    truss::ExportFormat format,
                                    const std::filesystem::path& filepath,
@@ -144,7 +137,7 @@ TrussAnalysisFacade::exportResults(application::ResultsHandle handle,
     return m_analysisService.exportResults(handle, format, filepath, truss, options);
 }
 
-application::Result<bool> 
+application::Result<bool>
 TrussAnalysisFacade::exportResults(application::ResultsHandle handle,
                                    const std::filesystem::path& filepath,
                                    const core::Truss& truss,
@@ -160,7 +153,7 @@ bool TrussAnalysisFacade::clearResults(application::ResultsHandle handle) {
 // High-Level Workflow Methods
 // ============================================================
 
-AnalysisWorkflowResult 
+AnalysisWorkflowResult
 TrussAnalysisFacade::analyzeFromFile(const std::filesystem::path& filepath,
                                      const core::analysis::AnalysisOptions& options) {
     // Step 1: Load truss from file
@@ -169,17 +162,16 @@ TrussAnalysisFacade::analyzeFromFile(const std::filesystem::path& filepath,
         return AnalysisWorkflowResult::Failure("Failed to load truss: " + loadResult.errorMessage);
     }
     auto trussHandle = loadResult.value;
-    
+
     // Step 2: Validate truss structure
     auto validationResult = validateTruss(trussHandle);
     if (!validationResult || !validationResult.value.isValid()) {
-        std::string error = validationResult ? 
-            formatValidationErrors(validationResult.value) : 
-            validationResult.errorMessage;
+        std::string error = validationResult ? formatValidationErrors(validationResult.value)
+                                             : validationResult.errorMessage;
         clearTruss(trussHandle);
         return AnalysisWorkflowResult::Failure("Validation failed: " + error);
     }
-    
+
     // Step 3: Perform analysis
     auto& truss = getTrussMutable(trussHandle);
     auto analysisResult = analyze(truss, options);
@@ -187,11 +179,11 @@ TrussAnalysisFacade::analyzeFromFile(const std::filesystem::path& filepath,
         clearTruss(trussHandle);
         return AnalysisWorkflowResult::Failure("Analysis failed: " + analysisResult.errorMessage);
     }
-    
+
     return AnalysisWorkflowResult::Success(trussHandle, analysisResult.value);
 }
 
-AnalysisWorkflowResult 
+AnalysisWorkflowResult
 TrussAnalysisFacade::analyzeInteractive(TrussBuilder& builder,
                                         const core::analysis::AnalysisOptions& options) {
     // Step 1: Build truss from builder
@@ -199,80 +191,78 @@ TrussAnalysisFacade::analyzeInteractive(TrussBuilder& builder,
     try {
         trussPtr = builder.build();
     } catch (const std::exception& e) {
-        return AnalysisWorkflowResult::Failure(
-            std::string("Failed to build truss: ") + e.what());
+        return AnalysisWorkflowResult::Failure(std::string("Failed to build truss: ") + e.what());
     }
-    
+
     // Step 2: Create truss handle
     auto createResult = createTruss("Interactive Truss");
     if (!createResult) {
-        return AnalysisWorkflowResult::Failure("Failed to create truss: " + createResult.errorMessage);
+        return AnalysisWorkflowResult::Failure("Failed to create truss: " +
+                                               createResult.errorMessage);
     }
     auto trussHandle = createResult.value;
-    
+
     // Copy built truss into managed truss
     auto& managedTruss = getTrussMutable(trussHandle);
     managedTruss = *trussPtr;
-    
+
     // Step 3: Validate
     auto validationResult = validateTruss(trussHandle);
     if (!validationResult || !validationResult.value.isValid()) {
-        std::string error = validationResult ? 
-            formatValidationErrors(validationResult.value) : 
-            validationResult.errorMessage;
+        std::string error = validationResult ? formatValidationErrors(validationResult.value)
+                                             : validationResult.errorMessage;
         clearTruss(trussHandle);
         return AnalysisWorkflowResult::Failure("Validation failed: " + error);
     }
-    
+
     // Step 4: Analyze
     auto analysisResult = analyze(managedTruss, options);
     if (!analysisResult) {
         clearTruss(trussHandle);
         return AnalysisWorkflowResult::Failure("Analysis failed: " + analysisResult.errorMessage);
     }
-    
+
     return AnalysisWorkflowResult::Success(trussHandle, analysisResult.value);
 }
 
-core::validation::ValidationResult 
+core::validation::ValidationResult
 TrussAnalysisFacade::validateFromFile(const std::filesystem::path& filepath) {
     // Load truss
     auto loadResult = loadTruss(filepath);
     if (!loadResult) {
         core::validation::ValidationResult result;
-        core::validation::ValidationIssue issue(
-            core::validation::ValidationSeverity::Fatal,
-            "File Loading",
-            "Failed to load truss file: " + loadResult.errorMessage,
-            "Check file path and format");
+        core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
+                                                "File Loading",
+                                                "Failed to load truss file: " +
+                                                    loadResult.errorMessage,
+                                                "Check file path and format");
         result.addIssue(issue);
         return result;
     }
-    
+
     auto trussHandle = loadResult.value;
-    
+
     // Validate
     auto validationResult = validateTruss(trussHandle);
-    
+
     // Cleanup and return
     clearTruss(trussHandle);
-    
+
     if (validationResult) {
         return validationResult.value;
     } else {
         core::validation::ValidationResult result;
-        core::validation::ValidationIssue issue(
-            core::validation::ValidationSeverity::Fatal,
-            "Validation",
-            "Validation process failed: " + validationResult.errorMessage,
-            "Internal error during validation");
+        core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
+                                                "Validation",
+                                                "Validation process failed: " +
+                                                    validationResult.errorMessage,
+                                                "Internal error during validation");
         result.addIssue(issue);
         return result;
     }
 }
 
-core::validation::ValidationResult 
-TrussAnalysisFacade::validateBuilder(TrussBuilder& builder) {
+core::validation::ValidationResult TrussAnalysisFacade::validateBuilder(TrussBuilder& builder) {
     std::shared_ptr<core::Truss> trussPtr;
     try {
         trussPtr = builder.build();
@@ -415,4 +405,4 @@ std::string TrussAnalysisFacade::formatValidationErrors(
     return oss.str();
 }
 
-} // namespace truss::interface
+}  // namespace truss::interface

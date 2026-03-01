@@ -6,11 +6,10 @@
  * @author Neil Taison Rigaud
  */
 
-
 #pragma once
 #include "application/interfaces/ianalysis_service.hpp"
-#include "truss/analysis/analysis_options.hpp"
 #include "interface/itruss_analysis_facade.hpp"
+#include "truss/analysis/analysis_options.hpp"
 
 namespace truss::interface {
 

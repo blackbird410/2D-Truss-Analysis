@@ -10,10 +10,10 @@
  */
 
 #include "core/analysis/analysis_orchestrator.hpp"
-#include "truss/export/export_format.hpp"
 #include "core/analysis/solver_factory.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/text_exporter.hpp"
+#include "truss/export/export_format.hpp"
 
 #include <filesystem>
 #include <fstream>

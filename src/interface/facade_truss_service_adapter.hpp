@@ -12,11 +12,10 @@
  * - Clean separation of concerns
  */
 
-
 #pragma once
 #include "application/interfaces/itruss_service.hpp"
-#include "truss/analysis/analysis_options.hpp"
 #include "interface/itruss_analysis_facade.hpp"
+#include "truss/analysis/analysis_options.hpp"
 
 namespace truss::interface {
 

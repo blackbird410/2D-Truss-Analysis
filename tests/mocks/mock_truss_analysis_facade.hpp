@@ -13,14 +13,13 @@
 #pragma once
 
 // Must be included before mock methods so MockTrussAnalysisFacade can inherit.
-#include "interface/itruss_analysis_facade.hpp"
-
-#include "application/result.hpp"
 #include "application/interfaces/ianalysis_service.hpp"
 #include "application/interfaces/itruss_service.hpp"
+#include "application/result.hpp"
+#include "interface/itruss_analysis_facade.hpp"
 
-#include <gmock/gmock.h>
 #include <filesystem>
+#include <gmock/gmock.h>
 #include <string>
 
 namespace truss::test {
@@ -104,9 +103,7 @@ public:
 
     MOCK_METHOD(application::Result<bool>,
                 applyNodeLoad,
-                (application::TrussHandle handle,
-                 core::NodeId nodeId,
-                 const core::Force2D& force),
+                (application::TrussHandle handle, core::NodeId nodeId, const core::Force2D& force),
                 (override));
 
     MOCK_METHOD(application::Result<bool>,

@@ -7,6 +7,7 @@
  */
 
 #include "facade_truss_service_adapter.hpp"
+
 #include "truss/analysis/analysis_options.hpp"
 #include "truss_analysis_facade.hpp"
 

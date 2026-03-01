@@ -74,12 +74,12 @@ protected:
 
     /**
      * @brief Create a simple valid truss JSON file for testing
-     * 
+     *
      * Creates a statically determinate triangular truss:
      * - Node 1 (0, 0): Pinned support (Fx, Fy constraints)
      * - Node 2 (4, 0): Roller support (Fy constraint)
      * - Node 3 (2, 3): Free node with downward load
-     * 
+     *
      * Members: 1-3, 2-3, 1-2 (3 members for 3 nodes = statically determinate)
      * Reactions: 3 (Fx at 1, Fy at 1, Fy at 2) = matches 3 load conditions
      */
@@ -153,8 +153,9 @@ TEST_F(FacadeAdaptersIntegrationTest, TrussAdapterCreateTrussWorks) {
 
 TEST_F(FacadeAdaptersIntegrationTest, TrussAdapterLoadTrussWorks) {
     // Arrange - verify test file exists
-    ASSERT_TRUE(fs::exists(testJsonFile)) << "Test JSON file does not exist at " << testJsonFile.string();
-    
+    ASSERT_TRUE(fs::exists(testJsonFile))
+        << "Test JSON file does not exist at " << testJsonFile.string();
+
     // Act
     auto result = trussAdapter->loadTruss(testJsonFile);
 
@@ -261,8 +262,8 @@ TEST_F(FacadeAdaptersIntegrationTest, TrussAdapterAddMemberWorks) {
     // Act
     application::MaterialSpec material{200e9, "Steel"};
     application::SectionSpec section{0.01, "Square"};
-    auto memberResult =
-        trussAdapter->addMember(handle, node1.value, node2.value, material, section);
+    auto memberResult = trussAdapter->addMember(
+        handle, node1.value, node2.value, material, section);
 
     // Assert
     ASSERT_TRUE(memberResult.success);
@@ -347,7 +348,7 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterGetResultsViewWorks) {
 
     // Assert - the test truss has 3 nodes (6 DOFs) and 3 members.
     EXPECT_EQ(resultsView.getDisplacements().size(), 6u);  // 3 nodes × 2 DOFs
-    EXPECT_EQ(resultsView.getMemberForces().size(), 3u);    // 3 members
+    EXPECT_EQ(resultsView.getMemberForces().size(), 3u);   // 3 members
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterExportResultsWorks) {
@@ -384,11 +385,8 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterExportWithExplicitFormatWor
 
     // Act - export CSV explicitly
     fs::path exportPath = tempDir / "results.csv";
-    auto exportResult = analysisAdapter->exportResults(resultsHandle,
-                                                       truss::ExportFormat::CSV,
-                                                       exportPath,
-                                                       truss,
-                                                       {});
+    auto exportResult = analysisAdapter->exportResults(
+        resultsHandle, truss::ExportFormat::CSV, exportPath, truss, {});
 
     // Assert
     ASSERT_TRUE(exportResult.success);
@@ -437,12 +435,9 @@ TEST_F(FacadeAdaptersIntegrationTest, CompleteWorkflowThroughAdapters) {
     application::MaterialSpec steel{200e9, "Steel"};
     application::SectionSpec section{0.01, "Square"};
 
-    auto member1 =
-        trussAdapter->addMember(trussHandle, node1.value, node3.value, steel, section);
-    auto member2 =
-        trussAdapter->addMember(trussHandle, node2.value, node3.value, steel, section);
-    auto member3 =
-        trussAdapter->addMember(trussHandle, node1.value, node2.value, steel, section);
+    auto member1 = trussAdapter->addMember(trussHandle, node1.value, node3.value, steel, section);
+    auto member2 = trussAdapter->addMember(trussHandle, node2.value, node3.value, steel, section);
+    auto member3 = trussAdapter->addMember(trussHandle, node1.value, node2.value, steel, section);
     ASSERT_TRUE(member1.success);
     ASSERT_TRUE(member2.success);
     ASSERT_TRUE(member3.success);

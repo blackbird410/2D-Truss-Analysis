@@ -153,8 +153,7 @@ bool ExportCommand::validateInputFile(const std::string& filepath) {
     }
 }
 
-std::optional<truss::ExportFormat>
-ExportCommand::parseExportFormat(const std::string& formatStr) {
+std::optional<truss::ExportFormat> ExportCommand::parseExportFormat(const std::string& formatStr) {
     using namespace truss::infrastructure::export_;
 
     // Convert to uppercase for case-insensitive comparison
@@ -180,8 +179,7 @@ ExportCommand::parseExportFormat(const std::string& formatStr) {
     return std::nullopt;
 }
 
-truss::ExportFormat
-ExportCommand::getDefaultExportFormat(const std::string& filepath) {
+truss::ExportFormat ExportCommand::getDefaultExportFormat(const std::string& filepath) {
     using namespace truss::infrastructure::export_;
 
     namespace fs = std::filesystem;

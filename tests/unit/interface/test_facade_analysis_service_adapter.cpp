@@ -54,8 +54,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, AnalyzeDelegatesToFacade) {
     const application::ResultsHandle expectedHandle = 100;
 
     EXPECT_CALL(mockFacade, analyze(Ref(testTruss), _))
-        .WillOnce(
-            Return(application::Result<application::ResultsHandle>::Success(expectedHandle)));
+        .WillOnce(Return(application::Result<application::ResultsHandle>::Success(expectedHandle)));
 
     // Act
     auto result = adapter->analyze(testTruss, options);
@@ -93,8 +92,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, AnalyzeForwardsOptionsCorrectly) {
 
     // Use a custom matcher to verify options are passed through
     EXPECT_CALL(mockFacade, analyze(Ref(testTruss), _))
-        .WillOnce(
-            Return(application::Result<application::ResultsHandle>::Success(expectedHandle)));
+        .WillOnce(Return(application::Result<application::ResultsHandle>::Success(expectedHandle)));
 
     // Act
     auto result = adapter->analyze(testTruss, options);
@@ -134,8 +132,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, GetResultsViewDelegatesToFacade) {
 TEST_F(FacadeAnalysisServiceAdapterTest, ExportResultsWithFormatDelegatesToFacade) {
     // Arrange
     const application::ResultsHandle testHandle = 100;
-    const truss::ExportFormat format =
-        truss::ExportFormat::JSON;
+    const truss::ExportFormat format = truss::ExportFormat::JSON;
     const std::filesystem::path filepath = "/tmp/results.json";
     core::Truss testTruss("ExportTruss");
     infrastructure::export_::ExportOptions options;
@@ -322,35 +319,19 @@ TEST_F(FacadeAnalysisServiceAdapterTest, ExportWithDifferentFormats) {
     core::Truss testTruss("MultiFormatTruss");
 
     // JSON export
-    EXPECT_CALL(mockFacade,
-                exportResults(handle,
-                              truss::ExportFormat::JSON,
-                              _,
-                              Ref(testTruss),
-                              _))
+    EXPECT_CALL(mockFacade, exportResults(handle, truss::ExportFormat::JSON, _, Ref(testTruss), _))
         .WillOnce(Return(application::Result<bool>::Success(true)));
 
-    auto jsonResult = adapter->exportResults(handle,
-                                             truss::ExportFormat::JSON,
-                                             "/tmp/out.json",
-                                             testTruss,
-                                             {});
+    auto jsonResult = adapter->exportResults(
+        handle, truss::ExportFormat::JSON, "/tmp/out.json", testTruss, {});
     ASSERT_TRUE(jsonResult.success);
 
     // CSV export
-    EXPECT_CALL(mockFacade,
-                exportResults(handle,
-                              truss::ExportFormat::CSV,
-                              _,
-                              Ref(testTruss),
-                              _))
+    EXPECT_CALL(mockFacade, exportResults(handle, truss::ExportFormat::CSV, _, Ref(testTruss), _))
         .WillOnce(Return(application::Result<bool>::Success(true)));
 
-    auto csvResult = adapter->exportResults(handle,
-                                            truss::ExportFormat::CSV,
-                                            "/tmp/out.csv",
-                                            testTruss,
-                                            {});
+    auto csvResult = adapter->exportResults(
+        handle, truss::ExportFormat::CSV, "/tmp/out.csv", testTruss, {});
     ASSERT_TRUE(csvResult.success);
 }
 

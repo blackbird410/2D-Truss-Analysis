@@ -155,10 +155,10 @@ TEST_F(FacadeTrussServiceAdapterTest, IsValidHandleDelegatesToFacade) {
 TEST_F(FacadeTrussServiceAdapterTest, GetTrussViewDelegatesToFacade) {
     // Arrange
     const application::TrussHandle testHandle = 42;
-    
+
     // Create a mock truss and mock view (we'll use NiceMock to avoid warnings)
     core::Truss mockTruss("TestTruss");
-    
+
     EXPECT_CALL(mockFacade, getTrussView(testHandle))
         .WillOnce(ReturnRef(static_cast<const core::interfaces::ITrussView&>(mockTruss)));
 
@@ -173,7 +173,7 @@ TEST_F(FacadeTrussServiceAdapterTest, GetTrussMutableDelegatesToFacade) {
     // Arrange
     const application::TrussHandle testHandle = 42;
     core::Truss mockTruss("MutableTruss");
-    
+
     EXPECT_CALL(mockFacade, getTrussMutable(testHandle)).WillOnce(ReturnRef(mockTruss));
 
     // Act
@@ -190,11 +190,12 @@ TEST_F(FacadeTrussServiceAdapterTest, GetTrussMutableDelegatesToFacade) {
 TEST_F(FacadeTrussServiceAdapterTest, ValidateTrussDelegatesToFacade) {
     // Arrange
     const application::TrussHandle testHandle = 42;
-    core::validation::ValidationResult validResult;  // Default constructor creates valid result (no issues)
+    core::validation::ValidationResult
+        validResult;  // Default constructor creates valid result (no issues)
 
     EXPECT_CALL(mockFacade, validateTruss(testHandle))
-        .WillOnce(Return(
-            application::Result<core::validation::ValidationResult>::Success(validResult)));
+        .WillOnce(
+            Return(application::Result<core::validation::ValidationResult>::Success(validResult)));
 
     // Act
     auto result = adapter->validateTruss(testHandle);
@@ -418,8 +419,8 @@ TEST_F(FacadeTrussServiceAdapterTest, ValidateTrussForwardsError) {
     const std::string errorMsg = "Invalid truss handle";
 
     EXPECT_CALL(mockFacade, validateTruss(badHandle))
-        .WillOnce(Return(
-            application::Result<core::validation::ValidationResult>::Failure(errorMsg)));
+        .WillOnce(
+            Return(application::Result<core::validation::ValidationResult>::Failure(errorMsg)));
 
     // Act
     auto result = adapter->validateTruss(badHandle);

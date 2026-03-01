@@ -31,16 +31,16 @@
  * @endcode
  */
 
-
 #pragma once
 #include "../application/analysis_application_service.hpp"
 #include "../application/truss_application_service.hpp"
 #include "../core/analysis/analysis_orchestrator.hpp"
 #include "../core/validation/truss_validator.hpp"
 #include "../infrastructure/export/exporter_factory.hpp"
-#include "truss_builder.hpp"
-#include "truss/analysis/analysis_options.hpp"
 #include "interface/itruss_analysis_facade.hpp"
+#include "truss/analysis/analysis_options.hpp"
+#include "truss_builder.hpp"
+
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -130,14 +130,16 @@ public:
 
     // ITrussService operations
     application::Result<application::TrussHandle> createTruss(const std::string& name) override;
-    application::Result<application::TrussHandle> loadTruss(const std::filesystem::path& filepath) override;
+    application::Result<application::TrussHandle>
+    loadTruss(const std::filesystem::path& filepath) override;
     application::Result<bool> saveTruss(application::TrussHandle handle,
                                         const std::filesystem::path& filepath,
                                         bool overwrite = false) override;
     bool clearTruss(application::TrussHandle handle) override;
     bool isValidTrussHandle(application::TrussHandle handle) const override;
 
-    const core::interfaces::ITrussView& getTrussView(application::TrussHandle handle) const override;
+    const core::interfaces::ITrussView&
+    getTrussView(application::TrussHandle handle) const override;
     core::Truss& getTrussMutable(application::TrussHandle handle) override;
 
     application::Result<core::validation::ValidationResult>
@@ -177,18 +179,18 @@ public:
     const core::interfaces::IAnalysisResultsView&
     getResultsView(application::ResultsHandle handle) const override;
 
-    application::Result<bool> exportResults(application::ResultsHandle handle,
-                                           truss::ExportFormat format,
-                                           const std::filesystem::path& filepath,
-                                           const core::Truss& truss,
-                                           const infrastructure::export_::ExportOptions& options =
-                                               {}) override;
+    application::Result<bool>
+    exportResults(application::ResultsHandle handle,
+                  truss::ExportFormat format,
+                  const std::filesystem::path& filepath,
+                  const core::Truss& truss,
+                  const infrastructure::export_::ExportOptions& options = {}) override;
 
-    application::Result<bool> exportResults(application::ResultsHandle handle,
-                                           const std::filesystem::path& filepath,
-                                           const core::Truss& truss,
-                                           const infrastructure::export_::ExportOptions& options =
-                                               {}) override;
+    application::Result<bool>
+    exportResults(application::ResultsHandle handle,
+                  const std::filesystem::path& filepath,
+                  const core::Truss& truss,
+                  const infrastructure::export_::ExportOptions& options = {}) override;
 
     bool clearResults(application::ResultsHandle handle) override;
     bool isValidResultsHandle(application::ResultsHandle handle) const override;

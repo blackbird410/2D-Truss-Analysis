@@ -177,11 +177,11 @@ TEST_F(ExportAdvancedTest, InvalidPathHandling) {
 
 TEST_F(ExportAdvancedTest, FactoryCreatesAllFormats) {
     std::vector<truss::ExportFormat> formats = {truss::ExportFormat::CSV,
-                                         truss::ExportFormat::JSON,
-                                         truss::ExportFormat::XML,
-                                         truss::ExportFormat::HTML,
-                                         truss::ExportFormat::LaTeX,
-                                         truss::ExportFormat::TXT};
+                                                truss::ExportFormat::JSON,
+                                                truss::ExportFormat::XML,
+                                                truss::ExportFormat::HTML,
+                                                truss::ExportFormat::LaTeX,
+                                                truss::ExportFormat::TXT};
 
     for (const auto& format : formats) {
         auto exporter = ExporterFactory::create(format);

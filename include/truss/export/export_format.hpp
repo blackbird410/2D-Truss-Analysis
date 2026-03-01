@@ -18,13 +18,13 @@ class AnalysisResults;
  * @brief Supported output formats for analysis results
  */
 enum class ExportFormat {
-    CSV,    ///< Comma-separated values
-    TSV,    ///< Tab-separated values
-    JSON,   ///< JSON format
-    XML,    ///< XML format
-    HTML,   ///< HTML report
-    TXT,    ///< Plain text
-    LaTeX   ///< LaTeX for academic papers
+    CSV,   ///< Comma-separated values
+    TSV,   ///< Tab-separated values
+    JSON,  ///< JSON format
+    XML,   ///< XML format
+    HTML,  ///< HTML report
+    TXT,   ///< Plain text
+    LaTeX  ///< LaTeX for academic papers
 };
 
 /**

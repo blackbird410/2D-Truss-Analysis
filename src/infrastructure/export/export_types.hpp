@@ -8,8 +8,9 @@
 
 #pragma once
 
-#include <string>
 #include "truss/export/export_format.hpp"  // MUST be outside namespace
+
+#include <string>
 
 namespace truss::infrastructure::export_ {
 

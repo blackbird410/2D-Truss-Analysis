@@ -376,10 +376,8 @@ TEST_F(TrussAnalysisFacadeTest, ExportResultsExplicitFormat) {
     fs::path outputFile = tempDir / "results.xml";
     ExportOptions options;
 
-    bool success = facade->exportResults(analysisResult.resultsHandle,
-                                         truss::ExportFormat::XML,
-                                         outputFile,
-                                         options);
+    bool success = facade->exportResults(
+        analysisResult.resultsHandle, truss::ExportFormat::XML, outputFile, options);
 
     EXPECT_TRUE(success);
     EXPECT_TRUE(fs::exists(outputFile));
