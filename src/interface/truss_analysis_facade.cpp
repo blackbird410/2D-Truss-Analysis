@@ -114,12 +114,12 @@ TrussAnalysisFacade::getResultsView(application::ResultsHandle handle) const {
     return m_analysisService.getResultsView(handle);
 }
 
-application::Result<bool>
+application::Result<bool> 
 TrussAnalysisFacade::exportResults(application::ResultsHandle handle,
-                                    infrastructure::export_::ExportFormat format,
-                                    const std::filesystem::path& filepath,
-                                    const core::Truss& truss,
-                                    const infrastructure::export_::ExportOptions& options) {
+                                   truss::ExportFormat format,
+                                   const std::filesystem::path& filepath,
+                                   const core::Truss& truss,
+                                   const infrastructure::export_::ExportOptions& options) {
     return m_analysisService.exportResults(handle, format, filepath, truss, options);
 }
 
@@ -281,7 +281,7 @@ bool TrussAnalysisFacade::exportResults(application::ResultsHandle resultsHandle
 }
 
 bool TrussAnalysisFacade::exportResults(application::ResultsHandle resultsHandle,
-                                        infrastructure::export_::ExportFormat format,
+                                        truss::ExportFormat format,
                                         const std::filesystem::path& filepath,
                                         const infrastructure::export_::ExportOptions& options) {
     // Validate handles

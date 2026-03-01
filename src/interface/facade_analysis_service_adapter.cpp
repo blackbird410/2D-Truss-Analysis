@@ -27,7 +27,7 @@ FacadeAnalysisServiceAdapter::getResultsView(application::ResultsHandle handle) 
 
 application::Result<bool>
 FacadeAnalysisServiceAdapter::exportResults(application::ResultsHandle handle,
-                                            infrastructure::export_::ExportFormat format,
+                                            truss::ExportFormat format,
                                             const std::filesystem::path& filepath,
                                             const core::Truss& truss,
                                             const infrastructure::export_::ExportOptions& options) {
