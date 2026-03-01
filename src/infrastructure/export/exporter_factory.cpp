@@ -15,8 +15,8 @@
 #include "text_exporter.hpp"
 #include "xml_exporter.hpp"
 
-#include <algorithm>
-#include <cctype>
+#include "utilities/string_utils.hpp"
+
 #include <stdexcept>
 
 namespace truss::infrastructure::export_ {
@@ -51,9 +51,7 @@ ExportFormat ExporterFactory::detectFormat(const std::filesystem::path& filePath
     std::string extension = filePath.extension().string();
 
     // Convert to lowercase for case-insensitive comparison
-    std::transform(extension.begin(), extension.end(), extension.begin(), [](unsigned char c) {
-        return std::tolower(c);
-    });
+    extension = truss::utils::string::toLower(extension);
 
     if (extension == ".csv") {
         return ExportFormat::CSV;

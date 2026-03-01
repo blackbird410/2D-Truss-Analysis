@@ -85,11 +85,6 @@ public:
 private:
     std::string m_lastError;  ///< Last error message
 
-    // Helper methods
-    static std::string formatNumber(Real value, const ExportOptions& options);
-    static std::string formatTimestamp();
-    static std::string escapeHtml(const std::string& text);
-
     // Document structure methods
     static void writeHeader(std::ostream& os, const ITrussView& truss);
     static void writeStyles(std::ostream& os);

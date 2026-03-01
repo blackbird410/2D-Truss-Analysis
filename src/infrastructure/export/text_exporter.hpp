@@ -163,20 +163,6 @@ private:
                                      const ExportOptions& options);
 
     /**
-     * @brief Format a number according to export options
-     * @param value Floating-point value
-     * @param options Export options
-     * @return Formatted string
-     */
-    static std::string formatNumber(Real value, const ExportOptions& options);
-
-    /**
-     * @brief Format current timestamp
-     * @return Formatted timestamp string
-     */
-    static std::string formatTimestamp();
-
-    /**
      * @brief Write a section separator line
      * @param os Output stream
      * @param width Line width

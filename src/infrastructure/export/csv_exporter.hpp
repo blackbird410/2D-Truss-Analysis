@@ -71,10 +71,6 @@ public:
 private:
     std::string m_lastError;  ///< Last error message
 
-    // Helper methods
-    static std::string formatNumber(Real value, const ExportOptions& options);
-    static std::string formatTimestamp();
-
     // Section writers
     static void
     writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);

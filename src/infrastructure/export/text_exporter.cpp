@@ -10,6 +10,7 @@
 
 #include <ctime>
 #include <fstream>
+#include "utilities/string_utils.hpp"
 
 namespace truss::infrastructure::export_ {
 
@@ -76,25 +77,6 @@ bool TextExporter::exportResults(const ITrussView& truss,
     }
 }
 
-std::string TextExporter::formatNumber(Real value, const ExportOptions& options) {
-    std::stringstream ss;
-    if (options.useScientificNotation) {
-        ss << std::scientific;
-    } else {
-        ss << std::fixed;
-    }
-    ss << std::setprecision(options.precision) << value;
-    return ss.str();
-}
-
-std::string TextExporter::formatTimestamp() {
-    auto now = std::chrono::system_clock::now();
-    auto time_t = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&time_t), "%Y-%m-%d %H:%M:%S");
-    return ss.str();
-}
-
 void TextExporter::writeSeparator(std::ostream& os, int width) {
     os << std::string(width, '=') << "\n";
 }
@@ -111,7 +93,7 @@ void TextExporter::writeHeader(std::ostream& os, const ITrussView& truss) {
     os << "2D TRUSS ANALYSIS RESULTS\n";
     os << truss.getName() << "\n";
     writeSeparator(os);
-    os << "Generated: " << formatTimestamp() << "\n";
+    os << "Generated: " << truss::utils::string::formatTimestamp() << "\n";
     os << "Version: 3.0.0\n";
     writeSeparator(os);
     os << "\n";
@@ -119,7 +101,7 @@ void TextExporter::writeHeader(std::ostream& os, const ITrussView& truss) {
     // Project metadata
     writeSectionHeader(os, "PROJECT METADATA");
     os << "  Project Name:    " << truss.getName() << "\n";
-    os << "  Generated:       " << formatTimestamp() << "\n";
+    os << "  Generated:       " << truss::utils::string::formatTimestamp() << "\n";
     os << "  Software:        2D Truss Analysis v3.0.0\n";
     os << "  Number of Nodes: " << truss.getNodeCount() << "\n";
     os << "  Number of Members: " << truss.getMemberCount() << "\n";
@@ -157,7 +139,7 @@ void TextExporter::writeGeometrySection(std::ostream& os,
         }
 
         os << "  " << std::left << std::setw(8) << node.id << std::setw(15)
-           << formatNumber(node.x, options) << std::setw(15) << formatNumber(node.y, options)
+           << truss::utils::string::formatReal(node.x, options.precision, options.useScientificNotation) << std::setw(15) << truss::utils::string::formatReal(node.y, options.precision, options.useScientificNotation)
            << std::setw(15) << supportType << "\n";
     }
 
@@ -170,7 +152,7 @@ void TextExporter::writeGeometrySection(std::ostream& os,
     for (const auto& member : truss.getMemberViews()) {
         os << "  " << std::left << std::setw(10) << member.id << std::setw(12) << member.startNodeId
            << std::setw(12) << member.endNodeId << std::setw(15)
-           << formatNumber(member.length, options) << "\n";
+           << truss::utils::string::formatReal(member.length, options.precision, options.useScientificNotation) << "\n";
     }
 }
 
@@ -187,10 +169,10 @@ void TextExporter::writePropertiesSection(std::ostream& os,
     for (const auto& member : truss.getMemberViews()) {
         os << "  " << std::left << std::setw(10) << member.id << std::setw(15)
            << "Steel"  // TODO: Add material type to MemberView struct
-           << std::setw(15) << formatNumber(member.youngModulus, options) << std::setw(18)
-           << formatNumber(member.yieldStrength, options) << std::setw(15)
-           << formatNumber(member.density, options) << std::setw(15)
-           << formatNumber(member.area, options) << "\n";
+           << std::setw(15) << truss::utils::string::formatReal(member.youngModulus, options.precision, options.useScientificNotation) << std::setw(18)
+           << truss::utils::string::formatReal(member.yieldStrength, options.precision, options.useScientificNotation) << std::setw(15)
+           << truss::utils::string::formatReal(member.density, options.precision, options.useScientificNotation) << std::setw(15)
+           << truss::utils::string::formatReal(member.area, options.precision, options.useScientificNotation) << "\n";
     }
 }
 
@@ -208,7 +190,7 @@ void TextExporter::writeLoadsSection(std::ostream& os,
         // Only export nodes with non-zero forces
         if (node.fx != 0.0 || node.fy != 0.0) {
             os << "  " << std::left << std::setw(10) << node.id << std::setw(20)
-               << formatNumber(node.fx, options) << std::setw(20) << formatNumber(node.fy, options)
+               << truss::utils::string::formatReal(node.fx, options.precision, options.useScientificNotation) << std::setw(20) << truss::utils::string::formatReal(node.fy, options.precision, options.useScientificNotation)
                << "\n";
             hasLoads = true;
         }
@@ -230,10 +212,10 @@ void TextExporter::writeDisplacementsSection(std::ostream& os,
 
     for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
         os << "  " << std::left << std::setw(10) << i << std::setw(20)
-           << formatNumber(results.getDisplacements()[i], options) << "\n";
+           << truss::utils::string::formatReal(results.getDisplacements()[i], options.precision, options.useScientificNotation) << "\n";
     }
 
-    os << "\n  Maximum Displacement: " << formatNumber(results.getMaxDisplacement(), options)
+    os << "\n  Maximum Displacement: " << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << " m\n";
 }
 
@@ -251,7 +233,7 @@ void TextExporter::writeMemberForcesSection(std::ostream& os,
         std::string type = (force > 0) ? "Tension" : "Compression";
 
         os << "  " << std::left << std::setw(12) << (i + 1) << std::setw(20)
-           << formatNumber(force, options) << std::setw(15) << type << "\n";
+           << truss::utils::string::formatReal(force, options.precision, options.useScientificNotation) << std::setw(15) << type << "\n";
     }
 }
 
@@ -266,7 +248,7 @@ void TextExporter::writeReactionsSection(std::ostream& os,
 
     for (size_t i = 0; i < results.getReactions().size(); ++i) {
         os << "  " << std::left << std::setw(10) << i << std::setw(25)
-           << formatNumber(results.getReactions()[i], options) << "\n";
+           << truss::utils::string::formatReal(results.getReactions()[i], options.precision, options.useScientificNotation) << "\n";
     }
 }
 
@@ -279,8 +261,8 @@ void TextExporter::writeMetadataSection(std::ostream& os,
     os << "  Iterations:         " << results.getIterations() << "\n";
     os << "  Total DOFs:         " << results.getTotalDofs() << "\n";
     os << "  Free DOFs:          " << results.getFreeDofs() << "\n";
-    os << "  Max Displacement:   " << formatNumber(results.getMaxDisplacement(), options) << " m\n";
-    os << "  Max Stress:         " << formatNumber(results.getMaxStress(), options) << " Pa\n";
+    os << "  Max Displacement:   " << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation) << " m\n";
+    os << "  Max Stress:         " << truss::utils::string::formatReal(results.getMaxStress(), options.precision, options.useScientificNotation) << " Pa\n";
 }
 
 }  // namespace truss::infrastructure::export_
