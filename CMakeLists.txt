@@ -112,6 +112,24 @@ if(BUILD_GUI)
     set(CMAKE_AUTOUIC ON)
 endif()
 
+# ============================================================================
+# UTILITY LAYER (no project dependencies — safe for all layers)
+# ============================================================================
+
+add_library(TrussUtils STATIC
+    src/utilities/math_utils.hpp
+)
+
+target_include_directories(TrussUtils PUBLIC
+    ${CMAKE_SOURCE_DIR}/src
+)
+
+set_target_properties(TrussUtils PROPERTIES
+    CXX_STANDARD 20
+    CXX_STANDARD_REQUIRED ON
+    POSITION_INDEPENDENT_CODE ON
+)
+
 # Create library for core functionality
 add_library(TrussCore STATIC
     src/core/application.hpp
@@ -204,6 +222,7 @@ target_link_libraries(TrussCore PUBLIC
     Eigen3::Eigen
     nlohmann_json::nlohmann_json
     tinyxml2::tinyxml2
+    TrussUtils
 )
 
 # Set target properties for library
