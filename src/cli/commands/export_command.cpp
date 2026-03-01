@@ -153,7 +153,7 @@ bool ExportCommand::validateInputFile(const std::string& filepath) {
     }
 }
 
-std::optional<truss::infrastructure::export_::ExportFormat>
+std::optional<truss::ExportFormat>
 ExportCommand::parseExportFormat(const std::string& formatStr) {
     using namespace truss::infrastructure::export_;
 
@@ -180,7 +180,7 @@ ExportCommand::parseExportFormat(const std::string& formatStr) {
     return std::nullopt;
 }
 
-truss::infrastructure::export_::ExportFormat
+truss::ExportFormat
 ExportCommand::getDefaultExportFormat(const std::string& filepath) {
     using namespace truss::infrastructure::export_;
 
