@@ -34,14 +34,12 @@ namespace {
  */
 class FacadeTrussServiceAdapterTest : public ::testing::Test {
 protected:
-    MockTrussAnalysisFacade mockFacade;
-    std::unique_ptr<FacadeTrussServiceAdapter> adapter;
+    truss::test::MockTrussAnalysisFacade mockFacade;
+    std::unique_ptr<truss::interface::FacadeTrussServiceAdapter> adapter;
 
     void SetUp() override {
-        // Create adapter with mock facade
-        // Note: We cast to reference to satisfy constructor
-        adapter = std::make_unique<FacadeTrussServiceAdapter>(
-            *reinterpret_cast<TrussAnalysisFacade*>(&mockFacade));
+        // Safe injection of mock via interface
+        adapter = std::make_unique<truss::interface::FacadeTrussServiceAdapter>(mockFacade);
     }
 };
 
