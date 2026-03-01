@@ -345,9 +345,9 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterGetResultsViewWorks) {
     // Act
     const auto& resultsView = analysisAdapter->getResultsView(resultsHandle);
 
-    // Assert - verify we can access results
-    EXPECT_GT(resultsView.getDisplacements().size(), 0u);
-    EXPECT_GT(resultsView.getMemberForces().size(), 0u);
+    // Assert - the test truss has 3 nodes (6 DOFs) and 3 members.
+    EXPECT_EQ(resultsView.getDisplacements().size(), 6u);  // 3 nodes × 2 DOFs
+    EXPECT_EQ(resultsView.getMemberForces().size(), 3u);    // 3 members
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterExportResultsWorks) {
