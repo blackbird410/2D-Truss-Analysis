@@ -13,12 +13,12 @@
  * 5. Optionally export results to file
  *
  * Architecture: CLI Layer (Command Pattern)
- * Dependencies: Interface Layer (TrussAnalysisFacade)
+ * Dependencies: Interface Layer (ITrussAnalysisFacade)
  */
 
 #pragma once
 
-#include "../../interface/truss_analysis_facade.hpp"
+#include "../../interface/itruss_analysis_facade.hpp"
 #include "../presenters/console_presenter.hpp"
 #include "icommand.hpp"
 
@@ -44,7 +44,7 @@ namespace truss::cli::commands {
  */
 class AnalyzeCommand : public ICommand {
 private:
-    truss::interface::TrussAnalysisFacade& m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;
     truss::cli::presenters::ConsolePresenter& m_presenter;
 
     std::string m_inputFile;
@@ -63,7 +63,7 @@ public:
      * @param exportFormat Optional export format (defaults to JSON)
      * @param verbose Enable verbose output
      */
-    AnalyzeCommand(truss::interface::TrussAnalysisFacade& facade,
+    AnalyzeCommand(truss::interface::ITrussAnalysisFacade& facade,
                    truss::cli::presenters::ConsolePresenter& presenter,
                    const std::string& inputFile,
                    const std::optional<std::string>& outputFile = std::nullopt,

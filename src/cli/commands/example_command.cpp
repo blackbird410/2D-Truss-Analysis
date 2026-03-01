@@ -7,7 +7,7 @@
  *
  * REFACTORING NOTE:
  * - Now uses TrussBuilder fluent API for truss construction
- * - Uses TrussAnalysisFacade for analysis orchestration
+ * - Uses ITrussAnalysisFacade for analysis orchestration
  * - Eliminates direct core/model/truss.hpp dependency
  * - Demonstrates best practices for Interface layer usage
  */
@@ -16,7 +16,7 @@
 
 namespace truss::cli::commands {
 
-ExampleCommand::ExampleCommand(truss::interface::TrussAnalysisFacade& facade,
+ExampleCommand::ExampleCommand(truss::interface::ITrussAnalysisFacade& facade,
                                truss::cli::presenters::ConsolePresenter& presenter,
                                bool verbose)
     : m_facade(facade), m_presenter(presenter), m_verbose(verbose) {}

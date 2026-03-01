@@ -9,12 +9,12 @@
  * performing structural analysis. Useful for quick structure checks.
  *
  * Architecture: CLI Layer (Command Pattern)
- * Dependencies: Interface Layer (TrussAnalysisFacade)
+ * Dependencies: Interface Layer (ITrussAnalysisFacade)
  */
 
 #pragma once
 
-#include "../../interface/truss_analysis_facade.hpp"
+#include "../../interface/itruss_analysis_facade.hpp"
 #include "../presenters/console_presenter.hpp"
 #include "icommand.hpp"
 
@@ -47,7 +47,7 @@ namespace truss::cli::commands {
  */
 class ValidateCommand : public ICommand {
 private:
-    truss::interface::TrussAnalysisFacade& m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;
     truss::cli::presenters::ConsolePresenter& m_presenter;
 
     std::string m_inputFile;
@@ -62,7 +62,7 @@ public:
      * @param inputFile Path to input truss file
      * @param verbose Enable verbose output
      */
-    ValidateCommand(truss::interface::TrussAnalysisFacade& facade,
+    ValidateCommand(truss::interface::ITrussAnalysisFacade& facade,
                     truss::cli::presenters::ConsolePresenter& presenter,
                     const std::string& inputFile,
                     bool verbose = false);
