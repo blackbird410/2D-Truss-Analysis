@@ -23,6 +23,37 @@
 namespace truss::interface {
 
 /**
+ * @brief Result of a complete analysis workflow
+ *
+ * Encapsulates all handles needed to access analysis results,
+ * providing a unified return type for facade workflow methods.
+ * Defined here (on the interface) so that all consumers of
+ * ITrussAnalysisFacade can use the type without depending on the
+ * concrete TrussAnalysisFacade header.
+ */
+struct AnalysisWorkflowResult {
+    bool success{false};
+    std::string errorMessage;
+
+    // Resource handles (valid only if success == true)
+    application::TrussHandle trussHandle{0};
+    application::ResultsHandle resultsHandle{0};
+
+    // Convenience methods
+    explicit operator bool() const noexcept { return success; }
+    bool isValid() const noexcept { return success; }
+
+    static AnalysisWorkflowResult Success(application::TrussHandle th,
+                                          application::ResultsHandle rh) {
+        return {true, "", th, rh};
+    }
+
+    static AnalysisWorkflowResult Failure(const std::string& error) {
+        return {false, error, 0, 0};
+    }
+};
+
+/**
  * @brief Combined interface for truss and analysis services
  *
  * This interface combines ITrussService and IAnalysisService into a single

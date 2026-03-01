@@ -50,31 +50,8 @@ namespace truss::interface {
 class FacadeTrussServiceAdapter;
 class FacadeAnalysisServiceAdapter;
 
-/**
- * @brief Result of a complete analysis workflow
- *
- * Encapsulates all handles needed to access analysis results,
- * providing a unified return type for facade methods.
- */
-struct AnalysisWorkflowResult {
-    bool success{false};
-    std::string errorMessage;
-
-    // Resource handles (valid only if success == true)
-    application::TrussHandle trussHandle{0};
-    application::ResultsHandle resultsHandle{0};
-
-    // Convenience methods
-    explicit operator bool() const noexcept { return success; }
-    bool isValid() const noexcept { return success; }
-
-    static AnalysisWorkflowResult Success(application::TrussHandle th,
-                                          application::ResultsHandle rh) {
-        return {true, "", th, rh};
-    }
-
-    static AnalysisWorkflowResult Failure(const std::string& error) { return {false, error, 0, 0}; }
-};
+// AnalysisWorkflowResult is defined in itruss_analysis_facade.hpp and
+// is available here via the #include of that header above.
 
 /**
  * @brief Unified facade for truss analysis workflows
