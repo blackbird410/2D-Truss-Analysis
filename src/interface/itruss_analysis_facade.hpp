@@ -22,6 +22,10 @@
 
 namespace truss::interface {
 
+// Forward declaration: TrussBuilder is defined in truss_builder.hpp.
+// Consumers that construct a TrussBuilder must include that header themselves.
+class TrussBuilder;
+
 /**
  * @brief Result of a complete analysis workflow
  *

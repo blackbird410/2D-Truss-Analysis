@@ -17,6 +17,7 @@
 #include "application/interfaces/itruss_service.hpp"
 #include "application/result.hpp"
 #include "interface/itruss_analysis_facade.hpp"
+#include "interface/truss_builder.hpp"
 
 #include <filesystem>
 #include <gmock/gmock.h>
