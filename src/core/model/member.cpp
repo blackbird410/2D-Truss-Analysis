@@ -54,7 +54,7 @@ Real Member::getAngle() const {
 }
 
 Real Member::getAngleDegrees() const {
-    return Utils::radiansToDegrees(getAngle());
+    return truss::utils::math::radiansToDegrees(getAngle());
 }
 
 Vector2d Member::getUnitVector() const {
@@ -117,11 +117,11 @@ std::shared_ptr<Node> Member::getOtherNode(NodeId nodeId) const {
 }
 
 bool Member::isVertical(Real tolerance) const {
-    return Utils::isZero(getDirection().x(), tolerance);
+    return truss::utils::math::isZero(getDirection().x(), tolerance);
 }
 
 bool Member::isHorizontal(Real tolerance) const {
-    return Utils::isZero(getDirection().y(), tolerance);
+    return truss::utils::math::isZero(getDirection().y(), tolerance);
 }
 
 bool Member::isParallelTo(const Member& other, Real tolerance) const {
@@ -129,11 +129,11 @@ bool Member::isParallelTo(const Member& other, Real tolerance) const {
     Vector2d dir1 = getDirection();
     Vector2d dir2 = other.getDirection();
     Real crossProduct = dir1.x() * dir2.y() - dir1.y() * dir2.x();
-    return Utils::isZero(crossProduct, tolerance);
+    return truss::utils::math::isZero(crossProduct, tolerance);
 }
 
 bool Member::isPerpendicularTo(const Member& other, Real tolerance) const {
-    return Utils::isZero(getDirection().dot(other.getDirection()), tolerance);
+    return truss::utils::math::isZero(getDirection().dot(other.getDirection()), tolerance);
 }
 
 bool Member::isValid() const {
@@ -141,7 +141,7 @@ bool Member::isValid() const {
 }
 
 bool Member::hasZeroLength(Real tolerance) const {
-    return Utils::isZero(getLength(), tolerance);
+    return truss::utils::math::isZero(getLength(), tolerance);
 }
 
 Matrix2d Member::getTransformationMatrix() const {
@@ -180,7 +180,7 @@ bool Member::intersectsWith(const Member& other, Real tolerance) const {
     Vector2d dir2 = other.getDirection();
     Real crossProduct = dir1.x() * dir2.y() - dir1.y() * dir2.x();
 
-    if (Utils::isZero(crossProduct, tolerance)) {
+    if (truss::utils::math::isZero(crossProduct, tolerance)) {
         // Lines are parallel or collinear
         return false;
     }
@@ -194,7 +194,7 @@ bool Member::intersectsWith(const Member& other, Real tolerance) const {
     Real dy12 = p1.y - p2.y;
 
     Real denom = dx1 * dy2 - dy1 * dx2;
-    if (Utils::isZero(denom, tolerance)) {
+    if (truss::utils::math::isZero(denom, tolerance)) {
         return false;
     }
 
@@ -221,7 +221,7 @@ Point2D Member::getIntersectionPoint(const Member& other) const {
     Real dy12 = p1.y - p2.y;
 
     Real denom = dx1 * dy2 - dy1 * dx2;
-    if (Utils::isZero(denom)) {
+    if (truss::utils::math::isZero(denom)) {
         // Lines are parallel or collinear - no unique intersection
         throw std::runtime_error(
             "Cannot calculate intersection point: lines are parallel or collinear");

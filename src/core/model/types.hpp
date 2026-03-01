@@ -14,6 +14,8 @@
 #include <memory>
 #include <vector>
 
+#include "utilities/math_utils.hpp"
+
 namespace truss::core {
 
 // Type aliases for better readability
@@ -154,46 +156,5 @@ constexpr Real DISPLACEMENT_TOLERANCE = 1e-9;
 constexpr Real DEFAULT_YOUNG_MODULUS = 200e9;  // Steel (Pa)
 constexpr Real DEFAULT_AREA = 1e-4;            // 1 cm² (m²)
 }  // namespace Constants
-
-/**
- * @brief Utility functions for numerical operations
- */
-namespace Utils {
-
-/**
- * @brief Check if a value is essentially zero
- */
-inline bool isZero(Real value, Real tolerance = Constants::ZERO_TOLERANCE) {
-    return std::abs(value) < tolerance;
-}
-
-/**
- * @brief Check if two values are approximately equal
- */
-inline bool isEqual(Real a, Real b, Real tolerance = Constants::ZERO_TOLERANCE) {
-    return std::abs(a - b) < tolerance;
-}
-
-/**
- * @brief Clamp a value between min and max
- */
-inline Real clamp(Real value, Real min_val, Real max_val) {
-    return std::max(min_val, std::min(value, max_val));
-}
-
-/**
- * @brief Convert degrees to radians
- */
-[[maybe_unused]] inline Real degreesToRadians(Real degrees) {
-    return degrees * M_PI / 180.0;
-}
-
-/**
- * @brief Convert radians to degrees
- */
-inline Real radiansToDegrees(Real radians) {
-    return radians * 180.0 / M_PI;
-}
-}  // namespace Utils
 
 }  // namespace truss::core
