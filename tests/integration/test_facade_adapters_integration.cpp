@@ -74,14 +74,22 @@ protected:
 
     /**
      * @brief Create a simple valid truss JSON file for testing
+     * 
+     * Creates a statically determinate triangular truss:
+     * - Node 1 (0, 0): Pinned support (Fx, Fy constraints)
+     * - Node 2 (4, 0): Roller support (Fy constraint)
+     * - Node 3 (2, 3): Free node with downward load
+     * 
+     * Members: 1-3, 2-3, 1-2 (3 members for 3 nodes = statically determinate)
+     * Reactions: 3 (Fx at 1, Fy at 1, Fy at 2) = matches 3 load conditions
      */
     void createTestJsonFile() {
         std::ofstream file(testJsonFile);
         file << R"({
   "name": "Simple Test Truss",
   "nodes": [
-    {"id": 1, "x": 0.0, "y": 0.0, "support": "Fixed"},
-    {"id": 2, "x": 4.0, "y": 0.0, "support": "Roller"},
+    {"id": 1, "x": 0.0, "y": 0.0, "support": "Pinned"},
+    {"id": 2, "x": 4.0, "y": 0.0, "support": "RollerX"},
     {"id": 3, "x": 2.0, "y": 3.0, "support": "Free"}
   ],
   "members": [
@@ -90,9 +98,7 @@ protected:
       "startNode": 1,
       "endNode": 3,
       "material": {
-        "youngModulus": 200e9,
-        "poissonRatio": 0.3,
-        "density": 7850.0
+        "youngModulus": 200e9
       },
       "section": {
         "area": 0.01
@@ -103,9 +109,18 @@ protected:
       "startNode": 2,
       "endNode": 3,
       "material": {
-        "youngModulus": 200e9,
-        "poissonRatio": 0.3,
-        "density": 7850.0
+        "youngModulus": 200e9
+      },
+      "section": {
+        "area": 0.01
+      }
+    },
+    {
+      "id": 3,
+      "startNode": 1,
+      "endNode": 2,
+      "material": {
+        "youngModulus": 200e9
       },
       "section": {
         "area": 0.01
