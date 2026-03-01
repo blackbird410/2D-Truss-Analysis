@@ -1,3 +1,11 @@
+/**
+ * @file support_type_serializer.cpp
+ * @brief Parses and serializes SupportType string tokens for JSON and XML I/O.
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
+ */
+
 #include "infrastructure/io/support_type_serializer.hpp"
 
 #include "infrastructure/io/io_types.hpp"

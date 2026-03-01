@@ -1,6 +1,9 @@
 /**
  * @file test_support_type_serializer.cpp
  * @brief Unit tests for parseSupportType() and supportTypeToString().
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
  */
 
 #include "infrastructure/io/io_types.hpp"

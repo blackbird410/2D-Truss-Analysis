@@ -1,6 +1,9 @@
 /**
  * @file test_math_utils.cpp
  * @brief Unit tests for truss::utils::math utility functions.
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
  */
 
 #include "utilities/math_utils.hpp"

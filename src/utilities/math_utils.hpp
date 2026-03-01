@@ -1,10 +1,9 @@
 /**
  * @file math_utils.hpp
  * @brief Pure mathematical utility functions with no project dependencies.
- *
- * This header is intentionally dependency-free: it only includes standard
- * library headers so it can be safely used by any layer without introducing
- * coupling.
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
  */
 #pragma once
 

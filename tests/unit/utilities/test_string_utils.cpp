@@ -1,6 +1,9 @@
 /**
  * @file test_string_utils.cpp
  * @brief Unit tests for truss::utils::string utility functions.
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
  */
 
 #include "utilities/string_utils.hpp"

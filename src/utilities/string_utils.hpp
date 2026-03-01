@@ -1,9 +1,9 @@
 /**
  * @file string_utils.hpp
  * @brief String formatting and escaping utilities with no project dependencies.
- *
- * All functions in this header depend only on the C++ standard library so any
- * layer can safely include it.
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
  */
 #pragma once
 

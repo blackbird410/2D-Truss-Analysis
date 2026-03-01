@@ -1,3 +1,11 @@
+/**
+ * @file string_utils.cpp
+ * @brief Formats numeric values and escapes strings for JSON, XML, HTML, and LaTeX output.
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
+ */
+
 #include "utilities/string_utils.hpp"
 
 #include <algorithm>

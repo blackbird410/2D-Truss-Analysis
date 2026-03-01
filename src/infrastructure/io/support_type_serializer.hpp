@@ -1,10 +1,9 @@
 /**
  * @file support_type_serializer.hpp
- * @brief Conversion helpers between core::SupportType and its string
- * representation used in JSON/XML files.
- *
- * Centralises logic that was previously duplicated in each reader and writer,
- * so a single place is updated when a new SupportType value is added.
+ * @brief Serializes and deserializes SupportType values to and from string.
+ * @version 3.0.0
+ * @date 2026-03-01
+ * @author Neil Taison Rigaud
  */
 #pragma once
 
