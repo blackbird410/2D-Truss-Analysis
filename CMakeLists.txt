@@ -390,6 +390,7 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/logging/test_logger_advanced.cpp
         tests/unit/infrastructure/io/test_fileio.cpp
         tests/unit/infrastructure/io/test_fileio_advanced.cpp
+        tests/unit/infrastructure/io/test_support_type_serializer.cpp
         tests/unit/infrastructure/adapters/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
