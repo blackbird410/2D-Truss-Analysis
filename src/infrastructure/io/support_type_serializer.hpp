@@ -11,21 +11,30 @@
 
 #include <string>
 
+/**
+ * @brief Serialization helpers for @c core::SupportType within the I/O layer.
+ */
 namespace truss::infrastructure::io {
 
 /**
- * @brief Parses a string token (e.g. "pinned", "roller_x") into a
- * core::SupportType.
+ * @brief Parses a string token into the corresponding @c core::SupportType.
  *
- * @throws ParseException if the token is not recognised.
+ * Recognised tokens (case-sensitive): `"free"`, `"pinned"`, `"roller_x"`,
+ * `"roller_y"`, and their legacy capitalised variants.
+ *
+ * @param  str  Token read from a JSON or XML file.
+ * @return Corresponding @c core::SupportType value.
+ * @throws ParseException if @p str is not a recognised token.
  */
 [[nodiscard]] core::SupportType parseSupportType(const std::string& str);
 
 /**
- * @brief Converts a core::SupportType value to its canonical string token.
+ * @brief Converts a @c core::SupportType value to its canonical string token.
  *
- * The returned token round-trips through parseSupportType.  Unknown values
- * fall back to "free".
+ * @param  type  Support type to convert.
+ * @return Canonical lowercase token (`"free"`, `"pinned"`, `"roller_x"`, or `"roller_y"`).
+ * @note   The returned token round-trips through parseSupportType().
+ *         Unrecognised enum values fall back to `"free"`.
  */
 [[nodiscard]] std::string supportTypeToString(core::SupportType type);
 
