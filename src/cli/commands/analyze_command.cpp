@@ -24,8 +24,6 @@ AnalyzeCommand::AnalyzeCommand(truss::interface::TrussAnalysisFacade& facade,
       m_exportFormat(exportFormat), m_verbose(verbose) {}
 
 int AnalyzeCommand::execute() {
-    using namespace truss::infrastructure::export_;
-
     m_presenter.displayHeader();
     m_presenter.displayInfo("Analyzing truss structure from file...\n");
 
@@ -133,7 +131,7 @@ bool AnalyzeCommand::validateInputFile() const {
     }
 }
 
-std::optional<truss::infrastructure::export_::ExportFormat>
+std::optional<truss::ExportFormat>
 AnalyzeCommand::parseExportFormat(const std::string& formatStr) {
     using namespace truss::infrastructure::export_;
 
@@ -160,7 +158,7 @@ AnalyzeCommand::parseExportFormat(const std::string& formatStr) {
     return std::nullopt;
 }
 
-truss::infrastructure::export_::ExportFormat
+truss::ExportFormat
 AnalyzeCommand::getDefaultExportFormat(const std::string& filepath) {
     using namespace truss::infrastructure::export_;
 

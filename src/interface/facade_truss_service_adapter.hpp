@@ -12,13 +12,15 @@
  * - Clean separation of concerns
  */
 
-#pragma once
 
+#pragma once
 #include "application/interfaces/itruss_service.hpp"
+#include "truss/analysis/analysis_options.hpp"
+#include "interface/itruss_analysis_facade.hpp"
 
 namespace truss::interface {
 
-class TrussAnalysisFacade;
+class ITrussAnalysisFacade;
 
 /**
  * @brief ITrussService adapter for TrussAnalysisFacade
@@ -35,7 +37,7 @@ class TrussAnalysisFacade;
  */
 class FacadeTrussServiceAdapter final : public application::ITrussService {
 public:
-    explicit FacadeTrussServiceAdapter(TrussAnalysisFacade& facade);
+    explicit FacadeTrussServiceAdapter(truss::interface::ITrussAnalysisFacade& facade);
 
     application::Result<application::TrussHandle> createTruss(const std::string& name) override;
     application::Result<application::TrussHandle>
@@ -45,7 +47,7 @@ public:
                                         bool overwrite = false) override;
     bool clearTruss(application::TrussHandle handle) override;
     void clearAll() override;
-    bool isValidHandle(application::TrussHandle handle) const override;
+    bool isValidTrussHandle(application::TrussHandle handle) const override;
 
     const core::interfaces::ITrussView&
     getTrussView(application::TrussHandle handle) const override;
@@ -82,7 +84,7 @@ public:
                                             core::NodeId nodeId) override;
 
 private:
-    TrussAnalysisFacade& m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;
 };
 
 }  // namespace truss::interface

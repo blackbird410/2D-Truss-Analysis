@@ -110,7 +110,7 @@ Result<bool> TrussApplicationService::saveTruss(TrussHandle handle,
                                                 bool overwrite) {
     try {
         // Validate handle
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<bool>::Failure("Invalid truss handle");
         }
 
@@ -148,7 +148,7 @@ Result<bool> TrussApplicationService::saveTruss(TrussHandle handle,
 
 Result<validation::ValidationResult> TrussApplicationService::validateTruss(TrussHandle handle) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<validation::ValidationResult>::Failure("Invalid truss handle");
         }
 
@@ -164,14 +164,14 @@ Result<validation::ValidationResult> TrussApplicationService::validateTruss(Trus
 
 const core::interfaces::ITrussView&
 TrussApplicationService::getTrussView(TrussHandle handle) const {
-    if (!isValidHandle(handle)) {
+    if (!isValidTrussHandle(handle)) {
         throw std::invalid_argument("Invalid truss handle: " + std::to_string(handle));
     }
     return *m_trusses.at(handle);
 }
 
 core::Truss& TrussApplicationService::getTrussMutable(TrussHandle handle) {
-    if (!isValidHandle(handle)) {
+    if (!isValidTrussHandle(handle)) {
         throw std::invalid_argument("Invalid truss handle: " + std::to_string(handle));
     }
     return *m_trusses.at(handle);
@@ -187,7 +187,7 @@ void TrussApplicationService::clearAll() {
     m_modifiedFlags.clear();
 }
 
-bool TrussApplicationService::isValidHandle(TrussHandle handle) const {
+bool TrussApplicationService::isValidTrussHandle(TrussHandle handle) const {
     return m_trusses.find(handle) != m_trusses.end();
 }
 
@@ -199,7 +199,7 @@ Result<NodeId> TrussApplicationService::addNode(TrussHandle handle,
                                                 const Point2D& position,
                                                 SupportType supportType) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<NodeId>::Failure("Invalid truss handle");
         }
 
@@ -220,7 +220,7 @@ Result<MemberId> TrussApplicationService::addMember(TrussHandle handle,
                                                     const MaterialSpec& materialSpec,
                                                     const SectionSpec& sectionSpec) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<MemberId>::Failure("Invalid truss handle");
         }
 
@@ -253,7 +253,7 @@ Result<MemberId> TrussApplicationService::addMember(TrussHandle handle,
 
 Result<bool> TrussApplicationService::removeNode(TrussHandle handle, NodeId nodeId) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<bool>::Failure("Invalid truss handle");
         }
 
@@ -274,7 +274,7 @@ Result<bool> TrussApplicationService::removeNode(TrussHandle handle, NodeId node
 
 Result<bool> TrussApplicationService::removeMember(TrussHandle handle, MemberId memberId) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<bool>::Failure("Invalid truss handle");
         }
 
@@ -297,7 +297,7 @@ Result<bool> TrussApplicationService::setNodeSupport(TrussHandle handle,
                                                      NodeId nodeId,
                                                      SupportType supportType) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<bool>::Failure("Invalid truss handle");
         }
 
@@ -314,7 +314,7 @@ Result<bool> TrussApplicationService::setNodeSupport(TrussHandle handle,
 Result<bool>
 TrussApplicationService::applyNodeLoad(TrussHandle handle, NodeId nodeId, const Force2D& force) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<bool>::Failure("Invalid truss handle");
         }
 
@@ -330,7 +330,7 @@ TrussApplicationService::applyNodeLoad(TrussHandle handle, NodeId nodeId, const 
 
 Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId nodeId) {
     try {
-        if (!isValidHandle(handle)) {
+        if (!isValidTrussHandle(handle)) {
             return Result<bool>::Failure("Invalid truss handle");
         }
 
@@ -351,7 +351,7 @@ Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId n
 }
 
 [[maybe_unused]] bool TrussApplicationService::hasUnsavedChanges(TrussHandle handle) const {
-    if (!isValidHandle(handle)) {
+    if (!isValidTrussHandle(handle)) {
         return false;
     }
     auto it = m_modifiedFlags.find(handle);
@@ -359,7 +359,7 @@ Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId n
 }
 
 void TrussApplicationService::markAsSaved(TrussHandle handle) {
-    if (isValidHandle(handle)) {
+    if (isValidTrussHandle(handle)) {
         m_modifiedFlags[handle] = false;
     }
 }

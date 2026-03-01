@@ -10,6 +10,7 @@
 #include "core/analysis/solver_factory.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/json_exporter.hpp"
+#include "truss/export/export_format.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -555,7 +556,7 @@ TEST_F(JSONExporterTest, InvalidFilePath) {
  * @brief Test getFormat() method
  */
 TEST_F(JSONExporterTest, GetFormat) {
-    EXPECT_EQ(exporter->getFormat(), ExportFormat::JSON);
+    EXPECT_EQ(exporter->getFormat(), truss::ExportFormat::JSON);
 }
 
 /**

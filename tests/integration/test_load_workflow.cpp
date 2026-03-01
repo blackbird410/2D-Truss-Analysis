@@ -99,7 +99,7 @@ TEST_F(LoadWorkflowTest, LoadProjectReconstructsDomain) {
     TrussHandle handle = result.value;
 
     // Verify truss exists and has correct structure
-    EXPECT_TRUE(service->isValidHandle(handle));
+    EXPECT_TRUE(service->isValidTrussHandle(handle));
 
     // Get view to verify nodes and members
     const auto& view = service->getTrussView(handle);
@@ -150,8 +150,8 @@ TEST_F(LoadWorkflowTest, MultipleLoadsCreateUniqueHandles) {
     EXPECT_NE(result1.value, result2.value) << "Handles should be unique";
 
     // Both should be valid
-    EXPECT_TRUE(service->isValidHandle(result1.value));
-    EXPECT_TRUE(service->isValidHandle(result2.value));
+    EXPECT_TRUE(service->isValidTrussHandle(result1.value));
+    EXPECT_TRUE(service->isValidTrussHandle(result2.value));
 
     // Both should have correct data
     const auto& view1 = service->getTrussView(result1.value);

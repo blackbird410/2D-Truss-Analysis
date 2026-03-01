@@ -7,11 +7,12 @@
  */
 
 #include "facade_analysis_service_adapter.hpp"
+#include "truss/analysis/analysis_options.hpp"
 #include "truss_analysis_facade.hpp"
 
 namespace truss::interface {
 
-FacadeAnalysisServiceAdapter::FacadeAnalysisServiceAdapter(TrussAnalysisFacade& facade)
+FacadeAnalysisServiceAdapter::FacadeAnalysisServiceAdapter(ITrussAnalysisFacade& facade)
     : m_facade(facade) {}
 
 application::Result<application::ResultsHandle>
@@ -27,7 +28,7 @@ FacadeAnalysisServiceAdapter::getResultsView(application::ResultsHandle handle) 
 
 application::Result<bool>
 FacadeAnalysisServiceAdapter::exportResults(application::ResultsHandle handle,
-                                            infrastructure::export_::ExportFormat format,
+                                            truss::ExportFormat format,
                                             const std::filesystem::path& filepath,
                                             const core::Truss& truss,
                                             const infrastructure::export_::ExportOptions& options) {
@@ -50,7 +51,7 @@ void FacadeAnalysisServiceAdapter::clearAll() {
     m_facade.clearAll();
 }
 
-bool FacadeAnalysisServiceAdapter::isValidHandle(application::ResultsHandle handle) const {
+bool FacadeAnalysisServiceAdapter::isValidResultsHandle(application::ResultsHandle handle) const {
     return m_facade.isValidResultsHandle(handle);
 }
 
