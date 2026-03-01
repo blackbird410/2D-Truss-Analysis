@@ -10,6 +10,7 @@
 #include "core/analysis/solver_factory.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/csv_exporter.hpp"
+#include "truss/export/export_format.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -305,7 +306,7 @@ TEST_F(CSVExporterTest, InvalidFilePath) {
  * @brief Test getFormat() method
  */
 TEST_F(CSVExporterTest, GetFormat) {
-    EXPECT_EQ(exporter->getFormat(), ExportFormat::CSV);
+    EXPECT_EQ(exporter->getFormat(), truss::ExportFormat::CSV);
 }
 
 /**

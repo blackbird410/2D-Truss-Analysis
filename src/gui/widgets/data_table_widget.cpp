@@ -18,12 +18,10 @@
 #include <algorithm>
 
 using namespace truss::application;
-using namespace truss::infrastructure;
 
 namespace truss::gui {
 
-DataTableWidget::DataTableWidget(application::TrussApplicationService& trussService,
-                                 QWidget* parent)
+DataTableWidget::DataTableWidget(application::ITrussService& trussService, QWidget* parent)
     : QWidget(parent), m_trussService(trussService), m_currentTrussHandle(0),
       m_nodesTable(new QTableWidget(this)), m_membersTable(new QTableWidget(this)),
       m_loadsTable(new QTableWidget(this)) {

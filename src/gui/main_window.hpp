@@ -7,8 +7,8 @@
 
 #pragma once
 
-#include "application/analysis_application_service.hpp"
-#include "application/truss_application_service.hpp"
+#include "application/interfaces/ianalysis_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
 #include "gui/controllers/analysis_controller.hpp"
 #include "gui/controllers/project_controller.hpp"
 #include "gui/controllers/truss_edit_controller.hpp"
@@ -72,8 +72,8 @@ public:
      * @param validationPresenter Presenter for validation messages
      * @param parent Qt parent widget
      */
-    explicit MainWindow(application::TrussApplicationService& trussService,
-                        application::AnalysisApplicationService& analysisService,
+    explicit MainWindow(application::ITrussService& trussService,
+                        application::IAnalysisService& analysisService,
                         truss_controllers::AnalysisController& analysisController,
                         truss_controllers::ProjectController& projectController,
                         truss_controllers::TrussEditController& trussEditController,
@@ -170,8 +170,8 @@ private:
     QLabel* m_coordinateLabel;
 
     // Injected dependencies (references, not owned)
-    application::TrussApplicationService& m_trussService;
-    application::AnalysisApplicationService& m_analysisService;
+    application::ITrussService& m_trussService;
+    application::IAnalysisService& m_analysisService;
     truss_controllers::AnalysisController& m_analysisController;
     truss_controllers::ProjectController& m_projectController;
     truss_controllers::TrussEditController& m_trussEditController;

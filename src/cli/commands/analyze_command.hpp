@@ -13,13 +13,12 @@
  * 5. Optionally export results to file
  *
  * Architecture: CLI Layer (Command Pattern)
- * Dependencies: Application services (TrussApplicationService, AnalysisApplicationService)
+ * Dependencies: Interface Layer (TrussAnalysisFacade)
  */
 
 #pragma once
 
-#include "../../application/analysis_application_service.hpp"
-#include "../../application/truss_application_service.hpp"
+#include "../../interface/truss_analysis_facade.hpp"
 #include "../presenters/console_presenter.hpp"
 #include "icommand.hpp"
 
@@ -45,8 +44,7 @@ namespace truss::cli::commands {
  */
 class AnalyzeCommand : public ICommand {
 private:
-    truss::application::TrussApplicationService& m_trussService;
-    truss::application::AnalysisApplicationService& m_analysisService;
+    truss::interface::TrussAnalysisFacade& m_facade;
     truss::cli::presenters::ConsolePresenter& m_presenter;
 
     std::string m_inputFile;
@@ -58,16 +56,14 @@ public:
     /**
      * @brief Construct AnalyzeCommand with dependencies
      *
-     * @param trussService Application service for truss operations
-     * @param analysisService Application service for analysis operations
+     * @param facade Interface facade for all analysis operations
      * @param presenter Console presenter for output formatting
      * @param inputFile Path to input truss file
      * @param outputFile Optional output file path for results export
      * @param exportFormat Optional export format (defaults to JSON)
      * @param verbose Enable verbose output
      */
-    AnalyzeCommand(truss::application::TrussApplicationService& trussService,
-                   truss::application::AnalysisApplicationService& analysisService,
+    AnalyzeCommand(truss::interface::TrussAnalysisFacade& facade,
                    truss::cli::presenters::ConsolePresenter& presenter,
                    const std::string& inputFile,
                    const std::optional<std::string>& outputFile = std::nullopt,
@@ -109,7 +105,7 @@ private:
      * @param formatStr Format string (case-insensitive)
      * @return Export format enum value, or nullopt if invalid
      */
-    static std::optional<truss::infrastructure::export_::ExportFormat>
+    static std::optional<truss::ExportFormat>
     parseExportFormat(const std::string& formatStr);
 
     /**
@@ -118,7 +114,7 @@ private:
      * @param filepath Output file path
      * @return Export format enum value
      */
-    static truss::infrastructure::export_::ExportFormat
+    static truss::ExportFormat
     getDefaultExportFormat(const std::string& filepath);
 };
 

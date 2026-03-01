@@ -50,7 +50,7 @@ public:
                                    bool overwrite = false) = 0;
     virtual bool clearTruss(TrussHandle handle) = 0;
     virtual void clearAll() = 0;
-    virtual bool isValidHandle(TrussHandle handle) const = 0;
+    virtual bool isValidTrussHandle(TrussHandle handle) const = 0;
 
     // View access
     virtual const core::interfaces::ITrussView& getTrussView(TrussHandle handle) const = 0;

@@ -20,8 +20,8 @@
 
 namespace truss::gui {
 
-ResultsWidget::ResultsWidget(application::TrussApplicationService& trussService,
-                             application::AnalysisApplicationService& analysisService,
+ResultsWidget::ResultsWidget(application::ITrussService& trussService,
+                             application::IAnalysisService& analysisService,
                              QWidget* parent)
     : QWidget(parent), m_trussService(trussService), m_analysisService(analysisService),
       m_currentTrussHandle(0), m_displacementsTable(new QTableWidget(this)),

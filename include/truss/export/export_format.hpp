@@ -19,11 +19,12 @@ class AnalysisResults;
  */
 enum class ExportFormat {
     CSV,    ///< Comma-separated values
+    TSV,    ///< Tab-separated values
     JSON,   ///< JSON format
     XML,    ///< XML format
     HTML,   ///< HTML report
-    LaTeX,  ///< LaTeX for academic papers
-    Text    ///< Plain text
+    TXT,    ///< Plain text
+    LaTeX   ///< LaTeX for academic papers
 };
 
 /**

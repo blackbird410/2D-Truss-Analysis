@@ -29,14 +29,14 @@
 
 #pragma once
 
+#include "../application/truss_edit_dtos.hpp"
 #include "../core/model/truss.hpp"
 #include "../core/model/types.hpp"
-#include "../application/truss_edit_dtos.hpp"
 
 #include <memory>
+#include <stdexcept>
 #include <string>
 #include <vector>
-#include <stdexcept>
 
 namespace truss::interface {
 
@@ -89,8 +89,7 @@ public:
      *
      * Node IDs are automatically assigned sequentially starting from 1.
      */
-    TrussBuilder& addNode(double x, double y, 
-                          core::SupportType support = core::SupportType::Free);
+    TrussBuilder& addNode(double x, double y, core::SupportType support = core::SupportType::Free);
 
     /**
      * @brief Add a member connecting two nodes
@@ -113,8 +112,7 @@ public:
      * @return Reference to this builder (for chaining)
      * @throws std::invalid_argument if node IDs are invalid
      */
-    TrussBuilder& addMember(core::NodeId startNodeId,
-                            core::NodeId endNodeId);
+    TrussBuilder& addMember(core::NodeId startNodeId, core::NodeId endNodeId);
 
     /**
      * @brief Apply a force to a node

@@ -190,6 +190,8 @@ add_library(TrussCore STATIC
 )
 
 target_include_directories(TrussCore PUBLIC
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/truss
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/core
     ${CMAKE_SOURCE_DIR}/src/core/analysis
@@ -248,11 +250,18 @@ add_library(TrussInterface STATIC
     src/interface/truss_builder.hpp
     src/interface/truss_analysis_facade.cpp
     src/interface/truss_analysis_facade.hpp
+    src/interface/facade_truss_service_adapter.cpp
+    src/interface/facade_truss_service_adapter.hpp
+    src/interface/facade_analysis_service_adapter.cpp
+    src/interface/facade_analysis_service_adapter.hpp
 )
 
 target_include_directories(TrussInterface PUBLIC
     ${CMAKE_SOURCE_DIR}/src
     ${CMAKE_SOURCE_DIR}/src/interface
+    ${CMAKE_SOURCE_DIR}/src/infrastructure/export
+    ${CMAKE_SOURCE_DIR}/include
+    ${CMAKE_SOURCE_DIR}/include/truss
 )
 
 target_link_libraries(TrussInterface PUBLIC
@@ -288,6 +297,7 @@ add_executable(TrussAnalysisCLI
 )
 
 target_link_libraries(TrussAnalysisCLI PRIVATE
+    TrussInterface
     TrussApplication
     TrussCore
 )
@@ -316,8 +326,8 @@ if(BUILD_TESTING)
     # GTest integration validation test
     add_executable(test_gtest_integration tests/test_gtest_integration.cpp)
     target_link_libraries(test_gtest_integration PRIVATE GTest::gtest GTest::gtest_main)
-    add_test(NAME GTestIntegration COMMAND test_gtest_integration)
-    set_tests_properties(GTestIntegration PROPERTIES
+    add_test(NAME gtest_integration COMMAND test_gtest_integration)
+    set_tests_properties(gtest_integration PROPERTIES
         TIMEOUT 10
         LABELS "gtest;integration"
     )
@@ -366,6 +376,8 @@ if(BUILD_TESTING)
         # Interface layer tests (Public API)
         tests/unit/interface/test_truss_builder.cpp
         tests/unit/interface/test_truss_analysis_facade.cpp
+        tests/unit/interface/test_facade_truss_service_adapter.cpp
+        tests/unit/interface/test_facade_analysis_service_adapter.cpp
         # CLI layer tests (Phase 5A & 5B & Phase 6)
         tests/unit/cli/test_console_presenter.cpp
         tests/unit/cli/test_help_command.cpp
@@ -425,8 +437,8 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/tests  # For mocks directory
     )
     
-    add_test(NAME UnitTests COMMAND unit_tests)
-    set_tests_properties(UnitTests PROPERTIES
+    add_test(NAME unit_tests COMMAND unit_tests)
+    set_tests_properties(unit_tests PROPERTIES
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         TIMEOUT 30
         LABELS "unit;gtest"
@@ -441,6 +453,7 @@ if(BUILD_TESTING)
         tests/integration/test_cli_workflows.cpp
         tests/integration/test_lifecycle_integration.cpp
         tests/integration/test_load_workflow.cpp
+        tests/integration/test_facade_adapters_integration.cpp
         # CLI source files needed for integration tests
         ${CLI_SOURCES}
     )
@@ -463,6 +476,7 @@ if(BUILD_TESTING)
     add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
     
     target_link_libraries(integration_tests PRIVATE
+        TrussInterface
         TrussCore
         TrussApplication
         $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
@@ -480,8 +494,8 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
     )
     
-    add_test(NAME IntegrationTests COMMAND integration_tests)
-    set_tests_properties(IntegrationTests PROPERTIES
+    add_test(NAME integration_tests COMMAND integration_tests)
+    set_tests_properties(integration_tests PROPERTIES
         TIMEOUT 60
         LABELS "integration;gtest"
     )
@@ -524,8 +538,8 @@ if(BUILD_GUI)
         ${CMAKE_SOURCE_DIR}/src/application
     )
     
-    add_test(NAME GUIIntegrationTests COMMAND gui_integration_test)
-    set_tests_properties(GUIIntegrationTests PROPERTIES
+    add_test(NAME gui_integration_tests COMMAND gui_integration_test)
+    set_tests_properties(gui_integration_tests PROPERTIES
         TIMEOUT 120
         LABELS "gui;integration;qt"
     )
@@ -576,6 +590,7 @@ if(BUILD_GUI)
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
+    TrussInterface
     TrussApplication
     TrussCore
     Qt6::Core

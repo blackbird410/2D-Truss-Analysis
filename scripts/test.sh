@@ -43,15 +43,15 @@ case "$TEST_TYPE" in
         ;;
     unit)
         echo "Running unit tests..."
-        ctest -R "UnitTests" --output-on-failure
+        ctest -R "unit_tests" --output-on-failure
         ;;
     integration)
         echo "Running integration tests..."
-        ctest -R "IntegrationTests" --output-on-failure
+        ctest -R "integration_tests" --output-on-failure
         ;;
     gui)
         echo "Running GUI integration tests..."
-        ctest -R "GUIIntegrationTests" --output-on-failure
+        ctest -R "gui_integration_tests" --output-on-failure
         ;;
     *)
         echo "Unknown test type: $TEST_TYPE"

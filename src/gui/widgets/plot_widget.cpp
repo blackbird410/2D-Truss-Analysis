@@ -20,7 +20,7 @@
 
 namespace truss::gui {
 
-PlotWidget::PlotWidget(truss::application::TrussApplicationService& trussService, QWidget* parent)
+PlotWidget::PlotWidget(truss::application::ITrussService& trussService, QWidget* parent)
     : QWidget(parent), m_trussService(trussService), m_currentTrussHandle(0), m_showDeformed(false),
       m_showForces(false), m_scaleFactor(1.0), m_minBounds(0.0, 0.0), m_maxBounds(1.0, 1.0) {
     setMinimumSize(400, 300);

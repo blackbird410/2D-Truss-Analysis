@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "application/analysis_application_service.hpp"
+#include "application/interfaces/ianalysis_service.hpp"
 #include "core/interfaces/ianalysis_results_view.hpp"
 #include "core/interfaces/itruss_view.hpp"
 

@@ -18,7 +18,7 @@
 
 namespace truss::gui {
 
-NodeInputWidget::NodeInputWidget(truss::application::TrussApplicationService& trussService,
+NodeInputWidget::NodeInputWidget(truss::application::ITrussService& trussService,
                                  truss_controllers::TrussEditController& editController,
                                  QWidget* parent)
     : QWidget(parent), m_trussService(trussService), m_editController(editController),

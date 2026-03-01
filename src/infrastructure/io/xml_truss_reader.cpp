@@ -319,9 +319,9 @@ void XmlTrussReader::parseSupports(tinyxml2::XMLElement* supportsElement,
             if (restrainedStr) {
                 std::string restrainedString(restrainedStr);
                 bool xRestrained{restrainedString.find('x') != std::string::npos ||
-                                   restrainedString.find('X') != std::string::npos};
+                                 restrainedString.find('X') != std::string::npos};
                 bool yRestrained{restrainedString.find('y') != std::string::npos ||
-                                   restrainedString.find('Y') != std::string::npos};
+                                 restrainedString.find('Y') != std::string::npos};
 
                 // Determine support type based on restraints
                 if (xRestrained && yRestrained) {
