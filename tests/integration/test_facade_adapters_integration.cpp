@@ -322,15 +322,11 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterAnalyzeWorks) {
     core::analysis::AnalysisOptions options;
     auto analyzeResult = analysisAdapter->analyze(truss, options);
 
-    // Assert - with diagnostics
-    if (!analyzeResult.success) {
-        SCOPED_TRACE("Analysis failed with error: " + analyzeResult.errorMessage);
-        SCOPED_TRACE("This may indicate the test truss is incomplete or invalid");
-    } else {
-        application::ResultsHandle resultsHandle = analyzeResult.value;
-        EXPECT_GT(resultsHandle, 0u);
-        EXPECT_TRUE(analysisAdapter->isValidResultsHandle(resultsHandle));
-    }
+    // Assert — the test truss is statically determinate and well-formed; analysis must succeed.
+    ASSERT_TRUE(analyzeResult.success) << "Analysis failed: " << analyzeResult.errorMessage;
+    application::ResultsHandle resultsHandle = analyzeResult.value;
+    EXPECT_GT(resultsHandle, 0u);
+    EXPECT_TRUE(analysisAdapter->isValidResultsHandle(resultsHandle));
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterGetResultsViewWorks) {
