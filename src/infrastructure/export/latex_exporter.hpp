@@ -172,27 +172,6 @@ private:
     static void writeMetadataSection(std::ostream& os,
                                      const IAnalysisResultsView& results,
                                      const ExportOptions& options);
-
-    /**
-     * @brief Format a number according to export options
-     * @param value The value to format
-     * @param options Export options (precision, scientific notation)
-     * @return Formatted string
-     */
-    static std::string formatNumber(Real value, const ExportOptions& options);
-
-    /**
-     * @brief Format timestamp for LaTeX
-     * @return Formatted timestamp string
-     */
-    static std::string formatTimestamp();
-
-    /**
-     * @brief Escape special LaTeX characters
-     * @param text Input text
-     * @return Escaped text safe for LaTeX
-     */
-    static std::string escapeLatex(const std::string& text);
 };
 
 }  // namespace truss::infrastructure::export_

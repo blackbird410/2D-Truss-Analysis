@@ -94,11 +94,6 @@ private:
     void parseLoads(const nlohmann::json& j,
                     core::interfaces::TrussDTO& dto,
                     const std::unordered_set<core::NodeId>& validNodeIds);
-
-    /**
-     * @brief Parse support type from string
-     */
-    static core::SupportType parseSupportType(const std::string& str);
 };
 
 }  // namespace truss::infrastructure::io

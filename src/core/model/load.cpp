@@ -21,21 +21,24 @@ Load::Load(LoadId id, NodeId nodeId, Real fx, Real fy, const std::string& label)
     : Load(id, nodeId, Force2D(fx, fy), label) {}
 
 bool Load::isZero(Real tolerance) const {
-    return Utils::isZero(m_force.fx, tolerance) && Utils::isZero(m_force.fy, tolerance);
+    return truss::utils::math::isZero(m_force.fx, tolerance) &&
+           truss::utils::math::isZero(m_force.fy, tolerance);
 }
 
 [[maybe_unused]] bool Load::isHorizontal(Real tolerance) const {
-    return Utils::isZero(m_force.fy, tolerance) && !Utils::isZero(m_force.fx, tolerance);
+    return truss::utils::math::isZero(m_force.fy, tolerance) &&
+           !truss::utils::math::isZero(m_force.fx, tolerance);
 }
 
 [[maybe_unused]] bool Load::isVertical(Real tolerance) const {
-    return Utils::isZero(m_force.fx, tolerance) && !Utils::isZero(m_force.fy, tolerance);
+    return truss::utils::math::isZero(m_force.fx, tolerance) &&
+           !truss::utils::math::isZero(m_force.fy, tolerance);
 }
 
 bool Load::operator==(const Load& other) const {
     return m_id == other.m_id && m_nodeId == other.m_nodeId &&
-           Utils::isEqual(m_force.fx, other.m_force.fx) &&
-           Utils::isEqual(m_force.fy, other.m_force.fy);
+           truss::utils::math::isApproxEqual(m_force.fx, other.m_force.fx) &&
+           truss::utils::math::isApproxEqual(m_force.fy, other.m_force.fy);
 }
 
 bool Load::operator!=(const Load& other) const {

@@ -57,11 +57,6 @@ private:
      * @brief Create loads JSON array
      */
     static nlohmann::json createLoads(const core::interfaces::TrussDTO& trussData);
-
-    /**
-     * @brief Convert support type to string
-     */
-    static std::string supportTypeToString(core::SupportType type);
 };
 
 }  // namespace truss::infrastructure::io

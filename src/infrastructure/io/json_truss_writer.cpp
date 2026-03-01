@@ -8,6 +8,8 @@
 
 #include "json_truss_writer.hpp"
 
+#include "infrastructure/io/support_type_serializer.hpp"
+
 #include <chrono>
 #include <fstream>
 #include <iomanip>
@@ -138,21 +140,6 @@ json JsonTrussWriter::createLoads(const core::interfaces::TrussDTO& trussData) {
     }
 
     return loadsArray;
-}
-
-std::string JsonTrussWriter::supportTypeToString(core::SupportType type) {
-    switch (type) {
-        case core::SupportType::Free:
-            return "free";
-        case core::SupportType::Pinned:
-            return "pinned";
-        case core::SupportType::RollerX:
-            return "roller_x";
-        case core::SupportType::RollerY:
-            return "roller_y";
-        default:
-            return "free";
-    }
 }
 
 }  // namespace truss::infrastructure::io

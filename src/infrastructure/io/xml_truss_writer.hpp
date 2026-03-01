@@ -64,11 +64,6 @@ private:
     static void createLoads(tinyxml2::XMLDocument& doc,
                             tinyxml2::XMLElement* root,
                             const core::interfaces::TrussDTO& trussData);
-
-    /**
-     * @brief Convert support type to string
-     */
-    static std::string supportTypeToString(core::SupportType type);
 };
 
 }  // namespace truss::infrastructure::io

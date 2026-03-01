@@ -8,6 +8,8 @@
 
 #include "json_exporter.hpp"
 
+#include "utilities/string_utils.hpp"
+
 #include <algorithm>
 #include <ctime>
 #include <fstream>
@@ -37,8 +39,8 @@ bool JSONExporter::exportResults(const ITrussView& truss,
 
         // Project metadata
         file << "  \"project\": {\n";
-        file << "    \"name\": \"" << escapeString(truss.getName()) << "\",\n";
-        file << "    \"exportTime\": \"" << formatTimestamp() << "\",\n";
+        file << "    \"name\": \"" << truss::utils::string::escapeJson(truss.getName()) << "\",\n";
+        file << "    \"exportTime\": \"" << truss::utils::string::formatTimestamp() << "\",\n";
         file << "    \"version\": \"3.0.0\"\n";
         file << "  }";
 
@@ -84,68 +86,6 @@ bool JSONExporter::exportResults(const ITrussView& truss,
     }
 }
 
-std::string JSONExporter::formatNumber(Real value, const ExportOptions& options) {
-    std::stringstream ss;
-    if (options.useScientificNotation) {
-        ss << std::scientific;
-    } else {
-        ss << std::fixed;
-    }
-    ss << std::setprecision(options.precision) << value;
-    return ss.str();
-}
-
-std::string JSONExporter::formatTimestamp() {
-    auto now = std::chrono::system_clock::now();
-    auto time_t = std::chrono::system_clock::to_time_t(now);
-    std::stringstream ss;
-    ss << std::put_time(std::localtime(&time_t), "%Y-%m-%d %H:%M:%S");
-    return ss.str();
-}
-
-std::string JSONExporter::escapeString(const std::string& str) {
-    std::string result;
-    result.reserve(str.length());
-
-    for (char c : str) {
-        switch (c) {
-            case '"':
-                result += "\\\"";
-                break;
-            case '\\':
-                result += "\\\\";
-                break;
-            case '\b':
-                result += "\\b";
-                break;
-            case '\f':
-                result += "\\f";
-                break;
-            case '\n':
-                result += "\\n";
-                break;
-            case '\r':
-                result += "\\r";
-                break;
-            case '\t':
-                result += "\\t";
-                break;
-            default:
-                if (static_cast<unsigned char>(c) < 0x20) {
-                    // Control characters
-                    std::ostringstream oss;
-                    oss << "\\u" << std::setw(4) << std::setfill('0') << std::hex
-                        << std::nouppercase << static_cast<int>(static_cast<unsigned char>(c));
-                    result += oss.str();
-                } else {
-                    result += c;
-                }
-        }
-    }
-
-    return result;
-}
-
 void JSONExporter::writeGeometrySection(std::ostream& os,
                                         const ITrussView& truss,
                                         const ExportOptions& options,
@@ -162,8 +102,14 @@ void JSONExporter::writeGeometrySection(std::ostream& os,
         const auto& node = nodes[i];
         os << "      {\n";
         os << "        \"id\": " << node.id << ",\n";
-        os << "        \"x\": " << formatNumber(node.x, options) << ",\n";
-        os << "        \"y\": " << formatNumber(node.y, options) << ",\n";
+        os << "        \"x\": "
+           << truss::utils::string::formatReal(
+                  node.x, options.precision, options.useScientificNotation)
+           << ",\n";
+        os << "        \"y\": "
+           << truss::utils::string::formatReal(
+                  node.y, options.precision, options.useScientificNotation)
+           << ",\n";
         os << "        \"supportType\": \"" << static_cast<int>(node.support) << "\"\n";
         os << "      }" << (i < nodes.size() - 1 ? "," : "") << "\n";
     }
@@ -178,7 +124,10 @@ void JSONExporter::writeGeometrySection(std::ostream& os,
         os << "        \"id\": " << member.id << ",\n";
         os << "        \"startNode\": " << member.startNodeId << ",\n";
         os << "        \"endNode\": " << member.endNodeId << ",\n";
-        os << "        \"length\": " << formatNumber(member.length, options) << "\n";
+        os << "        \"length\": "
+           << truss::utils::string::formatReal(
+                  member.length, options.precision, options.useScientificNotation)
+           << "\n";
         os << "      }" << (i < members.size() - 1 ? "," : "") << "\n";
     }
 
@@ -205,10 +154,22 @@ void JSONExporter::writePropertiesSection(std::ostream& os,
 
         os << "      {\n";
         os << "        \"memberId\": " << member.id << ",\n";
-        os << "        \"youngModulus\": " << formatNumber(member.youngModulus, options) << ",\n";
-        os << "        \"yieldStrength\": " << formatNumber(member.yieldStrength, options) << ",\n";
-        os << "        \"density\": " << formatNumber(member.density, options) << ",\n";
-        os << "        \"area\": " << formatNumber(member.area, options) << "\n";
+        os << "        \"youngModulus\": "
+           << truss::utils::string::formatReal(
+                  member.youngModulus, options.precision, options.useScientificNotation)
+           << ",\n";
+        os << "        \"yieldStrength\": "
+           << truss::utils::string::formatReal(
+                  member.yieldStrength, options.precision, options.useScientificNotation)
+           << ",\n";
+        os << "        \"density\": "
+           << truss::utils::string::formatReal(
+                  member.density, options.precision, options.useScientificNotation)
+           << ",\n";
+        os << "        \"area\": "
+           << truss::utils::string::formatReal(
+                  member.area, options.precision, options.useScientificNotation)
+           << "\n";
         os << "      }" << (i < members.size() - 1 ? "," : "") << "\n";
     }
 
@@ -242,8 +203,14 @@ void JSONExporter::writeLoadsSection(std::ostream& os,
 
         os << "      {\n";
         os << "        \"nodeId\": " << node.id << ",\n";
-        os << "        \"fx\": " << formatNumber(node.fx, options) << ",\n";
-        os << "        \"fy\": " << formatNumber(node.fy, options) << "\n";
+        os << "        \"fx\": "
+           << truss::utils::string::formatReal(
+                  node.fx, options.precision, options.useScientificNotation)
+           << ",\n";
+        os << "        \"fy\": "
+           << truss::utils::string::formatReal(
+                  node.fy, options.precision, options.useScientificNotation)
+           << "\n";
         os << "      }" << (i < loadedNodes.size() - 1 ? "," : "") << "\n";
     }
 
@@ -265,14 +232,17 @@ void JSONExporter::writeDisplacementsSection(std::ostream& os,
     os << "    \"values\": [";
 
     for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
-        os << formatNumber(results.getDisplacements()[i], options);
+        os << truss::utils::string::formatReal(
+            results.getDisplacements()[i], options.precision, options.useScientificNotation);
         if (i < results.getDisplacements().size() - 1) {
             os << ", ";
         }
     }
 
     os << "],\n";
-    os << "    \"maxDisplacement\": " << formatNumber(results.getMaxDisplacement(), options)
+    os << "    \"maxDisplacement\": "
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << "\n";
     os << "  }";
 
@@ -291,7 +261,8 @@ void JSONExporter::writeMemberForcesSection(std::ostream& os,
     os << "    \"values\": [";
 
     for (size_t i = 0; i < results.getMemberForces().size(); ++i) {
-        os << formatNumber(results.getMemberForces()[i], options);
+        os << truss::utils::string::formatReal(
+            results.getMemberForces()[i], options.precision, options.useScientificNotation);
         if (i < results.getMemberForces().size() - 1) {
             os << ", ";
         }
@@ -315,7 +286,8 @@ void JSONExporter::writeReactionsSection(std::ostream& os,
     os << "    \"values\": [";
 
     for (size_t i = 0; i < results.getReactions().size(); ++i) {
-        os << formatNumber(results.getReactions()[i], options);
+        os << truss::utils::string::formatReal(
+            results.getReactions()[i], options.precision, options.useScientificNotation);
         if (i < results.getReactions().size() - 1) {
             os << ", ";
         }
@@ -340,7 +312,10 @@ void JSONExporter::writeMetadataSection(std::ostream& os,
     os << "    \"iterations\": " << results.getIterations() << ",\n";
     os << "    \"totalDofs\": " << results.getTotalDofs() << ",\n";
     os << "    \"freeDofs\": " << results.getFreeDofs() << ",\n";
-    os << "    \"maxStress\": " << formatNumber(results.getMaxStress(), options) << "\n";
+    os << "    \"maxStress\": "
+       << truss::utils::string::formatReal(
+              results.getMaxStress(), options.precision, options.useScientificNotation)
+       << "\n";
     os << "  }\n";
 
     needsComma = true;
