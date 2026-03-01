@@ -322,38 +322,32 @@ TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterAnalyzeWorks) {
     core::analysis::AnalysisOptions options;
     auto analyzeResult = analysisAdapter->analyze(truss, options);
 
-    // Assert - with diagnostics
-    if (!analyzeResult.success) {
-        SCOPED_TRACE("Analysis failed with error: " + analyzeResult.errorMessage);
-        SCOPED_TRACE("This may indicate the test truss is incomplete or invalid");
-    } else {
-        application::ResultsHandle resultsHandle = analyzeResult.value;
-        EXPECT_GT(resultsHandle, 0u);
-        EXPECT_TRUE(analysisAdapter->isValidResultsHandle(resultsHandle));
-    }
+    // Assert — the test truss is statically determinate and well-formed; analysis must succeed.
+    ASSERT_TRUE(analyzeResult.success) << "Analysis failed: " << analyzeResult.errorMessage;
+    application::ResultsHandle resultsHandle = analyzeResult.value;
+    EXPECT_GT(resultsHandle, 0u);
+    EXPECT_TRUE(analysisAdapter->isValidResultsHandle(resultsHandle));
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterGetResultsViewWorks) {
-    // Arrange - perform analysis
+    // Arrange - perform analysis using the well-defined 3-node / 3-member test truss
     auto loadResult = trussAdapter->loadTruss(testJsonFile);
-    if (!loadResult.success) {
-        GTEST_SKIP() << "Load failed: " << loadResult.errorMessage;
-    }
+    // Hard failure: if load fails the test is broken, not to be silently skipped.
+    ASSERT_TRUE(loadResult.success) << "Load failed: " << loadResult.errorMessage;
     auto& truss = trussAdapter->getTrussMutable(loadResult.value);
 
     core::analysis::AnalysisOptions options;
     auto analyzeResult = analysisAdapter->analyze(truss, options);
-    if (!analyzeResult.success) {
-        GTEST_SKIP() << "Analysis failed: " << analyzeResult.errorMessage;
-    }
+    // Hard failure: analysis failure is a real error that must surface.
+    ASSERT_TRUE(analyzeResult.success) << "Analysis failed: " << analyzeResult.errorMessage;
     application::ResultsHandle resultsHandle = analyzeResult.value;
 
     // Act
     const auto& resultsView = analysisAdapter->getResultsView(resultsHandle);
 
-    // Assert - verify we can access results
-    EXPECT_GT(resultsView.getDisplacements().size(), 0u);
-    EXPECT_GT(resultsView.getMemberForces().size(), 0u);
+    // Assert - the test truss has 3 nodes (6 DOFs) and 3 members.
+    EXPECT_EQ(resultsView.getDisplacements().size(), 6u);  // 3 nodes × 2 DOFs
+    EXPECT_EQ(resultsView.getMemberForces().size(), 3u);    // 3 members
 }
 
 TEST_F(FacadeAdaptersIntegrationTest, AnalysisAdapterExportResultsWorks) {

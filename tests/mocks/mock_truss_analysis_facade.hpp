@@ -12,6 +12,9 @@
 
 #pragma once
 
+// Must be included before mock methods so MockTrussAnalysisFacade can inherit.
+#include "interface/itruss_analysis_facade.hpp"
+
 #include "application/result.hpp"
 #include "application/interfaces/ianalysis_service.hpp"
 #include "application/interfaces/itruss_service.hpp"
@@ -30,48 +33,48 @@ namespace truss::test {
  */
 class MockTrussAnalysisFacade : public truss::interface::ITrussAnalysisFacade {
 public:
-    virtual ~MockTrussAnalysisFacade() = default;
+    ~MockTrussAnalysisFacade() override = default;
 
-    // ITrussService operations
+    // ---- ITrussService operations ----
     MOCK_METHOD(application::Result<application::TrussHandle>,
                 createTruss,
                 (const std::string& name),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<application::TrussHandle>,
                 loadTruss,
                 (const std::filesystem::path& filepath),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<bool>,
                 saveTruss,
                 (application::TrussHandle handle,
                  const std::filesystem::path& filepath,
                  bool overwrite),
-                ());
+                (override));
 
-    MOCK_METHOD(bool, clearTruss, (application::TrussHandle handle), ());
+    MOCK_METHOD(bool, clearTruss, (application::TrussHandle handle), (override));
 
-    MOCK_METHOD(bool, isValidTrussHandle, (application::TrussHandle handle), (const));
+    MOCK_METHOD(bool, isValidTrussHandle, (application::TrussHandle handle), (const, override));
 
     MOCK_METHOD(const core::interfaces::ITrussView&,
                 getTrussView,
                 (application::TrussHandle handle),
-                (const));
+                (const, override));
 
-    MOCK_METHOD(core::Truss&, getTrussMutable, (application::TrussHandle handle), ());
+    MOCK_METHOD(core::Truss&, getTrussMutable, (application::TrussHandle handle), (override));
 
     MOCK_METHOD(application::Result<core::validation::ValidationResult>,
                 validateTruss,
                 (application::TrussHandle handle),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<core::NodeId>,
                 addNode,
                 (application::TrussHandle handle,
                  const core::Point2D& position,
                  core::SupportType supportType),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<core::MemberId>,
                 addMember,
@@ -80,47 +83,47 @@ public:
                  core::NodeId endNodeId,
                  const application::MaterialSpec& material,
                  const application::SectionSpec& section),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<bool>,
                 removeNode,
                 (application::TrussHandle handle, core::NodeId nodeId),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<bool>,
                 removeMember,
                 (application::TrussHandle handle, core::MemberId memberId),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<bool>,
                 setNodeSupport,
                 (application::TrussHandle handle,
                  core::NodeId nodeId,
                  core::SupportType supportType),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<bool>,
                 applyNodeLoad,
                 (application::TrussHandle handle,
                  core::NodeId nodeId,
                  const core::Force2D& force),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<bool>,
                 clearNodeLoad,
                 (application::TrussHandle handle, core::NodeId nodeId),
-                ());
+                (override));
 
-    // IAnalysisService operations
+    // ---- IAnalysisService operations ----
     MOCK_METHOD(application::Result<application::ResultsHandle>,
                 analyze,
                 (const core::Truss& truss, const core::analysis::AnalysisOptions& options),
-                ());
+                (override));
 
     MOCK_METHOD(const core::interfaces::IAnalysisResultsView&,
                 getResultsView,
                 (application::ResultsHandle handle),
-                (const));
+                (const, override));
 
     MOCK_METHOD(application::Result<bool>,
                 exportResults,
@@ -129,7 +132,7 @@ public:
                  const std::filesystem::path& filepath,
                  const core::Truss& truss,
                  const infrastructure::export_::ExportOptions& options),
-                ());
+                (override));
 
     MOCK_METHOD(application::Result<bool>,
                 exportResults,
@@ -137,19 +140,20 @@ public:
                  const std::filesystem::path& filepath,
                  const core::Truss& truss,
                  const infrastructure::export_::ExportOptions& options),
-                ());
+                (override));
 
-    MOCK_METHOD(bool, clearResults, (application::ResultsHandle handle), ());
+    MOCK_METHOD(bool, clearResults, (application::ResultsHandle handle), (override));
 
-    MOCK_METHOD(bool, isValidResultsHandle, (application::ResultsHandle handle), (const));
+    MOCK_METHOD(bool, isValidResultsHandle, (application::ResultsHandle handle), (const, override));
 
-    // Resource management
-    MOCK_METHOD(void, clearAll, (), ());
+    // ---- ITrussAnalysisFacade-only operation ----
+    // clearAll() resolves the diamond-inheritance ambiguity from ITrussService
+    // and IAnalysisService; it is the only additional pure virtual declared by
+    // ITrussAnalysisFacade itself.
+    MOCK_METHOD(void, clearAll, (), (override));
 
-    MOCK_METHOD(void,
-                clearWorkflow,
-                (application::TrussHandle trussHandle, application::ResultsHandle resultsHandle),
-                ());
+    // NOTE: clearWorkflow is a concrete helper on TrussAnalysisFacade only —
+    // it is NOT part of ITrussAnalysisFacade and must NOT be mocked here.
 };
 
 }  // namespace truss::test
