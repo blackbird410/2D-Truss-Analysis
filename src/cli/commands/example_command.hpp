@@ -11,7 +11,7 @@
 
 #pragma once
 
-#include "../../interface/truss_analysis_facade.hpp"
+#include "../../interface/itruss_analysis_facade.hpp"
 #include "../../interface/truss_builder.hpp"
 #include "../presenters/console_presenter.hpp"
 #include "icommand.hpp"
@@ -23,7 +23,7 @@ namespace truss::cli::commands {
  *
  * Demonstrates proper Interface layer usage:
  * - Creates truss via TrussBuilder fluent API
- * - Performs analysis via TrussAnalysisFacade
+ * - Performs analysis via ITrussAnalysisFacade
  * - Displays results via ConsolePresenter
  * - Uses Result<T> for error handling
  * - NO direct core API usage
@@ -36,7 +36,7 @@ public:
      * @param presenter Injected console presenter
      * @param verbose Enable verbose output
      */
-    ExampleCommand(truss::interface::TrussAnalysisFacade& facade,
+    ExampleCommand(truss::interface::ITrussAnalysisFacade& facade,
                    truss::cli::presenters::ConsolePresenter& presenter,
                    bool verbose = false);
 
@@ -50,7 +50,7 @@ public:
     }
 
 private:
-    truss::interface::TrussAnalysisFacade& m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;
     truss::cli::presenters::ConsolePresenter& m_presenter;
     bool m_verbose;
 };

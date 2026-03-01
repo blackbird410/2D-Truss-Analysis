@@ -12,7 +12,7 @@
 
 namespace truss::cli::commands {
 
-ValidateCommand::ValidateCommand(truss::interface::TrussAnalysisFacade& facade,
+ValidateCommand::ValidateCommand(truss::interface::ITrussAnalysisFacade& facade,
                                  truss::cli::presenters::ConsolePresenter& presenter,
                                  const std::string& inputFile,
                                  bool verbose)

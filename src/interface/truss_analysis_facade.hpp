@@ -50,31 +50,8 @@ namespace truss::interface {
 class FacadeTrussServiceAdapter;
 class FacadeAnalysisServiceAdapter;
 
-/**
- * @brief Result of a complete analysis workflow
- *
- * Encapsulates all handles needed to access analysis results,
- * providing a unified return type for facade methods.
- */
-struct AnalysisWorkflowResult {
-    bool success{false};
-    std::string errorMessage;
-
-    // Resource handles (valid only if success == true)
-    application::TrussHandle trussHandle{0};
-    application::ResultsHandle resultsHandle{0};
-
-    // Convenience methods
-    explicit operator bool() const noexcept { return success; }
-    bool isValid() const noexcept { return success; }
-
-    static AnalysisWorkflowResult Success(application::TrussHandle th,
-                                          application::ResultsHandle rh) {
-        return {true, "", th, rh};
-    }
-
-    static AnalysisWorkflowResult Failure(const std::string& error) { return {false, error, 0, 0}; }
-};
+// AnalysisWorkflowResult is defined in itruss_analysis_facade.hpp and
+// is available here via the #include of that header above.
 
 /**
  * @brief Unified facade for truss analysis workflows
@@ -209,8 +186,9 @@ public:
      *
      * On failure, cleans up any partially created resources.
      */
-    AnalysisWorkflowResult analyzeFromFile(const std::filesystem::path& filepath,
-                                           const core::analysis::AnalysisOptions& options = {});
+    AnalysisWorkflowResult
+    analyzeFromFile(const std::filesystem::path& filepath,
+                    const core::analysis::AnalysisOptions& options = {}) override;
 
     /**
      * @brief Complete workflow: build → validate → analyze
@@ -226,8 +204,9 @@ public:
      *
      * The builder is not modified by this call.
      */
-    AnalysisWorkflowResult analyzeInteractive(TrussBuilder& builder,
-                                              const core::analysis::AnalysisOptions& options = {});
+    AnalysisWorkflowResult
+    analyzeInteractive(TrussBuilder& builder,
+                       const core::analysis::AnalysisOptions& options = {}) override;
 
     /**
      * @brief Complete workflow: load → validate (no analysis)
@@ -238,7 +217,8 @@ public:
      * without running structural analysis. Useful for checking
      * model validity before committing to expensive analysis.
      */
-    core::validation::ValidationResult validateFromFile(const std::filesystem::path& filepath);
+    core::validation::ValidationResult
+    validateFromFile(const std::filesystem::path& filepath) override;
 
     /**
      * @brief Validate a builder configuration without building
@@ -263,7 +243,7 @@ public:
      */
     bool exportResults(application::ResultsHandle resultsHandle,
                        const std::filesystem::path& filepath,
-                       const infrastructure::export_::ExportOptions& options = {});
+                       const infrastructure::export_::ExportOptions& options = {}) override;
 
     /**
      * @brief Export analysis results with explicit format
@@ -276,7 +256,7 @@ public:
     bool exportResults(application::ResultsHandle resultsHandle,
                        truss::ExportFormat format,
                        const std::filesystem::path& filepath,
-                       const infrastructure::export_::ExportOptions& options = {});
+                       const infrastructure::export_::ExportOptions& options = {}) override;
 
     // ============================================================
     // Resource Management (for adapter delegation)

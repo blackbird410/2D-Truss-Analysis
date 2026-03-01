@@ -14,7 +14,7 @@
 
 namespace truss::cli::commands {
 
-ExportCommand::ExportCommand(truss::interface::TrussAnalysisFacade& facade,
+ExportCommand::ExportCommand(truss::interface::ITrussAnalysisFacade& facade,
                              truss::cli::presenters::ConsolePresenter& presenter,
                              const std::string& trussFile,
                              const std::string& resultsFile,

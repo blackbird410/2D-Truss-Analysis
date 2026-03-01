@@ -9,12 +9,12 @@
  * Re-analyzes if results file is not available.
  *
  * Architecture: CLI Layer (Command Pattern)
- * Dependencies: Interface Layer (TrussAnalysisFacade)
+ * Dependencies: Interface Layer (ITrussAnalysisFacade)
  */
 
 #pragma once
 
-#include "../../interface/truss_analysis_facade.hpp"
+#include "../../interface/itruss_analysis_facade.hpp"
 #include "../presenters/console_presenter.hpp"
 #include "icommand.hpp"
 
@@ -50,7 +50,7 @@ namespace truss::cli::commands {
  */
 class ExportCommand : public ICommand {
 private:
-    truss::interface::TrussAnalysisFacade& m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;
     truss::cli::presenters::ConsolePresenter& m_presenter;
 
     std::string m_trussFile;
@@ -71,7 +71,7 @@ public:
      * @param exportFormat Optional export format (defaults to format from file extension)
      * @param verbose Enable verbose output
      */
-    ExportCommand(truss::interface::TrussAnalysisFacade& facade,
+    ExportCommand(truss::interface::ITrussAnalysisFacade& facade,
                   truss::cli::presenters::ConsolePresenter& presenter,
                   const std::string& trussFile,
                   const std::string& resultsFile,

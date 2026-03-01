@@ -14,7 +14,7 @@
 
 namespace truss::cli::commands {
 
-AnalyzeCommand::AnalyzeCommand(truss::interface::TrussAnalysisFacade& facade,
+AnalyzeCommand::AnalyzeCommand(truss::interface::ITrussAnalysisFacade& facade,
                                truss::cli::presenters::ConsolePresenter& presenter,
                                const std::string& inputFile,
                                const std::optional<std::string>& outputFile,
