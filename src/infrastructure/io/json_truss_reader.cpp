@@ -13,6 +13,7 @@
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
+#include "infrastructure/io/support_type_serializer.hpp"
 
 using json = nlohmann::json;
 
@@ -365,32 +366,6 @@ void JsonTrussReader::parseLoads(const json& j,
             nodeIt->fy = fy;
         }
     }
-}
-
-core::SupportType JsonTrussReader::parseSupportType(const std::string& str) {
-    if (str == "free" || str == "Free")
-        return core::SupportType::Free;
-    if (str == "pinned" || str == "Pinned")
-        return core::SupportType::Pinned;
-    if (str == "fixed" || str == "Fixed")
-        return core::SupportType::Pinned;  // Fixed maps to Pinned
-    if (str == "roller" || str == "Roller")
-        return core::SupportType::RollerX;  // Generic roller - default to RollerX
-
-    // Backward compatibility: Legacy directional pins map to single-DOF rollers
-    // pinned_x / PinnedX: X constrained, Y free -> RollerY
-    if (str == "pinned_x" || str == "PinnedX")
-        return core::SupportType::RollerY;
-    // pinned_y / PinnedY: Y constrained, X free -> RollerX
-    if (str == "pinned_y" || str == "PinnedY")
-        return core::SupportType::RollerX;
-
-    if (str == "roller_x" || str == "RollerX")
-        return core::SupportType::RollerX;
-    if (str == "roller_y" || str == "RollerY")
-        return core::SupportType::RollerY;
-
-    throw ParseException("Unknown support type: " + str);
 }
 
 }  // namespace truss::infrastructure::io

@@ -65,10 +65,6 @@ private:
                             tinyxml2::XMLElement* root,
                             const core::interfaces::TrussDTO& trussData);
 
-    /**
-     * @brief Convert support type to string
-     */
-    static std::string supportTypeToString(core::SupportType type);
 };
 
 }  // namespace truss::infrastructure::io

@@ -12,6 +12,7 @@
 #include <cmath>
 #include <iomanip>
 #include <sstream>
+#include "infrastructure/io/support_type_serializer.hpp"
 
 namespace truss::infrastructure::io {
 
@@ -143,21 +144,6 @@ void XmlTrussWriter::createLoads(tinyxml2::XMLDocument& doc,
     }
 
     root->InsertEndChild(loadsElement);
-}
-
-std::string XmlTrussWriter::supportTypeToString(core::SupportType type) {
-    switch (type) {
-        case core::SupportType::Free:
-            return "free";
-        case core::SupportType::Pinned:
-            return "pinned";
-        case core::SupportType::RollerX:
-            return "roller_x";
-        case core::SupportType::RollerY:
-            return "roller_y";
-        default:
-            return "free";
-    }
 }
 
 }  // namespace truss::infrastructure::io

@@ -120,12 +120,6 @@ private:
                            core::interfaces::TrussDTO& dto,
                            const std::unordered_set<core::NodeId>& validNodeIds);
 
-    /**
-     * @brief Parse support type from string
-     * @param str String representation of support type
-     * @return Parsed support type enumeration value
-     */
-    static core::SupportType parseSupportType(const std::string& str);
 
     /**
      * @brief Get required attribute as double
