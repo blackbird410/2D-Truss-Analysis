@@ -34,13 +34,12 @@ namespace {
  */
 class FacadeAnalysisServiceAdapterTest : public ::testing::Test {
 protected:
-    MockTrussAnalysisFacade mockFacade;
-    std::unique_ptr<FacadeAnalysisServiceAdapter> adapter;
+    truss::test::MockTrussAnalysisFacade mockFacade;
+    std::unique_ptr<truss::interface::FacadeAnalysisServiceAdapter> adapter;
 
     void SetUp() override {
-        // Create adapter with mock facade
-        adapter = std::make_unique<FacadeAnalysisServiceAdapter>(
-            *reinterpret_cast<TrussAnalysisFacade*>(&mockFacade));
+        // Safe injection of mock via interface
+        adapter = std::make_unique<truss::interface::FacadeAnalysisServiceAdapter>(mockFacade);
     }
 };
 
@@ -124,6 +123,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, GetResultsViewDelegatesToFacade) {
 
     // Assert - just verify we got a reference back
     // (In real testing, you'd verify specific properties)
+    [[maybe_unused]] const auto& unused_view = view;
     SUCCEED();
 }
 
@@ -134,8 +134,8 @@ TEST_F(FacadeAnalysisServiceAdapterTest, GetResultsViewDelegatesToFacade) {
 TEST_F(FacadeAnalysisServiceAdapterTest, ExportResultsWithFormatDelegatesToFacade) {
     // Arrange
     const application::ResultsHandle testHandle = 100;
-    const infrastructure::export_::ExportFormat format =
-        infrastructure::export_::ExportFormat::JSON;
+    const truss::ExportFormat format =
+        truss::ExportFormat::JSON;
     const std::filesystem::path filepath = "/tmp/results.json";
     core::Truss testTruss("ExportTruss");
     infrastructure::export_::ExportOptions options;
@@ -235,7 +235,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, IsValidHandleDelegatesToFacade) {
     EXPECT_CALL(mockFacade, isValidResultsHandle(testHandle)).WillOnce(Return(true));
 
     // Act
-    bool result = adapter->isValidHandle(testHandle);
+    bool result = adapter->isValidResultsHandle(testHandle);
 
     // Assert
     EXPECT_TRUE(result);
@@ -248,7 +248,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, IsValidHandleReturnsFalseForInvalid) {
     EXPECT_CALL(mockFacade, isValidResultsHandle(testHandle)).WillOnce(Return(false));
 
     // Act
-    bool result = adapter->isValidHandle(testHandle);
+    bool result = adapter->isValidResultsHandle(testHandle);
 
     // Assert
     EXPECT_FALSE(result);
@@ -296,8 +296,8 @@ TEST_F(FacadeAnalysisServiceAdapterTest, ParallelHandlesWork) {
     EXPECT_CALL(mockFacade, clearResults(handle1)).WillOnce(Return(true));
     EXPECT_CALL(mockFacade, clearResults(handle2)).WillOnce(Return(true));
 
-    EXPECT_TRUE(adapter->isValidHandle(handle1));
-    EXPECT_TRUE(adapter->isValidHandle(handle2));
+    EXPECT_TRUE(adapter->isValidResultsHandle(handle1));
+    EXPECT_TRUE(adapter->isValidResultsHandle(handle2));
     EXPECT_TRUE(adapter->clearResults(handle1));
     EXPECT_TRUE(adapter->clearResults(handle2));
 }
@@ -312,7 +312,7 @@ TEST_F(FacadeAnalysisServiceAdapterTest, HandlesZeroResultsHandle) {
 
     EXPECT_CALL(mockFacade, isValidResultsHandle(invalidHandle)).WillOnce(Return(false));
 
-    bool result = adapter->isValidHandle(invalidHandle);
+    bool result = adapter->isValidResultsHandle(invalidHandle);
     EXPECT_FALSE(result);
 }
 
@@ -324,14 +324,14 @@ TEST_F(FacadeAnalysisServiceAdapterTest, ExportWithDifferentFormats) {
     // JSON export
     EXPECT_CALL(mockFacade,
                 exportResults(handle,
-                              infrastructure::export_::ExportFormat::JSON,
+                              truss::ExportFormat::JSON,
                               _,
                               Ref(testTruss),
                               _))
         .WillOnce(Return(application::Result<bool>::Success(true)));
 
     auto jsonResult = adapter->exportResults(handle,
-                                             infrastructure::export_::ExportFormat::JSON,
+                                             truss::ExportFormat::JSON,
                                              "/tmp/out.json",
                                              testTruss,
                                              {});
@@ -340,14 +340,14 @@ TEST_F(FacadeAnalysisServiceAdapterTest, ExportWithDifferentFormats) {
     // CSV export
     EXPECT_CALL(mockFacade,
                 exportResults(handle,
-                              infrastructure::export_::ExportFormat::CSV,
+                              truss::ExportFormat::CSV,
                               _,
                               Ref(testTruss),
                               _))
         .WillOnce(Return(application::Result<bool>::Success(true)));
 
     auto csvResult = adapter->exportResults(handle,
-                                            infrastructure::export_::ExportFormat::CSV,
+                                            truss::ExportFormat::CSV,
                                             "/tmp/out.csv",
                                             testTruss,
                                             {});

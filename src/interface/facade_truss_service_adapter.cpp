@@ -7,11 +7,12 @@
  */
 
 #include "facade_truss_service_adapter.hpp"
+#include "truss/analysis/analysis_options.hpp"
 #include "truss_analysis_facade.hpp"
 
 namespace truss::interface {
 
-FacadeTrussServiceAdapter::FacadeTrussServiceAdapter(TrussAnalysisFacade& facade)
+FacadeTrussServiceAdapter::FacadeTrussServiceAdapter(ITrussAnalysisFacade& facade)
     : m_facade(facade) {}
 
 application::Result<application::TrussHandle>
@@ -37,7 +38,7 @@ void FacadeTrussServiceAdapter::clearAll() {
     m_facade.clearAll();
 }
 
-bool FacadeTrussServiceAdapter::isValidHandle(application::TrussHandle handle) const {
+bool FacadeTrussServiceAdapter::isValidTrussHandle(application::TrussHandle handle) const {
     return m_facade.isValidTrussHandle(handle);
 }
 

@@ -31,15 +31,16 @@
  * @endcode
  */
 
-#pragma once
 
+#pragma once
 #include "../application/analysis_application_service.hpp"
 #include "../application/truss_application_service.hpp"
 #include "../core/analysis/analysis_orchestrator.hpp"
 #include "../core/validation/truss_validator.hpp"
 #include "../infrastructure/export/exporter_factory.hpp"
 #include "truss_builder.hpp"
-
+#include "truss/analysis/analysis_options.hpp"
+#include "interface/itruss_analysis_facade.hpp"
 #include <filesystem>
 #include <memory>
 #include <string>
@@ -82,7 +83,7 @@ struct AnalysisWorkflowResult {
  * analysis workflows, hiding the complexity of coordinating multiple
  * application services.
  *
- * **Design Pattern:** Facade (with proper encapsulation)  
+ * **Design Pattern:** Facade (with proper encapsulation)
  * - Provides complete workflow methods (analyzeFromFile, analyzeInteractive, etc.)
  * - Exposes service operations via public methods (NOT friend access)
  * - Allows adapters to implement service interfaces by delegating to Facade public API
@@ -104,7 +105,7 @@ struct AnalysisWorkflowResult {
  *
  * Thread Safety: Not thread-safe (intended for single-threaded use)
  */
-class TrussAnalysisFacade final {
+class TrussAnalysisFacade final : public ITrussAnalysisFacade {
 public:
     /**
      * @brief Construct a new facade with default services
@@ -128,69 +129,69 @@ public:
     // Adapters delegate to these methods (NOT via friend access)
 
     // ITrussService operations
-    application::Result<application::TrussHandle> createTruss(const std::string& name);
-    application::Result<application::TrussHandle> loadTruss(const std::filesystem::path& filepath);
+    application::Result<application::TrussHandle> createTruss(const std::string& name) override;
+    application::Result<application::TrussHandle> loadTruss(const std::filesystem::path& filepath) override;
     application::Result<bool> saveTruss(application::TrussHandle handle,
                                         const std::filesystem::path& filepath,
-                                        bool overwrite = false);
-    bool clearTruss(application::TrussHandle handle);
-    bool isValidTrussHandle(application::TrussHandle handle) const;
+                                        bool overwrite = false) override;
+    bool clearTruss(application::TrussHandle handle) override;
+    bool isValidTrussHandle(application::TrussHandle handle) const override;
 
-    const core::interfaces::ITrussView& getTrussView(application::TrussHandle handle) const;
-    core::Truss& getTrussMutable(application::TrussHandle handle);
+    const core::interfaces::ITrussView& getTrussView(application::TrussHandle handle) const override;
+    core::Truss& getTrussMutable(application::TrussHandle handle) override;
 
     application::Result<core::validation::ValidationResult>
-    validateTruss(application::TrussHandle handle);
+    validateTruss(application::TrussHandle handle) override;
 
     application::Result<core::NodeId>
     addNode(application::TrussHandle handle,
             const core::Point2D& position,
-            core::SupportType supportType = core::SupportType::Free);
+            core::SupportType supportType = core::SupportType::Free) override;
 
     application::Result<core::MemberId> addMember(application::TrussHandle handle,
                                                   core::NodeId startNodeId,
                                                   core::NodeId endNodeId,
                                                   const application::MaterialSpec& material,
-                                                  const application::SectionSpec& section);
+                                                  const application::SectionSpec& section) override;
 
     application::Result<bool> removeNode(application::TrussHandle handle,
-                                         core::NodeId nodeId);
+                                         core::NodeId nodeId) override;
     application::Result<bool> removeMember(application::TrussHandle handle,
-                                           core::MemberId memberId);
+                                           core::MemberId memberId) override;
 
     application::Result<bool> setNodeSupport(application::TrussHandle handle,
                                              core::NodeId nodeId,
-                                             core::SupportType supportType);
+                                             core::SupportType supportType) override;
 
     application::Result<bool> applyNodeLoad(application::TrussHandle handle,
                                             core::NodeId nodeId,
-                                            const core::Force2D& force);
+                                            const core::Force2D& force) override;
 
     application::Result<bool> clearNodeLoad(application::TrussHandle handle,
-                                            core::NodeId nodeId);
+                                            core::NodeId nodeId) override;
 
     // IAnalysisService operations
     application::Result<application::ResultsHandle>
-    analyze(const core::Truss& truss, const core::analysis::AnalysisOptions& options = {});
+    analyze(const core::Truss& truss, const core::analysis::AnalysisOptions& options = {}) override;
 
     const core::interfaces::IAnalysisResultsView&
-    getResultsView(application::ResultsHandle handle) const;
+    getResultsView(application::ResultsHandle handle) const override;
 
     application::Result<bool> exportResults(application::ResultsHandle handle,
-                                           infrastructure::export_::ExportFormat format,
+                                           truss::ExportFormat format,
                                            const std::filesystem::path& filepath,
                                            const core::Truss& truss,
                                            const infrastructure::export_::ExportOptions& options =
-                                               {});
+                                               {}) override;
 
     application::Result<bool> exportResults(application::ResultsHandle handle,
                                            const std::filesystem::path& filepath,
                                            const core::Truss& truss,
                                            const infrastructure::export_::ExportOptions& options =
-                                               {});
+                                               {}) override;
 
-    bool clearResults(application::ResultsHandle handle);
-    bool isValidResultsHandle(application::ResultsHandle handle) const;
+    bool clearResults(application::ResultsHandle handle) override;
+    bool isValidResultsHandle(application::ResultsHandle handle) const override;
 
     /**
      * @brief Complete workflow: load → validate → analyze
@@ -271,7 +272,7 @@ public:
      * @return true on success, false on failure
      */
     bool exportResults(application::ResultsHandle resultsHandle,
-                       infrastructure::export_::ExportFormat format,
+                       truss::ExportFormat format,
                        const std::filesystem::path& filepath,
                        const infrastructure::export_::ExportOptions& options = {});
 
@@ -279,7 +280,7 @@ public:
     // Resource Management (for adapter delegation)
     // ============================================================
 
-    void clearAll();
+    void clearAll() override;
     void clearWorkflow(application::TrussHandle trussHandle,
                        application::ResultsHandle resultsHandle);
 

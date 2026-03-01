@@ -105,7 +105,7 @@ private:
      * @param formatStr Format string (case-insensitive)
      * @return Export format enum value, or nullopt if invalid
      */
-    static std::optional<truss::infrastructure::export_::ExportFormat>
+    static std::optional<truss::ExportFormat>
     parseExportFormat(const std::string& formatStr);
 
     /**
@@ -114,7 +114,7 @@ private:
      * @param filepath Output file path
      * @return Export format enum value
      */
-    static truss::infrastructure::export_::ExportFormat
+    static truss::ExportFormat
     getDefaultExportFormat(const std::string& filepath);
 };
 
