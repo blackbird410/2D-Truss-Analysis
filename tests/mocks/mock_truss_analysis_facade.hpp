@@ -161,7 +161,7 @@ public:
 
     MOCK_METHOD(truss::interface::AnalysisWorkflowResult,
                 analyzeInteractive,
-                (truss::interface::TrussBuilder& builder,
+                (truss::interface::TrussBuilder & builder,
                  const core::analysis::AnalysisOptions& options),
                 (override));
 

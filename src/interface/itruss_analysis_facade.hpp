@@ -52,9 +52,7 @@ struct AnalysisWorkflowResult {
         return {true, "", th, rh};
     }
 
-    static AnalysisWorkflowResult Failure(const std::string& error) {
-        return {false, error, 0, 0};
-    }
+    static AnalysisWorkflowResult Failure(const std::string& error) { return {false, error, 0, 0}; }
 };
 
 /**
@@ -134,11 +132,10 @@ public:
      * @param options       Export options (default: all data)
      * @return true on success, false on failure
      */
-    virtual bool
-    exportResults(application::ResultsHandle resultsHandle,
-                  truss::ExportFormat format,
-                  const std::filesystem::path& filepath,
-                  const infrastructure::export_::ExportOptions& options = {}) = 0;
+    virtual bool exportResults(application::ResultsHandle resultsHandle,
+                               truss::ExportFormat format,
+                               const std::filesystem::path& filepath,
+                               const infrastructure::export_::ExportOptions& options = {}) = 0;
 
     /**
      * @brief Export analysis results with format auto-detected from filepath extension
@@ -150,10 +147,9 @@ public:
      * @param options       Export options (default: all data)
      * @return true on success, false on failure
      */
-    virtual bool
-    exportResults(application::ResultsHandle resultsHandle,
-                  const std::filesystem::path& filepath,
-                  const infrastructure::export_::ExportOptions& options = {}) = 0;
+    virtual bool exportResults(application::ResultsHandle resultsHandle,
+                               const std::filesystem::path& filepath,
+                               const infrastructure::export_::ExportOptions& options = {}) = 0;
 
     // Bring the IAnalysisService::exportResults overloads (which take an
     // explicit Truss and return Result<bool>) back into scope, so they are
