@@ -134,8 +134,8 @@ TEST_F(FacadeAnalysisServiceAdapterTest, GetResultsViewDelegatesToFacade) {
 TEST_F(FacadeAnalysisServiceAdapterTest, ExportResultsWithFormatDelegatesToFacade) {
     // Arrange
     const application::ResultsHandle testHandle = 100;
-    const infrastructure::export_::ExportFormat format =
-        infrastructure::export_::ExportFormat::JSON;
+    const truss::ExportFormat format =
+        truss::ExportFormat::JSON;
     const std::filesystem::path filepath = "/tmp/results.json";
     core::Truss testTruss("ExportTruss");
     infrastructure::export_::ExportOptions options;
@@ -324,14 +324,14 @@ TEST_F(FacadeAnalysisServiceAdapterTest, ExportWithDifferentFormats) {
     // JSON export
     EXPECT_CALL(mockFacade,
                 exportResults(handle,
-                              infrastructure::export_::ExportFormat::JSON,
+                              truss::ExportFormat::JSON,
                               _,
                               Ref(testTruss),
                               _))
         .WillOnce(Return(application::Result<bool>::Success(true)));
 
     auto jsonResult = adapter->exportResults(handle,
-                                             infrastructure::export_::ExportFormat::JSON,
+                                             truss::ExportFormat::JSON,
                                              "/tmp/out.json",
                                              testTruss,
                                              {});
@@ -340,14 +340,14 @@ TEST_F(FacadeAnalysisServiceAdapterTest, ExportWithDifferentFormats) {
     // CSV export
     EXPECT_CALL(mockFacade,
                 exportResults(handle,
-                              infrastructure::export_::ExportFormat::CSV,
+                              truss::ExportFormat::CSV,
                               _,
                               Ref(testTruss),
                               _))
         .WillOnce(Return(application::Result<bool>::Success(true)));
 
     auto csvResult = adapter->exportResults(handle,
-                                            infrastructure::export_::ExportFormat::CSV,
+                                            truss::ExportFormat::CSV,
                                             "/tmp/out.csv",
                                             testTruss,
                                             {});

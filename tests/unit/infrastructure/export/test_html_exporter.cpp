@@ -10,6 +10,7 @@
 #include "core/analysis/solver_factory.hpp"
 #include "core/model/truss.hpp"
 #include "infrastructure/export/html_exporter.hpp"
+#include "truss/export/export_format.hpp"
 
 #include <filesystem>
 #include <fstream>
@@ -558,5 +559,5 @@ TEST_F(HTMLExporterTest, FooterPresent) {
  * @brief Test getFormat() returns correct format
  */
 TEST_F(HTMLExporterTest, GetFormat) {
-    EXPECT_EQ(exporter->getFormat(), ExportFormat::HTML);
+    EXPECT_EQ(exporter->getFormat(), truss::ExportFormat::HTML);
 }
