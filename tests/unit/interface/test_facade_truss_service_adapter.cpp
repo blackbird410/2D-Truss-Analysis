@@ -362,4 +362,81 @@ TEST_F(FacadeTrussServiceAdapterTest, MultipleCallsWork) {
     EXPECT_TRUE(adapter->clearTruss(handle2));
 }
 
+// ============================================================
+// Additional Error-Forwarding Coverage
+// ============================================================
+
+TEST_F(FacadeTrussServiceAdapterTest, LoadTrussForwardsError) {
+    // Arrange
+    const std::filesystem::path missingFile = "/does/not/exist.json";
+    const std::string errorMsg = "File not found";
+
+    EXPECT_CALL(mockFacade, loadTruss(missingFile))
+        .WillOnce(Return(application::Result<application::TrussHandle>::Failure(errorMsg)));
+
+    // Act
+    auto result = adapter->loadTruss(missingFile);
+
+    // Assert
+    ASSERT_FALSE(result.success);
+    EXPECT_EQ(result.errorMessage, errorMsg);
+}
+
+TEST_F(FacadeTrussServiceAdapterTest, SaveTrussForwardsError) {
+    // Arrange
+    const application::TrussHandle testHandle = 42;
+    const std::filesystem::path readOnlyPath = "/read/only/output.json";
+    const std::string errorMsg = "Cannot write to path";
+
+    EXPECT_CALL(mockFacade, saveTruss(testHandle, readOnlyPath, false))
+        .WillOnce(Return(application::Result<bool>::Failure(errorMsg)));
+
+    // Act
+    auto result = adapter->saveTruss(testHandle, readOnlyPath, false);
+
+    // Assert
+    ASSERT_FALSE(result.success);
+    EXPECT_EQ(result.errorMessage, errorMsg);
+}
+
+TEST_F(FacadeTrussServiceAdapterTest, IsValidHandleReturnsFalseForInvalidHandle) {
+    // Arrange — zero and large out-of-range values are both invalid
+    const application::TrussHandle zeroHandle = 0;
+    const application::TrussHandle bigHandle = 99999;
+
+    EXPECT_CALL(mockFacade, isValidTrussHandle(zeroHandle)).WillOnce(Return(false));
+    EXPECT_CALL(mockFacade, isValidTrussHandle(bigHandle)).WillOnce(Return(false));
+
+    // Act & Assert
+    EXPECT_FALSE(adapter->isValidTrussHandle(zeroHandle));
+    EXPECT_FALSE(adapter->isValidTrussHandle(bigHandle));
+}
+
+TEST_F(FacadeTrussServiceAdapterTest, ValidateTrussForwardsError) {
+    // Arrange
+    const application::TrussHandle badHandle = 999;
+    const std::string errorMsg = "Invalid truss handle";
+
+    EXPECT_CALL(mockFacade, validateTruss(badHandle))
+        .WillOnce(Return(
+            application::Result<core::validation::ValidationResult>::Failure(errorMsg)));
+
+    // Act
+    auto result = adapter->validateTruss(badHandle);
+
+    // Assert
+    ASSERT_FALSE(result.success);
+    EXPECT_EQ(result.errorMessage, errorMsg);
+}
+
+TEST_F(FacadeTrussServiceAdapterTest, ClearTrussReturnsFalseForUnknownHandle) {
+    // Arrange — clearing an unknown handle should return false
+    const application::TrussHandle unknownHandle = 555;
+
+    EXPECT_CALL(mockFacade, clearTruss(unknownHandle)).WillOnce(Return(false));
+
+    // Act & Assert
+    EXPECT_FALSE(adapter->clearTruss(unknownHandle));
+}
+
 }  // namespace
