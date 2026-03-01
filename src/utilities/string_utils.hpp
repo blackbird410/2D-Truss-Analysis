@@ -19,8 +19,7 @@ namespace truss::utils::string {
  * @param precision  Number of digits after the decimal point.
  * @param scientific Use scientific notation when true, fixed otherwise.
  */
-[[nodiscard]] std::string formatReal(double value, int precision,
-                                     bool scientific = false);
+[[nodiscard]] std::string formatReal(double value, int precision, bool scientific = false);
 
 /**
  * @brief Returns the current wall-clock time as "YYYY-MM-DD HH:MM:SS".

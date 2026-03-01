@@ -8,9 +8,10 @@
 
 #include "latex_exporter.hpp"
 
+#include "utilities/string_utils.hpp"
+
 #include <ctime>
 #include <fstream>
-#include "utilities/string_utils.hpp"
 
 namespace truss::infrastructure::export_ {
 
@@ -40,7 +41,8 @@ bool LaTeXExporter::exportResults(const ITrussView& truss,
         file << "\\maketitle\n\n";
         file << "\\section{Project Metadata}\n\n";
         file << "\\begin{itemize}\n";
-        file << "  \\item \\textbf{Project Name:} " << truss::utils::string::escapeLatex(truss.getName()) << "\n";
+        file << "  \\item \\textbf{Project Name:} "
+             << truss::utils::string::escapeLatex(truss.getName()) << "\n";
         file << "  \\item \\textbf{Generated:} " << truss::utils::string::formatTimestamp() << "\n";
         file << "  \\item \\textbf{Software:} 2D Truss Analysis v3.0.0\n";
         file << "  \\item \\textbf{Nodes:} " << truss.getNodeViews().size() << "\n";
@@ -131,8 +133,13 @@ void LaTeXExporter::writeGeometrySection(std::ostream& os,
     os << "\\endlastfoot\n\n";
 
     for (const auto& node : truss.getNodeViews()) {
-        os << node.id << " & " << truss::utils::string::formatReal(node.x, options.precision, options.useScientificNotation) << " & "
-           << truss::utils::string::formatReal(node.y, options.precision, options.useScientificNotation) << " & " << static_cast<int>(node.support) << " \\\\\n";
+        os << node.id << " & "
+           << truss::utils::string::formatReal(
+                  node.x, options.precision, options.useScientificNotation)
+           << " & "
+           << truss::utils::string::formatReal(
+                  node.y, options.precision, options.useScientificNotation)
+           << " & " << static_cast<int>(node.support) << " \\\\\n";
     }
 
     os << "\\end{longtable}\n\n";
@@ -158,7 +165,9 @@ void LaTeXExporter::writeGeometrySection(std::ostream& os,
 
     for (const auto& member : truss.getMemberViews()) {
         os << member.id << " & " << member.startNodeId << " & " << member.endNodeId << " & "
-           << truss::utils::string::formatReal(member.length, options.precision, options.useScientificNotation) << " \\\\\n";
+           << truss::utils::string::formatReal(
+                  member.length, options.precision, options.useScientificNotation)
+           << " \\\\\n";
     }
 
     os << "\\end{longtable}\n\n";
@@ -186,9 +195,18 @@ void LaTeXExporter::writePropertiesSection(std::ostream& os,
     os << "\\endlastfoot\n\n";
 
     for (const auto& member : truss.getMemberViews()) {
-        os << member.id << " & " << truss::utils::string::formatReal(member.youngModulus, options.precision, options.useScientificNotation) << " & "
-           << truss::utils::string::formatReal(member.yieldStrength, options.precision, options.useScientificNotation) << " & "
-           << truss::utils::string::formatReal(member.density, options.precision, options.useScientificNotation) << " & " << truss::utils::string::formatReal(member.area, options.precision, options.useScientificNotation)
+        os << member.id << " & "
+           << truss::utils::string::formatReal(
+                  member.youngModulus, options.precision, options.useScientificNotation)
+           << " & "
+           << truss::utils::string::formatReal(
+                  member.yieldStrength, options.precision, options.useScientificNotation)
+           << " & "
+           << truss::utils::string::formatReal(
+                  member.density, options.precision, options.useScientificNotation)
+           << " & "
+           << truss::utils::string::formatReal(
+                  member.area, options.precision, options.useScientificNotation)
            << " \\\\\n";
     }
 
@@ -219,8 +237,13 @@ void LaTeXExporter::writeLoadsSection(std::ostream& os,
     for (const auto& node : truss.getNodeViews()) {
         // Only export nodes with non-zero forces
         if (node.fx != 0.0 || node.fy != 0.0) {
-            os << node.id << " & " << truss::utils::string::formatReal(node.fx, options.precision, options.useScientificNotation) << " & "
-               << truss::utils::string::formatReal(node.fy, options.precision, options.useScientificNotation) << " \\\\\n";
+            os << node.id << " & "
+               << truss::utils::string::formatReal(
+                      node.fx, options.precision, options.useScientificNotation)
+               << " & "
+               << truss::utils::string::formatReal(
+                      node.fy, options.precision, options.useScientificNotation)
+               << " \\\\\n";
         }
     }
 
@@ -249,11 +272,16 @@ void LaTeXExporter::writeDisplacementsSection(std::ostream& os,
     os << "\\endlastfoot\n\n";
 
     for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
-        os << i << " & " << truss::utils::string::formatReal(results.getDisplacements()[i], options.precision, options.useScientificNotation) << " \\\\\n";
+        os << i << " & "
+           << truss::utils::string::formatReal(
+                  results.getDisplacements()[i], options.precision, options.useScientificNotation)
+           << " \\\\\n";
     }
 
     os << "\\end{longtable}\n\n";
-    os << "\\textbf{Maximum Displacement:} " << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+    os << "\\textbf{Maximum Displacement:} "
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << " m\n\n";
 }
 
@@ -281,7 +309,10 @@ void LaTeXExporter::writeMemberForcesSection(std::ostream& os,
     for (size_t i = 0; i < results.getMemberForces().size(); ++i) {
         Real force = results.getMemberForces()[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
-        os << (i + 1) << " & " << truss::utils::string::formatReal(force, options.precision, options.useScientificNotation) << " & " << type << " \\\\\n";
+        os << (i + 1) << " & "
+           << truss::utils::string::formatReal(
+                  force, options.precision, options.useScientificNotation)
+           << " & " << type << " \\\\\n";
     }
 
     os << "\\end{longtable}\n\n";
@@ -309,7 +340,10 @@ void LaTeXExporter::writeReactionsSection(std::ostream& os,
     os << "\\endlastfoot\n\n";
 
     for (size_t i = 0; i < results.getReactions().size(); ++i) {
-        os << i << " & " << truss::utils::string::formatReal(results.getReactions()[i], options.precision, options.useScientificNotation) << " \\\\\n";
+        os << i << " & "
+           << truss::utils::string::formatReal(
+                  results.getReactions()[i], options.precision, options.useScientificNotation)
+           << " \\\\\n";
     }
 
     os << "\\end{longtable}\n\n";
@@ -327,9 +361,14 @@ void LaTeXExporter::writeMetadataSection(std::ostream& os,
     os << "Iterations & " << results.getIterations() << " \\\\\n";
     os << "Total DOFs & " << results.getTotalDofs() << " \\\\\n";
     os << "Free DOFs & " << results.getFreeDofs() << " \\\\\n";
-    os << "Max Displacement & " << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+    os << "Max Displacement & "
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << " m \\\\\n";
-    os << "Max Stress & " << truss::utils::string::formatReal(results.getMaxStress(), options.precision, options.useScientificNotation) << " Pa \\\\\n";
+    os << "Max Stress & "
+       << truss::utils::string::formatReal(
+              results.getMaxStress(), options.precision, options.useScientificNotation)
+       << " Pa \\\\\n";
     os << "\\bottomrule\n";
     os << "\\end{tabular}\n\n";
 }

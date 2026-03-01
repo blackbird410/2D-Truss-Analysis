@@ -8,9 +8,10 @@
 
 #include "html_exporter.hpp"
 
+#include "utilities/string_utils.hpp"
+
 #include <ctime>
 #include <fstream>
-#include "utilities/string_utils.hpp"
 
 namespace truss::infrastructure::export_ {
 
@@ -43,8 +44,10 @@ bool HTMLExporter::exportResults(const ITrussView& truss,
         file << "<h1>Truss Analysis Results</h1>\n";
         file << "<h2>Project Metadata</h2>\n";
         file << "<div class=\"metadata\">\n";
-        file << "  <p><strong>Project Name:</strong> " << truss::utils::string::escapeHtml(truss.getName()) << "</p>\n";
-        file << "  <p><strong>Export Date:</strong> " << truss::utils::string::formatTimestamp() << "</p>\n";
+        file << "  <p><strong>Project Name:</strong> "
+             << truss::utils::string::escapeHtml(truss.getName()) << "</p>\n";
+        file << "  <p><strong>Export Date:</strong> " << truss::utils::string::formatTimestamp()
+             << "</p>\n";
         file << "  <p><strong>Version:</strong> 3.0.0</p>\n";
         if (options.includeGeometry) {
             writeGeometrySection(file, truss, options);
@@ -93,7 +96,8 @@ void HTMLExporter::writeHeader(std::ostream& os, const ITrussView& truss) {
     os << "<head>\n";
     os << "  <meta charset=\"UTF-8\">\n";
     os << "  <meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n";
-    os << "  <title>Truss Analysis Results - " << truss::utils::string::escapeHtml(truss.getName()) << "</title>\n";
+    os << "  <title>Truss Analysis Results - " << truss::utils::string::escapeHtml(truss.getName())
+       << "</title>\n";
 }
 
 void HTMLExporter::writeStyles(std::ostream& os) {
@@ -222,8 +226,14 @@ void HTMLExporter::writeGeometrySection(std::ostream& os,
     for (const auto& node : truss.getNodeViews()) {
         os << "    <tr>\n";
         os << "      <td>" << node.id << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(node.x, options.precision, options.useScientificNotation) << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(node.y, options.precision, options.useScientificNotation) << "</td>\n";
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  node.x, options.precision, options.useScientificNotation)
+           << "</td>\n";
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  node.y, options.precision, options.useScientificNotation)
+           << "</td>\n";
         os << "      <td>" << static_cast<int>(node.support) << "</td>\n";
         os << "    </tr>\n";
     }
@@ -249,7 +259,10 @@ void HTMLExporter::writeGeometrySection(std::ostream& os,
         os << "      <td>" << member.id << "</td>\n";
         os << "      <td>" << member.startNodeId << "</td>\n";
         os << "      <td>" << member.endNodeId << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(member.length, options.precision, options.useScientificNotation) << "</td>\n";
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  member.length, options.precision, options.useScientificNotation)
+           << "</td>\n";
         os << "    </tr>\n";
     }
 
@@ -276,12 +289,22 @@ void HTMLExporter::writePropertiesSection(std::ostream& os,
     for (const auto& member : truss.getMemberViews()) {
         os << "    <tr>\n";
         os << "      <td>" << member.id << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(member.youngModulus, options.precision, options.useScientificNotation)
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  member.youngModulus, options.precision, options.useScientificNotation)
            << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(member.yieldStrength, options.precision, options.useScientificNotation)
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  member.yieldStrength, options.precision, options.useScientificNotation)
            << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(member.density, options.precision, options.useScientificNotation) << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(member.area, options.precision, options.useScientificNotation) << "</td>\n";
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  member.density, options.precision, options.useScientificNotation)
+           << "</td>\n";
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  member.area, options.precision, options.useScientificNotation)
+           << "</td>\n";
         os << "    </tr>\n";
     }
 
@@ -308,8 +331,14 @@ void HTMLExporter::writeLoadsSection(std::ostream& os,
         if (node.fx != 0.0 || node.fy != 0.0) {
             os << "    <tr>\n";
             os << "      <td>" << node.id << "</td>\n";
-            os << "      <td class=\"number\">" << truss::utils::string::formatReal(node.fx, options.precision, options.useScientificNotation) << "</td>\n";
-            os << "      <td class=\"number\">" << truss::utils::string::formatReal(node.fy, options.precision, options.useScientificNotation) << "</td>\n";
+            os << "      <td class=\"number\">"
+               << truss::utils::string::formatReal(
+                      node.fx, options.precision, options.useScientificNotation)
+               << "</td>\n";
+            os << "      <td class=\"number\">"
+               << truss::utils::string::formatReal(
+                      node.fy, options.precision, options.useScientificNotation)
+               << "</td>\n";
             os << "    </tr>\n";
         }
     }
@@ -334,7 +363,9 @@ void HTMLExporter::writeDisplacementsSection(std::ostream& os,
     for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
         os << "    <tr>\n";
         os << "      <td>" << i << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(results.getDisplacements()[i], options.precision, options.useScientificNotation)
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  results.getDisplacements()[i], options.precision, options.useScientificNotation)
            << "</td>\n";
         os << "    </tr>\n";
     }
@@ -343,7 +374,9 @@ void HTMLExporter::writeDisplacementsSection(std::ostream& os,
     os << "</table>\n";
 
     os << "<p><strong>Maximum Displacement:</strong> <span class=\"number\">"
-       << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation) << "</span></p>\n";
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+       << "</span></p>\n";
 }
 
 void HTMLExporter::writeMemberForcesSection(std::ostream& os,
@@ -367,7 +400,10 @@ void HTMLExporter::writeMemberForcesSection(std::ostream& os,
 
         os << "    <tr>\n";
         os << "      <td>" << (i + 1) << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(force, options.precision, options.useScientificNotation) << "</td>\n";
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  force, options.precision, options.useScientificNotation)
+           << "</td>\n";
         os << "      <td class=\"" << cssClass << "\">" << type << "</td>\n";
         os << "    </tr>\n";
     }
@@ -392,7 +428,9 @@ void HTMLExporter::writeReactionsSection(std::ostream& os,
     for (size_t i = 0; i < results.getReactions().size(); ++i) {
         os << "    <tr>\n";
         os << "      <td>" << i << "</td>\n";
-        os << "      <td class=\"number\">" << truss::utils::string::formatReal(results.getReactions()[i], options.precision, options.useScientificNotation)
+        os << "      <td class=\"number\">"
+           << truss::utils::string::formatReal(
+                  results.getReactions()[i], options.precision, options.useScientificNotation)
            << "</td>\n";
         os << "    </tr>\n";
     }
@@ -436,13 +474,17 @@ void HTMLExporter::writeMetadataSection(std::ostream& os,
 
     os << "    <tr>\n";
     os << "      <td>Max Displacement</td>\n";
-    os << "      <td class=\"number\">" << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+    os << "      <td class=\"number\">"
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << "</td>\n";
     os << "    </tr>\n";
 
     os << "    <tr>\n";
     os << "      <td>Max Stress</td>\n";
-    os << "      <td class=\"number\">" << truss::utils::string::formatReal(results.getMaxStress(), options.precision, options.useScientificNotation)
+    os << "      <td class=\"number\">"
+       << truss::utils::string::formatReal(
+              results.getMaxStress(), options.precision, options.useScientificNotation)
        << "</td>\n";
     os << "    </tr>\n";
 

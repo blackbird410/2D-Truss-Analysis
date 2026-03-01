@@ -8,9 +8,9 @@
  */
 #pragma once
 
-#include <string>
-
 #include "core/model/types.hpp"
+
+#include <string>
 
 namespace truss::infrastructure::io {
 

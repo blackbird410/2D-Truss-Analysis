@@ -13,9 +13,8 @@
 #include "json_exporter.hpp"
 #include "latex_exporter.hpp"
 #include "text_exporter.hpp"
-#include "xml_exporter.hpp"
-
 #include "utilities/string_utils.hpp"
+#include "xml_exporter.hpp"
 
 #include <stdexcept>
 

@@ -32,14 +32,16 @@ std::string formatTimestamp() {
 // ─── Case conversion ─────────────────────────────────────────────────────────
 
 std::string toLower(std::string s) {
-    std::transform(s.begin(), s.end(), s.begin(),
-                   [](unsigned char c) { return static_cast<char>(std::tolower(c)); });
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) {
+        return static_cast<char>(std::tolower(c));
+    });
     return s;
 }
 
 std::string toUpper(std::string s) {
-    std::transform(s.begin(), s.end(), s.begin(),
-                   [](unsigned char c) { return static_cast<char>(std::toupper(c)); });
+    std::transform(s.begin(), s.end(), s.begin(), [](unsigned char c) {
+        return static_cast<char>(std::toupper(c));
+    });
     return s;
 }
 
@@ -51,20 +53,33 @@ std::string escapeJson(const std::string& text) {
 
     for (char c : text) {
         switch (c) {
-            case '"':  result += "\\\""; break;
-            case '\\': result += "\\\\"; break;
-            case '\b': result += "\\b";  break;
-            case '\f': result += "\\f";  break;
-            case '\n': result += "\\n";  break;
-            case '\r': result += "\\r";  break;
-            case '\t': result += "\\t";  break;
+            case '"':
+                result += "\\\"";
+                break;
+            case '\\':
+                result += "\\\\";
+                break;
+            case '\b':
+                result += "\\b";
+                break;
+            case '\f':
+                result += "\\f";
+                break;
+            case '\n':
+                result += "\\n";
+                break;
+            case '\r':
+                result += "\\r";
+                break;
+            case '\t':
+                result += "\\t";
+                break;
             default:
                 if (static_cast<unsigned char>(c) < 0x20) {
                     // Remaining control characters → \uXXXX
                     std::ostringstream oss;
                     oss << "\\u" << std::setw(4) << std::setfill('0') << std::hex
-                        << std::nouppercase
-                        << static_cast<int>(static_cast<unsigned char>(c));
+                        << std::nouppercase << static_cast<int>(static_cast<unsigned char>(c));
                     result += oss.str();
                 } else {
                     result += c;
@@ -80,11 +95,21 @@ std::string escapeXml(const std::string& text) {
 
     for (char c : text) {
         switch (c) {
-            case '<':  result += "&lt;";   break;
-            case '>':  result += "&gt;";   break;
-            case '&':  result += "&amp;";  break;
-            case '"':  result += "&quot;"; break;
-            case '\'': result += "&apos;"; break;
+            case '<':
+                result += "&lt;";
+                break;
+            case '>':
+                result += "&gt;";
+                break;
+            case '&':
+                result += "&amp;";
+                break;
+            case '"':
+                result += "&quot;";
+                break;
+            case '\'':
+                result += "&apos;";
+                break;
             default:
                 if (c < 0x20 && c != '\t' && c != '\n' && c != '\r') {
                     // Control characters (except tab, LF, CR)
@@ -105,12 +130,23 @@ std::string escapeHtml(const std::string& text) {
 
     for (char c : text) {
         switch (c) {
-            case '<':  result += "&lt;";   break;
-            case '>':  result += "&gt;";   break;
-            case '&':  result += "&amp;";  break;
-            case '"':  result += "&quot;"; break;
-            case '\'': result += "&#39;";  break;
-            default:   result += c;
+            case '<':
+                result += "&lt;";
+                break;
+            case '>':
+                result += "&gt;";
+                break;
+            case '&':
+                result += "&amp;";
+                break;
+            case '"':
+                result += "&quot;";
+                break;
+            case '\'':
+                result += "&#39;";
+                break;
+            default:
+                result += c;
         }
     }
     return result;
@@ -122,17 +158,38 @@ std::string escapeLatex(const std::string& text) {
 
     for (char c : text) {
         switch (c) {
-            case '\\': result += "\\textbackslash{}";   break;
-            case '{':  result += "\\{";                 break;
-            case '}':  result += "\\}";                 break;
-            case '$':  result += "\\$";                 break;
-            case '&':  result += "\\&";                 break;
-            case '%':  result += "\\%";                 break;
-            case '#':  result += "\\#";                 break;
-            case '_':  result += "\\_";                 break;
-            case '~':  result += "\\textasciitilde{}";  break;
-            case '^':  result += "\\textasciicircum{}"; break;
-            default:   result += c;
+            case '\\':
+                result += "\\textbackslash{}";
+                break;
+            case '{':
+                result += "\\{";
+                break;
+            case '}':
+                result += "\\}";
+                break;
+            case '$':
+                result += "\\$";
+                break;
+            case '&':
+                result += "\\&";
+                break;
+            case '%':
+                result += "\\%";
+                break;
+            case '#':
+                result += "\\#";
+                break;
+            case '_':
+                result += "\\_";
+                break;
+            case '~':
+                result += "\\textasciitilde{}";
+                break;
+            case '^':
+                result += "\\textasciicircum{}";
+                break;
+            default:
+                result += c;
         }
     }
     return result;

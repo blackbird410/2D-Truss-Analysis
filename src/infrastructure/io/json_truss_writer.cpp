@@ -8,11 +8,12 @@
 
 #include "json_truss_writer.hpp"
 
+#include "infrastructure/io/support_type_serializer.hpp"
+
 #include <chrono>
 #include <fstream>
 #include <iomanip>
 #include <sstream>
-#include "infrastructure/io/support_type_serializer.hpp"
 
 using json = nlohmann::json;
 

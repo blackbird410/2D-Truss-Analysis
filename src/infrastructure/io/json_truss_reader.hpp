@@ -94,7 +94,6 @@ private:
     void parseLoads(const nlohmann::json& j,
                     core::interfaces::TrussDTO& dto,
                     const std::unordered_set<core::NodeId>& validNodeIds);
-
 };
 
 }  // namespace truss::infrastructure::io

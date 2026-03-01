@@ -57,7 +57,6 @@ private:
      * @brief Create loads JSON array
      */
     static nlohmann::json createLoads(const core::interfaces::TrussDTO& trussData);
-
 };
 
 }  // namespace truss::infrastructure::io

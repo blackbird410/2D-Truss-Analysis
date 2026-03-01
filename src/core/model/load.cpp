@@ -21,15 +21,18 @@ Load::Load(LoadId id, NodeId nodeId, Real fx, Real fy, const std::string& label)
     : Load(id, nodeId, Force2D(fx, fy), label) {}
 
 bool Load::isZero(Real tolerance) const {
-    return truss::utils::math::isZero(m_force.fx, tolerance) && truss::utils::math::isZero(m_force.fy, tolerance);
+    return truss::utils::math::isZero(m_force.fx, tolerance) &&
+           truss::utils::math::isZero(m_force.fy, tolerance);
 }
 
 [[maybe_unused]] bool Load::isHorizontal(Real tolerance) const {
-    return truss::utils::math::isZero(m_force.fy, tolerance) && !truss::utils::math::isZero(m_force.fx, tolerance);
+    return truss::utils::math::isZero(m_force.fy, tolerance) &&
+           !truss::utils::math::isZero(m_force.fx, tolerance);
 }
 
 [[maybe_unused]] bool Load::isVertical(Real tolerance) const {
-    return truss::utils::math::isZero(m_force.fx, tolerance) && !truss::utils::math::isZero(m_force.fy, tolerance);
+    return truss::utils::math::isZero(m_force.fx, tolerance) &&
+           !truss::utils::math::isZero(m_force.fy, tolerance);
 }
 
 bool Load::operator==(const Load& other) const {

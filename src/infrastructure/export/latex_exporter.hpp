@@ -172,7 +172,6 @@ private:
     static void writeMetadataSection(std::ostream& os,
                                      const IAnalysisResultsView& results,
                                      const ExportOptions& options);
-
 };
 
 }  // namespace truss::infrastructure::export_

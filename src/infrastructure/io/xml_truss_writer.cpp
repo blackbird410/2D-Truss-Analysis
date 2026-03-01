@@ -8,11 +8,12 @@
 
 #include "xml_truss_writer.hpp"
 
+#include "infrastructure/io/support_type_serializer.hpp"
+
 #include <chrono>
 #include <cmath>
 #include <iomanip>
 #include <sstream>
-#include "infrastructure/io/support_type_serializer.hpp"
 
 namespace truss::infrastructure::io {
 

@@ -8,9 +8,10 @@
 
 #include "text_exporter.hpp"
 
+#include "utilities/string_utils.hpp"
+
 #include <ctime>
 #include <fstream>
-#include "utilities/string_utils.hpp"
 
 namespace truss::infrastructure::export_ {
 
@@ -139,7 +140,11 @@ void TextExporter::writeGeometrySection(std::ostream& os,
         }
 
         os << "  " << std::left << std::setw(8) << node.id << std::setw(15)
-           << truss::utils::string::formatReal(node.x, options.precision, options.useScientificNotation) << std::setw(15) << truss::utils::string::formatReal(node.y, options.precision, options.useScientificNotation)
+           << truss::utils::string::formatReal(
+                  node.x, options.precision, options.useScientificNotation)
+           << std::setw(15)
+           << truss::utils::string::formatReal(
+                  node.y, options.precision, options.useScientificNotation)
            << std::setw(15) << supportType << "\n";
     }
 
@@ -152,7 +157,9 @@ void TextExporter::writeGeometrySection(std::ostream& os,
     for (const auto& member : truss.getMemberViews()) {
         os << "  " << std::left << std::setw(10) << member.id << std::setw(12) << member.startNodeId
            << std::setw(12) << member.endNodeId << std::setw(15)
-           << truss::utils::string::formatReal(member.length, options.precision, options.useScientificNotation) << "\n";
+           << truss::utils::string::formatReal(
+                  member.length, options.precision, options.useScientificNotation)
+           << "\n";
     }
 }
 
@@ -169,10 +176,19 @@ void TextExporter::writePropertiesSection(std::ostream& os,
     for (const auto& member : truss.getMemberViews()) {
         os << "  " << std::left << std::setw(10) << member.id << std::setw(15)
            << "Steel"  // TODO: Add material type to MemberView struct
-           << std::setw(15) << truss::utils::string::formatReal(member.youngModulus, options.precision, options.useScientificNotation) << std::setw(18)
-           << truss::utils::string::formatReal(member.yieldStrength, options.precision, options.useScientificNotation) << std::setw(15)
-           << truss::utils::string::formatReal(member.density, options.precision, options.useScientificNotation) << std::setw(15)
-           << truss::utils::string::formatReal(member.area, options.precision, options.useScientificNotation) << "\n";
+           << std::setw(15)
+           << truss::utils::string::formatReal(
+                  member.youngModulus, options.precision, options.useScientificNotation)
+           << std::setw(18)
+           << truss::utils::string::formatReal(
+                  member.yieldStrength, options.precision, options.useScientificNotation)
+           << std::setw(15)
+           << truss::utils::string::formatReal(
+                  member.density, options.precision, options.useScientificNotation)
+           << std::setw(15)
+           << truss::utils::string::formatReal(
+                  member.area, options.precision, options.useScientificNotation)
+           << "\n";
     }
 }
 
@@ -190,7 +206,11 @@ void TextExporter::writeLoadsSection(std::ostream& os,
         // Only export nodes with non-zero forces
         if (node.fx != 0.0 || node.fy != 0.0) {
             os << "  " << std::left << std::setw(10) << node.id << std::setw(20)
-               << truss::utils::string::formatReal(node.fx, options.precision, options.useScientificNotation) << std::setw(20) << truss::utils::string::formatReal(node.fy, options.precision, options.useScientificNotation)
+               << truss::utils::string::formatReal(
+                      node.fx, options.precision, options.useScientificNotation)
+               << std::setw(20)
+               << truss::utils::string::formatReal(
+                      node.fy, options.precision, options.useScientificNotation)
                << "\n";
             hasLoads = true;
         }
@@ -212,10 +232,14 @@ void TextExporter::writeDisplacementsSection(std::ostream& os,
 
     for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
         os << "  " << std::left << std::setw(10) << i << std::setw(20)
-           << truss::utils::string::formatReal(results.getDisplacements()[i], options.precision, options.useScientificNotation) << "\n";
+           << truss::utils::string::formatReal(
+                  results.getDisplacements()[i], options.precision, options.useScientificNotation)
+           << "\n";
     }
 
-    os << "\n  Maximum Displacement: " << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+    os << "\n  Maximum Displacement: "
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << " m\n";
 }
 
@@ -233,7 +257,9 @@ void TextExporter::writeMemberForcesSection(std::ostream& os,
         std::string type = (force > 0) ? "Tension" : "Compression";
 
         os << "  " << std::left << std::setw(12) << (i + 1) << std::setw(20)
-           << truss::utils::string::formatReal(force, options.precision, options.useScientificNotation) << std::setw(15) << type << "\n";
+           << truss::utils::string::formatReal(
+                  force, options.precision, options.useScientificNotation)
+           << std::setw(15) << type << "\n";
     }
 }
 
@@ -248,7 +274,9 @@ void TextExporter::writeReactionsSection(std::ostream& os,
 
     for (size_t i = 0; i < results.getReactions().size(); ++i) {
         os << "  " << std::left << std::setw(10) << i << std::setw(25)
-           << truss::utils::string::formatReal(results.getReactions()[i], options.precision, options.useScientificNotation) << "\n";
+           << truss::utils::string::formatReal(
+                  results.getReactions()[i], options.precision, options.useScientificNotation)
+           << "\n";
     }
 }
 
@@ -261,8 +289,14 @@ void TextExporter::writeMetadataSection(std::ostream& os,
     os << "  Iterations:         " << results.getIterations() << "\n";
     os << "  Total DOFs:         " << results.getTotalDofs() << "\n";
     os << "  Free DOFs:          " << results.getFreeDofs() << "\n";
-    os << "  Max Displacement:   " << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation) << " m\n";
-    os << "  Max Stress:         " << truss::utils::string::formatReal(results.getMaxStress(), options.precision, options.useScientificNotation) << " Pa\n";
+    os << "  Max Displacement:   "
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+       << " m\n";
+    os << "  Max Stress:         "
+       << truss::utils::string::formatReal(
+              results.getMaxStress(), options.precision, options.useScientificNotation)
+       << " Pa\n";
 }
 
 }  // namespace truss::infrastructure::export_

@@ -64,7 +64,6 @@ private:
     static void createLoads(tinyxml2::XMLDocument& doc,
                             tinyxml2::XMLElement* root,
                             const core::interfaces::TrussDTO& trussData);
-
 };
 
 }  // namespace truss::infrastructure::io

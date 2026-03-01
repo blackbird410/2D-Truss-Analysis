@@ -8,13 +8,13 @@
 
 #pragma once
 
+#include "utilities/math_utils.hpp"
+
 #include <Eigen/Dense>
 
 #include <cstdint>
 #include <memory>
 #include <vector>
-
-#include "utilities/math_utils.hpp"
 
 namespace truss::core {
 

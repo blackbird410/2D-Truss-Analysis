@@ -8,11 +8,12 @@
 
 #include "xml_truss_reader.hpp"
 
+#include "infrastructure/io/support_type_serializer.hpp"
+
 #include <algorithm>
 #include <sstream>
 #include <unordered_map>
 #include <unordered_set>
-#include "infrastructure/io/support_type_serializer.hpp"
 
 namespace truss::infrastructure::io {
 

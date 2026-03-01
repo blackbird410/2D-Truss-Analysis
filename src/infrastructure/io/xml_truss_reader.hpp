@@ -120,7 +120,6 @@ private:
                            core::interfaces::TrussDTO& dto,
                            const std::unordered_set<core::NodeId>& validNodeIds);
 
-
     /**
      * @brief Get required attribute as double
      * @param element XML element to read from

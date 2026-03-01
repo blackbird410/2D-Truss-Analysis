@@ -8,9 +8,10 @@
 
 #include "xml_exporter.hpp"
 
+#include "utilities/string_utils.hpp"
+
 #include <ctime>
 #include <fstream>
-#include "utilities/string_utils.hpp"
 
 namespace truss::infrastructure::export_ {
 
@@ -98,8 +99,14 @@ void XMLExporter::writeGeometrySection(std::ostream& os,
     os << "    <Nodes>\n";
     for (const auto& node : truss.getNodeViews()) {
         os << "      <Node id=\"" << node.id << "\">\n";
-        os << "        <X>" << truss::utils::string::formatReal(node.x, options.precision, options.useScientificNotation) << "</X>\n";
-        os << "        <Y>" << truss::utils::string::formatReal(node.y, options.precision, options.useScientificNotation) << "</Y>\n";
+        os << "        <X>"
+           << truss::utils::string::formatReal(
+                  node.x, options.precision, options.useScientificNotation)
+           << "</X>\n";
+        os << "        <Y>"
+           << truss::utils::string::formatReal(
+                  node.y, options.precision, options.useScientificNotation)
+           << "</Y>\n";
         os << "        <SupportType>" << static_cast<int>(node.support) << "</SupportType>\n";
         os << "      </Node>\n";
     }
@@ -111,7 +118,10 @@ void XMLExporter::writeGeometrySection(std::ostream& os,
         os << "      <Member id=\"" << member.id << "\">\n";
         os << "        <StartNode>" << member.startNodeId << "</StartNode>\n";
         os << "        <EndNode>" << member.endNodeId << "</EndNode>\n";
-        os << "        <Length>" << truss::utils::string::formatReal(member.length, options.precision, options.useScientificNotation) << "</Length>\n";
+        os << "        <Length>"
+           << truss::utils::string::formatReal(
+                  member.length, options.precision, options.useScientificNotation)
+           << "</Length>\n";
         os << "      </Member>\n";
     }
     os << "    </Members>\n";
@@ -127,12 +137,22 @@ void XMLExporter::writePropertiesSection(std::ostream& os,
 
     for (const auto& member : truss.getMemberViews()) {
         os << "      <Member id=\"" << member.id << "\">\n";
-        os << "        <YoungModulus>" << truss::utils::string::formatReal(member.youngModulus, options.precision, options.useScientificNotation)
+        os << "        <YoungModulus>"
+           << truss::utils::string::formatReal(
+                  member.youngModulus, options.precision, options.useScientificNotation)
            << "</YoungModulus>\n";
-        os << "        <YieldStrength>" << truss::utils::string::formatReal(member.yieldStrength, options.precision, options.useScientificNotation)
+        os << "        <YieldStrength>"
+           << truss::utils::string::formatReal(
+                  member.yieldStrength, options.precision, options.useScientificNotation)
            << "</YieldStrength>\n";
-        os << "        <Density>" << truss::utils::string::formatReal(member.density, options.precision, options.useScientificNotation) << "</Density>\n";
-        os << "        <Area>" << truss::utils::string::formatReal(member.area, options.precision, options.useScientificNotation) << "</Area>\n";
+        os << "        <Density>"
+           << truss::utils::string::formatReal(
+                  member.density, options.precision, options.useScientificNotation)
+           << "</Density>\n";
+        os << "        <Area>"
+           << truss::utils::string::formatReal(
+                  member.area, options.precision, options.useScientificNotation)
+           << "</Area>\n";
         os << "      </Member>\n";
     }
 
@@ -150,8 +170,14 @@ void XMLExporter::writeLoadsSection(std::ostream& os,
         // Only export nodes with non-zero forces
         if (node.fx != 0.0 || node.fy != 0.0) {
             os << "      <Force nodeId=\"" << node.id << "\">\n";
-            os << "        <Fx>" << truss::utils::string::formatReal(node.fx, options.precision, options.useScientificNotation) << "</Fx>\n";
-            os << "        <Fy>" << truss::utils::string::formatReal(node.fy, options.precision, options.useScientificNotation) << "</Fy>\n";
+            os << "        <Fx>"
+               << truss::utils::string::formatReal(
+                      node.fx, options.precision, options.useScientificNotation)
+               << "</Fx>\n";
+            os << "        <Fy>"
+               << truss::utils::string::formatReal(
+                      node.fy, options.precision, options.useScientificNotation)
+               << "</Fy>\n";
             os << "      </Force>\n";
         }
     }
@@ -168,12 +194,15 @@ void XMLExporter::writeDisplacementsSection(std::ostream& os,
 
     for (size_t i = 0; i < results.getDisplacements().size(); ++i) {
         os << "      <Displacement dof=\"" << i << "\">";
-        os << truss::utils::string::formatReal(results.getDisplacements()[i], options.precision, options.useScientificNotation);
+        os << truss::utils::string::formatReal(
+            results.getDisplacements()[i], options.precision, options.useScientificNotation);
         os << "</Displacement>\n";
     }
 
     os << "    </Values>\n";
-    os << "    <MaxDisplacement>" << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+    os << "    <MaxDisplacement>"
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << "</MaxDisplacement>\n";
     os << "  </Displacements>\n";
 }
@@ -188,7 +217,8 @@ void XMLExporter::writeMemberForcesSection(std::ostream& os,
         Real force = results.getMemberForces()[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
         os << "      <Force memberId=\"" << (i + 1) << "\" type=\"" << type << "\">";
-        os << truss::utils::string::formatReal(force, options.precision, options.useScientificNotation);
+        os << truss::utils::string::formatReal(
+            force, options.precision, options.useScientificNotation);
         os << "</Force>\n";
     }
 
@@ -204,7 +234,8 @@ void XMLExporter::writeReactionsSection(std::ostream& os,
 
     for (size_t i = 0; i < results.getReactions().size(); ++i) {
         os << "      <Reaction dof=\"" << i << "\">";
-        os << truss::utils::string::formatReal(results.getReactions()[i], options.precision, options.useScientificNotation);
+        os << truss::utils::string::formatReal(
+            results.getReactions()[i], options.precision, options.useScientificNotation);
         os << "</Reaction>\n";
     }
 
@@ -220,7 +251,10 @@ void XMLExporter::writeMetadataSection(std::ostream& os,
     os << "    <Iterations>" << results.getIterations() << "</Iterations>\n";
     os << "    <TotalDofs>" << results.getTotalDofs() << "</TotalDofs>\n";
     os << "    <FreeDofs>" << results.getFreeDofs() << "</FreeDofs>\n";
-    os << "    <MaxStress>" << truss::utils::string::formatReal(results.getMaxStress(), options.precision, options.useScientificNotation) << "</MaxStress>\n";
+    os << "    <MaxStress>"
+       << truss::utils::string::formatReal(
+              results.getMaxStress(), options.precision, options.useScientificNotation)
+       << "</MaxStress>\n";
     os << "  </Analysis>\n";
 }
 

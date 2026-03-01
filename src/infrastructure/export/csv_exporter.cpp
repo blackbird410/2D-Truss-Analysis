@@ -8,9 +8,10 @@
 
 #include "csv_exporter.hpp"
 
+#include "utilities/string_utils.hpp"
+
 #include <ctime>
 #include <fstream>
-#include "utilities/string_utils.hpp"
 
 namespace truss::infrastructure::export_ {
 
@@ -92,8 +93,13 @@ void CSVExporter::writeGeometrySection(std::ostream& os,
     os << "Node ID" << delim << "X" << delim << "Y" << delim << "Support Type" << std::endl;
     auto nodes = truss.getNodeViews();
     for (const auto& node : nodes) {
-        os << node.id << delim << truss::utils::string::formatReal(node.x, options.precision, options.useScientificNotation) << delim
-           << truss::utils::string::formatReal(node.y, options.precision, options.useScientificNotation) << delim << static_cast<int>(node.support) << std::endl;
+        os << node.id << delim
+           << truss::utils::string::formatReal(
+                  node.x, options.precision, options.useScientificNotation)
+           << delim
+           << truss::utils::string::formatReal(
+                  node.y, options.precision, options.useScientificNotation)
+           << delim << static_cast<int>(node.support) << std::endl;
     }
 
     os << std::endl;
@@ -104,7 +110,9 @@ void CSVExporter::writeGeometrySection(std::ostream& os,
     auto members = truss.getMemberViews();
     for (const auto& member : members) {
         os << member.id << delim << member.startNodeId << delim << member.endNodeId << delim
-           << truss::utils::string::formatReal(member.length, options.precision, options.useScientificNotation) << std::endl;
+           << truss::utils::string::formatReal(
+                  member.length, options.precision, options.useScientificNotation)
+           << std::endl;
     }
 }
 
@@ -118,9 +126,19 @@ void CSVExporter::writePropertiesSection(std::ostream& os,
 
     auto members = truss.getMemberViews();
     for (const auto& member : members) {
-        os << member.id << delim << truss::utils::string::formatReal(member.youngModulus, options.precision, options.useScientificNotation) << delim
-           << truss::utils::string::formatReal(member.density, options.precision, options.useScientificNotation) << delim << truss::utils::string::formatReal(member.area, options.precision, options.useScientificNotation)
-           << delim << truss::utils::string::formatReal(member.yieldStrength, options.precision, options.useScientificNotation) << std::endl;
+        os << member.id << delim
+           << truss::utils::string::formatReal(
+                  member.youngModulus, options.precision, options.useScientificNotation)
+           << delim
+           << truss::utils::string::formatReal(
+                  member.density, options.precision, options.useScientificNotation)
+           << delim
+           << truss::utils::string::formatReal(
+                  member.area, options.precision, options.useScientificNotation)
+           << delim
+           << truss::utils::string::formatReal(
+                  member.yieldStrength, options.precision, options.useScientificNotation)
+           << std::endl;
     }
 }
 
@@ -135,8 +153,13 @@ void CSVExporter::writeLoadsSection(std::ostream& os,
     for (const auto& node : nodes) {
         // Only export nodes with non-zero forces
         if (node.fx != 0.0 || node.fy != 0.0) {
-            os << node.id << delim << truss::utils::string::formatReal(node.fx, options.precision, options.useScientificNotation) << delim
-               << truss::utils::string::formatReal(node.fy, options.precision, options.useScientificNotation) << std::endl;
+            os << node.id << delim
+               << truss::utils::string::formatReal(
+                      node.fx, options.precision, options.useScientificNotation)
+               << delim
+               << truss::utils::string::formatReal(
+                      node.fy, options.precision, options.useScientificNotation)
+               << std::endl;
         }
     }
 }
@@ -150,7 +173,10 @@ void CSVExporter::writeDisplacementsSection(std::ostream& os,
     os << "DOF" << delim << "Displacement" << std::endl;
     const auto& displacements = results.getDisplacements();
     for (size_t i = 0; i < displacements.size(); ++i) {
-        os << i << delim << truss::utils::string::formatReal(displacements[i], options.precision, options.useScientificNotation) << std::endl;
+        os << i << delim
+           << truss::utils::string::formatReal(
+                  displacements[i], options.precision, options.useScientificNotation)
+           << std::endl;
     }
 }
 
@@ -165,7 +191,10 @@ void CSVExporter::writeMemberForcesSection(std::ostream& os,
     for (size_t i = 0; i < memberForces.size() && i < truss.getMemberCount(); ++i) {
         Real force = memberForces[i];
         std::string type = (force > 0) ? "Tension" : "Compression";
-        os << (i + 1) << delim << truss::utils::string::formatReal(force, options.precision, options.useScientificNotation) << delim << type << std::endl;
+        os << (i + 1) << delim
+           << truss::utils::string::formatReal(
+                  force, options.precision, options.useScientificNotation)
+           << delim << type << std::endl;
     }
 }
 
@@ -178,7 +207,10 @@ void CSVExporter::writeReactionsSection(std::ostream& os,
     os << "DOF" << delim << "Reaction Force" << std::endl;
     const auto& reactions = results.getReactions();
     for (size_t i = 0; i < reactions.size(); ++i) {
-        os << i << delim << truss::utils::string::formatReal(reactions[i], options.precision, options.useScientificNotation) << std::endl;
+        os << i << delim
+           << truss::utils::string::formatReal(
+                  reactions[i], options.precision, options.useScientificNotation)
+           << std::endl;
     }
 }
 
@@ -192,9 +224,14 @@ void CSVExporter::writeMetadataSection(std::ostream& os,
     os << "Iterations" << delim << results.getIterations() << std::endl;
     os << "Total DOFs" << delim << results.getTotalDofs() << std::endl;
     os << "Free DOFs" << delim << results.getFreeDofs() << std::endl;
-    os << "Max Displacement" << delim << truss::utils::string::formatReal(results.getMaxDisplacement(), options.precision, options.useScientificNotation)
+    os << "Max Displacement" << delim
+       << truss::utils::string::formatReal(
+              results.getMaxDisplacement(), options.precision, options.useScientificNotation)
        << std::endl;
-    os << "Max Stress" << delim << truss::utils::string::formatReal(results.getMaxStress(), options.precision, options.useScientificNotation) << std::endl;
+    os << "Max Stress" << delim
+       << truss::utils::string::formatReal(
+              results.getMaxStress(), options.precision, options.useScientificNotation)
+       << std::endl;
 }
 
 }  // namespace truss::infrastructure::export_

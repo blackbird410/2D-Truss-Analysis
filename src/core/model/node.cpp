@@ -84,7 +84,8 @@ bool Node::isCoincidentWith(const Node& other, Real tolerance) const {
 }
 
 bool Node::hasAppliedForce() const {
-    return !truss::utils::math::isZero(m_appliedForce.fx) || !truss::utils::math::isZero(m_appliedForce.fy);
+    return !truss::utils::math::isZero(m_appliedForce.fx) ||
+           !truss::utils::math::isZero(m_appliedForce.fy);
 }
 
 int Node::getConstraintCount() const {

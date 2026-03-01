@@ -26,8 +26,7 @@ inline bool isZero(double value, double tolerance = DEFAULT_TOLERANCE) noexcept 
 /**
  * @brief Returns true if |a - b| < tolerance.
  */
-inline bool isApproxEqual(double a, double b,
-                          double tolerance = DEFAULT_TOLERANCE) noexcept {
+inline bool isApproxEqual(double a, double b, double tolerance = DEFAULT_TOLERANCE) noexcept {
     return std::abs(a - b) < tolerance;
 }
 
