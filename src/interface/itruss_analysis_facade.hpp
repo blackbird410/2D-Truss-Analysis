@@ -58,7 +58,11 @@ struct AnalysisWorkflowResult {
  *
  * This interface combines ITrussService and IAnalysisService into a single
  * unified interface. It resolves the diamond inheritance problem by
- * explicitly declaring the clearAll() method once.
+ * explicitly declaring the clearAll() method once, and additionally
+ * exposes the high-level workflow methods that consumers (e.g. CLI command
+ * classes) depend on.  Declaring these methods here — rather than only on
+ * the concrete TrussAnalysisFacade — ensures that high-level modules
+ * never need to include or name the concrete implementation.
  *
  * Note: isValidTrussHandle and isValidResultsHandle are already inherited
  * from the respective base interfaces and do not need redeclaration.
@@ -68,17 +72,98 @@ class ITrussAnalysisFacade : public truss::application::ITrussService,
 public:
     virtual ~ITrussAnalysisFacade() = default;
 
-    // Resolve clearAll() ambiguity from multiple inheritance
-    // Both ITrussService and IAnalysisService declare clearAll()
-    // Implementations should clear both truss and analysis resources
+    // =========================================================
+    // Ambiguity resolution
+    // =========================================================
+
+    // Resolve clearAll() ambiguity from multiple inheritance.
+    // Both ITrussService and IAnalysisService declare clearAll().
+    // Implementations should clear both truss and analysis resources.
     virtual void clearAll() = 0;
+
+    // =========================================================
+    // High-level workflow methods
+    // =========================================================
+    // These methods are the primary API surface for CLI consumers.
+    // Declaring them here (as pure virtuals) ensures that CLI command
+    // classes depend only on this interface and never on the concrete
+    // TrussAnalysisFacade class, satisfying the Dependency Inversion
+    // Principle.
+
+    /**
+     * @brief Complete workflow: load → validate → analyze
+     * @param filepath Path to truss model file
+     * @param options  Analysis configuration options
+     * @return AnalysisWorkflowResult with handles on success, error on failure
+     */
+    virtual AnalysisWorkflowResult
+    analyzeFromFile(const std::filesystem::path& filepath,
+                    const core::analysis::AnalysisOptions& options = {}) = 0;
+
+    /**
+     * @brief Complete workflow: build → validate → analyze
+     * @param builder TrussBuilder with configured truss (not modified)
+     * @param options Analysis configuration options
+     * @return AnalysisWorkflowResult with handles on success, error on failure
+     */
+    virtual AnalysisWorkflowResult
+    analyzeInteractive(TrussBuilder& builder,
+                       const core::analysis::AnalysisOptions& options = {}) = 0;
+
+    /**
+     * @brief Complete workflow: load → validate (no analysis)
+     * @param filepath Path to truss model file
+     * @return ValidationResult with detailed validation report
+     */
+    virtual core::validation::ValidationResult
+    validateFromFile(const std::filesystem::path& filepath) = 0;
+
+    /**
+     * @brief Export analysis results with explicit format
+     *
+     * Simplified overload that does not require a separate truss parameter;
+     * the facade resolves the associated truss from the results handle.
+     *
+     * @param resultsHandle Handle to analysis results
+     * @param format        Explicit export format
+     * @param filepath      Export file path
+     * @param options       Export options (default: all data)
+     * @return true on success, false on failure
+     */
+    virtual bool
+    exportResults(application::ResultsHandle resultsHandle,
+                  truss::ExportFormat format,
+                  const std::filesystem::path& filepath,
+                  const infrastructure::export_::ExportOptions& options = {}) = 0;
+
+    /**
+     * @brief Export analysis results with format auto-detected from filepath extension
+     *
+     * Simplified overload that does not require a separate truss parameter.
+     *
+     * @param resultsHandle Handle to analysis results
+     * @param filepath      Export file path (extension determines format)
+     * @param options       Export options (default: all data)
+     * @return true on success, false on failure
+     */
+    virtual bool
+    exportResults(application::ResultsHandle resultsHandle,
+                  const std::filesystem::path& filepath,
+                  const infrastructure::export_::ExportOptions& options = {}) = 0;
+
+    // Bring the IAnalysisService::exportResults overloads (which take an
+    // explicit Truss and return Result<bool>) back into scope, so they are
+    // not hidden by the simpler bool overloads declared above.
+    using truss::application::IAnalysisService::exportResults;
 
     // All other methods are inherited from base interfaces:
     // - ITrussService: createTruss, loadTruss, saveTruss, clearTruss,
     //                  isValidTrussHandle, getTrussView, getTrussMutable,
     //                  validateTruss, addNode, addMember, removeNode,
     //                  removeMember, setNodeSupport, applyNodeLoad, clearNodeLoad
-    // - IAnalysisService: analyze, getResultsView, exportResults,
+    // - IAnalysisService: analyze, getResultsView,
+    //                     exportResults(handle, format, filepath, truss, opts),
+    //                     exportResults(handle, filepath, truss, opts),
     //                     clearResults, isValidResultsHandle
 };
 
