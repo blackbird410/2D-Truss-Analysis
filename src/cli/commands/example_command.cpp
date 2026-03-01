@@ -2,117 +2,65 @@
  * @file example_command.cpp
  * @brief CLI command for generating example truss models.
  * @version 3.0.0
- * @date 2026-02-24
+ * @date 2026-02-27
  * @author Neil Taison Rigaud
  *
- * TECHNICAL DEBT:
- * - Includes core/model/truss.hpp for direct geometry construction
- * - Required by getTrussMutable() which returns Truss& reference
- * - Necessitates access to Domain types: SupportType, MaterialProperties, etc.
- * - FUTURE: Replace with Application-layer Builder API to eliminate this dependency
+ * REFACTORING NOTE:
+ * - Now uses TrussBuilder fluent API for truss construction
+ * - Uses ITrussAnalysisFacade for analysis orchestration
+ * - Eliminates direct core/model/truss.hpp dependency
+ * - Demonstrates best practices for Interface layer usage
  */
 
 #include "example_command.hpp"
 
-#include "../../core/model/truss.hpp"
-
 namespace truss::cli::commands {
 
-ExampleCommand::ExampleCommand(truss::application::TrussApplicationService& trussService,
-                               truss::application::AnalysisApplicationService& analysisService,
+ExampleCommand::ExampleCommand(truss::interface::ITrussAnalysisFacade& facade,
                                truss::cli::presenters::ConsolePresenter& presenter,
                                bool verbose)
-    : m_trussService(trussService), m_analysisService(analysisService), m_presenter(presenter),
-      m_verbose(verbose) {}
+    : m_facade(facade), m_presenter(presenter), m_verbose(verbose) {}
 
 int ExampleCommand::execute() {
-    using namespace truss::application;
+    using namespace truss::interface;
     using namespace truss::core;
 
-    m_presenter.displayInfo("Running example truss analysis...\n");
+    m_presenter.displayHeader();
+    m_presenter.displayInfo("Running example 3-member truss analysis...\n");
 
-    // Create truss via Application service
-    auto createResult = m_trussService.createTruss("Example Truss");
-    if (!createResult) {
-        m_presenter.displayError(createResult.errorMessage);
-        return 1;
-    }
-    TrussHandle handle = createResult.value;
+    // Build truss using fluent interface (no direct core API usage)
+    TrussBuilder builder("Example 3-Member Truss");
+    builder.setName("Example 3-Member Truss")
+        .addNode(0.0, 0.0, SupportType::Pinned)   // Node 1: Fixed support
+        .addNode(4.0, 0.0, SupportType::RollerX)  // Node 2: Roller support
+        .addNode(2.0, 3.0, SupportType::Free)     // Node 3: Free node
+        .addMember(NodeId(1), NodeId(2))          // Member 1-2
+        .addMember(NodeId(1), NodeId(3))          // Member 1-3
+        .addMember(NodeId(2), NodeId(3))          // Member 2-3
+        .applyForce(NodeId(3), 0.0, -50000.0);    // 50 kN downward load
 
-    // Build geometry
-    auto& truss = m_trussService.getTrussMutable(handle);
-
-    // Add nodes
-    auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);   // Fixed support
-    auto node2 = truss.addNode(4.0, 0.0, SupportType::RollerX);  // Roller support (Y-constrained)
-    auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);     // Free node
-
-    // Define material properties (steel)
-    MaterialProperties steel;
-    steel.youngModulus = 200e9;   // Pa
-    steel.density = 7850;         // kg/m³
-    steel.yieldStrength = 250e6;  // Pa
-    steel.name = "Steel S355";
-
-    // Define section properties
-    SectionProperties section;
-    section.area = 2e-3;  // m² (20 cm²)
-    section.designation = "L50x50x5";
-
-    // Add members
-    truss.addMember(node1, node2, steel, section);
-    truss.addMember(node1, node3, steel, section);
-    truss.addMember(node2, node3, steel, section);
-
-    // Apply loads
-    truss.applyForce(node3->getId(), Force2D(0.0, -50000.0));  // 50 kN downward
-
-    // Display statistics via view interface
-    const truss::core::interfaces::ITrussView& trussView = m_trussService.getTrussView(handle);
-    m_presenter.displayTrussStatistics(trussView);
-
-    // Validate via Application service
-    auto validateResult = m_trussService.validateTruss(handle);
-    if (!validateResult) {
-        m_presenter.displayError(validateResult.errorMessage);
-        m_trussService.clearTruss(handle);
-        return 1;
+    if (m_verbose) {
+        m_presenter.displayInfo("Truss structure created using fluent builder API.\n");
     }
 
-    if (!validateResult.value.isValid()) {
-        m_presenter.displayError("Truss validation failed");
-        m_trussService.clearTruss(handle);
-        return 1;
-    }
-
-    // Analyze via Application service
-    m_presenter.displayInfo("Performing structural analysis...");
-
-    // Configure analysis options
-    truss::core::analysis::AnalysisOptions options;
-    options.verbose = m_verbose;
-    options.useDirectSolver = true;
-    options.computeReactions = true;
-
-    auto analysisResult = m_analysisService.analyze(truss, options);
+    // Analyze using facade
+    m_presenter.displayInfo("Performing structural analysis...\n");
+    auto analysisResult = m_facade.analyzeInteractive(builder);
 
     if (!analysisResult) {
-        m_presenter.displayError(analysisResult.errorMessage);
-        m_trussService.clearTruss(handle);
+        m_presenter.displayError("Analysis failed: " + analysisResult.errorMessage);
         return 1;
     }
 
-    // Display results via view interface
-    const truss::core::interfaces::IAnalysisResultsView& resultsView =
-        m_analysisService.getResultsView(analysisResult.value);
+    if (m_verbose) {
+        m_presenter.displaySuccess("Analysis completed successfully.");
+    }
+
+    // Display results
+    const auto& resultsView = m_facade.getResultsView(analysisResult.resultsHandle);
     m_presenter.displayAnalysisResults(resultsView);
 
-    m_presenter.displaySuccess("Analysis completed successfully!");
-
-    // Cleanup via Application service
-    m_trussService.clearTruss(handle);
-    m_analysisService.clearResults(analysisResult.value);
-
+    m_presenter.displaySuccess("\nExample analysis complete!");
     return 0;
 }
 

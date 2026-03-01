@@ -9,7 +9,7 @@
 
 #pragma once
 
-#include "application/truss_application_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
 
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QLineEdit>
@@ -46,7 +46,7 @@ public:
      * @param editController Controller for coordinating truss edits
      * @param parent Parent widget
      */
-    explicit MemberInputWidget(truss::application::TrussApplicationService& trussService,
+    explicit MemberInputWidget(truss::application::ITrussService& trussService,
                                truss_controllers::TrussEditController& editController,
                                QWidget* parent = nullptr);
 
@@ -97,7 +97,7 @@ private:
     void setupUI();
 
     // Dependencies (Clean Architecture)
-    truss::application::TrussApplicationService& m_trussService;
+    truss::application::ITrussService& m_trussService;
     truss_controllers::TrussEditController& m_editController;
     truss::application::TrussHandle m_currentTrussHandle;
 

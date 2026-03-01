@@ -26,7 +26,7 @@ namespace truss::gui {
 // DrawingCanvas Implementation
 //=============================================================================
 
-DrawingCanvas::DrawingCanvas(application::TrussApplicationService& trussService, QWidget* parent)
+DrawingCanvas::DrawingCanvas(application::ITrussService& trussService, QWidget* parent)
     : QWidget(parent), m_trussService(trussService), m_drawingMode(DrawingMode::Select),
       m_trussHandle(0), m_scale(DEFAULT_SCALE), m_offset(0.0, 0.0), m_gridVisible(true),
       m_snapToGrid(true), m_gridSpacing(GRID_SPACING_DEFAULT),
@@ -1468,8 +1468,8 @@ void PropertyPanel::onNodePositionChanged() {
 // InteractiveDrawingWidget Implementation
 //=============================================================================
 
-InteractiveDrawingWidget::InteractiveDrawingWidget(
-    application::TrussApplicationService& trussService, QWidget* parent)
+InteractiveDrawingWidget::InteractiveDrawingWidget(application::ITrussService& trussService,
+                                                   QWidget* parent)
     : QWidget(parent), m_trussService(trussService) {
     setupUI();
     setupToolbar();

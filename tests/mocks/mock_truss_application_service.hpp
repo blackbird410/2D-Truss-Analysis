@@ -58,7 +58,7 @@ public:
 
     MOCK_METHOD(void, clearAll, (), (override));
 
-    MOCK_METHOD(bool, isValidHandle, (application::TrussHandle handle), (const, override));
+    MOCK_METHOD(bool, isValidTrussHandle, (application::TrussHandle handle), (const, override));
 
     // Mock view access (required by ITrussService interface)
     MOCK_METHOD(const core::interfaces::ITrussView&,

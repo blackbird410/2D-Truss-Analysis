@@ -20,6 +20,7 @@
 #include "../../../src/core/model/node.hpp"
 #include "../../../src/core/model/truss.hpp"
 #include "../../../src/infrastructure/export/exporter_factory.hpp"
+#include "truss/export/export_format.hpp"
 
 #include <filesystem>
 #include <gtest/gtest.h>
@@ -311,7 +312,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_CSV_Succeeds) {
 
     auto filepath = tempDir / "results.csv";
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::CSV, filepath, truss);
+        analysisResult.value, truss::ExportFormat::CSV, filepath, truss);
 
     EXPECT_TRUE(exportResult.success);
     EXPECT_TRUE(std::filesystem::exists(filepath));
@@ -324,7 +325,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_JSON_Succeeds) {
 
     auto filepath = tempDir / "results.json";
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::JSON, filepath, truss);
+        analysisResult.value, truss::ExportFormat::JSON, filepath, truss);
 
     EXPECT_TRUE(exportResult.success);
     EXPECT_TRUE(std::filesystem::exists(filepath));
@@ -337,7 +338,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_XML_Succeeds) {
 
     auto filepath = tempDir / "results.xml";
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::XML, filepath, truss);
+        analysisResult.value, truss::ExportFormat::XML, filepath, truss);
 
     EXPECT_TRUE(exportResult.success);
     EXPECT_TRUE(std::filesystem::exists(filepath));
@@ -350,7 +351,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_HTML_Succeeds) {
 
     auto filepath = tempDir / "results.html";
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::HTML, filepath, truss);
+        analysisResult.value, truss::ExportFormat::HTML, filepath, truss);
 
     EXPECT_TRUE(exportResult.success);
     EXPECT_TRUE(std::filesystem::exists(filepath));
@@ -363,7 +364,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_Text_Succeeds) {
 
     auto filepath = tempDir / "results.txt";
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::TXT, filepath, truss);
+        analysisResult.value, truss::ExportFormat::TXT, filepath, truss);
 
     EXPECT_TRUE(exportResult.success);
     EXPECT_TRUE(std::filesystem::exists(filepath));
@@ -376,7 +377,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_LaTeX_Succeeds) {
 
     auto filepath = tempDir / "results.tex";
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::LaTeX, filepath, truss);
+        analysisResult.value, truss::ExportFormat::LaTeX, filepath, truss);
 
     EXPECT_TRUE(exportResult.success);
     EXPECT_TRUE(std::filesystem::exists(filepath));
@@ -407,7 +408,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_WithOptions_Succeeds) {
 
     auto filepath = tempDir / "results.csv";
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::CSV, filepath, truss, options);
+        analysisResult.value, truss::ExportFormat::CSV, filepath, truss, options);
 
     EXPECT_TRUE(exportResult.success);
 }
@@ -417,7 +418,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_InvalidHandle_ReturnsFailur
 
     auto filepath = tempDir / "results.csv";
     auto exportResult = analysisService.exportResults(99999,  // Invalid handle
-                                                      ExportFormat::CSV,
+                                                      truss::ExportFormat::CSV,
                                                       filepath,
                                                       truss);
 
@@ -433,7 +434,7 @@ TEST_F(AnalysisApplicationServiceTest, ExportResults_InvalidPath_ReturnsFailure)
     // Invalid path
     auto filepath = std::filesystem::path("/invalid/nonexistent/path/results.csv");
     auto exportResult = analysisService.exportResults(
-        analysisResult.value, ExportFormat::CSV, filepath, truss);
+        analysisResult.value, truss::ExportFormat::CSV, filepath, truss);
 
     EXPECT_FALSE(exportResult.success);
     EXPECT_FALSE(exportResult.errorMessage.empty());

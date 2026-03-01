@@ -8,22 +8,11 @@
 
 #pragma once
 
+#include "truss/export/export_format.hpp"  // MUST be outside namespace
+
 #include <string>
 
 namespace truss::infrastructure::export_ {
-
-/**
- * @brief Export format options
- */
-enum class ExportFormat {
-    CSV,    ///< Comma-separated values
-    TSV,    ///< Tab-separated values
-    JSON,   ///< JSON format
-    XML,    ///< XML format
-    TXT,    ///< Plain text format
-    LaTeX,  ///< LaTeX table format
-    HTML    ///< HTML table format
-};
 
 /**
  * @brief Export section options

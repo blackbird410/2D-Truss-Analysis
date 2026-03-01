@@ -55,7 +55,7 @@ public:
     MOCK_METHOD(truss::application::Result<bool>,
                 exportResults,
                 (truss::application::ResultsHandle handle,
-                 truss::infrastructure::export_::ExportFormat format,
+                 truss::ExportFormat format,
                  const std::filesystem::path& filepath,
                  const truss::core::Truss& truss,
                  const truss::infrastructure::export_::ExportOptions& options),
@@ -73,5 +73,8 @@ public:
 
     MOCK_METHOD(void, clearAll, (), (override));
 
-    MOCK_METHOD(bool, isValidHandle, (truss::application::ResultsHandle handle), (const, override));
+    MOCK_METHOD(bool,
+                isValidResultsHandle,
+                (truss::application::ResultsHandle handle),
+                (const, override));
 };

@@ -22,6 +22,7 @@ using namespace truss::core::assembly;
 using namespace truss::application;
 using namespace truss::infrastructure::io;
 using namespace truss::infrastructure::export_;
+using truss::ExportFormat;
 
 class E2EWorkflowTest : public ::testing::Test {
 protected:

@@ -48,9 +48,9 @@ public:
     ~FileLogger() override;
 
     // Rule of Five: FileLogger manages file handle resource
-    FileLogger(const FileLogger&) = delete;            // No copy - file handle unique
+    FileLogger(const FileLogger&) = delete;  // No copy - file handle unique
     FileLogger& operator=(const FileLogger&) = delete;
-    FileLogger(FileLogger&&) = delete;                 // No move - simplify lifetime
+    FileLogger(FileLogger&&) = delete;  // No move - simplify lifetime
     FileLogger& operator=(FileLogger&&) = delete;
 
     // ILogger interface implementation

@@ -81,13 +81,13 @@ core::analysis::AnalysisResults& AnalysisApplicationService::getResults(ResultsH
 
 Result<bool>
 AnalysisApplicationService::exportResults(ResultsHandle handle,
-                                          infrastructure::export_::ExportFormat format,
+                                          truss::ExportFormat format,
                                           const std::filesystem::path& filepath,
                                           const core::Truss& truss,
                                           const infrastructure::export_::ExportOptions& options) {
     try {
         // Validate handle
-        if (!isValidHandle(handle)) {
+        if (!isValidResultsHandle(handle)) {
             return Result<bool>::Failure("Invalid results handle: " + std::to_string(handle));
         }
 
@@ -139,7 +139,7 @@ void AnalysisApplicationService::clearAll() {
     m_nextHandle = 1;
 }
 
-bool AnalysisApplicationService::isValidHandle(ResultsHandle handle) const {
+bool AnalysisApplicationService::isValidResultsHandle(ResultsHandle handle) const {
     return m_results.find(handle) != m_results.end();
 }
 

@@ -18,14 +18,13 @@
  * and real Infrastructure components to verify the complete dependency chain.
  */
 
-#include "../../src/application/analysis_application_service.hpp"
-#include "../../src/application/truss_application_service.hpp"
 #include "../../src/cli/argument_parser.hpp"
 #include "../../src/cli/commands/example_command.hpp"
 #include "../../src/cli/commands/help_command.hpp"
 #include "../../src/cli/presenters/console_presenter.hpp"
 #include "../../src/infrastructure/adapters/console_output_adapter.hpp"
 #include "../../src/infrastructure/logging/logger_factory.hpp"
+#include "../../src/interface/truss_analysis_facade.hpp"
 
 #include <gtest/gtest.h>
 #include <sstream>
@@ -33,14 +32,14 @@
 using namespace truss::cli;
 using namespace truss::cli::commands;
 using namespace truss::cli::presenters;
-using namespace truss::application;
+using namespace truss::interface;
 using namespace truss::infrastructure::adapters;
 using namespace truss::infrastructure::logging;
 
 /**
  * @brief Test fixture for CLI integration tests
  *
- * Provides common setup: real Application services, real logger,
+ * Provides common setup: real Interface facade, real logger,
  * real output adapter, and real presenter.
  */
 class CLIIntegrationTest : public ::testing::Test {
@@ -56,15 +55,13 @@ protected:
         // Create real CLI presenter
         presenter = std::make_unique<ConsolePresenter>(*outputAdapter);
 
-        // Create real Application services
-        trussService = std::make_unique<TrussApplicationService>();
-        analysisService = std::make_unique<AnalysisApplicationService>();
+        // Create real Interface facade (encapsulates Application services)
+        facade = std::make_unique<TrussAnalysisFacade>();
     }
 
     void TearDown() override {
         // Clean up in reverse order of creation
-        analysisService.reset();
-        trussService.reset();
+        facade.reset();
         presenter.reset();
         outputAdapter.reset();
         logger.reset();
@@ -73,15 +70,14 @@ protected:
     std::shared_ptr<ILogger> logger;
     std::unique_ptr<ConsoleOutputAdapter> outputAdapter;
     std::unique_ptr<ConsolePresenter> presenter;
-    std::unique_ptr<TrussApplicationService> trussService;
-    std::unique_ptr<AnalysisApplicationService> analysisService;
+    std::unique_ptr<TrussAnalysisFacade> facade;
 };
 
 /**
  * @brief Test: ExampleCommand produces correct output end-to-end
  *
  * Verifies that ExampleCommand executes successfully using real
- * Application services and produces expected output via real logger.
+ * Interface facade and produces expected output via real logger.
  *
  * Expected Behavior:
  * - Command executes without errors
@@ -91,10 +87,7 @@ protected:
  */
 TEST_F(CLIIntegrationTest, ExampleCommandProducesOutput) {
     // Arrange: Create real ExampleCommand with real dependencies
-    ExampleCommand cmd(*trussService,
-                       *analysisService,
-                       *presenter,
-                       false  // verbose = false
+    ExampleCommand cmd(*facade, *presenter, false  // verbose = false
     );
 
     // Act: Execute command
@@ -120,10 +113,7 @@ TEST_F(CLIIntegrationTest, ExampleCommandProducesOutput) {
  */
 TEST_F(CLIIntegrationTest, ExampleCommandVerboseModeWorks) {
     // Arrange: Create ExampleCommand with verbose enabled
-    ExampleCommand cmd(*trussService,
-                       *analysisService,
-                       *presenter,
-                       true  // verbose = true
+    ExampleCommand cmd(*facade, *presenter, true  // verbose = true
     );
 
     // Act: Execute command
@@ -173,7 +163,7 @@ TEST_F(CLIIntegrationTest, HelpCommandProducesOutput) {
  */
 TEST_F(CLIIntegrationTest, HelpCommandDisplaysMultipleCommands) {
     // Arrange: Create commands for help display
-    ExampleCommand exampleCmd(*trussService, *analysisService, *presenter, false);
+    ExampleCommand exampleCmd(*facade, *presenter, false);
 
     std::vector<ICommand*> commands;
     commands.push_back(&exampleCmd);
@@ -200,7 +190,7 @@ TEST_F(CLIIntegrationTest, HelpCommandDisplaysMultipleCommands) {
  */
 TEST_F(CLIIntegrationTest, CompleteDependencyChainWorks) {
     // Arrange: Create ExampleCommand (most complex command)
-    ExampleCommand cmd(*trussService, *analysisService, *presenter, false);
+    ExampleCommand cmd(*facade, *presenter, false);
 
     // Act & Assert: Execution completes without throwing
     EXPECT_NO_THROW({
@@ -222,7 +212,7 @@ TEST_F(CLIIntegrationTest, CompleteDependencyChainWorks) {
  */
 TEST_F(CLIIntegrationTest, ErrorHandlingWorksCorrectly) {
     // Arrange: Create command
-    ExampleCommand cmd(*trussService, *analysisService, *presenter, false);
+    ExampleCommand cmd(*facade, *presenter, false);
 
     // Act: Execute (example command should succeed, but we test error handling exists)
     int exitCode = cmd.execute();
@@ -285,7 +275,7 @@ TEST_F(CLIIntegrationTest, FullCLIWorkflowSimulation) {
 
     // Create command registry (simplified)
     std::map<std::string, ICommand*> commands;
-    ExampleCommand exampleCmd(*trussService, *analysisService, *presenter, args.verbose);
+    ExampleCommand exampleCmd(*facade, *presenter, args.verbose);
     commands["example"] = &exampleCmd;
 
     // Act: Find and execute command

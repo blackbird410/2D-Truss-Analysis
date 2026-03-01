@@ -9,8 +9,8 @@
 
 #pragma once
 
-#include "application/analysis_application_service.hpp"
-#include "application/truss_application_service.hpp"
+#include "application/interfaces/ianalysis_service.hpp"
+#include "application/interfaces/itruss_service.hpp"
 
 #include <QtWidgets/QTableWidget>
 #include <QtWidgets/QTextEdit>
@@ -28,7 +28,7 @@ namespace truss::gui {
  * - All rendering is read-only
  *
  * Architecture:
- * - Depends on: TrussApplicationService, AnalysisApplicationService (injected)
+ * - Depends on: ITrussService, IAnalysisService (injected)
  * - Uses: ITrussView, IAnalysisResultsView interfaces for data access
  * - No controller dependency (read-only widget)
  */
@@ -42,8 +42,8 @@ public:
      * @param analysisService Application service for analysis results
      * @param parent Qt parent widget
      */
-    explicit ResultsWidget(application::TrussApplicationService& trussService,
-                           application::AnalysisApplicationService& analysisService,
+    explicit ResultsWidget(application::ITrussService& trussService,
+                           application::IAnalysisService& analysisService,
                            QWidget* parent = nullptr);
 
 public slots:
@@ -67,8 +67,8 @@ private:
     void updateSummary(application::TrussHandle trussHandle);
 
     // Service dependencies (injected)
-    application::TrussApplicationService& m_trussService;
-    application::AnalysisApplicationService& m_analysisService;
+    application::ITrussService& m_trussService;
+    application::IAnalysisService& m_analysisService;
 
     // Current state
     application::TrussHandle m_currentTrussHandle;

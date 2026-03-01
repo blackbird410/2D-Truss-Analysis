@@ -14,20 +14,17 @@
 
 namespace truss::cli::commands {
 
-ExportCommand::ExportCommand(truss::application::TrussApplicationService& trussService,
-                             truss::application::AnalysisApplicationService& analysisService,
+ExportCommand::ExportCommand(truss::interface::ITrussAnalysisFacade& facade,
                              truss::cli::presenters::ConsolePresenter& presenter,
                              const std::string& trussFile,
                              const std::string& resultsFile,
                              const std::string& outputFile,
                              const std::optional<std::string>& exportFormat,
                              bool verbose)
-    : m_trussService(trussService), m_analysisService(analysisService), m_presenter(presenter),
-      m_trussFile(trussFile), m_resultsFile(resultsFile), m_outputFile(outputFile),
-      m_exportFormat(exportFormat), m_verbose(verbose) {}
+    : m_facade(facade), m_presenter(presenter), m_trussFile(trussFile), m_resultsFile(resultsFile),
+      m_outputFile(outputFile), m_exportFormat(exportFormat), m_verbose(verbose) {}
 
 int ExportCommand::execute() {
-    using namespace truss::application;
     using namespace truss::infrastructure::export_;
 
     m_presenter.displayHeader();
@@ -40,50 +37,21 @@ int ExportCommand::execute() {
         return 1;
     }
 
-    if (!validateInputFile(m_resultsFile)) {
-        m_presenter.displayError("Results file does not exist or is not readable: " +
-                                 m_resultsFile);
-        m_presenter.displayInfo("Suggestion: Run analysis first to generate results file.\n");
-        m_presenter.displayInfo("Example: TrussAnalysisCLI analyze --file " + m_trussFile + "\n");
-        return 1;
-    }
-
     if (m_verbose) {
         m_presenter.displayInfo("Truss file: " + m_trussFile + "\n");
-        m_presenter.displayInfo("Results file: " + m_resultsFile + "\n");
         m_presenter.displayInfo("Output file: " + m_outputFile + "\n");
     }
 
-    // Load truss from file
-    auto loadTrussResult = m_trussService.loadTruss(m_trussFile);
-    if (!loadTrussResult) {
-        m_presenter.displayError("Failed to load truss: " + loadTrussResult.errorMessage);
-        m_presenter.displayInfo("Suggestion: Verify the truss file format is valid.\n");
-        return 1;
-    }
-    TrussHandle trussHandle = loadTrussResult.value;
+    // Analyze truss from file using facade
+    m_presenter.displayInfo("\nAnalyzing truss to generate results for export...\n");
+    auto analysisResult = m_facade.analyzeFromFile(m_trussFile);
 
-    if (m_verbose) {
-        m_presenter.displaySuccess("Truss loaded successfully.");
-    }
-
-    // Load results from file (note: this assumes results were saved previously)
-    // For now, we'll need to re-run analysis since we don't have results persistence yet
-    m_presenter.displayInfo("\nRe-analyzing to generate results for export...\n");
-
-    // Get mutable truss for analysis
-    const auto& truss = m_trussService.getTrussMutable(trussHandle);
-
-    // Run analysis
-    auto analysisResult = m_analysisService.analyze(truss);
     if (!analysisResult) {
         m_presenter.displayError("Analysis failed: " + analysisResult.errorMessage);
         m_presenter.displayInfo("Suggestion: Validate the truss structure first.\n");
         m_presenter.displayInfo("Example: TrussAnalysisCLI validate --file " + m_trussFile + "\n");
-        m_trussService.clearTruss(trussHandle);
         return 1;
     }
-    ResultsHandle resultsHandle = analysisResult.value;
 
     if (m_verbose) {
         m_presenter.displaySuccess("Analysis completed successfully.");
@@ -95,9 +63,7 @@ int ExportCommand::execute() {
         auto parsedFormat = parseExportFormat(m_exportFormat.value());
         if (!parsedFormat.has_value()) {
             m_presenter.displayError("Invalid export format: " + m_exportFormat.value());
-            m_presenter.displayInfo("Valid formats: JSON, XML, CSV, TSV, TXT, YAML, MARKDOWN\n");
-            m_analysisService.clearResults(resultsHandle);
-            m_trussService.clearTruss(trussHandle);
+            m_presenter.displayInfo("Valid formats: JSON, XML, CSV, TSV, TXT, LaTeX, HTML\n");
             return 1;
         }
         format = parsedFormat.value();
@@ -133,24 +99,16 @@ int ExportCommand::execute() {
         m_presenter.displayInfo("Export format: " + formatName + "\n");
     }
 
-    // Export results
+    // Export results using facade
     m_presenter.displayInfo("\nExporting results...\n");
-    auto exportResult = m_analysisService.exportResults(
-        resultsHandle, format, m_outputFile, truss, {}  // Default export options
-    );
-
-    if (!exportResult) {
-        m_presenter.displayError("Export failed: " + exportResult.errorMessage);
-        m_presenter.displayInfo(
-            "Suggestion: Check that the output directory exists and is writable.\n");
-        m_analysisService.clearResults(resultsHandle);
-        m_trussService.clearTruss(trussHandle);
+    if (!m_facade.exportResults(analysisResult.resultsHandle, format, m_outputFile)) {
+        m_presenter.displayError("Export failed: Check output directory is writable.");
+        m_presenter.displayInfo("Suggestion: Verify that the output directory exists and you have "
+                                "write permissions.\n");
         return 1;
     }
 
-    // Cleanup
-    m_analysisService.clearResults(resultsHandle);
-    m_trussService.clearTruss(trussHandle);
+    // Automatic cleanup via facade RAII (no manual clearResults or clearTruss needed)
 
     m_presenter.displaySuccess("\n✓ Results exported successfully to " + m_outputFile);
 
@@ -195,8 +153,7 @@ bool ExportCommand::validateInputFile(const std::string& filepath) {
     }
 }
 
-std::optional<truss::infrastructure::export_::ExportFormat>
-ExportCommand::parseExportFormat(const std::string& formatStr) {
+std::optional<truss::ExportFormat> ExportCommand::parseExportFormat(const std::string& formatStr) {
     using namespace truss::infrastructure::export_;
 
     // Convert to uppercase for case-insensitive comparison
@@ -222,8 +179,7 @@ ExportCommand::parseExportFormat(const std::string& formatStr) {
     return std::nullopt;
 }
 
-truss::infrastructure::export_::ExportFormat
-ExportCommand::getDefaultExportFormat(const std::string& filepath) {
+truss::ExportFormat ExportCommand::getDefaultExportFormat(const std::string& filepath) {
     using namespace truss::infrastructure::export_;
 
     namespace fs = std::filesystem;

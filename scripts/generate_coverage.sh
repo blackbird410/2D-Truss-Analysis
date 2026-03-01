@@ -103,15 +103,17 @@ genhtml "$COVERAGE_DIR/coverage_filtered.info" \
 echo -e "${GREEN}✓ HTML report generated${NC}"
 echo ""
 
-# Generate text summary
+# Generate text summary  
 echo -e "${YELLOW}Generating coverage summary...${NC}"
 lcov --summary "$COVERAGE_DIR/coverage_filtered.info" \
      --rc branch_coverage=1 --ignore-errors format,inconsistent,mismatch > "$COVERAGE_DIR/summary.txt" 2>&1
 
-# Extract key metrics
-LINE_COVERAGE=$(grep "lines" "$COVERAGE_DIR/summary.txt" | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\)%.*/\1/')
-FUNCTION_COVERAGE=$(grep "functions" "$COVERAGE_DIR/summary.txt" | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\)%.*/\1/')
-BRANCH_COVERAGE=$(grep "branches" "$COVERAGE_DIR/summary.txt" | sed 's/.*\([0-9][0-9]*\.[0-9][0-9]*\)%.*/\1/')
+# Extract key metrics using more specific patterns
+# Pattern explanation: Match a colon followed by space, then capture number.number, then %
+# Using [^%] to explicitly avoid matching the % in the replacement part incorrectly
+LINE_COVERAGE=$(grep -E "lines" "$COVERAGE_DIR/summary.txt" | grep -oE '[0-9]+\.[0-9]+%' | head -1 | sed 's/%$//')
+FUNCTION_COVERAGE=$(grep -E "functions" "$COVERAGE_DIR/summary.txt" | grep -oE '[0-9]+\.[0-9]+%' | head -1 | sed 's/%$//')
+BRANCH_COVERAGE=$(grep -E "branches" "$COVERAGE_DIR/summary.txt" | grep -oE '[0-9]+\.[0-9]+%' | head -1 | sed 's/%$//')
 
 # Create timestamped summary
 cat > "$REPORT_DIR/coverage_${TIMESTAMP}.txt" <<EOF
