@@ -6,10 +6,11 @@
  * @author Neil Taison Rigaud
  */
 
-#pragma once
 
+#pragma once
 #include "application/interfaces/ianalysis_service.hpp"
-#include "interface/truss_analysis_facade.hpp"
+#include "truss/analysis/analysis_options.hpp"
+#include "interface/itruss_analysis_facade.hpp"
 
 namespace truss::interface {
 
@@ -19,9 +20,10 @@ namespace truss::interface {
  * Provides GUI compatibility while routing operations through the
  * facade-owned analysis service.
  */
+class ITrussAnalysisFacade;
 class FacadeAnalysisServiceAdapter final : public application::IAnalysisService {
 public:
-    explicit FacadeAnalysisServiceAdapter(TrussAnalysisFacade& facade);
+    explicit FacadeAnalysisServiceAdapter(truss::interface::ITrussAnalysisFacade& facade);
 
     application::Result<application::ResultsHandle>
     analyze(const core::Truss& truss, const core::analysis::AnalysisOptions& options = {}) override;
@@ -47,7 +49,7 @@ public:
     bool isValidResultsHandle(application::ResultsHandle handle) const override;
 
 private:
-    TrussAnalysisFacade& m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;
 };
 
 }  // namespace truss::interface

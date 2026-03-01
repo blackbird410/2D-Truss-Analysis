@@ -7,11 +7,12 @@
  */
 
 #include "facade_analysis_service_adapter.hpp"
+#include "truss/analysis/analysis_options.hpp"
 #include "truss_analysis_facade.hpp"
 
 namespace truss::interface {
 
-FacadeAnalysisServiceAdapter::FacadeAnalysisServiceAdapter(TrussAnalysisFacade& facade)
+FacadeAnalysisServiceAdapter::FacadeAnalysisServiceAdapter(ITrussAnalysisFacade& facade)
     : m_facade(facade) {}
 
 application::Result<application::ResultsHandle>
