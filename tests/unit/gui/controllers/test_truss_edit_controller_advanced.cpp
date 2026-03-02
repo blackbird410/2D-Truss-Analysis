@@ -13,7 +13,7 @@
 #include "gui/presenters/truss_data_presenter.hpp"
 #include "mocks/mock_truss_application_service.hpp"
 
-#include <QCoreApplication>
+#include <QApplication>
 #include <QSignalSpy>
 #include <QTimer>
 
@@ -35,10 +35,13 @@ using namespace testing;
 class TrussEditControllerAdvancedTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        static int argc = 0;
-        static char* argv[] = {nullptr};
+        // QApplication (superset of QCoreApplication) so QWidget-based tests
+        // in the same binary can share the instance safely.
+        static int   argc    = 1;
+        static char  argv0[] = "unit_tests";
+        static char* argv[]  = {argv0, nullptr};
         if (!QCoreApplication::instance()) {
-            app = new QCoreApplication(argc, argv);
+            app = new QApplication(argc, argv);
         }
 
         mockService = std::make_unique<MockTrussApplicationService>();
@@ -56,7 +59,7 @@ protected:
     std::unique_ptr<MockTrussApplicationService> mockService;
     std::unique_ptr<TrussDataPresenter> presenter;
     std::unique_ptr<TrussEditController> controller;
-    QCoreApplication* app = nullptr;
+    QApplication* app = nullptr;
 
     const application::TrussHandle testHandle = 42;
     const core::Point2D testPosition{1.5, 2.5};
