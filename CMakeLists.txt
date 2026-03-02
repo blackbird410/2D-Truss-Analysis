@@ -628,7 +628,6 @@ if(BUILD_GUI)
     src/gui/panels/inspector_panel.hpp
     src/gui/panels/analysis_control_bar.hpp
     src/gui/panels/results_dock_panel.hpp
-    src/gui/panels/notification_rail.hpp
     src/gui/panels/analysis_options_dialog.hpp
     # Models (new — src/gui/models/)
     src/gui/models/node_table_model.hpp
@@ -643,6 +642,17 @@ if(BUILD_GUI)
     # Controllers (new — _v2 suffix until legacy counterparts are deleted in Phase 8)
     src/gui/controllers/analysis_controller_v2.hpp
     src/gui/controllers/project_controller_v2.hpp
+    # -----------------------------------------------------------------------
+    # Phase 2: Qt Infrastructure Setup
+    # -----------------------------------------------------------------------
+    # NotificationRail — full Q_OBJECT implementation
+    src/gui/panels/notification_rail.hpp
+    src/gui/panels/notification_rail.cpp
+    # ThemeLoader utility
+    src/gui/theme_loader.hpp
+    src/gui/theme_loader.cpp
+    # Qt resources (AUTORCC — compiles QSS themes into the binary)
+    src/gui/resources/resources.qrc
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
