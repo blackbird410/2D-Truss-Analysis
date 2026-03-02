@@ -614,6 +614,35 @@ if(BUILD_GUI)
     src/gui/controllers/truss_edit_controller.cpp
     src/gui/controllers/analysis_controller.cpp
     src/gui/controllers/project_controller.cpp
+    # -----------------------------------------------------------------------
+    # Phase 1: New GUI Architecture Stubs
+    # These headers are listed here for IDE indexing and build-system awareness.
+    # No Q_OBJECT macros are present in Phase 1 stubs; AUTOMOC will not process
+    # them. Implementation and Q_OBJECT are added in the phases noted per file.
+    # -----------------------------------------------------------------------
+    # State
+    src/gui/state/workspace_state.hpp
+    # Widgets (new)
+    src/gui/widgets/truss_canvas_widget.hpp
+    # Panels (new — src/gui/panels/)
+    src/gui/panels/inspector_panel.hpp
+    src/gui/panels/analysis_control_bar.hpp
+    src/gui/panels/results_dock_panel.hpp
+    src/gui/panels/notification_rail.hpp
+    src/gui/panels/analysis_options_dialog.hpp
+    # Models (new — src/gui/models/)
+    src/gui/models/node_table_model.hpp
+    src/gui/models/member_table_model.hpp
+    src/gui/models/validation_list_model.hpp
+    src/gui/models/results_table_model.hpp
+    # Controllers (new — non-conflicting names)
+    src/gui/controllers/main_window_controller.hpp
+    src/gui/controllers/canvas_controller.hpp
+    src/gui/controllers/inspector_controller.hpp
+    src/gui/controllers/export_controller.hpp
+    # Controllers (new — _v2 suffix until legacy counterparts are deleted in Phase 8)
+    src/gui/controllers/analysis_controller_v2.hpp
+    src/gui/controllers/project_controller_v2.hpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
