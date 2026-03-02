@@ -428,6 +428,8 @@ if(BUILD_TESTING)
             tests/unit/gui/controllers/test_project_controller.cpp
             tests/unit/gui/controllers/test_analysis_controller.cpp
             tests/unit/gui/presenters/test_truss_data_presenter.cpp
+            # Phase 2: NotificationRail panel tests
+            tests/unit/gui/panels/test_notification_rail.cpp
             # GUI source files needed for GUI tests
             src/gui/presenters/truss_data_presenter.cpp
             src/gui/presenters/analysis_results_presenter.cpp
@@ -435,6 +437,8 @@ if(BUILD_TESTING)
             src/gui/controllers/truss_edit_controller.cpp
             src/gui/controllers/analysis_controller.cpp
             src/gui/controllers/project_controller.cpp
+            # Phase 2: panel / utility sources under test
+            src/gui/panels/notification_rail.cpp
         )
     endif()
     
