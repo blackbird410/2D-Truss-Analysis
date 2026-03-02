@@ -1,0 +1,17 @@
+/* dark.qss — Phase 2 placeholder
+ * Full dark theme implementation is added in Phase 2 (Qt Infrastructure Setup).
+ * Colour tokens are defined in docs/architecture/GUI-MODERNIZATION-ARCHITECTURE.md
+ * Section 5.4.1.
+ *
+ * Token reference:
+ *   --bg-primary:     #1E2028   (window background)
+ *   --bg-secondary:   #252830   (card / groupbox background)
+ *   --bg-canvas:      #14161C   (canvas drawing area)
+ *   --accent-primary: #5B9BD5   (buttons, selection highlights)
+ *   --accent-hover:   #7BB3E0   (hover states)
+ *   --text-primary:   #E8EAED   (primary readable text)
+ *   --text-secondary: #9AA0A6   (labels, placeholders)
+ *   --status-ok:      #34A853
+ *   --status-warning: #FFC107
+ *   --status-error:   #EA4335
+ */
