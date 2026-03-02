@@ -17,7 +17,7 @@
 #include "gui/presenters/truss_data_presenter.hpp"
 #include "mocks/mock_truss_application_service.hpp"
 
-#include <QCoreApplication>
+#include <QApplication>
 #include <QSignalSpy>
 
 #include <gmock/gmock.h>
@@ -38,11 +38,15 @@ using namespace testing;
 class TrussEditControllerTest : public ::testing::Test {
 protected:
     void SetUp() override {
-        // Create Qt application context for signal/slot testing
-        static int argc = 0;
-        static char* argv[] = {nullptr};
+        // Create Qt application context for signal/slot testing.
+        // QApplication is used (superset of QCoreApplication) so that
+        // test suites requiring QWidget (e.g. NotificationRailTest) can
+        // safely share the same application instance.
+        static int   argc    = 1;
+        static char  argv0[] = "unit_tests";
+        static char* argv[]  = {argv0, nullptr};
         if (!QCoreApplication::instance()) {
-            app = new QCoreApplication(argc, argv);
+            app = new QApplication(argc, argv);
         }
 
         // Create mock service and real presenter
@@ -65,7 +69,7 @@ protected:
     std::unique_ptr<MockTrussApplicationService> mockService;
     std::unique_ptr<TrussDataPresenter> presenter;
     std::unique_ptr<TrussEditController> controller;
-    QCoreApplication* app = nullptr;
+    QApplication* app = nullptr;
 
     // Test data
     const application::TrussHandle testHandle = 42;

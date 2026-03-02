@@ -428,6 +428,8 @@ if(BUILD_TESTING)
             tests/unit/gui/controllers/test_project_controller.cpp
             tests/unit/gui/controllers/test_analysis_controller.cpp
             tests/unit/gui/presenters/test_truss_data_presenter.cpp
+            # Phase 2: NotificationRail panel tests
+            tests/unit/gui/panels/test_notification_rail.cpp
             # GUI source files needed for GUI tests
             src/gui/presenters/truss_data_presenter.cpp
             src/gui/presenters/analysis_results_presenter.cpp
@@ -435,6 +437,8 @@ if(BUILD_TESTING)
             src/gui/controllers/truss_edit_controller.cpp
             src/gui/controllers/analysis_controller.cpp
             src/gui/controllers/project_controller.cpp
+            # Phase 2: panel / utility sources under test
+            src/gui/panels/notification_rail.cpp
         )
     endif()
     
@@ -628,7 +632,6 @@ if(BUILD_GUI)
     src/gui/panels/inspector_panel.hpp
     src/gui/panels/analysis_control_bar.hpp
     src/gui/panels/results_dock_panel.hpp
-    src/gui/panels/notification_rail.hpp
     src/gui/panels/analysis_options_dialog.hpp
     # Models (new — src/gui/models/)
     src/gui/models/node_table_model.hpp
@@ -643,6 +646,17 @@ if(BUILD_GUI)
     # Controllers (new — _v2 suffix until legacy counterparts are deleted in Phase 8)
     src/gui/controllers/analysis_controller_v2.hpp
     src/gui/controllers/project_controller_v2.hpp
+    # -----------------------------------------------------------------------
+    # Phase 2: Qt Infrastructure Setup
+    # -----------------------------------------------------------------------
+    # NotificationRail — full Q_OBJECT implementation
+    src/gui/panels/notification_rail.hpp
+    src/gui/panels/notification_rail.cpp
+    # ThemeLoader utility
+    src/gui/theme_loader.hpp
+    src/gui/theme_loader.cpp
+    # Qt resources (AUTORCC — compiles QSS themes into the binary)
+    src/gui/resources/resources.qrc
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
