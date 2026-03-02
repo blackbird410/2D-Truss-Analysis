@@ -1,0 +1,30 @@
+<!DOCTYPE RCC>
+<!--
+    resources.qrc — Qt resource file for TrussAnalysisGUI
+    ======================================================
+    Phase 1: Empty skeleton. Files are added in subsequent phases:
+      Phase 2: Dark and light QSS theme files added under :/themes/
+      Phase 7: SVG toolbar icons added under :/icons/
+
+    Phase 2 entries (preview — do not uncomment until files exist):
+    <qresource prefix="/themes">
+        <file alias="dark.qss">themes/dark.qss</file>
+        <file alias="light.qss">themes/light.qss</file>
+    </qresource>
+
+    Phase 7 entries (preview — do not uncomment until files exist):
+    <qresource prefix="/icons">
+        <file alias="new_project.svg">icons/new_project.svg</file>
+        <file alias="open_file.svg">icons/open_file.svg</file>
+        <file alias="save.svg">icons/save.svg</file>
+        <file alias="select.svg">icons/select.svg</file>
+        <file alias="add_node.svg">icons/add_node.svg</file>
+        <file alias="add_member.svg">icons/add_member.svg</file>
+        <file alias="delete.svg">icons/delete.svg</file>
+        <file alias="run_analysis.svg">icons/run_analysis.svg</file>
+        <file alias="export.svg">icons/export.svg</file>
+    </qresource>
+-->
+<RCC version="1.0">
+    <!-- Resources are populated starting from Phase 2 -->
+</RCC>

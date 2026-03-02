@@ -1,0 +1,17 @@
+/* light.qss — Phase 2 placeholder
+ * Full light theme implementation is added in Phase 2 (Qt Infrastructure Setup).
+ * Colour tokens are defined in docs/architecture/GUI-MODERNIZATION-ARCHITECTURE.md
+ * Section 5.4.1.
+ *
+ * Token reference:
+ *   --bg-primary:     #F5F5F5   (window background)
+ *   --bg-secondary:   #FFFFFF   (card / groupbox background)
+ *   --bg-canvas:      #FAFAFA   (canvas drawing area)
+ *   --accent-primary: #1565C0   (buttons, selection highlights)
+ *   --accent-hover:   #1976D2   (hover states)
+ *   --text-primary:   #1A1A1A   (primary readable text)
+ *   --text-secondary: #5F5F5F   (labels, placeholders)
+ *   --status-ok:      #2E7D32
+ *   --status-warning: #E65100
+ *   --status-error:   #C62828
+ */
