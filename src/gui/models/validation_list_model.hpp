@@ -2,54 +2,80 @@
  * @file validation_list_model.hpp
  * @brief Qt Item Model providing validation issues for QListView.
  *
- * Phase 1 stub — minimal compilable declaration only.
- * Full implementation in Phase 3 (Qt Item Models).
- *
- * @note Q_OBJECT is added in Phase 3.
+ * Phase 3: Qt Item Models — full implementation.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
- * @date 2026-03-02
+ * @date 2026-03-03
  */
 
 #pragma once
 
+#include "core/validation/truss_validator.hpp"
+
 #include <QAbstractListModel>
+#include <QColor>
+#include <QPixmap>
+
+#include <vector>
 
 namespace truss::gui::model {
+
+using truss::core::validation::ValidationIssue;
+using truss::core::validation::ValidationResult;
+using truss::core::validation::ValidationSeverity;
 
 /**
  * @brief List model that exposes validation issues from a ValidationResult.
  *
  * Each row represents one ValidationIssue.
  *
- * Roles implemented (Phase 3):
- *  - Qt::DisplayRole       — "[CATEGORY] message text"
- *  - Qt::DecorationRole    — severity icon from resource: :/icons/severity_*.svg
- *  - Qt::UserRole + 1      — QVariant(NodeId) of first affected node (0 if none)
- *  - Qt::UserRole + 2      — QVariant(MemberId) of first affected member (0 if none)
+ * Roles:
+ *  Qt::DisplayRole    — "[CATEGORY] message"
+ *  Qt::DecorationRole — 12×12 colour square per severity:
+ *                       Info=steel-blue, Warning=amber, Error=red, Fatal=dark-red
+ *  Qt::ToolTipRole    — technicalDetail string (if non-empty)
+ *  Qt::UserRole + 1   — QVariant(quint32) first affected NodeId, or 0
+ *  Qt::UserRole + 2   — QVariant(quint32) first affected MemberId, or 0
  *
- * The UserRole data enables click-to-select: InspectorController subscribes to
- * QListView::activated and uses these roles to focus the canvas selection.
+ * These UserRole values let controllers navigate the canvas to the issue location.
  *
- * @todo Phase 3: Add Q_OBJECT macro, implement all QAbstractListModel overrides,
- *       add refresh(const ValidationResult&) slot.
+ * Thread safety: all methods must be called from the GUI thread.
  */
 class ValidationListModel : public QAbstractListModel {
+    Q_OBJECT
+
 public:
-    explicit ValidationListModel(QObject* parent = nullptr) : QAbstractListModel(parent) {}
+    explicit ValidationListModel(QObject* parent = nullptr);
+    ~ValidationListModel() override;
 
-    [[nodiscard]] int rowCount(const QModelIndex& parent = {}) const override {
-        Q_UNUSED(parent)
-        return 0;
-    }
+    // -----------------------------------------------------------------------
+    // QAbstractListModel interface
+    // -----------------------------------------------------------------------
+    [[nodiscard]] int     rowCount(const QModelIndex& parent = {}) const override;
+    [[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
 
-    [[nodiscard]] QVariant data(const QModelIndex& /*index*/,
-                                int /*role*/ = Qt::DisplayRole) const override {
-        return {};
-    }
+    // Custom role constants
+    static constexpr int kNodeIdRole   = Qt::UserRole + 1;
+    static constexpr int kMemberIdRole = Qt::UserRole + 2;
 
-    // TODO Phase 3: void refresh(const core::validation::ValidationResult& result)
+public Q_SLOTS:
+    /**
+     * @brief Replace the cached issues with the contents of @p result.
+     * Calls beginResetModel / endResetModel.
+     */
+    void refresh(const ValidationResult& result);
+
+    /**
+     * @brief Clear all rows (convenience overload).
+     */
+    void clear();
+
+private:
+    [[nodiscard]] QColor   severityColor(ValidationSeverity severity) const;
+    [[nodiscard]] QPixmap  severityIcon(ValidationSeverity severity) const;
+
+    std::vector<ValidationIssue> m_issues;
 };
 
-}  // namespace truss::gui::model
+} // namespace truss::gui::model
