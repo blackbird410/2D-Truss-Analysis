@@ -635,9 +635,13 @@ if(BUILD_GUI)
     src/gui/panels/analysis_options_dialog.hpp
     # Models (new — src/gui/models/)
     src/gui/models/node_table_model.hpp
+    src/gui/models/node_table_model.cpp
     src/gui/models/member_table_model.hpp
+    src/gui/models/member_table_model.cpp
     src/gui/models/validation_list_model.hpp
+    src/gui/models/validation_list_model.cpp
     src/gui/models/results_table_model.hpp
+    src/gui/models/results_table_model.cpp
     # Controllers (new — non-conflicting names)
     src/gui/controllers/main_window_controller.hpp
     src/gui/controllers/canvas_controller.hpp
