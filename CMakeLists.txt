@@ -439,6 +439,16 @@ if(BUILD_TESTING)
             src/gui/controllers/project_controller.cpp
             # Phase 2: panel / utility sources under test
             src/gui/panels/notification_rail.cpp
+            # Phase 3: Qt Item Model tests
+            tests/unit/gui/models/test_node_table_model.cpp
+            tests/unit/gui/models/test_member_table_model.cpp
+            tests/unit/gui/models/test_validation_list_model.cpp
+            tests/unit/gui/models/test_results_table_model.cpp
+            # Phase 3: Qt Item Model sources under test
+            src/gui/models/node_table_model.cpp
+            src/gui/models/member_table_model.cpp
+            src/gui/models/validation_list_model.cpp
+            src/gui/models/results_table_model.cpp
         )
     endif()
     
