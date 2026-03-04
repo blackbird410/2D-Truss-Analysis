@@ -449,6 +449,12 @@ if(BUILD_TESTING)
             src/gui/models/member_table_model.cpp
             src/gui/models/validation_list_model.cpp
             src/gui/models/results_table_model.cpp
+            # Phase 4: Core Window & Navigation Framework tests
+            tests/unit/gui/controllers/test_main_window_controller.cpp
+            tests/unit/gui/widgets/test_truss_canvas_widget.cpp
+            # Phase 4: sources under test
+            src/gui/controllers/main_window_controller.cpp
+            src/gui/widgets/truss_canvas_widget.cpp
         )
     endif()
     
