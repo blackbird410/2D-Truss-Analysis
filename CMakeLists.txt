@@ -671,6 +671,16 @@ if(BUILD_GUI)
     src/gui/theme_loader.cpp
     # Qt resources (AUTORCC — compiles QSS themes into the binary)
     src/gui/resources/resources.qrc
+    # -----------------------------------------------------------------------
+    # Phase 4: Core Window & Navigation Framework
+    # -----------------------------------------------------------------------
+    # TrussCanvasWidget — full Q_OBJECT rendering pipeline
+    src/gui/widgets/truss_canvas_widget.cpp
+    # MainWindowController — Q_OBJECT, WorkspaceState owner
+    src/gui/controllers/main_window_controller.cpp
+    # New MainWindow skeleton (temp v2 suffix; renamed to main_window in Phase 8)
+    src/gui/main_window_v2.hpp
+    src/gui/main_window_v2.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
