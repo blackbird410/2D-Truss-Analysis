@@ -455,6 +455,27 @@ if(BUILD_TESTING)
             # Phase 4: sources under test
             src/gui/controllers/main_window_controller.cpp
             src/gui/widgets/truss_canvas_widget.cpp
+            # Phase 5: Feature Module Implementation — controller tests
+            tests/unit/gui/controllers/test_canvas_controller.cpp
+            tests/unit/gui/controllers/test_inspector_controller.cpp
+            tests/unit/gui/controllers/test_analysis_controller_v2.cpp
+            tests/unit/gui/controllers/test_project_controller_v2.cpp
+            tests/unit/gui/controllers/test_export_controller.cpp
+            # Phase 5: Feature Module Implementation — panel tests
+            tests/unit/gui/panels/test_inspector_panel.cpp
+            tests/unit/gui/panels/test_analysis_control_bar.cpp
+            tests/unit/gui/panels/test_results_dock_panel.cpp
+            # Phase 5: sources under test — panels
+            src/gui/panels/analysis_options_dialog.cpp
+            src/gui/panels/inspector_panel.cpp
+            src/gui/panels/analysis_control_bar.cpp
+            src/gui/panels/results_dock_panel.cpp
+            # Phase 5: sources under test — controllers
+            src/gui/controllers/canvas_controller.cpp
+            src/gui/controllers/inspector_controller.cpp
+            src/gui/controllers/analysis_controller_v2.cpp
+            src/gui/controllers/project_controller_v2.cpp
+            src/gui/controllers/export_controller.cpp
         )
     endif()
     
@@ -687,6 +708,22 @@ if(BUILD_GUI)
     # New MainWindow skeleton (temp v2 suffix; renamed to main_window in Phase 8)
     src/gui/main_window_v2.hpp
     src/gui/main_window_v2.cpp
+    # -----------------------------------------------------------------------
+    # Phase 5: Feature Module Implementation
+    # -----------------------------------------------------------------------
+    # IConfirmationProvider interface
+    src/gui/interfaces/iconfirmation_provider.hpp
+    # Panels — full Q_OBJECT implementations
+    src/gui/panels/analysis_options_dialog.cpp
+    src/gui/panels/inspector_panel.cpp
+    src/gui/panels/analysis_control_bar.cpp
+    src/gui/panels/results_dock_panel.cpp
+    # Controllers — full Q_OBJECT implementations
+    src/gui/controllers/canvas_controller.cpp
+    src/gui/controllers/inspector_controller.cpp
+    src/gui/controllers/analysis_controller_v2.cpp
+    src/gui/controllers/project_controller_v2.cpp
+    src/gui/controllers/export_controller.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE

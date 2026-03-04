@@ -1,53 +1,59 @@
 /**
  * @file export_controller.hpp
- * @brief Controller mediating export requests from result panels and
- *        IAnalysisService::exportResults calls.
+ * @brief Controller mediating export requests from ResultsDockPanel and
+ *        ITrussAnalysisFacade::exportResults calls.
  *
- * Phase 1 stub — class declaration only.
- * Full implementation in Phase 5.
- *
- * @note Q_OBJECT is added in Phase 5.
+ * Phase 5: Full Q_OBJECT implementation.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
- * @date 2026-03-02
+ * @date 2026-03-04
  */
 
 #pragma once
 
-#include <QObject>
+#include "truss/export/export_format.hpp"
 
-namespace truss::application { class IAnalysisService; }
+#include <QObject>
+#include <QString>
+
+#include <cstddef>
+
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
 
 namespace truss::gui::ctrl {
 
 /**
  * @brief Handles export requests from ResultsDockPanel.
  *
- * Receives exportRequested(format, path) signals from ResultsDockPanel and
- * calls IAnalysisService::exportResults(resultsHandle, format, path).
+ * Receives exportRequested(format, filepath) and forwards to
+ * facade.exportResults(resultsHandle, format, filepath).  The active
+ * results handle is updated via onResultsHandleUpdated.
  *
- * On success:  emits exportCompleted(outputPath)
- * On failure:  emits exportFailed(errorMessage) → NotificationRail
- *
- * @note ExportController receives IAnalysisService* (not the full facade)
- *       because it only needs export operations.
- *
- * @todo Phase 5: Add Q_OBJECT macro, implement onExportRequested slot with
- *       IAnalysisService call, hold resultsHandle updated from stateChanged.
+ * On success emits exportCompleted(path).
+ * On failure emits exportFailed(errorMessage).
  */
 class ExportController : public QObject {
-public:
-    explicit ExportController(QObject* parent = nullptr) : QObject(parent) {}
+    Q_OBJECT
 
-    // TODO Phase 5: explicit ExportController(application::IAnalysisService* service,
-    //                                          QObject* parent = nullptr)
-    // TODO Phase 5: public slots:
-    //   void onExportRequested(ExportFormat format, const QString& filePath)
-    //   void onResultsHandleUpdated(std::size_t resultsHandle)
-    // TODO Phase 5: signals:
-    //   void exportCompleted(const QString& outputPath)
-    //   void exportFailed(const QString& errorMessage)
+public:
+    explicit ExportController(truss::interface::ITrussAnalysisFacade& facade,
+                               QObject*                                parent = nullptr);
+
+public slots:
+    void onExportRequested(truss::ExportFormat format, const QString& filePath);
+    /// Update active results handle (called by MainWindowController).
+    void onResultsHandleUpdated(std::size_t resultsHandle);
+
+signals:
+    void exportCompleted(const QString& outputPath);
+    void exportFailed(const QString& errorMessage);
+
+private:
+    truss::interface::ITrussAnalysisFacade& m_facade;
+    std::size_t                              m_resultsHandle{0};
 };
 
 }  // namespace truss::gui::ctrl

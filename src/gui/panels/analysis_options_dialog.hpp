@@ -2,42 +2,60 @@
  * @file analysis_options_dialog.hpp
  * @brief Modal dialog for configuring solver options before analysis.
  *
- * Phase 1 stub — class declaration only.
- * Full implementation in Phase 5.
- *
- * @note Q_OBJECT is added in Phase 5.
+ * Phase 5: Full Q_OBJECT implementation.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
- * @date 2026-03-02
+ * @date 2026-03-04
  */
 
 #pragma once
 
+#include "core/analysis/analysis_orchestrator.hpp"
+
 #include <QDialog>
+
+class QComboBox;
+class QDoubleSpinBox;
+class QSpinBox;
+class QCheckBox;
 
 namespace truss::gui {
 
 /**
- * @brief Configuration dialog for analysis solver options.
+ * @brief Configuration dialog for solver options.
  *
- * Appears when the user clicks the "Options" gear button in AnalysisControlBar.
- * Exposes solver settings from AnalysisOptions (tolerance, max iterations,
- * solver type) as form fields.
+ * Exposes every field of `core::analysis::AnalysisOptions` as an editable
+ * form field.  Accepted settings are retrieved via options(); they can be
+ * pre-populated via setOptions().
  *
- * @note This is one of two permitted modal dialogs (the other being unsaved-
- *       changes confirmation in ProjectController). All other feedback uses
- *       the NotificationRail.
- *
- * @todo Phase 5: Add Q_OBJECT macro, implement QFormLayout with AnalysisOptions
- *       fields, OK/Cancel buttons, validate input ranges before accepting.
+ * This is one of two permitted modal dialogs (the other being unsaved-changes
+ * confirmation in ProjectController).  All other feedback uses NotificationRail.
  */
 class AnalysisOptionsDialog : public QDialog {
-public:
-    explicit AnalysisOptionsDialog(QWidget* parent = nullptr) : QDialog(parent) {}
+    Q_OBJECT
 
-    // TODO Phase 5: AnalysisOptions getOptions() const
-    // TODO Phase 5: void setOptions(const AnalysisOptions& options)
+public:
+    explicit AnalysisOptionsDialog(QWidget* parent = nullptr);
+
+    /// @brief Return the options currently shown in the dialog.
+    [[nodiscard]] core::analysis::AnalysisOptions options() const;
+
+    /// @brief Pre-populate all fields from @p opts.
+    void setOptions(const core::analysis::AnalysisOptions& opts);
+
+private slots:
+    void onSolverTypeChanged(int index);
+
+private:
+    void buildLayout();
+
+    QComboBox*      m_solverCombo{nullptr};
+    QDoubleSpinBox* m_toleranceSpin{nullptr};
+    QSpinBox*       m_maxIterSpin{nullptr};
+    QCheckBox*      m_computeReactionsCheck{nullptr};
+    QCheckBox*      m_checkStabilityCheck{nullptr};
+    QCheckBox*      m_verboseCheck{nullptr};
 };
 
 }  // namespace truss::gui
