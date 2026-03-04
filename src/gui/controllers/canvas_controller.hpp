@@ -1,57 +1,69 @@
 /**
  * @file canvas_controller.hpp
- * @brief Controller mediating between TrussCanvasWidget interactions and
- *        ITrussService facade calls.
+ * @brief Controller mediating TrussCanvasWidget interactions and
+ *        ITrussAnalysisFacade calls for node/member mutation.
  *
- * Phase 1 stub — class declaration only.
- * Full implementation in Phase 5.
- *
- * @note Q_OBJECT is added in Phase 5.
+ * Phase 5: Full Q_OBJECT implementation.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
- * @date 2026-03-02
+ * @date 2026-03-04
  */
 
 #pragma once
 
-#include <QObject>
+#include "application/truss_edit_dtos.hpp"
+#include "core/model/types.hpp"
 
-namespace truss::application { class ITrussService; }
+#include <QObject>
+#include <QString>
+
+#include <cstddef>
+
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
 
 namespace truss::gui::ctrl {
 
 /**
- * @brief Translates canvas interaction signals into ITrussService calls.
+ * @brief Translates canvas interaction signals into ITrussAnalysisFacade calls.
  *
- * Receives signals from TrussCanvasWidget (nodeDropRequested,
- * memberDrawRequested, deleteRequested) and forwards them to the
- * ITrussService* it was constructed with.
+ * CanvasController is constructed with a facade reference and a default
+ * truss handle.  When the user drops a node or draws a member on the canvas
+ * the corresponding signal is forwarded here; the controller calls the facade
+ * and emits trussModified(handle) on success or operationFailed(message) on
+ * failure.  The active handle is updated via onTrussHandleUpdated.
  *
- * On success:  emits trussModified(TrussHandle) to MainWindowController.
- * On failure:  emits operationFailed(QString) to NotificationRail.
- *
- * @note CanvasController receives ITrussService* (not the full facade) because
- *       it only needs node/member mutation operations. The sub-interface is
- *       extracted and passed by MainWindow during construction.
- *
- * @todo Phase 5: Add Q_OBJECT macro, implement all public slots with
- *       EXPECT_CALL-compatible facade calls, emit trussModified/operationFailed.
+ * New members are created with a default Steel material / 100 cm² section
+ * (sensible defaults pending a full material picker in Phase 6).
  */
 class CanvasController : public QObject {
-public:
-    explicit CanvasController(QObject* parent = nullptr) : QObject(parent) {}
+    Q_OBJECT
 
-    // TODO Phase 5: explicit CanvasController(application::ITrussService* service,
-    //                                          QObject* parent = nullptr)
-    // TODO Phase 5: public slots:
-    //   void onNodeDropRequested(core::Point2D pos, core::SupportType support)
-    //   void onMemberDrawRequested(core::NodeId startId, core::NodeId endId)
-    //   void onNodeDeleteRequested(core::NodeId id)
-    //   void onMemberDeleteRequested(core::MemberId id)
-    // TODO Phase 5: signals:
-    //   void trussModified(std::size_t trussHandle)
-    //   void operationFailed(const QString& message)
+public:
+    explicit CanvasController(truss::interface::ITrussAnalysisFacade& facade,
+                               QObject*                                parent = nullptr);
+
+public slots:
+    /// Drop a node at @p pos with given support type.
+    void onNodeDropRequested(truss::core::Point2D pos, truss::core::SupportType support);
+    /// Draw a member between two existing nodes.
+    void onMemberDrawRequested(truss::core::NodeId startId, truss::core::NodeId endId);
+    /// Delete a node and all members connected to it.
+    void onNodeDeleteRequested(truss::core::NodeId id);
+    /// Delete a single member.
+    void onMemberDeleteRequested(truss::core::MemberId id);
+    /// Update the active truss handle (called by MainWindowController on every truss change).
+    void onTrussHandleUpdated(std::size_t trussHandle);
+
+signals:
+    void trussModified(std::size_t trussHandle);
+    void operationFailed(const QString& message);
+
+private:
+    truss::interface::ITrussAnalysisFacade& m_facade;
+    std::size_t                              m_trussHandle{0};
 };
 
 }  // namespace truss::gui::ctrl
