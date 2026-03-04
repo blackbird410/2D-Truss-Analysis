@@ -1,59 +1,72 @@
 /**
  * @file project_controller_v2.hpp
- * @brief New ProjectController (truss::gui::ctrl namespace) that replaces the
+ * @brief New ProjectController (truss::gui::ctrl namespace) replacing the
  *        legacy truss_controllers::ProjectController from Phase 8 onward.
  *
- * Phase 1 stub — class declaration only.
- * Full implementation in Phase 5.
+ * Phase 5: Full Q_OBJECT implementation with IConfirmationProvider.
  *
- * @note NAMING: This file uses the _v2 suffix temporarily to coexist with the
- *       legacy src/gui/controllers/project_controller.hpp during Phases 1–7.
- *       In Phase 8 the legacy file is deleted and this file is renamed to
- *       project_controller.hpp.
- *
- * @note Q_OBJECT is added in Phase 5.
+ * @note NAMING: _v2 suffix coexists with legacy project_controller.hpp during
+ *       Phases 1–7.  Renamed to project_controller.hpp in Phase 8.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
- * @date 2026-03-02
+ * @date 2026-03-04
  */
 
 #pragma once
 
-#include <QObject>
+#include "gui/interfaces/iconfirmation_provider.hpp"
 
-namespace truss::application { class ITrussService; }
+#include <QObject>
+#include <QString>
+
+#include <cstddef>
+
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
 
 namespace truss::gui::ctrl {
 
 /**
- * @brief Manages project lifecycle: new, open, save, save-as, close.
+ * @brief Manages project lifecycle: new, open, save, save-as.
  *
- * Guards destructive actions (new project, close) against unsaved changes
- * using an IConfirmationProvider interface to allow headless testing without
- * modal dialogs. The default implementation delegates to QMessageBox.
- *
- * @todo Phase 5: Add Q_OBJECT macro, implement all project lifecycle slots,
- *       introduce IConfirmationProvider, wire QFileDialog calls, emit
- *       trussCreated/trussLoaded/projectSaved signals.
+ * Guards destructive actions (new project) against unsaved changes using
+ * IConfirmationProvider, enabling headless unit tests without modal dialogs.
+ * File paths are obtained via QFileDialog in production; tests inject a fake
+ * path by instead calling the slot directly.
  */
 class ProjectController : public QObject {
-public:
-    explicit ProjectController(QObject* parent = nullptr) : QObject(parent) {}
+    Q_OBJECT
 
-    // TODO Phase 5: explicit ProjectController(application::ITrussService* service,
-    //                                           QObject* parent = nullptr)
-    // TODO Phase 5: public slots:
-    //   void onNewProjectRequested()
-    //   void onOpenFileRequested()
-    //   void onSaveRequested()
-    //   void onSaveAsRequested()
-    //   void onTrussHandleUpdated(std::size_t trussHandle)
-    // TODO Phase 5: signals:
-    //   void trussCreated(std::size_t trussHandle)
-    //   void trussLoaded(std::size_t trussHandle, const QString& filePath)
-    //   void projectSaved(const QString& filePath)
-    //   void operationFailed(const QString& errorMessage)
+public:
+    explicit ProjectController(truss::interface::ITrussAnalysisFacade&         facade,
+                                truss::gui::interfaces::IConfirmationProvider&  confirmProvider,
+                                QObject*                                         parent = nullptr);
+
+    /// @brief Update dirty state (true = model has unsaved changes).
+    void setDirty(bool dirty) noexcept;
+
+public slots:
+    void onNewProjectRequested();
+    void onOpenFileRequested();
+    void onSaveRequested();
+    void onSaveAsRequested();
+    /// Update the active truss handle (called by MainWindowController).
+    void onTrussHandleUpdated(std::size_t trussHandle);
+
+signals:
+    void trussCreated(std::size_t trussHandle);
+    void trussLoaded(std::size_t trussHandle, const QString& filePath);
+    void projectSaved(const QString& filePath);
+    void operationFailed(const QString& errorMessage);
+
+private:
+    truss::interface::ITrussAnalysisFacade&        m_facade;
+    truss::gui::interfaces::IConfirmationProvider& m_confirm;
+    std::size_t                                     m_trussHandle{0};
+    QString                                         m_currentFilePath;
+    bool                                            m_isDirty{false};
 };
 
 }  // namespace truss::gui::ctrl
