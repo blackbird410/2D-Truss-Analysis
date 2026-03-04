@@ -2,12 +2,9 @@
  * @file truss_canvas_widget.hpp
  * @brief Interactive canvas widget for 2D truss geometry visualisation.
  *
- * Phase 1 stub — class declaration only.
- * Full rendering pipeline and interaction logic are implemented in Phase 4.
- * Full interaction (pan, zoom, node drop, member draw, select) in Phase 6.
- *
- * @note Q_OBJECT and paintEvent are added in Phase 4.
- *       Do NOT add Q_OBJECT to this stub — it would trigger unnecessary MOC runs.
+ * Phase 4: Full rendering pipeline — Q_OBJECT, paintEvent (7-step pipeline),
+ *          DisplayMode, refresh slot, viewport, Y-axis coordinate transform.
+ * Phase 6: Interaction layer added (pan, zoom, node drop, member draw, select).
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -16,39 +13,147 @@
 
 #pragma once
 
-#include <QWidget>
+#include "core/interfaces/itruss_view.hpp"
+#include "core/model/types.hpp"
 
-// Forward declarations — full includes deferred until Phase 4 implementation
-namespace truss::core::interfaces { class ITrussView; }
+#include <QRectF>
+#include <QTransform>
+#include <QWidget>
 
 namespace truss::gui {
 
 /**
  * @brief Renders a 2D truss model with optional result overlays.
  *
- * Responsibilities (Phase 4+):
- *  - Renders nodes, members, support symbols, force arrows
- *  - Supports three DisplayModes: Geometry, StressRatio, DeformedShape
- *  - Accepts mouse/keyboard events for model editing (Phase 6)
- *  - Emits signals for node/member creation and selection changes
+ * TrussCanvasWidget owns a @c QTransform m_worldToScreen that maps structural
+ * world coordinates (Y+ upward, metres) to Qt screen coordinates (Y+ downward,
+ * pixels).  The mapping is rebuilt whenever the viewport or widget size changes.
  *
- * Coordinate system: world coordinates use structural convention
- * (Y+ upward). The worldToScreen QTransform applies scale(1, -1)
- * to convert to Qt's screen space (Y+ downward).
+ * @par Coordinate system
+ * @code
+ *   world:  x → right,  y ↑ up
+ *   screen: x → right,  y ↓ down
+ *   transform:  screen_x =  scale * (wx - world_left) + left_margin_px
+ *               screen_y = -scale * (wy - world_top_structural) + top_margin_px
+ * @endcode
  *
- * @todo Phase 4: Add Q_OBJECT macro, implement paintEvent pipeline,
- *       add DisplayMode enum, add refresh(ITrussView*, DisplayMode) slot.
- * @todo Phase 6: Add mouse/keyboard interaction and all interaction signals.
+ * @par Display modes
+ * - @c Geometry      — plain geometry, support symbols, force arrows
+ * - @c StressRatio   — members colour-mapped by utilisation ratio (green→amber→red)
+ * - @c DeformedShape — exaggerated deformation overlay in ghost colour (post-analysis)
+ *
+ * @todo Phase 6: Add mouse/keyboard interaction signals (nodeDropRequested,
+ *       memberDrawRequested, selectionChanged, deleteRequested, cursorPositionChanged).
  */
 class TrussCanvasWidget : public QWidget {
-public:
-    explicit TrussCanvasWidget(QWidget* parent = nullptr) : QWidget(parent) {}
+    Q_OBJECT
 
-    // TODO Phase 4: DisplayMode enum { Geometry, StressRatio, DeformedShape }
-    // TODO Phase 4: void refresh(const core::interfaces::ITrussView* view, DisplayMode mode)
-    // TODO Phase 4: void setViewport(QRectF worldBounds)
-    // TODO Phase 6: signals: nodeDropRequested, memberDrawRequested, selectionChanged,
-    //                         deleteRequested, cursorPositionChanged
+public:
+    /// @brief Mutually exclusive display overlay modes.
+    enum class DisplayMode {
+        Geometry,      ///< Plain geometry (always available)
+        StressRatio,   ///< Member colour by utilisation ratio (post-analysis)
+        DeformedShape  ///< Deformed shape overlay (post-analysis)
+    };
+
+    explicit TrussCanvasWidget(QWidget* parent = nullptr);
+    ~TrussCanvasWidget() override = default;
+
+public slots:
+    /**
+     * @brief Update the data source and trigger a repaint.
+     *
+     * Does @em not take ownership of @p view; the pointer must remain valid
+     * until the next call to refresh() or clearCanvas().
+     *
+     * @param view  Live view of the current truss.  May be nullptr → empty canvas.
+     * @param mode  Which overlay to render.
+     */
+    void refresh(const core::interfaces::ITrussView* view,
+                 DisplayMode mode = DisplayMode::Geometry);
+
+    /**
+     * @brief Set the visible extent of world-space shown in the canvas.
+     *
+     * Rebuilds the world→screen transform immediately.  Call this before
+     * refresh() when loading a new model to frame the geometry correctly.
+     *
+     * @param worldBounds  Visible area in world coordinates (metres, Y+ upward),
+     *                     expressed as a QRectF with positive width and height.
+     *                     A zero-area rect is ignored.
+     */
+    void setViewport(const QRectF& worldBounds);
+
+    /// @brief Detach any current view and repaint to show the empty canvas hint.
+    void clearCanvas();
+
+protected:
+    void paintEvent(QPaintEvent* event) override;
+    void resizeEvent(QResizeEvent* event) override;
+
+private:
+    // -------------------------------------------------------------------
+    // 7-step paint pipeline
+    // -------------------------------------------------------------------
+    void drawBackground(QPainter& p) const;
+    void drawGrid(QPainter& p) const;
+    void drawMembers(QPainter& p) const;
+    void drawNodes(QPainter& p) const;
+    void drawForceArrows(QPainter& p) const;
+    void drawReactions(QPainter& p) const;
+    void drawOverlayText(QPainter& p) const;
+
+    // -------------------------------------------------------------------
+    // Helpers
+    // -------------------------------------------------------------------
+
+    /// @brief Convert world (metres, Y+ up) to screen (pixels, Y+ down).
+    [[nodiscard]] QPointF toScreen(double wx, double wy) const;
+
+    /// @brief Rebuild @c m_worldToScreen from @c m_worldBounds and widget size.
+    void rebuildTransform();
+
+    /// @brief Return the draw colour for a member given the current display mode.
+    [[nodiscard]] QColor memberColour(const core::interfaces::MemberView& mv) const;
+
+    /// @brief Draw a structural support symbol at a screen position.
+    void drawSupportSymbol(QPainter& p,
+                           const QPointF& screenPos,
+                           core::SupportType support) const;
+
+    /// @brief Draw a force arrow with arrowhead.  headPos is the screen node position.
+    void drawForceArrow(QPainter& p,
+                        const QPointF& headPos,
+                        double fx,
+                        double fy,
+                        const QColor& colour) const;
+
+    // -------------------------------------------------------------------
+    // State
+    // -------------------------------------------------------------------
+
+    /// Non-owning pointer to the current truss view; may be nullptr.
+    const core::interfaces::ITrussView* m_view{nullptr};
+
+    DisplayMode m_mode{DisplayMode::Geometry};
+
+    /// Maps world coordinates → screen pixels.
+    /// Built by rebuildTransform(); m12 = 0, m22 = -scale for Y-axis flip.
+    QTransform m_worldToScreen;
+
+    /// Visible world-space rectangle (metres, Y+ upward; stored as QRectF
+    /// so top() = structural yMin, bottom() = structural yMax).
+    /// Default: [−1, −1, 7, 7] m  (6 m × 6 m with 1 m padding each side).
+    QRectF m_worldBounds{-1.0, -1.0, 7.0, 7.0};
+
+    // -------------------------------------------------------------------
+    // Visual constants
+    // -------------------------------------------------------------------
+    static constexpr double kNodeRadius       = 6.0;   ///< Node circle radius (px)
+    static constexpr double kMemberWidth      = 2.0;   ///< Member stroke width (px)
+    static constexpr double kSupportSize      = 14.0;  ///< Support symbol half-size (px)
+    static constexpr double kArrowLength      = 40.0;  ///< Force arrow length (px)
+    static constexpr double kMarginFraction   = 0.12;  ///< Canvas margin (fraction of dimension)
 };
 
 }  // namespace truss::gui
