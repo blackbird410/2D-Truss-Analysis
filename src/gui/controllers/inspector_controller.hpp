@@ -1,56 +1,75 @@
 /**
  * @file inspector_controller.hpp
- * @brief Controller mediating between InspectorPanel user actions and
- *        ITrussService facade calls for property changes.
+ * @brief Controller mediating InspectorPanel user actions and
+ *        ITrussAnalysisFacade calls for property changes.
  *
- * Phase 1 stub — class declaration only.
- * Full implementation in Phase 5.
- *
- * @note Q_OBJECT is added in Phase 5.
+ * Phase 5: Full Q_OBJECT implementation.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
- * @date 2026-03-02
+ * @date 2026-03-04
  */
 
 #pragma once
 
-#include <QObject>
+#include "core/interfaces/itruss_view.hpp"
+#include "core/model/types.hpp"
 
-namespace truss::application { class ITrussService; }
+#include <QObject>
+#include <QString>
+
+#include <cstddef>
+
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
 
 namespace truss::gui::ctrl {
 
+using truss::core::interfaces::MemberView;
+using truss::core::interfaces::NodeView;
+using truss::core::Force2D;
+using truss::core::MemberId;
+using truss::core::NodeId;
+using truss::core::SupportType;
+
 /**
  * @brief Drives InspectorPanel content in response to canvas selection changes
- *        and applies property edits via ITrussService.
+ *        and applies property edits via ITrussAnalysisFacade.
  *
  * Workflow:
- *  1. Canvas emits selectionChanged(NodeId/MemberId)
- *  2. InspectorController receives onSelectionChanged, queries getTrussView,
- *     and calls panel->showNodeEditor(nodeView) or showMemberEditor(memberView)
- *  3. Inspector emits loadChangeRequested / memberPropertyChanged
- *  4. InspectorController calls applyNodeLoad / setMemberProperties on service
- *  5. On success emits trussModified; on failure emits operationFailed
- *
- * @todo Phase 5: Add Q_OBJECT macro, implement full selection/edit workflow,
- *       hold current trussHandle as member state.
+ *  1. Canvas emits selectionChanged(NodeId / MemberId).
+ *  2. InspectorController queries getTrussView and emits nodeViewReady / memberViewReady.
+ *  3. InspectorPanel emits supportChangeRequested / loadChangeRequested.
+ *  4. InspectorController calls setNodeSupport / applyNodeLoad on the facade.
+ *  5. On success emits trussModified; on failure emits operationFailed.
  */
 class InspectorController : public QObject {
-public:
-    explicit InspectorController(QObject* parent = nullptr) : QObject(parent) {}
+    Q_OBJECT
 
-    // TODO Phase 5: explicit InspectorController(application::ITrussService* service,
-    //                                              QObject* parent = nullptr)
-    // TODO Phase 5: public slots:
-    //   void onNodeSelectionChanged(std::uint32_t nodeId)
-    //   void onMemberSelectionChanged(std::uint32_t memberId)
-    //   void onSupportChangeRequested(std::uint32_t nodeId, core::SupportType type)
-    //   void onLoadChangeRequested(std::uint32_t nodeId, core::Force2D load)
-    //   void onTrussHandleUpdated(std::size_t trussHandle)
-    // TODO Phase 5: signals:
-    //   void trussModified(std::size_t trussHandle)
-    //   void operationFailed(const QString& message)
+public:
+    explicit InspectorController(truss::interface::ITrussAnalysisFacade& facade,
+                                  QObject*                                 parent = nullptr);
+
+public slots:
+    void onNodeSelectionChanged(NodeId nodeId);
+    void onMemberSelectionChanged(MemberId memberId);
+    void onSelectionCleared();
+    void onSupportChangeRequested(NodeId nodeId, SupportType type);
+    void onLoadChangeRequested(NodeId nodeId, Force2D load);
+    /// Update the active truss handle (called by MainWindowController).
+    void onTrussHandleUpdated(std::size_t trussHandle);
+
+signals:
+    void nodeViewReady(NodeView node);
+    void memberViewReady(MemberView member);
+    void selectionCleared();
+    void trussModified(std::size_t trussHandle);
+    void operationFailed(const QString& message);
+
+private:
+    truss::interface::ITrussAnalysisFacade& m_facade;
+    std::size_t                              m_trussHandle{0};
 };
 
 }  // namespace truss::gui::ctrl
