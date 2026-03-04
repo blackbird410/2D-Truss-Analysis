@@ -449,6 +449,12 @@ if(BUILD_TESTING)
             src/gui/models/member_table_model.cpp
             src/gui/models/validation_list_model.cpp
             src/gui/models/results_table_model.cpp
+            # Phase 4: Core Window & Navigation Framework tests
+            tests/unit/gui/controllers/test_main_window_controller.cpp
+            tests/unit/gui/widgets/test_truss_canvas_widget.cpp
+            # Phase 4: sources under test
+            src/gui/controllers/main_window_controller.cpp
+            src/gui/widgets/truss_canvas_widget.cpp
         )
     endif()
     
@@ -671,6 +677,16 @@ if(BUILD_GUI)
     src/gui/theme_loader.cpp
     # Qt resources (AUTORCC — compiles QSS themes into the binary)
     src/gui/resources/resources.qrc
+    # -----------------------------------------------------------------------
+    # Phase 4: Core Window & Navigation Framework
+    # -----------------------------------------------------------------------
+    # TrussCanvasWidget — full Q_OBJECT rendering pipeline
+    src/gui/widgets/truss_canvas_widget.cpp
+    # MainWindowController — Q_OBJECT, WorkspaceState owner
+    src/gui/controllers/main_window_controller.cpp
+    # New MainWindow skeleton (temp v2 suffix; renamed to main_window in Phase 8)
+    src/gui/main_window_v2.hpp
+    src/gui/main_window_v2.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
