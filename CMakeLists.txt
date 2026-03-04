@@ -455,6 +455,12 @@ if(BUILD_TESTING)
             # Phase 4: sources under test
             src/gui/controllers/main_window_controller.cpp
             src/gui/widgets/truss_canvas_widget.cpp
+            # Phase 5: Feature Module Implementation — controller tests
+            tests/unit/gui/controllers/test_canvas_controller.cpp
+            tests/unit/gui/controllers/test_inspector_controller.cpp
+            tests/unit/gui/controllers/test_analysis_controller_v2.cpp
+            tests/unit/gui/controllers/test_project_controller_v2.cpp
+            tests/unit/gui/controllers/test_export_controller.cpp
             # Phase 5: Feature Module Implementation — panel tests
             tests/unit/gui/panels/test_inspector_panel.cpp
             tests/unit/gui/panels/test_analysis_control_bar.cpp
@@ -464,6 +470,12 @@ if(BUILD_TESTING)
             src/gui/panels/inspector_panel.cpp
             src/gui/panels/analysis_control_bar.cpp
             src/gui/panels/results_dock_panel.cpp
+            # Phase 5: sources under test — controllers
+            src/gui/controllers/canvas_controller.cpp
+            src/gui/controllers/inspector_controller.cpp
+            src/gui/controllers/analysis_controller_v2.cpp
+            src/gui/controllers/project_controller_v2.cpp
+            src/gui/controllers/export_controller.cpp
         )
     endif()
     
