@@ -455,6 +455,15 @@ if(BUILD_TESTING)
             # Phase 4: sources under test
             src/gui/controllers/main_window_controller.cpp
             src/gui/widgets/truss_canvas_widget.cpp
+            # Phase 5: Feature Module Implementation — panel tests
+            tests/unit/gui/panels/test_inspector_panel.cpp
+            tests/unit/gui/panels/test_analysis_control_bar.cpp
+            tests/unit/gui/panels/test_results_dock_panel.cpp
+            # Phase 5: sources under test — panels
+            src/gui/panels/analysis_options_dialog.cpp
+            src/gui/panels/inspector_panel.cpp
+            src/gui/panels/analysis_control_bar.cpp
+            src/gui/panels/results_dock_panel.cpp
         )
     endif()
     
