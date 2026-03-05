@@ -162,6 +162,7 @@ signals:
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
 
 private:
     // -------------------------------------------------------------------
@@ -238,6 +239,10 @@ private:
     // -------------------------------------------------------------------
 
     ToolMode m_toolMode{ToolMode::Select};
+
+    /// True while the middle mouse button is held for panning.
+    bool   m_isPanning{false};
+    QPoint m_lastPanPos;
 
     /// AddMember mode: set after the user clicks the first node.
     std::optional<core::NodeId> m_pendingMemberStart;

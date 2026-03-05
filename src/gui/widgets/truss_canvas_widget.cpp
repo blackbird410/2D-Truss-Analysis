@@ -514,6 +514,94 @@ core::Point2D TrussCanvasWidget::screenToWorld(QPoint screenPos) const
 }
 
 // -------------------------------------------------------------------
+// Mouse / key event handlers
+// -------------------------------------------------------------------
+
+void TrussCanvasWidget::mousePressEvent(QMouseEvent* event)
+{
+    // ---- Middle button: start pan ----
+    if (event->button() == Qt::MiddleButton) {
+        m_isPanning   = true;
+        m_lastPanPos  = event->pos();
+        setCursor(Qt::ClosedHandCursor);
+        event->accept();
+        return;
+    }
+
+    if (event->button() != Qt::LeftButton) {
+        QWidget::mousePressEvent(event);
+        return;
+    }
+
+    // ---- Left button: tool-dependent action ----
+    const QPoint pos = event->pos();
+
+    switch (m_toolMode) {
+
+    case ToolMode::Select: {
+        if (auto nodeId = findNodeAt(pos)) {
+            m_selectedNodeId   = *nodeId;
+            m_selectedMemberId = 0;
+            emit nodeSelectionChanged(*nodeId);
+        } else if (auto memberId = findMemberAt(pos)) {
+            m_selectedMemberId = *memberId;
+            m_selectedNodeId   = 0;
+            emit memberSelectionChanged(*memberId);
+        } else {
+            m_selectedNodeId   = 0;
+            m_selectedMemberId = 0;
+            emit selectionCleared();
+        }
+        update();
+        break;
+    }
+
+    case ToolMode::AddNode: {
+        // Only drop on empty space (prevent overlapping nodes)
+        if (!findNodeAt(pos)) {
+            const core::Point2D worldPos = screenToWorld(pos);
+            emit nodeDropRequested(worldPos, core::SupportType::Free);
+        }
+        break;
+    }
+
+    case ToolMode::AddMember: {
+        const auto nodeId = findNodeAt(pos);
+        if (!nodeId) break;  // must click on a node
+
+        if (!m_pendingMemberStart) {
+            // First click — record start node
+            m_pendingMemberStart = *nodeId;
+            update(); // highlight pending start
+        } else if (*m_pendingMemberStart != *nodeId) {
+            // Second click on a different node — emit
+            emit memberDrawRequested(*m_pendingMemberStart, *nodeId);
+            m_pendingMemberStart.reset();
+            update();
+        }
+        // If same node clicked again, cancel
+        else {
+            m_pendingMemberStart.reset();
+            update();
+        }
+        break;
+    }
+
+    case ToolMode::Delete: {
+        if (auto nodeId = findNodeAt(pos)) {
+            emit nodeDeleteRequested(*nodeId);
+        } else if (auto memberId = findMemberAt(pos)) {
+            emit memberDeleteRequested(*memberId);
+        }
+        break;
+    }
+
+    }  // switch
+
+    event->accept();
+}
+
+// -------------------------------------------------------------------
 // Interaction helpers
 // -------------------------------------------------------------------
 
