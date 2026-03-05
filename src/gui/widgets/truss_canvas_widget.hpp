@@ -224,6 +224,10 @@ private:
     /// @brief Update the cursor shape to reflect the current tool mode.
     void updateCursorForMode();
 
+    // -------------------------------------------------------------------
+    // Rendering state
+    // -------------------------------------------------------------------
+
     /// Non-owning pointer to the current truss view; may be nullptr.
     const core::interfaces::ITrussView* m_view{nullptr};
 
