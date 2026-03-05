@@ -20,6 +20,8 @@
 
 #include <QColor>
 #include <QFont>
+#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPen>
@@ -83,6 +85,8 @@ TrussCanvasWidget::TrussCanvasWidget(QWidget* parent)
     setMinimumSize(400, 300);
     setAutoFillBackground(false);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setMouseTracking(true);          // receive mouseMoveEvent without button held
+    setFocusPolicy(Qt::StrongFocus); // receive keyPressEvent
     rebuildTransform();
 }
 
