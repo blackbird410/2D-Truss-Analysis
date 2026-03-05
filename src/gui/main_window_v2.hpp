@@ -107,6 +107,12 @@ private:
     QAction* m_actThemeDark{nullptr};
     QAction* m_actThemeLight{nullptr};
 
+    // Tool-mode QActions (exclusive)
+    QAction* m_actToolSelect{nullptr};
+    QAction* m_actToolNode{nullptr};
+    QAction* m_actToolMember{nullptr};
+    QAction* m_actToolDelete{nullptr};
+
     // -------------------------------------------------------------------
     // Controller
     // -------------------------------------------------------------------
