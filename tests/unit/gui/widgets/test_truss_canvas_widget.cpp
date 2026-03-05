@@ -280,3 +280,42 @@ TEST_F(TrussCanvasWidgetTest, ClearCanvasResetsToEmptyState)
         EXPECT_FALSE(px.isNull());
     });
 }
+
+// ============================================================
+// Tests — Phase 6: ToolMode
+// ============================================================
+
+TEST_F(TrussCanvasWidgetTest, SetModeToSelectDoesNotCrash)
+{
+    ASSERT_NO_FATAL_FAILURE(
+        widget->setMode(TrussCanvasWidget::ToolMode::Select));
+}
+
+TEST_F(TrussCanvasWidgetTest, SetModeToAddNodeDoesNotCrash)
+{
+    ASSERT_NO_FATAL_FAILURE(
+        widget->setMode(TrussCanvasWidget::ToolMode::AddNode));
+}
+
+TEST_F(TrussCanvasWidgetTest, SetModeToAddMemberDoesNotCrash)
+{
+    ASSERT_NO_FATAL_FAILURE(
+        widget->setMode(TrussCanvasWidget::ToolMode::AddMember));
+}
+
+TEST_F(TrussCanvasWidgetTest, SetModeToDeleteDoesNotCrash)
+{
+    ASSERT_NO_FATAL_FAILURE(
+        widget->setMode(TrussCanvasWidget::ToolMode::Delete));
+}
+
+TEST_F(TrussCanvasWidgetTest, SetModeTriggersRepaint)
+{
+    // Switching modes triggers update(). Grabbing forces synchronous paint.
+    widget->setMode(TrussCanvasWidget::ToolMode::AddNode);
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = grabWidget(*widget);
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
