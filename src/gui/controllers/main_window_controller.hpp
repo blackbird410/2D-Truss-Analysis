@@ -106,6 +106,16 @@ public:
      */
     void setState(state::WorkspaceState newState);
 
+    // -----------------------------------------------------------------------
+    // Sub-controller accessors
+    // -----------------------------------------------------------------------
+
+    [[nodiscard]] CanvasController*    canvasController()    const noexcept;
+    [[nodiscard]] InspectorController* inspectorController() const noexcept;
+    [[nodiscard]] AnalysisController*  analysisController()  const noexcept;
+    [[nodiscard]] ProjectController*   projectController()   const noexcept;
+    [[nodiscard]] ExportController*    exportController()    const noexcept;
+
 signals:
     /**
      * @brief Emitted whenever the workspace state transitions to a new value.

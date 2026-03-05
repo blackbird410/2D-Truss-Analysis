@@ -113,6 +113,16 @@ void MainWindowController::setState(state::WorkspaceState newState)
 }
 
 // ============================================================
+// Accessors — sub-controllers
+// ============================================================
+
+CanvasController*    MainWindowController::canvasController()    const noexcept { return m_canvasController.get(); }
+InspectorController* MainWindowController::inspectorController() const noexcept { return m_inspectorController.get(); }
+AnalysisController*  MainWindowController::analysisController()  const noexcept { return m_analysisController.get(); }
+ProjectController*   MainWindowController::projectController()   const noexcept { return m_projectController.get(); }
+ExportController*    MainWindowController::exportController()    const noexcept { return m_exportController.get(); }
+
+// ============================================================
 // Slots
 // ============================================================
 
