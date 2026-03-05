@@ -311,4 +311,13 @@ void MainWindowV2::onExportRequested(truss::ExportFormat format,
     }
 }
 
+void MainWindowV2::onOptionsRequested()
+{
+    AnalysisOptionsDialog dlg(this);
+    dlg.setOptions(m_analysisBar->options());
+    if (dlg.exec() == QDialog::Accepted) {
+        m_analysisBar->setOptions(dlg.options());
+    }
+}
+
 }  // namespace truss::gui

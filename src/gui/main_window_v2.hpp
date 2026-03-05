@@ -80,6 +80,9 @@ private slots:
     /// Show QFileDialog then hand path to ExportController.
     void onExportRequested(truss::ExportFormat format, const QString& suggestedFilename);
 
+    /// Show AnalysisOptionsDialog and push result back to AnalysisControlBar.
+    void onOptionsRequested();
+
 private:
     void setupCentralWidget();
     void setupMenuBar();
