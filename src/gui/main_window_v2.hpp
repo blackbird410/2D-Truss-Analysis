@@ -92,12 +92,11 @@ private:
     QDockWidget*         m_resultsDock{nullptr};
     QSplitter*           m_centralSplitter{nullptr};
 
+    // Status bar labels
+    QLabel* m_phaseLabel{nullptr};
+    QLabel* m_statsLabel{nullptr};
+    QLabel* m_cursorLabel{nullptr};
 
-    // -------------------------------------------------------------------
-    // Status bar widgets
-    // -------------------------------------------------------------------
-    QLabel*             m_phaseLabel{nullptr};     ///< Shows current WorkspacePhase name
-    QLabel*             m_statsLabel{nullptr};     ///< Shows "Nodes: N  Members: M"
 
     // -------------------------------------------------------------------
     // Controller
