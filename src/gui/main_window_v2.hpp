@@ -86,6 +86,9 @@ private slots:
     /// Trigger facade validation and show result in status bar.
     void onValidateRequested();
 
+    /// Handle toolbar tool-mode actions.
+    void onToolActionTriggered();
+
 private:
     void setupCentralWidget();
     void setupMenuBar();

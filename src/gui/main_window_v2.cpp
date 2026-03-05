@@ -339,4 +339,17 @@ void MainWindowV2::onValidateRequested()
     }
 }
 
+void MainWindowV2::onToolActionTriggered()
+{
+    auto* act = qobject_cast<QAction*>(sender());
+    if (!act) return;
+
+    TrussCanvasWidget::ToolMode mode = TrussCanvasWidget::ToolMode::Select;
+    if      (act == m_actToolNode)   mode = TrussCanvasWidget::ToolMode::AddNode;
+    else if (act == m_actToolMember) mode = TrussCanvasWidget::ToolMode::AddMember;
+    else if (act == m_actToolDelete) mode = TrussCanvasWidget::ToolMode::Delete;
+
+    m_canvas->setMode(mode);
+}
+
 }  // namespace truss::gui
