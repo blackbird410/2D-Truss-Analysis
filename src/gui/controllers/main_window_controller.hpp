@@ -131,13 +131,20 @@ signals:
      */
     void stateChanged(const truss::gui::state::WorkspaceState& newState);
 
+    /**
+     * @brief Emitted after model refresh; carries a pointer to the new truss view.
+     *
+     * Connected to TrussCanvasWidget::refresh().  The pointer is valid until the
+     * next call to onTrussModified or until the truss handle is cleared.
+     */
+    void trussViewChanged(const truss::core::interfaces::ITrussView* view);
+
 public slots:
     /**
      * @brief Called when the structural model has been modified.
      *
-     * Transitions the phase to @c ModelBuilding and updates the truss handle.
-     *
-     * @todo Phase 6: Trigger NodeTableModel / MemberTableModel refresh cascade.
+     * Transitions to ModelBuilding, refreshes NodeTableModel and
+     * MemberTableModel, runs validation, and emits trussViewChanged.
      *
      * @param trussHandle  Handle to the modified truss.
      */

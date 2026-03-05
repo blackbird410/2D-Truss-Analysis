@@ -138,12 +138,34 @@ model::ResultsTableModel*   MainWindowController::resultsModel()    const noexce
 void MainWindowController::onTrussModified(std::size_t trussHandle)
 {
     state::WorkspaceState next = m_state;
-    next.trussHandle  = trussHandle;
-    next.phase        = state::WorkspacePhase::ModelBuilding;
-    next.resultsHandle = 0;        // results are stale after any model edit
-    next.isDirty      = true;
+    next.trussHandle   = trussHandle;
+    next.phase         = state::WorkspacePhase::ModelBuilding;
+    next.resultsHandle = 0;
+    next.isDirty       = true;
     next.lastError.clear();
-    // TODO Phase 6: trigger NodeTableModel::refresh() and MemberTableModel::refresh()
+
+    // Refresh node and member models from the new truss view
+    const core::interfaces::ITrussView* viewPtr = nullptr;
+    try {
+        if (trussHandle != 0) {
+            const auto& view = m_facade->getTrussView(trussHandle);
+            m_nodeModel->refresh(view);
+            m_nodeModel->setHasResults(false);
+            m_memberModel->refresh(view);
+            m_memberModel->setHasResults(false);
+            viewPtr = &view;
+
+            // Run validation and update validation model
+            auto valResult = m_facade->validateTruss(trussHandle);
+            if (valResult.success) {
+                m_validationModel->refresh(valResult.value);
+            }
+        }
+    } catch (...) {
+        // getTrussView may throw for invalid handles — silently ignore
+    }
+
+    emit trussViewChanged(viewPtr);
     setState(std::move(next));
 }
 
