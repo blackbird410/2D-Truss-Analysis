@@ -154,7 +154,7 @@ void MainWindowV2::setupMenuBar()
     m_actSaveAs->setShortcut(QKeySequence::SaveAs);
     m_actQuit->setShortcut(QKeySequence::Quit);
 
-    // Edit menu
+    // ---- Edit menu ----
     auto* editMenu = mb->addMenu(QStringLiteral("&Edit"));
     editMenu->setObjectName(QStringLiteral("menuEdit"));
     editMenu->addAction(QStringLiteral("&Undo"))->setShortcut(QKeySequence::Undo);
