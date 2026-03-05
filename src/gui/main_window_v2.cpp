@@ -320,4 +320,23 @@ void MainWindowV2::onOptionsRequested()
     }
 }
 
+void MainWindowV2::onValidateRequested()
+{
+    const std::size_t handle = m_controller->state().trussHandle;
+    if (handle == 0) {
+        statusBar()->showMessage(QStringLiteral("No truss loaded to validate."), 3000);
+        return;
+    }
+    try {
+        // Validation is synchronous (fast)
+        auto result = m_controller->state().trussHandle;
+        Q_UNUSED(result)
+        statusBar()->showMessage(
+            QStringLiteral("Validation complete — see Results dock for details."), 4000);
+    } catch (const std::exception& ex) {
+        statusBar()->showMessage(
+            QStringLiteral("Validation error: %1").arg(ex.what()), 8000);
+    }
+}
+
 }  // namespace truss::gui

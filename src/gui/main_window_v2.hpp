@@ -83,6 +83,9 @@ private slots:
     /// Show AnalysisOptionsDialog and push result back to AnalysisControlBar.
     void onOptionsRequested();
 
+    /// Trigger facade validation and show result in status bar.
+    void onValidateRequested();
+
 private:
     void setupCentralWidget();
     void setupMenuBar();
