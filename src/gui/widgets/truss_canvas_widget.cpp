@@ -488,6 +488,19 @@ void TrussCanvasWidget::drawForceArrow(QPainter& p,
 // ============================================================
 
 // -------------------------------------------------------------------
+// Public slot: setMode
+// -------------------------------------------------------------------
+
+void TrussCanvasWidget::setMode(ToolMode mode)
+{
+    if (m_toolMode == mode) return;
+    m_toolMode = mode;
+    m_pendingMemberStart.reset(); // cancel any in-progress member draw
+    updateCursorForMode();
+    update(); // repaint pending-member highlight
+}
+
+// -------------------------------------------------------------------
 // Public method: screenToWorld
 // -------------------------------------------------------------------
 

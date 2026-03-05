@@ -114,6 +114,12 @@ public slots:
     /// @brief Detach any current view and repaint to show the empty canvas hint.
     void clearCanvas();
 
+    /**
+     * @brief Switch the active editing tool mode.
+     * @param mode  The new tool mode.
+     */
+    void setMode(ToolMode mode);
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
