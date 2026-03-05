@@ -322,3 +322,53 @@ TEST_F(MainWindowControllerTest, OnAnalysisFailedClearsResultsHandle)
 
     EXPECT_EQ(controller->state().resultsHandle, 0u);
 }
+
+// ============================================================
+// Tests — Phase 6: sub-controller and model accessors
+// ============================================================
+
+TEST_F(MainWindowControllerTest, CanvasControllerIsNotNull)
+{
+    EXPECT_NE(controller->canvasController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, InspectorControllerIsNotNull)
+{
+    EXPECT_NE(controller->inspectorController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, AnalysisControllerV2IsNotNull)
+{
+    EXPECT_NE(controller->analysisController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ProjectControllerV2IsNotNull)
+{
+    EXPECT_NE(controller->projectController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ExportControllerIsNotNull)
+{
+    EXPECT_NE(controller->exportController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, NodeModelIsNotNull)
+{
+    EXPECT_NE(controller->nodeModel(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, MemberModelIsNotNull)
+{
+    EXPECT_NE(controller->memberModel(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ValidationModelIsNotNull)
+{
+    EXPECT_NE(controller->validationModel(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ResultsModelIsNotNull)
+{
+    EXPECT_NE(controller->resultsModel(), nullptr);
+}
+
