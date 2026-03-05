@@ -22,6 +22,28 @@
 
 namespace truss::interface { class ITrussAnalysisFacade; }
 
+namespace truss::core::interfaces {
+class ITrussView;
+class IAnalysisResultsView;
+}
+
+namespace truss::core::validation { class ValidationResult; }
+
+namespace truss::gui::ctrl {
+class CanvasController;
+class InspectorController;
+class AnalysisController;
+class ProjectController;
+class ExportController;
+}
+
+namespace truss::gui::model {
+class NodeTableModel;
+class MemberTableModel;
+class ValidationListModel;
+class ResultsTableModel;
+}
+
 namespace truss::gui::ctrl {
 
 /**
