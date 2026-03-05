@@ -14,9 +14,11 @@
 
 #include "gui/main_window_v2.hpp"
 
+#include "gui/controllers/project_controller_v2.hpp"
 #include "gui/panels/analysis_control_bar.hpp"
 #include "gui/panels/inspector_panel.hpp"
 #include "gui/panels/results_dock_panel.hpp"
+#include "gui/theme_loader.hpp"
 #include "gui/widgets/truss_canvas_widget.hpp"
 #include "core/interfaces/itruss_view.hpp"
 
@@ -259,6 +261,7 @@ void MainWindowV2::setupStatusBar()
 
 void MainWindowV2::connectSignals()
 {
+    auto* projectCtrl   = m_controller->projectController();
     // ----------------------------------------------------------------
     // MainWindowController → panels
     // ----------------------------------------------------------------
@@ -276,6 +279,28 @@ void MainWindowV2::connectSignals()
             m_canvas, [this](const truss::core::interfaces::ITrussView* view) {
                 m_canvas->refresh(view);
             });
+
+    // ----------------------------------------------------------------
+    // Menu actions → ProjectController
+    // ----------------------------------------------------------------
+    connect(m_actNew,    &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onNewProjectRequested);
+    connect(m_actOpen,   &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onOpenFileRequested);
+    connect(m_actSave,   &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onSaveRequested);
+    connect(m_actSaveAs, &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onSaveAsRequested);
+    connect(m_actQuit,   &QAction::triggered,
+            this,        &QMainWindow::close);
+
+    // Theme actions
+    connect(m_actThemeDark, &QAction::triggered, this, []() {
+        ThemeLoader::applyTheme(*qApp, QStringLiteral(":/themes/dark.qss"));
+    });
+    connect(m_actThemeLight, &QAction::triggered, this, []() {
+        ThemeLoader::applyTheme(*qApp, QStringLiteral(":/themes/light.qss"));
+    });
 
 }
 
