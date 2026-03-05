@@ -6,6 +6,7 @@
  *  - Default construction yields WorkspacePhase::Empty.
  *  - hasTruss(), hasResults(), isAnalysing(), isResultsReady(), isEditable()
  *    return correct values for representative states.
+ *  - operator== and operator!= satisfy value-equality semantics.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -170,3 +171,59 @@ TEST(WorkspaceStateTest, IsEditableReturnsFalseWhileAnalysing)
     EXPECT_FALSE(s.isEditable());
 }
 
+// ============================================================
+// Tests — value equality (operator== / operator!=)
+// ============================================================
+
+TEST(WorkspaceStateTest, DefaultConstructedStatesAreEqual)
+{
+    WorkspaceState a;
+    WorkspaceState b;
+    EXPECT_EQ(a, b);
+}
+
+TEST(WorkspaceStateTest, StatesWithDifferentPhasesAreNotEqual)
+{
+    WorkspaceState a;
+    WorkspaceState b;
+    b.phase = WorkspacePhase::ModelBuilding;
+    EXPECT_NE(a, b);
+}
+
+TEST(WorkspaceStateTest, StatesWithDifferentHandlesAreNotEqual)
+{
+    WorkspaceState a;
+    WorkspaceState b;
+    b.trussHandle = 99u;
+    EXPECT_NE(a, b);
+}
+
+TEST(WorkspaceStateTest, StatesWithDifferentIsDirtyAreNotEqual)
+{
+    WorkspaceState a;
+    WorkspaceState b;
+    b.isDirty = true;
+    EXPECT_NE(a, b);
+}
+
+TEST(WorkspaceStateTest, StatesWithDifferentLastErrorAreNotEqual)
+{
+    WorkspaceState a;
+    WorkspaceState b;
+    b.lastError = "singular matrix";
+    EXPECT_NE(a, b);
+}
+
+TEST(WorkspaceStateTest, CopiedStateEqualsOriginal)
+{
+    WorkspaceState a;
+    a.phase         = WorkspacePhase::ResultsReady;
+    a.trussHandle   = 5u;
+    a.resultsHandle = 2u;
+    a.isDirty       = true;
+    a.projectName   = "bridge.truss";
+    a.lastError     = "";
+
+    WorkspaceState b = a;
+    EXPECT_EQ(a, b);
+}
