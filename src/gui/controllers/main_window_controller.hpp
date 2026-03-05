@@ -176,6 +176,13 @@ public slots:
      */
     void onAnalysisFailed(const QString& errorMessage);
 
+    /**
+     * @brief Called when the project has been saved successfully.
+     *
+     * Clears the isDirty flag in the workspace state.
+     */
+    void onProjectSaved(const QString& filePath);
+
 private:
     truss::interface::ITrussAnalysisFacade* m_facade{nullptr};
     state::WorkspaceState                   m_state;

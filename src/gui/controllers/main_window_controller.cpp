@@ -213,4 +213,11 @@ void MainWindowController::onAnalysisFailed(const QString& errorMessage)
     setState(std::move(next));
 }
 
+void MainWindowController::onProjectSaved(const QString& /*filePath*/)
+{
+    state::WorkspaceState next = m_state;
+    next.isDirty = false;
+    setState(std::move(next));
+}
+
 }  // namespace truss::gui::ctrl
