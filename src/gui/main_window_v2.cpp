@@ -266,6 +266,7 @@ void MainWindowV2::connectSignals()
     auto* canvasCtrl    = m_controller->canvasController();
     auto* inspectorCtrl = m_controller->inspectorController();
     auto* projectCtrl   = m_controller->projectController();
+
     // ----------------------------------------------------------------
     // MainWindowController → panels
     // ----------------------------------------------------------------
@@ -334,6 +335,22 @@ void MainWindowV2::connectSignals()
                         .arg(pos.x, 0, 'f', 3)
                         .arg(pos.y, 0, 'f', 3));
             });
+
+    // ----------------------------------------------------------------
+    // InspectorController → InspectorPanel
+    // ----------------------------------------------------------------
+    connect(inspectorCtrl, &ctrl::InspectorController::nodeViewReady,
+            m_inspectorPanel, &InspectorPanel::showNodeEditor);
+    connect(inspectorCtrl, &ctrl::InspectorController::memberViewReady,
+            m_inspectorPanel, &InspectorPanel::showMemberEditor);
+    connect(inspectorCtrl, &ctrl::InspectorController::selectionCleared,
+            m_inspectorPanel, &InspectorPanel::showNoSelection);
+
+    // InspectorPanel → InspectorController (property edits)
+    connect(m_inspectorPanel, &InspectorPanel::supportChangeRequested,
+            inspectorCtrl, &ctrl::InspectorController::onSupportChangeRequested);
+    connect(m_inspectorPanel, &InspectorPanel::loadChangeRequested,
+            inspectorCtrl, &ctrl::InspectorController::onLoadChangeRequested);
 
 }
 
