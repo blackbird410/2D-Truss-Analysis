@@ -216,6 +216,9 @@ private:
      */
     [[nodiscard]] std::optional<core::MemberId> findMemberAt(QPoint p) const;
 
+    /// @brief Update the cursor shape to reflect the current tool mode.
+    void updateCursorForMode();
+
     /// Non-owning pointer to the current truss view; may be nullptr.
     const core::interfaces::ITrussView* m_view{nullptr};
 
@@ -229,6 +232,12 @@ private:
     /// so top() = structural yMin, bottom() = structural yMax).
     /// Default: [−1, −1, 7, 7] m  (6 m × 6 m with 1 m padding each side).
     QRectF m_worldBounds{-1.0, -1.0, 7.0, 7.0};
+
+    // -------------------------------------------------------------------
+    // Interaction state
+    // -------------------------------------------------------------------
+
+    ToolMode m_toolMode{ToolMode::Select};
 
     /// AddMember mode: set after the user clicks the first node.
     std::optional<core::NodeId> m_pendingMemberStart;

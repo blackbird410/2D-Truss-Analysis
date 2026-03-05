@@ -571,4 +571,14 @@ std::optional<core::MemberId> TrussCanvasWidget::findMemberAt(QPoint p) const
     return std::nullopt;
 }
 
+void TrussCanvasWidget::updateCursorForMode()
+{
+    switch (m_toolMode) {
+    case ToolMode::Select:    setCursor(Qt::ArrowCursor);     break;
+    case ToolMode::AddNode:   setCursor(Qt::CrossCursor);     break;
+    case ToolMode::AddMember: setCursor(Qt::CrossCursor);     break;
+    case ToolMode::Delete:    setCursor(Qt::ForbiddenCursor); break;
+    }
+}
+
 }  // namespace truss::gui
