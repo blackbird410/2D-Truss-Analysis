@@ -92,15 +92,15 @@ public:
     MainWindowController(MainWindowController&&)                  = delete;
     MainWindowController& operator=(MainWindowController&&)       = delete;
 
+    // -----------------------------------------------------------------------
+    // State accessors
+    // -----------------------------------------------------------------------
+
     /// @brief Read-only access to the current workspace state.
     [[nodiscard]] const state::WorkspaceState& state() const noexcept;
 
     /**
      * @brief Replace the workspace state and emit @c stateChanged if it changed.
-     *
-     * This is the sole write path for WorkspaceState.  Sub-controllers and
-     * background workers must call this (via Qt::QueuedConnection if off-thread)
-     * rather than mutating any shared state directly.
      *
      * @param newState  Desired new state.
      */

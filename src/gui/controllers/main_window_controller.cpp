@@ -97,7 +97,7 @@ MainWindowController::MainWindowController(truss::interface::ITrussAnalysisFacad
 MainWindowController::~MainWindowController() = default;
 
 // ============================================================
-// Accessors
+// Accessors — state
 // ============================================================
 
 const state::WorkspaceState& MainWindowController::state() const noexcept
@@ -107,7 +107,7 @@ const state::WorkspaceState& MainWindowController::state() const noexcept
 
 void MainWindowController::setState(state::WorkspaceState newState)
 {
-    if (m_state == newState) return;  // avoid spurious signal emissions
+    if (m_state == newState) return;
     m_state = std::move(newState);
     emit stateChanged(m_state);
 }
