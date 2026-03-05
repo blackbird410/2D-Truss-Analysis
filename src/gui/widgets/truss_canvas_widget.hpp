@@ -64,6 +64,14 @@ public:
         DeformedShape  ///< Deformed shape overlay (post-analysis)
     };
 
+    /// @brief Active editing tool; governs left-click / left-drag behaviour.
+    enum class ToolMode {
+        Select,     ///< Click to select node or member; empty space clears selection
+        AddNode,    ///< Click on canvas space to drop a new node
+        AddMember,  ///< Click two nodes in sequence to draw a member between them
+        Delete      ///< Click a node or member to request its deletion
+    };
+
     explicit TrussCanvasWidget(QWidget* parent = nullptr);
     ~TrussCanvasWidget() override = default;
 
