@@ -47,7 +47,51 @@ MainWindowController::MainWindowController(truss::interface::ITrussAnalysisFacad
     , m_validationModel(std::make_unique<model::ValidationListModel> (this))
     , m_resultsModel   (std::make_unique<model::ResultsTableModel>   (this))
 {
-    // Workspace starts in the Empty phase; no model is loaded yet.
+    // ----------------------------------------------------------------
+    // Inter-controller signal wiring
+    // (Panel ↔ controller wiring is done in MainWindowV2::connectSignals)
+    // ----------------------------------------------------------------
+
+    // CanvasController → MainWindowController
+    connect(m_canvasController.get(), &CanvasController::trussModified,
+            this, &MainWindowController::onTrussModified);
+
+    // InspectorController mutations → MainWindowController
+    connect(m_inspectorController.get(), &InspectorController::trussModified,
+            this, &MainWindowController::onTrussModified);
+
+    // AnalysisController lifecycle → MainWindowController
+    connect(m_analysisController.get(), &AnalysisController::analysisStarted,
+            this, &MainWindowController::onAnalysisStarted);
+    connect(m_analysisController.get(), &AnalysisController::analysisCompleted,
+            this, &MainWindowController::onAnalysisCompleted);
+    connect(m_analysisController.get(), &AnalysisController::analysisFailed,
+            this, &MainWindowController::onAnalysisFailed);
+
+    // ProjectController → MainWindowController
+    connect(m_projectController.get(), &ProjectController::trussCreated,
+            this, &MainWindowController::onTrussModified);
+    connect(m_projectController.get(), &ProjectController::trussLoaded,
+            this, [this](std::size_t handle, const QString& /*path*/) {
+                onTrussModified(handle);
+            });
+    connect(m_projectController.get(), &ProjectController::projectSaved,
+            this, &MainWindowController::onProjectSaved);
+
+    // MainWindowController → Sub-controller handle cascades
+    // When truss handle changes, all controllers need to know
+    connect(this, &MainWindowController::stateChanged,
+            this, [this](const state::WorkspaceState& s) {
+                const std::size_t h = s.trussHandle;
+                m_canvasController->onTrussHandleUpdated(h);
+                m_inspectorController->onTrussHandleUpdated(h);
+                m_analysisController->onTrussHandleUpdated(h);
+                m_projectController->onTrussHandleUpdated(h);
+                // Dirty propagation to ProjectController
+                m_projectController->setDirty(s.isDirty);
+                // Results handle to ExportController
+                m_exportController->onResultsHandleUpdated(s.resultsHandle);
+            });
 }
 
 // ============================================================
