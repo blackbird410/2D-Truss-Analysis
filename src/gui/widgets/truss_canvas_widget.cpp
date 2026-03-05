@@ -483,4 +483,21 @@ void TrussCanvasWidget::drawForceArrow(QPainter& p,
     p.drawText(tail + QPointF(4.0, -4.0), label);
 }
 
+// ============================================================
+// Phase 6 — Interaction layer
+// ============================================================
+
+// -------------------------------------------------------------------
+// Public method: screenToWorld
+// -------------------------------------------------------------------
+
+core::Point2D TrussCanvasWidget::screenToWorld(QPoint screenPos) const
+{
+    bool ok = false;
+    const QTransform inv = m_worldToScreen.inverted(&ok);
+    if (!ok) return {0.0, 0.0};
+    const QPointF w = inv.map(QPointF(screenPos));
+    return {w.x(), w.y()};
+}
+
 }  // namespace truss::gui

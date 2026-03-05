@@ -75,6 +75,17 @@ public:
     explicit TrussCanvasWidget(QWidget* parent = nullptr);
     ~TrussCanvasWidget() override = default;
 
+    /**
+     * @brief Convert a screen pixel position to a structural world coordinate.
+     *
+     * Uses the inverse of @c m_worldToScreen.  Returns {0, 0} if the transform
+     * is not invertible.
+     *
+     * @param screenPos  Mouse position in widget (pixel) coordinates.
+     * @return           Corresponding world-space point (metres, Y+ upward).
+     */
+    [[nodiscard]] truss::core::Point2D screenToWorld(QPoint screenPos) const;
+
 public slots:
     /**
      * @brief Update the data source and trigger a repaint.
