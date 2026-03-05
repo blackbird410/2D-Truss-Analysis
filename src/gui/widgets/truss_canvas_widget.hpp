@@ -152,6 +152,13 @@ signals:
     /// @brief Emitted in Select mode when the user clicks on empty canvas space.
     void selectionCleared();
 
+    // -----------------------------------------------------------------------
+    // Auxiliary signals
+    // -----------------------------------------------------------------------
+
+    /// @brief Emitted on every mouse move to show world coordinates in status bar.
+    void cursorPositionChanged(truss::core::Point2D worldPos);
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
