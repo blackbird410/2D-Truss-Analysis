@@ -72,6 +72,34 @@ private:
     std::string m_name{"StubTruss"};
 };
 
+// ============================================================
+// Minimal IAnalysisResultsView stub
+// ============================================================
+
+class StubResultsView final : public truss::core::interfaces::IAnalysisResultsView {
+public:
+    const std::vector<truss::core::Real>& getDisplacements()     const override { return m_empty; }
+    const std::vector<truss::core::Real>& getReactions()          const override { return m_empty; }
+    const std::vector<truss::core::Real>& getMemberForces()       const override { return m_empty; }
+    const std::vector<truss::core::Real>& getMemberStresses()     const override { return m_empty; }
+    const std::vector<truss::core::Real>& getUtilizationRatios()  const override { return m_empty; }
+    const std::vector<std::vector<truss::core::Real>>&
+        getStiffnessMatrix() const override { return m_matrix; }
+    bool hasConverged()   const override { return true; }
+    int  getIterations()  const override { return 1; }
+    truss::core::Real getResidualNorm()    const override { return 0.0; }
+    truss::core::Real getConditionNumber() const override { return 1.0; }
+    std::size_t getTotalDofs()      const override { return 0; }
+    std::size_t getFreeDofs()       const override { return 0; }
+    std::size_t getConstrainedDofs() const override { return 0; }
+    truss::core::Real getTotalStrain()      const override { return 0.0; }
+    truss::core::Real getMaxDisplacement()  const override { return 0.0; }
+    truss::core::Real getMaxStress()        const override { return 0.0; }
+private:
+    std::vector<truss::core::Real>                   m_empty;
+    std::vector<std::vector<truss::core::Real>>      m_matrix;
+};
+
 }  // namespace
 
 // ============================================================
