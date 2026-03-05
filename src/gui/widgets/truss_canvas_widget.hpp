@@ -120,6 +120,15 @@ public slots:
      */
     void setMode(ToolMode mode);
 
+signals:
+    // -----------------------------------------------------------------------
+    // Model-mutation requests (wired to CanvasController)
+    // -----------------------------------------------------------------------
+
+    /// @brief Emitted in AddNode mode when the user clicks on empty canvas space.
+    void nodeDropRequested(truss::core::Point2D worldPos,
+                           truss::core::SupportType defaultSupport);
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
