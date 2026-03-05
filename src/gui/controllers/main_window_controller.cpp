@@ -169,6 +169,14 @@ void MainWindowController::onTrussModified(std::size_t trussHandle)
     setState(std::move(next));
 }
 
+void MainWindowController::onAnalysisStarted()
+{
+    state::WorkspaceState next = m_state;
+    next.phase = state::WorkspacePhase::Analysing;
+    next.lastError.clear();
+    setState(std::move(next));
+}
+
 void MainWindowController::onAnalysisCompleted(std::size_t resultsHandle)
 {
     state::WorkspaceState next = m_state;

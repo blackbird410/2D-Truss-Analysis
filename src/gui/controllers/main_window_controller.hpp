@@ -151,9 +151,12 @@ public slots:
     void onTrussModified(std::size_t trussHandle);
 
     /**
-     * @brief Called when a background analysis has completed successfully.
+     * @brief Called when background analysis starts (from AnalysisController).
      *
-     * Transitions the phase to @c ResultsReady and stores the results handle.
+     * Transitions the phase to @c Analysing.
+     */
+    void onAnalysisStarted();
+
      *
      * @todo Phase 6: Trigger ResultsTableModel / MemberTableModel results refresh.
      *
