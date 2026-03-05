@@ -30,7 +30,12 @@
 #include <memory>
 
 namespace truss::interface { class ITrussAnalysisFacade; }
-namespace truss::gui { class TrussCanvasWidget; }
+namespace truss::gui {
+class TrussCanvasWidget;
+class InspectorPanel;
+class AnalysisControlBar;
+class ResultsDockPanel;
+}
 
 namespace truss::gui {
 
