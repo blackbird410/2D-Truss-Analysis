@@ -30,6 +30,7 @@
 #include <QPixmap>
 #include <QResizeEvent>
 
+#include <cmath>
 #include <gtest/gtest.h>
 
 #include <array>
@@ -317,5 +318,37 @@ TEST_F(TrussCanvasWidgetTest, SetModeTriggersRepaint)
         auto px = grabWidget(*widget);
         EXPECT_FALSE(px.isNull());
     });
+}
+
+// ============================================================
+// Tests — Phase 6: screenToWorld
+// ============================================================
+
+TEST_F(TrussCanvasWidgetTest, ScreenToWorldReturnsFiniteCoordinates)
+{
+    // With no view set, worldBounds defaults to the auto-fit rect; the result
+    // must be a finite Point2D regardless.
+    auto pt = widget->screenToWorld(QPoint(400, 300));
+    EXPECT_TRUE(std::isfinite(pt.x));
+    EXPECT_TRUE(std::isfinite(pt.y));
+}
+
+TEST_F(TrussCanvasWidgetTest, ScreenToWorldAfterRefreshReturnsFiniteCoordinates)
+{
+    widget->refresh(&trussView);
+    auto pt = widget->screenToWorld(QPoint(400, 300));
+    EXPECT_TRUE(std::isfinite(pt.x));
+    EXPECT_TRUE(std::isfinite(pt.y));
+}
+
+TEST_F(TrussCanvasWidgetTest, ScreenToWorldCenterIsApproximatelyWorldCenter)
+{
+    // After loading the 3-node truss (x ∈ [0,4], y ∈ [0,3]) the centre of the
+    // screen should map to approximately the world centre (2, 1.5) ± margins.
+    widget->refresh(&trussView);
+    auto pt = widget->screenToWorld(QPoint(400, 300));
+    // Allow generous ±3 m tolerance due to auto-fit padding
+    EXPECT_NEAR(pt.x, 2.0, 3.0);
+    EXPECT_NEAR(pt.y, 1.5, 3.0);
 }
 
