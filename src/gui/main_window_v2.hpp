@@ -21,6 +21,7 @@
 #include "gui/controllers/main_window_controller.hpp"
 #include "gui/state/workspace_state.hpp"
 
+#include <QAction>
 #include <QDockWidget>
 #include <QLabel>
 #include <QMainWindow>
@@ -97,6 +98,14 @@ private:
     QLabel* m_statsLabel{nullptr};
     QLabel* m_cursorLabel{nullptr};
 
+    // Menu QActions stored for later connection in connectSignals()
+    QAction* m_actNew{nullptr};
+    QAction* m_actOpen{nullptr};
+    QAction* m_actSave{nullptr};
+    QAction* m_actSaveAs{nullptr};
+    QAction* m_actQuit{nullptr};
+    QAction* m_actThemeDark{nullptr};
+    QAction* m_actThemeLight{nullptr};
 
     // -------------------------------------------------------------------
     // Controller
