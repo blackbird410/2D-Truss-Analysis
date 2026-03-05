@@ -162,6 +162,14 @@ private:
     /// Default: [−1, −1, 7, 7] m  (6 m × 6 m with 1 m padding each side).
     QRectF m_worldBounds{-1.0, -1.0, 7.0, 7.0};
 
+    /// AddMember mode: set after the user clicks the first node.
+    std::optional<core::NodeId> m_pendingMemberStart;
+
+    /// Currently selected node (0 = none).
+    core::NodeId   m_selectedNodeId{0};
+    /// Currently selected member (0 = none).
+    core::MemberId m_selectedMemberId{0};
+
     // -------------------------------------------------------------------
     // Visual constants
     // -------------------------------------------------------------------

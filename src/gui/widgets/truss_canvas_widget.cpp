@@ -114,6 +114,9 @@ void TrussCanvasWidget::clearCanvas()
 {
     m_view = nullptr;
     m_mode = DisplayMode::Geometry;
+    m_pendingMemberStart.reset();
+    m_selectedNodeId   = 0;
+    m_selectedMemberId = 0;
     update();
 }
 
