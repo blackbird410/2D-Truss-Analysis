@@ -160,14 +160,14 @@ void MainWindowV2::setupMenuBar()
     editMenu->addAction(QStringLiteral("&Undo"))->setShortcut(QKeySequence::Undo);
     editMenu->addAction(QStringLiteral("&Redo"))->setShortcut(QKeySequence::Redo);
 
-    // View menu
+    // ---- View menu ----
     auto* viewMenu = mb->addMenu(QStringLiteral("&View"));
     viewMenu->setObjectName(QStringLiteral("menuView"));
     viewMenu->addAction(m_resultsDock->toggleViewAction());
     viewMenu->addSeparator();
     auto* themeMenu = viewMenu->addMenu(QStringLiteral("&Theme"));
-    themeMenu->addAction(QStringLiteral("Dark"));
-    themeMenu->addAction(QStringLiteral("Light"));
+    m_actThemeDark  = themeMenu->addAction(QStringLiteral("Dark"));
+    m_actThemeLight = themeMenu->addAction(QStringLiteral("Light"));
 
     // Analysis menu
     auto* analysisMenu = mb->addMenu(QStringLiteral("&Analysis"));
