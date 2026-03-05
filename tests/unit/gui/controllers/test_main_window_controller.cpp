@@ -18,6 +18,11 @@
 #include "gui/controllers/main_window_controller.hpp"
 #include "mocks/mock_truss_analysis_facade.hpp"
 
+#include "application/result.hpp"
+#include "core/interfaces/ianalysis_results_view.hpp"
+#include "core/interfaces/itruss_view.hpp"
+#include "core/validation/truss_validator.hpp"
+
 #include <QApplication>
 #include <QCoreApplication>
 #include <QSignalSpy>
@@ -46,6 +51,27 @@ QApplication& ensureQApp()
     }();
     return *s_app;
 }
+
+// ============================================================
+// Minimal ITrussView stub — 0 nodes, 0 members
+// ============================================================
+
+class StubTrussView final : public truss::core::interfaces::ITrussView {
+public:
+    const std::string& getName() const override { return m_name; }
+    std::vector<truss::core::interfaces::NodeView>
+        getNodeViews()   const override { return {}; }
+    std::size_t getNodeCount()   const override { return 0; }
+    std::vector<truss::core::interfaces::MemberView>
+        getMemberViews() const override { return {}; }
+    std::size_t getMemberCount() const override { return 0; }
+    std::size_t getTotalDofs()   const override { return 0; }
+    std::size_t getFreeDofs()    const override { return 0; }
+    std::size_t getConstrainedDofs() const override { return 0; }
+private:
+    std::string m_name{"StubTruss"};
+};
+
 }  // namespace
 
 // ============================================================
