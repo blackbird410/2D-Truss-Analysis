@@ -128,8 +128,6 @@ public:
 signals:
     /**
      * @brief Emitted whenever the workspace state transitions to a new value.
-     *
-     * @param newState  The new state after the transition.
      */
     void stateChanged(const truss::gui::state::WorkspaceState& newState);
 
