@@ -47,21 +47,24 @@ class ResultsTableModel;
 namespace truss::gui::ctrl {
 
 /**
- * @brief Owns WorkspaceState and orchestrates all GUI sub-controllers.
+ * @brief Owns WorkspaceState, all sub-controllers, and all Qt Item Models.
  *
- * MainWindowController is the single owner of @c WorkspaceState.  It receives
- * domain events from sub-controllers and transitions the workspace state
- * accordingly.  All panels subscribe to @c stateChanged(WorkspaceState).
+ * MainWindowController is the composition root for the entire new GUI
+ * architecture.  On construction it:
+ * - Creates all five sub-controllers (CanvasController, InspectorController,
+ *   AnalysisController, ProjectController, ExportController)
+ * - Creates all four Qt Item Models (NodeTableModel, MemberTableModel,
+ *   ValidationListModel, ResultsTableModel)
+ * - Wires all inter-controller signal/slot connections
+ *
+ * Panels (InspectorPanel, AnalysisControlBar, ResultsDockPanel) receive model
+ * pointers and controller pointers via accessors exposed from this class.
+ * MainWindowV2 is responsible for wiring panel ↔ controller signals.
  *
  * Design constraints:
- * - @c ITrussAnalysisFacade is held by pointer (non-owning); the facade must
- *   outlive the controller.
  * - setState() deep-compares old and new state; only emits stateChanged when
  *   the value actually changes.
- *
- * @todo Phase 6: Wire CanvasController / AnalysisController signals;
- *       implement onTrussModified, onAnalysisCompleted, onAnalysisFailed
- *       with full Qt Item Model refresh cascade.
+ * - The confirmation provider is owned by this controller (ModalConfirmProvider).
  */
 class MainWindowController : public QObject {
     Q_OBJECT
@@ -69,6 +72,8 @@ class MainWindowController : public QObject {
 public:
     /**
      * @brief Construct with a mandatory facade reference.
+     *
+     * Creates all sub-controllers and models; wires inter-controller signals.
      *
      * @param facade  Application facade; must outlive this controller.
      * @param parent  Qt parent for memory management.
