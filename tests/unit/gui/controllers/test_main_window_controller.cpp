@@ -372,3 +372,21 @@ TEST_F(MainWindowControllerTest, ResultsModelIsNotNull)
     EXPECT_NE(controller->resultsModel(), nullptr);
 }
 
+// ============================================================
+// Tests — Phase 6: trussViewChanged signal
+// ============================================================
+
+TEST_F(MainWindowControllerTest, OnTrussModifiedEmitsTrussViewChanged)
+{
+    QSignalSpy spy(controller.get(), &MainWindowController::trussViewChanged);
+    controller->onTrussModified(1u);
+    EXPECT_EQ(spy.count(), 1);
+}
+
+TEST_F(MainWindowControllerTest, OnTrussModifiedSetsAnalysisControllerHandle)
+{
+    // After onTrussModified, the stateChanged cascade should run, setting the
+    // truss handle on all sub-controllers. We verify indirectly via the state.
+    controller->onTrussModified(42u);
+    EXPECT_EQ(controller->state().trussHandle, 42u);
+}
