@@ -69,6 +69,9 @@ public:
                           QWidget* parent = nullptr);
     ~MainWindowV2() override = default;
 
+protected:
+    void closeEvent(QCloseEvent* event) override;
+
 private slots:
     /// @brief React to workspace state transitions emitted by the controller.
     void onStateChanged(const truss::gui::state::WorkspaceState& newState);

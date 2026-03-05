@@ -17,9 +17,11 @@
 #include "gui/widgets/truss_canvas_widget.hpp"
 
 #include <QAction>
+#include <QCloseEvent>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
+#include <QMessageBox>
 #include <QSplitter>
 #include <QStatusBar>
 #include <QToolBar>
@@ -47,6 +49,28 @@ MainWindowV2::MainWindowV2(truss::interface::ITrussAnalysisFacade& facade,
     setupToolBar();
     setupStatusBar();
     connectSignals();
+}
+
+// ============================================================
+// closeEvent: dirty-state guard
+// ============================================================
+
+void MainWindowV2::closeEvent(QCloseEvent* event)
+{
+    if (m_controller->state().isDirty) {
+        const auto reply = QMessageBox::question(
+            this,
+            QStringLiteral("Unsaved Changes"),
+            QStringLiteral("The project has unsaved changes.\n"
+                           "Do you want to quit without saving?"),
+            QMessageBox::Discard | QMessageBox::Cancel,
+            QMessageBox::Cancel);
+        if (reply != QMessageBox::Discard) {
+            event->ignore();
+            return;
+        }
+    }
+    event->accept();
 }
 
 // ============================================================
