@@ -1,17 +1,15 @@
 /**
  * @file main_window_v2.hpp
- * @brief New MainWindow skeleton (Phase 4).
+ * @brief New MainWindow with full Phase 6 signal/slot wiring.
  *
  * Temporary name @e v2 avoids symbol conflict with the legacy @c main_window.cpp
- * while both coexist in the CMake target during the migration.  In Phase 8
- * this file will be renamed to @c main_window.cpp after the legacy version is
- * deleted.
+ * while both coexist in the CMake target during migration.  Phase 8 renames
+ * this to @c main_window.cpp after deleting the legacy version.
  *
- * Phase 4: Full QMainWindow skeleton — QSplitter (65/35), bottom QDockWidget,
- *          menu bar stubs, toolbar stubs, status bar labels, MainWindowController
- *          ownership.  Panels are placeholder QWidgets pending Phase 5.
+ * Phase 4: QMainWindow skeleton — QSplitter (65/35), bottom QDockWidget,
+ *          menu bar stubs, toolbar stubs, status bar, MainWindowController.
  * Phase 5: InspectorPanel / AnalysisControlBar / ResultsDockPanel replace placeholders.
- * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard.
+ * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard; toolbar wiring.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0

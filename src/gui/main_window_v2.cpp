@@ -1,11 +1,11 @@
 /**
  * @file main_window_v2.cpp
- * @brief New MainWindow skeleton implementation (Phase 4).
+ * @brief New MainWindow full implementation (Phase 6).
  *
- * Constructs a workspace-centric layout: horizontal QSplitter (65/35),
- * bottom QDockWidget, menu bar stubs, QToolBar stubs, QStatusBar with
- * phase + stats labels.  All secondary panels are QWidget placeholders
- * pending Phase 5.
+ * Phase 4: QMainWindow skeleton with placeholder panels.
+ * Phase 5: Real InspectorPanel / AnalysisControlBar / ResultsDockPanel.
+ * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard;
+ *          theme switching; toolbar tool-mode selection.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
