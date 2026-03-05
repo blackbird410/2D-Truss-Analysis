@@ -1,17 +1,15 @@
 /**
  * @file main_window_v2.hpp
- * @brief New MainWindow skeleton (Phase 4).
+ * @brief New MainWindow with full Phase 6 signal/slot wiring.
  *
  * Temporary name @e v2 avoids symbol conflict with the legacy @c main_window.cpp
- * while both coexist in the CMake target during the migration.  In Phase 8
- * this file will be renamed to @c main_window.cpp after the legacy version is
- * deleted.
+ * while both coexist in the CMake target during migration.  Phase 8 renames
+ * this to @c main_window.cpp after deleting the legacy version.
  *
- * Phase 4: Full QMainWindow skeleton — QSplitter (65/35), bottom QDockWidget,
- *          menu bar stubs, toolbar stubs, status bar labels, MainWindowController
- *          ownership.  Panels are placeholder QWidgets pending Phase 5.
+ * Phase 4: QMainWindow skeleton — QSplitter (65/35), bottom QDockWidget,
+ *          menu bar stubs, toolbar stubs, status bar, MainWindowController.
  * Phase 5: InspectorPanel / AnalysisControlBar / ResultsDockPanel replace placeholders.
- * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard.
+ * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard; toolbar wiring.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -22,7 +20,9 @@
 
 #include "gui/controllers/main_window_controller.hpp"
 #include "gui/state/workspace_state.hpp"
+#include "truss/export/export_format.hpp"
 
+#include <QAction>
 #include <QDockWidget>
 #include <QLabel>
 #include <QMainWindow>
@@ -32,57 +32,64 @@
 #include <memory>
 
 namespace truss::interface { class ITrussAnalysisFacade; }
-namespace truss::gui { class TrussCanvasWidget; }
+namespace truss::gui {
+class TrussCanvasWidget;
+class InspectorPanel;
+class AnalysisControlBar;
+class ResultsDockPanel;
+}
 
 namespace truss::gui {
 
 /**
  * @brief New-architecture main window for the 2D Truss Analysis application.
  *
- * Layout (Phase 4):
+ * Layout (Phase 6):
  * @code
- * ┌──────────────────────────────────────────────────┐
- * │ MenuBar                                          │
- * ├──────────────────────────────────────────────────┤
- * │ ToolBar                                          │
- * ├────────────────────────────┬─────────────────────┤
- * │                            │                     │
- * │   TrussCanvasWidget        │  Inspector          │
- * │   (65 % of splitter)       │  (placeholder,      │
- * │                            │   35 %)             │
- * ├──────────────────────────────────────────────────┤
- * │ Results Dock (bottom, dismissible)               │
- * ├──────────────────────────────────────────────────┤
- * │ StatusBar  [Phase]  [Nodes N  Members M]         │
- * └──────────────────────────────────────────────────┘
+ * ┌────────────────────────────────────────────────────┐
+ * │ MenuBar                                            │
+ * ├────────────────────────────────────────────────────┤
+ * │ ToolBar                                            │
+ * ├────────────────────────────┬───────────────────────┤
+ * │                            │  AnalysisControlBar   │
+ * │   TrussCanvasWidget        │  ──────────────────── │
+ * │   (65 % of splitter)       │  InspectorPanel       │
+ * │                            │  (35 %)               │
+ * ├────────────────────────────┴───────────────────────┤
+ * │ ResultsDockPanel (QDockWidget, bottom)              │
+ * ├────────────────────────────────────────────────────┤
+ * │ StatusBar  [Phase badge]  [Nodes: N  Members: M]   │
+ * └────────────────────────────────────────────────────┘
  * @endcode
- *
- * Constructor takes @em only @c ITrussAnalysisFacade&; all internal
- * dependencies are constructed inside the constructor.
  */
 class MainWindowV2 : public QMainWindow {
     Q_OBJECT
 
 public:
-    /**
-     * @brief Construct the new main window.
-     *
-     * @param facade  Application facade (non-owning); must outlive this window.
-     * @param parent  Qt parent widget (usually nullptr for a top-level window).
-     */
     explicit MainWindowV2(truss::interface::ITrussAnalysisFacade& facade,
                           QWidget* parent = nullptr);
-
     ~MainWindowV2() override = default;
 
+protected:
+    void closeEvent(QCloseEvent* event) override;
+
 private slots:
-    /// @brief React to workspace state transitions emitted by the controller.
+    /// React to workspace state transitions from the controller.
     void onStateChanged(const truss::gui::state::WorkspaceState& newState);
 
+    /// Show QFileDialog then hand path to ExportController.
+    void onExportRequested(truss::ExportFormat format, const QString& suggestedFilename);
+
+    /// Show AnalysisOptionsDialog and push result back to AnalysisControlBar.
+    void onOptionsRequested();
+
+    /// Trigger facade validation and show result in status bar.
+    void onValidateRequested();
+
+    /// Handle toolbar tool-mode actions.
+    void onToolActionTriggered();
+
 private:
-    // -------------------------------------------------------------------
-    // Setup helpers (called from constructor)
-    // -------------------------------------------------------------------
     void setupCentralWidget();
     void setupMenuBar();
     void setupToolBar();
@@ -92,25 +99,32 @@ private:
     // -------------------------------------------------------------------
     // Owned widgets
     // -------------------------------------------------------------------
-    TrussCanvasWidget*  m_canvas{nullptr};         ///< Primary rendering area
+    TrussCanvasWidget*   m_canvas{nullptr};
+    InspectorPanel*      m_inspectorPanel{nullptr};
+    AnalysisControlBar*  m_analysisBar{nullptr};
+    ResultsDockPanel*    m_resultsDockPanel{nullptr};
+    QDockWidget*         m_resultsDock{nullptr};
+    QSplitter*           m_centralSplitter{nullptr};
 
-    /// Right-panel placeholder — replaced by InspectorPanel in Phase 5.
-    QWidget*            m_inspectorPlaceholder{nullptr};
+    // Status bar labels
+    QLabel* m_phaseLabel{nullptr};
+    QLabel* m_statsLabel{nullptr};
+    QLabel* m_cursorLabel{nullptr};
 
-    /// Bottom dock widget — contains m_resultsPlaceholder (Phase 4),
-    /// replaced by full ResultsDockPanel in Phase 5.
-    QDockWidget*        m_resultsDock{nullptr};
+    // Menu QActions stored for later connection in connectSignals()
+    QAction* m_actNew{nullptr};
+    QAction* m_actOpen{nullptr};
+    QAction* m_actSave{nullptr};
+    QAction* m_actSaveAs{nullptr};
+    QAction* m_actQuit{nullptr};
+    QAction* m_actThemeDark{nullptr};
+    QAction* m_actThemeLight{nullptr};
 
-    /// Results content placeholder — replaced by ResultsDockPanel in Phase 5.
-    QWidget*            m_resultsPlaceholder{nullptr};
-
-    QSplitter*          m_centralSplitter{nullptr};///< Horizontal 65/35 splitter
-
-    // -------------------------------------------------------------------
-    // Status bar widgets
-    // -------------------------------------------------------------------
-    QLabel*             m_phaseLabel{nullptr};     ///< Shows current WorkspacePhase name
-    QLabel*             m_statsLabel{nullptr};     ///< Shows "Nodes: N  Members: M"
+    // Tool-mode QActions (exclusive)
+    QAction* m_actToolSelect{nullptr};
+    QAction* m_actToolNode{nullptr};
+    QAction* m_actToolMember{nullptr};
+    QAction* m_actToolDelete{nullptr};
 
     // -------------------------------------------------------------------
     // Controller
