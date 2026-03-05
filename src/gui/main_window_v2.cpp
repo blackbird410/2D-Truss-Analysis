@@ -245,8 +245,14 @@ void MainWindowV2::setupStatusBar()
     m_statsLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
     m_statsLabel->setMinimumWidth(200);
 
+    m_cursorLabel = new QLabel(QStringLiteral("0.000, 0.000 m"), this);
+    m_cursorLabel->setObjectName(QStringLiteral("statusCursorLabel"));
+    m_cursorLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    m_cursorLabel->setMinimumWidth(160);
+
     statusBar()->addPermanentWidget(m_phaseLabel);
     statusBar()->addPermanentWidget(m_statsLabel);
+    statusBar()->addPermanentWidget(m_cursorLabel);
     statusBar()->setObjectName(QStringLiteral("mainStatusBar"));
 }
 
