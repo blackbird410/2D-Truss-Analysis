@@ -111,8 +111,17 @@ protected:
     void SetUp() override
     {
         ensureQApp();
-        // MockTrussAnalysisFacade uses NiceMock semantics (no unexpected-call warnings
-        // needed for this set of tests — we only care about controller behaviour)
+        // Provide concrete stubs so that onTrussModified / onAnalysisCompleted
+        // can dereference the views returned by the mock facade without UB.
+        ON_CALL(facade, getTrussView(::testing::_))
+            .WillByDefault(::testing::ReturnRef(stubTrussView_));
+        ON_CALL(facade, getResultsView(::testing::_))
+            .WillByDefault(::testing::ReturnRef(stubResultsView_));
+        ON_CALL(facade, validateTruss(::testing::_))
+            .WillByDefault(::testing::Return(
+                truss::application::Result<truss::core::validation::ValidationResult>
+                    ::Success(truss::core::validation::ValidationResult{})));
+
         controller = std::make_unique<MainWindowController>(facade);
     }
 
@@ -122,6 +131,8 @@ protected:
     }
 
     ::testing::NiceMock<MockTrussAnalysisFacade> facade;
+    StubTrussView                                stubTrussView_;
+    StubResultsView                              stubResultsView_;
     std::unique_ptr<MainWindowController>        controller;
 };
 
