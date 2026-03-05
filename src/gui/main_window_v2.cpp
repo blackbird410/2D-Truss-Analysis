@@ -260,6 +260,12 @@ void MainWindowV2::onStateChanged(const truss::gui::state::WorkspaceState& newSt
     }
     m_phaseLabel->setText(phaseText);
 
+    // Stats label (node/member counts from models)
+    const int nodeCount   = m_controller->nodeModel()->rowCount();
+    const int memberCount = m_controller->memberModel()->rowCount();
+    m_statsLabel->setText(
+        QStringLiteral("Nodes: %1   Members: %2").arg(nodeCount).arg(memberCount));
+
     // Dirty indicator in title bar
     setWindowTitle(newState.isDirty
         ? QStringLiteral("2D Truss Analysis *")
