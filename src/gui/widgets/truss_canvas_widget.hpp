@@ -201,8 +201,14 @@ private:
                         const QColor& colour) const;
 
     // -------------------------------------------------------------------
-    // State
+    // Interaction helpers
     // -------------------------------------------------------------------
+
+    /**
+     * @brief Find a node within hit-testing radius at screen position @p p.
+     * @return Node id, or std::nullopt if nothing is close enough.
+     */
+    [[nodiscard]] std::optional<core::NodeId> findNodeAt(QPoint p) const;
 
     /// Non-owning pointer to the current truss view; may be nullptr.
     const core::interfaces::ITrussView* m_view{nullptr};
@@ -234,6 +240,7 @@ private:
     static constexpr double kSupportSize      = 14.0;  ///< Support symbol half-size (px)
     static constexpr double kArrowLength      = 40.0;  ///< Force arrow length (px)
     static constexpr double kMarginFraction   = 0.12;  ///< Canvas margin (fraction of dimension)
+    static constexpr double kHitRadius        = 10.0;  ///< Node hit-test radius (px)
 };
 
 }  // namespace truss::gui

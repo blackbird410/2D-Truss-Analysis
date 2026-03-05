@@ -513,4 +513,22 @@ core::Point2D TrussCanvasWidget::screenToWorld(QPoint screenPos) const
     return {w.x(), w.y()};
 }
 
+// -------------------------------------------------------------------
+// Interaction helpers
+// -------------------------------------------------------------------
+
+std::optional<core::NodeId> TrussCanvasWidget::findNodeAt(QPoint p) const
+{
+    if (!m_view) return std::nullopt;
+    const QPointF qp(p);
+    for (const auto& n : m_view->getNodeViews()) {
+        const QPointF sp = toScreen(n.x, n.y);
+        const QPointF d  = qp - sp;
+        if (std::hypot(d.x(), d.y()) <= kHitRadius) {
+            return n.id;
+        }
+    }
+    return std::nullopt;
+}
+
 }  // namespace truss::gui
