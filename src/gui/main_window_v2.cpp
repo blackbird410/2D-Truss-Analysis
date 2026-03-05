@@ -16,6 +16,7 @@
 
 #include "gui/controllers/analysis_controller_v2.hpp"
 #include "gui/controllers/canvas_controller.hpp"
+#include "gui/controllers/export_controller.hpp"
 #include "gui/controllers/inspector_controller.hpp"
 #include "gui/controllers/project_controller_v2.hpp"
 #include "gui/panels/analysis_control_bar.hpp"
@@ -268,6 +269,7 @@ void MainWindowV2::connectSignals()
     auto* inspectorCtrl = m_controller->inspectorController();
     auto* analysisCtrl  = m_controller->analysisController();
     auto* projectCtrl   = m_controller->projectController();
+    auto* exportCtrl    = m_controller->exportController();
 
     // ----------------------------------------------------------------
     // MainWindowController → panels
@@ -366,6 +368,36 @@ void MainWindowV2::connectSignals()
     connect(m_analysisBar, &AnalysisControlBar::optionsRequested,
             this, &MainWindowV2::onOptionsRequested);
 
+    // ----------------------------------------------------------------
+    // ResultsDockPanel → ExportController (via file dialog in this window)
+    // ----------------------------------------------------------------
+    connect(m_resultsDockPanel, &ResultsDockPanel::exportRequested,
+            this, &MainWindowV2::onExportRequested);
+
+    connect(exportCtrl, &ctrl::ExportController::exportCompleted,
+            this, [this](const QString& path) {
+                statusBar()->showMessage(
+                    QStringLiteral("Exported to %1").arg(path), 5000);
+            });
+    connect(exportCtrl, &ctrl::ExportController::exportFailed,
+            this, [this](const QString& err) {
+                statusBar()->showMessage(
+                    QStringLiteral("Export failed: %1").arg(err), 8000);
+            });
+
+    // OperationFailed error notifications
+    connect(canvasCtrl, &ctrl::CanvasController::operationFailed,
+            this, [this](const QString& msg) {
+                statusBar()->showMessage(msg, 5000);
+            });
+    connect(inspectorCtrl, &ctrl::InspectorController::operationFailed,
+            this, [this](const QString& msg) {
+                statusBar()->showMessage(msg, 5000);
+            });
+    connect(projectCtrl, &ctrl::ProjectController::operationFailed,
+            this, [this](const QString& msg) {
+                statusBar()->showMessage(msg, 5000);
+            });
 }
 
 // ============================================================
