@@ -133,6 +133,9 @@ signals:
     void memberDrawRequested(truss::core::NodeId startId,
                              truss::core::NodeId endId);
 
+    /// @brief Emitted in Delete mode when the user clicks on a node.
+    void nodeDeleteRequested(truss::core::NodeId nodeId);
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
