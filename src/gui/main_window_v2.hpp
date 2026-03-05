@@ -42,40 +42,30 @@ namespace truss::gui {
 /**
  * @brief New-architecture main window for the 2D Truss Analysis application.
  *
- * Layout (Phase 4):
+ * Layout (Phase 6):
  * @code
- * ┌──────────────────────────────────────────────────┐
- * │ MenuBar                                          │
- * ├──────────────────────────────────────────────────┤
- * │ ToolBar                                          │
- * ├────────────────────────────┬─────────────────────┤
- * │                            │                     │
- * │   TrussCanvasWidget        │  Inspector          │
- * │   (65 % of splitter)       │  (placeholder,      │
- * │                            │   35 %)             │
- * ├──────────────────────────────────────────────────┤
- * │ Results Dock (bottom, dismissible)               │
- * ├──────────────────────────────────────────────────┤
- * │ StatusBar  [Phase]  [Nodes N  Members M]         │
- * └──────────────────────────────────────────────────┘
+ * ┌────────────────────────────────────────────────────┐
+ * │ MenuBar                                            │
+ * ├────────────────────────────────────────────────────┤
+ * │ ToolBar                                            │
+ * ├────────────────────────────┬───────────────────────┤
+ * │                            │  AnalysisControlBar   │
+ * │   TrussCanvasWidget        │  ──────────────────── │
+ * │   (65 % of splitter)       │  InspectorPanel       │
+ * │                            │  (35 %)               │
+ * ├────────────────────────────┴───────────────────────┤
+ * │ ResultsDockPanel (QDockWidget, bottom)              │
+ * ├────────────────────────────────────────────────────┤
+ * │ StatusBar  [Phase badge]  [Nodes: N  Members: M]   │
+ * └────────────────────────────────────────────────────┘
  * @endcode
- *
- * Constructor takes @em only @c ITrussAnalysisFacade&; all internal
- * dependencies are constructed inside the constructor.
  */
 class MainWindowV2 : public QMainWindow {
     Q_OBJECT
 
 public:
-    /**
-     * @brief Construct the new main window.
-     *
-     * @param facade  Application facade (non-owning); must outlive this window.
-     * @param parent  Qt parent widget (usually nullptr for a top-level window).
-     */
     explicit MainWindowV2(truss::interface::ITrussAnalysisFacade& facade,
                           QWidget* parent = nullptr);
-
     ~MainWindowV2() override = default;
 
 private slots:
