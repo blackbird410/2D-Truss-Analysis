@@ -4,6 +4,8 @@
  *
  * WorkspaceState is a pure C++ value type (Qt-free). These tests verify:
  *  - Default construction yields WorkspacePhase::Empty.
+ *  - hasTruss(), hasResults(), isAnalysing(), isResultsReady(), isEditable()
+ *    return correct values for representative states.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -54,5 +56,117 @@ TEST(WorkspaceStateTest, DefaultLastErrorIsEmpty)
 {
     WorkspaceState s;
     EXPECT_TRUE(s.lastError.empty());
+}
+
+// ============================================================
+// Tests — hasTruss()
+// ============================================================
+
+TEST(WorkspaceStateTest, HasTrussReturnsFalseWhenHandleIsZero)
+{
+    WorkspaceState s;
+    EXPECT_FALSE(s.hasTruss());
+}
+
+TEST(WorkspaceStateTest, HasTrussReturnsTrueWhenHandleNonZero)
+{
+    WorkspaceState s;
+    s.trussHandle = 1u;
+    EXPECT_TRUE(s.hasTruss());
+}
+
+// ============================================================
+// Tests — hasResults()
+// ============================================================
+
+TEST(WorkspaceStateTest, HasResultsReturnsFalseWhenHandleIsZero)
+{
+    WorkspaceState s;
+    EXPECT_FALSE(s.hasResults());
+}
+
+TEST(WorkspaceStateTest, HasResultsReturnsTrueWhenHandleNonZero)
+{
+    WorkspaceState s;
+    s.resultsHandle = 7u;
+    EXPECT_TRUE(s.hasResults());
+}
+
+// ============================================================
+// Tests — isAnalysing()
+// ============================================================
+
+TEST(WorkspaceStateTest, IsAnalysingReturnsTrueOnlyForAnalysingPhase)
+{
+    WorkspaceState s;
+    s.phase = WorkspacePhase::Analysing;
+    EXPECT_TRUE(s.isAnalysing());
+}
+
+TEST(WorkspaceStateTest, IsAnalysingReturnsFalseForOtherPhases)
+{
+    for (auto phase : {WorkspacePhase::Empty,
+                       WorkspacePhase::ModelBuilding,
+                       WorkspacePhase::Validating,
+                       WorkspacePhase::ResultsReady}) {
+        WorkspaceState s;
+        s.phase = phase;
+        EXPECT_FALSE(s.isAnalysing()) << "Phase should not be Analysing";
+    }
+}
+
+// ============================================================
+// Tests — isResultsReady()
+// ============================================================
+
+TEST(WorkspaceStateTest, IsResultsReadyReturnsTrueOnlyForResultsReadyPhase)
+{
+    WorkspaceState s;
+    s.phase = WorkspacePhase::ResultsReady;
+    EXPECT_TRUE(s.isResultsReady());
+}
+
+TEST(WorkspaceStateTest, IsResultsReadyReturnsFalseForOtherPhases)
+{
+    for (auto phase : {WorkspacePhase::Empty,
+                       WorkspacePhase::ModelBuilding,
+                       WorkspacePhase::Validating,
+                       WorkspacePhase::Analysing}) {
+        WorkspaceState s;
+        s.phase = phase;
+        EXPECT_FALSE(s.isResultsReady()) << "Phase should not be ResultsReady";
+    }
+}
+
+// ============================================================
+// Tests — isEditable()
+// ============================================================
+
+TEST(WorkspaceStateTest, IsEditableReturnsTrueForModelBuilding)
+{
+    WorkspaceState s;
+    s.phase = WorkspacePhase::ModelBuilding;
+    EXPECT_TRUE(s.isEditable());
+}
+
+TEST(WorkspaceStateTest, IsEditableReturnsTrueForResultsReady)
+{
+    WorkspaceState s;
+    s.phase = WorkspacePhase::ResultsReady;
+    EXPECT_TRUE(s.isEditable());
+}
+
+TEST(WorkspaceStateTest, IsEditableReturnsFalseForEmpty)
+{
+    WorkspaceState s;
+    s.phase = WorkspacePhase::Empty;
+    EXPECT_FALSE(s.isEditable());
+}
+
+TEST(WorkspaceStateTest, IsEditableReturnsFalseWhileAnalysing)
+{
+    WorkspaceState s;
+    s.phase = WorkspacePhase::Analysing;
+    EXPECT_FALSE(s.isEditable());
 }
 
