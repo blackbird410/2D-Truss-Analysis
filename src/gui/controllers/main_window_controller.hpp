@@ -157,8 +157,11 @@ public slots:
      */
     void onAnalysisStarted();
 
+    /**
+     * @brief Called when a background analysis has completed successfully.
      *
-     * @todo Phase 6: Trigger ResultsTableModel / MemberTableModel results refresh.
+     * Transitions to ResultsReady, refreshes ResultsTableModel and
+     * MemberTableModel results columns.
      *
      * @param resultsHandle  Handle to the completed analysis results.
      */

@@ -183,7 +183,24 @@ void MainWindowController::onAnalysisCompleted(std::size_t resultsHandle)
     next.resultsHandle = resultsHandle;
     next.phase         = state::WorkspacePhase::ResultsReady;
     next.lastError.clear();
-    // TODO Phase 6: trigger ResultsTableModel::refresh() and MemberTableModel results refresh
+
+    // Refresh results model and enable results columns in node/member models
+    try {
+        if (resultsHandle != 0) {
+            const auto& results = m_facade->getResultsView(resultsHandle);
+            m_resultsModel->refresh(results);
+        }
+        if (next.trussHandle != 0) {
+            const auto& view = m_facade->getTrussView(next.trussHandle);
+            m_nodeModel->refresh(view);
+            m_nodeModel->setHasResults(true);
+            m_memberModel->refresh(view);
+            m_memberModel->setHasResults(true);
+        }
+    } catch (...) {
+        // Silently ignore refresh failures (shouldn't happen with valid handles)
+    }
+
     setState(std::move(next));
 }
 
