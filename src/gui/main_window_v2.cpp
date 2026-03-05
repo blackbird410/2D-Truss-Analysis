@@ -169,7 +169,7 @@ void MainWindowV2::setupMenuBar()
     m_actThemeDark  = themeMenu->addAction(QStringLiteral("Dark"));
     m_actThemeLight = themeMenu->addAction(QStringLiteral("Light"));
 
-    // Analysis menu
+    // ---- Analysis menu ----
     auto* analysisMenu = mb->addMenu(QStringLiteral("&Analysis"));
     analysisMenu->setObjectName(QStringLiteral("menuAnalysis"));
     analysisMenu->addAction(QStringLiteral("&Run Analysis"))->setShortcut(Qt::Key_F5);
@@ -177,7 +177,7 @@ void MainWindowV2::setupMenuBar()
     analysisMenu->addSeparator();
     analysisMenu->addAction(QStringLiteral("Analysis &Options…"));
 
-    // Export menu
+    // ---- Export menu ----
     auto* exportMenu = mb->addMenu(QStringLiteral("&Export"));
     exportMenu->setObjectName(QStringLiteral("menuExport"));
     exportMenu->addAction(QStringLiteral("Export as &CSV…"));
@@ -185,7 +185,7 @@ void MainWindowV2::setupMenuBar()
     exportMenu->addAction(QStringLiteral("Export as &HTML…"));
     exportMenu->addAction(QStringLiteral("Export as &LaTeX…"));
 
-    // Help menu
+    // ---- Help menu ----
     auto* helpMenu = mb->addMenu(QStringLiteral("&Help"));
     helpMenu->setObjectName(QStringLiteral("menuHelp"));
     helpMenu->addAction(QStringLiteral("&About…"));
