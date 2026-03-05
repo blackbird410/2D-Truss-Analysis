@@ -14,6 +14,8 @@
 
 #include "gui/main_window_v2.hpp"
 
+#include "gui/panels/analysis_control_bar.hpp"
+#include "gui/panels/inspector_panel.hpp"
 #include "gui/widgets/truss_canvas_widget.hpp"
 
 #include <QAction>
@@ -84,30 +86,32 @@ void MainWindowV2::setupCentralWidget()
     m_canvas = new TrussCanvasWidget(this);
     m_canvas->setObjectName(QStringLiteral("trussCanvas"));
 
-    // --- Inspector placeholder (right, ~35 %) ---
-    m_inspectorPlaceholder = new QWidget(this);
-    m_inspectorPlaceholder->setObjectName(QStringLiteral("inspectorPlaceholder"));
-    m_inspectorPlaceholder->setMinimumWidth(280);
+    // --- Right panel: AnalysisControlBar + InspectorPanel ---
+    m_analysisBar = new AnalysisControlBar(this);
+    m_analysisBar->setObjectName(QStringLiteral("analysisControlBar"));
 
-    auto* phLabel = new QLabel(
-        QStringLiteral("Inspector Panel\n(Phase 5)"), m_inspectorPlaceholder);
-    phLabel->setAlignment(Qt::AlignCenter);
-    phLabel->setStyleSheet(QStringLiteral("color: #5F5F5F; font-size: 11px;"));
-    auto* phLayout = new QVBoxLayout(m_inspectorPlaceholder);
-    phLayout->addWidget(phLabel);
-    phLayout->setAlignment(Qt::AlignCenter);
+    m_inspectorPanel = new InspectorPanel(this);
+    m_inspectorPanel->setObjectName(QStringLiteral("inspectorPanel"));
+
+    auto* rightWidget  = new QWidget(this);
+    rightWidget->setObjectName(QStringLiteral("rightPanel"));
+    rightWidget->setMinimumWidth(280);
+
+    auto* rightLayout = new QVBoxLayout(rightWidget);
+    rightLayout->setContentsMargins(0, 0, 0, 0);
+    rightLayout->setSpacing(0);
+    rightLayout->addWidget(m_analysisBar);
+    rightLayout->addWidget(m_inspectorPanel, 1 /*stretch*/);
 
     // --- Horizontal splitter (65 / 35 default) ---
     m_centralSplitter = new QSplitter(Qt::Horizontal, this);
     m_centralSplitter->setObjectName(QStringLiteral("centralSplitter"));
     m_centralSplitter->addWidget(m_canvas);
-    m_centralSplitter->addWidget(m_inspectorPlaceholder);
-    // Set proportional sizes: 65 + 35 = 100 units
+    m_centralSplitter->addWidget(rightWidget);
     m_centralSplitter->setSizes({650, 350});
     m_centralSplitter->setStretchFactor(0, 65);
     m_centralSplitter->setStretchFactor(1, 35);
     m_centralSplitter->setChildrenCollapsible(false);
-
     setCentralWidget(m_centralSplitter);
 
     // --- Results Dock (bottom, dismissible) ---
