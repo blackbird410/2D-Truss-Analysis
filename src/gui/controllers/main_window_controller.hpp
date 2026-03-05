@@ -116,6 +116,15 @@ public:
     [[nodiscard]] ProjectController*   projectController()   const noexcept;
     [[nodiscard]] ExportController*    exportController()    const noexcept;
 
+    // -----------------------------------------------------------------------
+    // Qt Item Model accessors (non-owning pointers — lifetime is this object)
+    // -----------------------------------------------------------------------
+
+    [[nodiscard]] model::NodeTableModel*       nodeModel()        const noexcept;
+    [[nodiscard]] model::MemberTableModel*     memberModel()      const noexcept;
+    [[nodiscard]] model::ValidationListModel*  validationModel()  const noexcept;
+    [[nodiscard]] model::ResultsTableModel*    resultsModel()     const noexcept;
+
 signals:
     /**
      * @brief Emitted whenever the workspace state transitions to a new value.

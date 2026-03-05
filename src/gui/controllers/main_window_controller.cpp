@@ -123,6 +123,15 @@ ProjectController*   MainWindowController::projectController()   const noexcept 
 ExportController*    MainWindowController::exportController()    const noexcept { return m_exportController.get(); }
 
 // ============================================================
+// Accessors — models
+// ============================================================
+
+model::NodeTableModel*      MainWindowController::nodeModel()       const noexcept { return m_nodeModel.get(); }
+model::MemberTableModel*    MainWindowController::memberModel()     const noexcept { return m_memberModel.get(); }
+model::ValidationListModel* MainWindowController::validationModel() const noexcept { return m_validationModel.get(); }
+model::ResultsTableModel*   MainWindowController::resultsModel()    const noexcept { return m_resultsModel.get(); }
+
+// ============================================================
 // Slots
 // ============================================================
 
