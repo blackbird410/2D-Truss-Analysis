@@ -627,6 +627,17 @@ void TrussCanvasWidget::mouseMoveEvent(QMouseEvent* event)
     QWidget::mouseMoveEvent(event);
 }
 
+void TrussCanvasWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::MiddleButton && m_isPanning) {
+        m_isPanning = false;
+        updateCursorForMode();
+        event->accept();
+        return;
+    }
+    QWidget::mouseReleaseEvent(event);
+}
+
 // -------------------------------------------------------------------
 // Interaction helpers
 // -------------------------------------------------------------------
