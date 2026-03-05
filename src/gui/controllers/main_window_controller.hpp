@@ -84,7 +84,7 @@ public:
     explicit MainWindowController(truss::interface::ITrussAnalysisFacade& facade,
                                   QObject* parent = nullptr);
 
-    ~MainWindowController() override = default;
+    ~MainWindowController() override;
 
     // Disable copy and move — controller has identity semantics
     MainWindowController(const MainWindowController&)            = delete;

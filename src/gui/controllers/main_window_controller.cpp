@@ -94,6 +94,8 @@ MainWindowController::MainWindowController(truss::interface::ITrussAnalysisFacad
             });
 }
 
+MainWindowController::~MainWindowController() = default;
+
 // ============================================================
 // Accessors
 // ============================================================
