@@ -1,13 +1,11 @@
 /**
  * @file main_window_controller.cpp
- * @brief MainWindowController implementation (Phase 4).
+ * @brief MainWindowController full implementation (Phase 6).
  *
- * Phase 4: Constructor, WorkspaceState accessor / mutator,
- *          stateChanged signal emission, onTrussModified /
- *          onAnalysisCompleted / onAnalysisFailed skeleton slots.
- *
- * Phase 6 will wire these to sub-controllers and trigger Qt Item Model
- * refresh cascades.
+ * Phase 4: Constructor, WorkspaceState accessor / mutator, stateChanged signal.
+ * Phase 6: Creates and owns all sub-controllers and Qt Item Models.
+ *          Wires inter-controller signals.  Implements full cascade refresh
+ *          in onTrussModified and onAnalysisCompleted.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0

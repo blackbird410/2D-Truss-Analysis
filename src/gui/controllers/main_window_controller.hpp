@@ -1,12 +1,12 @@
 /**
  * @file main_window_controller.hpp
- * @brief Top-level orchestrator controller: owns WorkspaceState and coordinates
- *        all sub-controllers.
+ * @brief Top-level orchestrator controller: owns WorkspaceState, all sub-controllers,
+ *        and all Qt Item Models.  Receives domain events and cascades model refreshes.
  *
- * Phase 4: Q_OBJECT, constructor with facade injection, WorkspaceState ownership,
- *          setState() / state() accessors, stateChanged() signal.
- * Phase 6: Sub-controller signal wiring, full onTrussModified / onAnalysisCompleted
- *          / onAnalysisFailed slot implementations with model refresh.
+ * Phase 4: Q_OBJECT, WorkspaceState ownership, stateChanged signal.
+ * Phase 6: Sub-controller creation + ownership, model refresh cascade,
+ *          full onTrussModified / onAnalysisCompleted / onAnalysisFailed
+ *          implementations with model refresh.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
