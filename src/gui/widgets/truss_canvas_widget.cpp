@@ -531,4 +531,44 @@ std::optional<core::NodeId> TrussCanvasWidget::findNodeAt(QPoint p) const
     return std::nullopt;
 }
 
+std::optional<core::MemberId> TrussCanvasWidget::findMemberAt(QPoint p) const
+{
+    if (!m_view) return std::nullopt;
+
+    const auto nodes   = m_view->getNodeViews();
+    const auto members = m_view->getMemberViews();
+
+    std::unordered_map<core::NodeId, QPointF> screenMap;
+    screenMap.reserve(nodes.size());
+    for (const auto& n : nodes) {
+        screenMap[n.id] = toScreen(n.x, n.y);
+    }
+
+    const QPointF qp(p);
+
+    for (const auto& m : members) {
+        const auto it1 = screenMap.find(m.startNodeId);
+        const auto it2 = screenMap.find(m.endNodeId);
+        if (it1 == screenMap.end() || it2 == screenMap.end()) continue;
+
+        const QPointF a = it1->second;
+        const QPointF b = it2->second;
+        const QPointF ab = b - a;
+        const QPointF ap = qp - a;
+
+        const double lenSq = ab.x() * ab.x() + ab.y() * ab.y();
+        if (lenSq < 1e-10) continue;
+
+        const double t = std::clamp(
+            (ap.x() * ab.x() + ap.y() * ab.y()) / lenSq, 0.0, 1.0);
+        const QPointF proj = a + t * ab;
+        const QPointF diff = qp - proj;
+
+        if (std::hypot(diff.x(), diff.y()) <= kMemberHitTol) {
+            return m.id;
+        }
+    }
+    return std::nullopt;
+}
+
 }  // namespace truss::gui

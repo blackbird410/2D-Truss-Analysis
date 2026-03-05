@@ -210,6 +210,12 @@ private:
      */
     [[nodiscard]] std::optional<core::NodeId> findNodeAt(QPoint p) const;
 
+    /**
+     * @brief Find a member whose line passes within tolerance of screen position @p p.
+     * @return Member id, or std::nullopt if nothing is close enough.
+     */
+    [[nodiscard]] std::optional<core::MemberId> findMemberAt(QPoint p) const;
+
     /// Non-owning pointer to the current truss view; may be nullptr.
     const core::interfaces::ITrussView* m_view{nullptr};
 
@@ -241,6 +247,7 @@ private:
     static constexpr double kArrowLength      = 40.0;  ///< Force arrow length (px)
     static constexpr double kMarginFraction   = 0.12;  ///< Canvas margin (fraction of dimension)
     static constexpr double kHitRadius        = 10.0;  ///< Node hit-test radius (px)
+    static constexpr double kMemberHitTol     = 6.0;   ///< Member hit-test tolerance (px)
 };
 
 }  // namespace truss::gui
