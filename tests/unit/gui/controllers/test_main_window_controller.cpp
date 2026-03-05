@@ -18,6 +18,11 @@
 #include "gui/controllers/main_window_controller.hpp"
 #include "mocks/mock_truss_analysis_facade.hpp"
 
+#include "application/result.hpp"
+#include "core/interfaces/ianalysis_results_view.hpp"
+#include "core/interfaces/itruss_view.hpp"
+#include "core/validation/truss_validator.hpp"
+
 #include <QApplication>
 #include <QCoreApplication>
 #include <QSignalSpy>
@@ -46,6 +51,55 @@ QApplication& ensureQApp()
     }();
     return *s_app;
 }
+
+// ============================================================
+// Minimal ITrussView stub — 0 nodes, 0 members
+// ============================================================
+
+class StubTrussView final : public truss::core::interfaces::ITrussView {
+public:
+    const std::string& getName() const override { return m_name; }
+    std::vector<truss::core::interfaces::NodeView>
+        getNodeViews()   const override { return {}; }
+    std::size_t getNodeCount()   const override { return 0; }
+    std::vector<truss::core::interfaces::MemberView>
+        getMemberViews() const override { return {}; }
+    std::size_t getMemberCount() const override { return 0; }
+    std::size_t getTotalDofs()   const override { return 0; }
+    std::size_t getFreeDofs()    const override { return 0; }
+    std::size_t getConstrainedDofs() const override { return 0; }
+private:
+    std::string m_name{"StubTruss"};
+};
+
+// ============================================================
+// Minimal IAnalysisResultsView stub
+// ============================================================
+
+class StubResultsView final : public truss::core::interfaces::IAnalysisResultsView {
+public:
+    const std::vector<truss::core::Real>& getDisplacements()     const override { return m_empty; }
+    const std::vector<truss::core::Real>& getReactions()          const override { return m_empty; }
+    const std::vector<truss::core::Real>& getMemberForces()       const override { return m_empty; }
+    const std::vector<truss::core::Real>& getMemberStresses()     const override { return m_empty; }
+    const std::vector<truss::core::Real>& getUtilizationRatios()  const override { return m_empty; }
+    const std::vector<std::vector<truss::core::Real>>&
+        getStiffnessMatrix() const override { return m_matrix; }
+    bool hasConverged()   const override { return true; }
+    int  getIterations()  const override { return 1; }
+    truss::core::Real getResidualNorm()    const override { return 0.0; }
+    truss::core::Real getConditionNumber() const override { return 1.0; }
+    std::size_t getTotalDofs()      const override { return 0; }
+    std::size_t getFreeDofs()       const override { return 0; }
+    std::size_t getConstrainedDofs() const override { return 0; }
+    truss::core::Real getTotalStrain()      const override { return 0.0; }
+    truss::core::Real getMaxDisplacement()  const override { return 0.0; }
+    truss::core::Real getMaxStress()        const override { return 0.0; }
+private:
+    std::vector<truss::core::Real>                   m_empty;
+    std::vector<std::vector<truss::core::Real>>      m_matrix;
+};
+
 }  // namespace
 
 // ============================================================
@@ -57,8 +111,17 @@ protected:
     void SetUp() override
     {
         ensureQApp();
-        // MockTrussAnalysisFacade uses NiceMock semantics (no unexpected-call warnings
-        // needed for this set of tests — we only care about controller behaviour)
+        // Provide concrete stubs so that onTrussModified / onAnalysisCompleted
+        // can dereference the views returned by the mock facade without UB.
+        ON_CALL(facade, getTrussView(::testing::_))
+            .WillByDefault(::testing::ReturnRef(stubTrussView_));
+        ON_CALL(facade, getResultsView(::testing::_))
+            .WillByDefault(::testing::ReturnRef(stubResultsView_));
+        ON_CALL(facade, validateTruss(::testing::_))
+            .WillByDefault(::testing::Return(
+                truss::application::Result<truss::core::validation::ValidationResult>
+                    ::Success(truss::core::validation::ValidationResult{})));
+
         controller = std::make_unique<MainWindowController>(facade);
     }
 
@@ -68,6 +131,8 @@ protected:
     }
 
     ::testing::NiceMock<MockTrussAnalysisFacade> facade;
+    StubTrussView                                stubTrussView_;
+    StubResultsView                              stubResultsView_;
     std::unique_ptr<MainWindowController>        controller;
 };
 
@@ -256,4 +321,72 @@ TEST_F(MainWindowControllerTest, OnAnalysisFailedClearsResultsHandle)
     controller->onAnalysisFailed(QStringLiteral("error"));
 
     EXPECT_EQ(controller->state().resultsHandle, 0u);
+}
+
+// ============================================================
+// Tests — Phase 6: sub-controller and model accessors
+// ============================================================
+
+TEST_F(MainWindowControllerTest, CanvasControllerIsNotNull)
+{
+    EXPECT_NE(controller->canvasController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, InspectorControllerIsNotNull)
+{
+    EXPECT_NE(controller->inspectorController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, AnalysisControllerV2IsNotNull)
+{
+    EXPECT_NE(controller->analysisController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ProjectControllerV2IsNotNull)
+{
+    EXPECT_NE(controller->projectController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ExportControllerIsNotNull)
+{
+    EXPECT_NE(controller->exportController(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, NodeModelIsNotNull)
+{
+    EXPECT_NE(controller->nodeModel(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, MemberModelIsNotNull)
+{
+    EXPECT_NE(controller->memberModel(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ValidationModelIsNotNull)
+{
+    EXPECT_NE(controller->validationModel(), nullptr);
+}
+
+TEST_F(MainWindowControllerTest, ResultsModelIsNotNull)
+{
+    EXPECT_NE(controller->resultsModel(), nullptr);
+}
+
+// ============================================================
+// Tests — Phase 6: trussViewChanged signal
+// ============================================================
+
+TEST_F(MainWindowControllerTest, OnTrussModifiedEmitsTrussViewChanged)
+{
+    QSignalSpy spy(controller.get(), &MainWindowController::trussViewChanged);
+    controller->onTrussModified(1u);
+    EXPECT_EQ(spy.count(), 1);
+}
+
+TEST_F(MainWindowControllerTest, OnTrussModifiedSetsAnalysisControllerHandle)
+{
+    // After onTrussModified, the stateChanged cascade should run, setting the
+    // truss handle on all sub-controllers. We verify indirectly via the state.
+    controller->onTrussModified(42u);
+    EXPECT_EQ(controller->state().trussHandle, 42u);
 }
