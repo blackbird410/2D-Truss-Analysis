@@ -244,29 +244,19 @@ void MainWindowV2::connectSignals()
 }
 
 // ============================================================
-// Slots
+// Private slots
 // ============================================================
 
 void MainWindowV2::onStateChanged(const truss::gui::state::WorkspaceState& newState)
 {
-    // Update phase label
+    // Phase label
     QString phaseText;
     switch (newState.phase) {
-        case state::WorkspacePhase::Empty:
-            phaseText = QStringLiteral("Empty");
-            break;
-        case state::WorkspacePhase::ModelBuilding:
-            phaseText = QStringLiteral("Building");
-            break;
-        case state::WorkspacePhase::Validating:
-            phaseText = QStringLiteral("Validating");
-            break;
-        case state::WorkspacePhase::Analysing:
-            phaseText = QStringLiteral("Analysing…");
-            break;
-        case state::WorkspacePhase::ResultsReady:
-            phaseText = QStringLiteral("Results Ready");
-            break;
+        case state::WorkspacePhase::Empty:         phaseText = QStringLiteral("Empty");          break;
+        case state::WorkspacePhase::ModelBuilding: phaseText = QStringLiteral("Building");       break;
+        case state::WorkspacePhase::Validating:    phaseText = QStringLiteral("Validating…");    break;
+        case state::WorkspacePhase::Analysing:     phaseText = QStringLiteral("Analysing…");     break;
+        case state::WorkspacePhase::ResultsReady:  phaseText = QStringLiteral("Results Ready");  break;
     }
     m_phaseLabel->setText(phaseText);
 
