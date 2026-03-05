@@ -20,6 +20,7 @@
 
 #include "gui/controllers/main_window_controller.hpp"
 #include "gui/state/workspace_state.hpp"
+#include "truss/export/export_format.hpp"
 
 #include <QAction>
 #include <QDockWidget>
@@ -75,6 +76,9 @@ protected:
 private slots:
     /// React to workspace state transitions from the controller.
     void onStateChanged(const truss::gui::state::WorkspaceState& newState);
+
+    /// Show QFileDialog then hand path to ExportController.
+    void onExportRequested(truss::ExportFormat format, const QString& suggestedFilename);
 
 private:
     void setupCentralWidget();

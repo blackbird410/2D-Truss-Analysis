@@ -18,6 +18,7 @@
 
 #include <QAction>
 #include <QCloseEvent>
+#include <QFileDialog>
 #include <QLabel>
 #include <QMenu>
 #include <QMenuBar>
@@ -281,6 +282,32 @@ void MainWindowV2::onStateChanged(const truss::gui::state::WorkspaceState& newSt
     const bool editable = newState.isEditable() || newState.phase == state::WorkspacePhase::Empty;
     for (auto* act : {m_actToolNode, m_actToolMember, m_actToolDelete}) {
         if (act) act->setEnabled(editable);
+    }
+}
+
+void MainWindowV2::onExportRequested(truss::ExportFormat format,
+                                     const QString& suggestedFilename)
+{
+    // Map format to file filter
+    QString filter;
+    switch (format) {
+    case truss::ExportFormat::CSV:   filter = QStringLiteral("CSV Files (*.csv)");    break;
+    case truss::ExportFormat::TSV:   filter = QStringLiteral("TSV Files (*.tsv)");    break;
+    case truss::ExportFormat::JSON:  filter = QStringLiteral("JSON Files (*.json)");  break;
+    case truss::ExportFormat::HTML:  filter = QStringLiteral("HTML Files (*.html)");  break;
+    case truss::ExportFormat::LaTeX: filter = QStringLiteral("LaTeX Files (*.tex)");  break;
+    case truss::ExportFormat::TXT:   filter = QStringLiteral("Text Files (*.txt)");   break;
+    case truss::ExportFormat::XML:   filter = QStringLiteral("XML Files (*.xml)");    break;
+    }
+
+    const QString path = QFileDialog::getSaveFileName(
+        this,
+        QStringLiteral("Export Results"),
+        suggestedFilename,
+        filter);
+
+    if (!path.isEmpty()) {
+        m_controller->exportController()->onExportRequested(format, path);
     }
 }
 
