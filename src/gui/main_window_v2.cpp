@@ -20,6 +20,7 @@
 #include "gui/widgets/truss_canvas_widget.hpp"
 
 #include <QAction>
+#include <QActionGroup>
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QLabel>
@@ -199,22 +200,37 @@ void MainWindowV2::setupToolBar()
     tb->setIconSize(QSize(24, 24));
 
     // File group
-    tb->addAction(QStringLiteral("New"));
-    tb->addAction(QStringLiteral("Open"));
-    tb->addAction(QStringLiteral("Save"));
+    auto* actTbNew  = tb->addAction(QStringLiteral("New"));
+    auto* actTbOpen = tb->addAction(QStringLiteral("Open"));
+    auto* actTbSave = tb->addAction(QStringLiteral("Save"));
     tb->addSeparator();
 
-    // Edit tool group
-    tb->addAction(QStringLiteral("Select"));
-    tb->addAction(QStringLiteral("Node"));
-    tb->addAction(QStringLiteral("Member"));
-    tb->addAction(QStringLiteral("Load"));
-    tb->addAction(QStringLiteral("Support"));
+    // Tool-mode group (exclusive checkable)
+    auto* toolGroup = new QActionGroup(this);
+    toolGroup->setExclusive(true);
+
+    m_actToolSelect = tb->addAction(QStringLiteral("Select"));
+    m_actToolNode   = tb->addAction(QStringLiteral("Node"));
+    m_actToolMember = tb->addAction(QStringLiteral("Member"));
+    m_actToolDelete = tb->addAction(QStringLiteral("Delete"));
+
+    for (auto* act : {m_actToolSelect, m_actToolNode, m_actToolMember, m_actToolDelete}) {
+        act->setCheckable(true);
+        toolGroup->addAction(act);
+        connect(act, &QAction::triggered, this, &MainWindowV2::onToolActionTriggered);
+    }
+    m_actToolSelect->setChecked(true);
     tb->addSeparator();
 
-    // Analysis group
-    tb->addAction(QStringLiteral("Run"));
-    tb->addAction(QStringLiteral("Stop"));
+    // Analysis group (for quick access — AnalysisControlBar is the primary UI)
+    auto* actTbRun  = tb->addAction(QStringLiteral("Run"));
+    auto* actTbStop = tb->addAction(QStringLiteral("Stop"));
+
+    Q_UNUSED(actTbNew)   // connected below in connectSignals()
+    Q_UNUSED(actTbOpen)
+    Q_UNUSED(actTbSave)
+    Q_UNUSED(actTbRun)
+    Q_UNUSED(actTbStop)
 }
 
 void MainWindowV2::setupStatusBar()
