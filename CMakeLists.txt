@@ -476,6 +476,9 @@ if(BUILD_TESTING)
             src/gui/controllers/analysis_controller_v2.cpp
             src/gui/controllers/project_controller_v2.cpp
             src/gui/controllers/export_controller.cpp
+            # Phase 6: State Management & Interaction Logic — tests
+            # workspace_state.hpp is header-only; no extra source files required.
+            tests/unit/gui/state/test_workspace_state.cpp
         )
     endif()
     

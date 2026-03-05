@@ -4,7 +4,8 @@
  *
  * Phase 4: Full rendering pipeline — Q_OBJECT, paintEvent (7-step pipeline),
  *          DisplayMode, refresh slot, viewport, Y-axis coordinate transform.
- * Phase 6: Interaction layer added (pan, zoom, node drop, member draw, select).
+ * Phase 6: Full interaction layer — pan (middle-button drag), zoom (scroll wheel),
+ *          node drop, member draw, select, delete.  Tool modes drive left-click behaviour.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -16,18 +17,22 @@
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
 
+#include <QPoint>
 #include <QRectF>
 #include <QTransform>
 #include <QWidget>
 
+#include <optional>
+#include <unordered_map>
+
 namespace truss::gui {
 
 /**
- * @brief Renders a 2D truss model with optional result overlays.
+ * @brief Interactive canvas widget for rendering and editing a 2D truss.
  *
  * TrussCanvasWidget owns a @c QTransform m_worldToScreen that maps structural
  * world coordinates (Y+ upward, metres) to Qt screen coordinates (Y+ downward,
- * pixels).  The mapping is rebuilt whenever the viewport or widget size changes.
+ * pixels).  The mapping is rebuilt on resize and after pan/zoom operations.
  *
  * @par Coordinate system
  * @code
@@ -37,13 +42,16 @@ namespace truss::gui {
  *               screen_y = -scale * (wy - world_top_structural) + top_margin_px
  * @endcode
  *
- * @par Display modes
+ * @par Display modes (overlay rendering)
  * - @c Geometry      — plain geometry, support symbols, force arrows
  * - @c StressRatio   — members colour-mapped by utilisation ratio (green→amber→red)
  * - @c DeformedShape — exaggerated deformation overlay in ghost colour (post-analysis)
  *
- * @todo Phase 6: Add mouse/keyboard interaction signals (nodeDropRequested,
- *       memberDrawRequested, selectionChanged, deleteRequested, cursorPositionChanged).
+ * @par Tool modes (left-click behaviour)
+ * - @c Select       — click to select a node or member; click empty space to deselect
+ * - @c AddNode      — click on canvas to drop a new node at that world coordinate
+ * - @c AddMember    — first click picks start node; second picks end node; emits memberDrawRequested
+ * - @c Delete       — click on a node or member to delete it
  */
 class TrussCanvasWidget : public QWidget {
     Q_OBJECT
@@ -56,8 +64,27 @@ public:
         DeformedShape  ///< Deformed shape overlay (post-analysis)
     };
 
+    /// @brief Active editing tool; governs left-click / left-drag behaviour.
+    enum class ToolMode {
+        Select,     ///< Click to select node or member; empty space clears selection
+        AddNode,    ///< Click on canvas space to drop a new node
+        AddMember,  ///< Click two nodes in sequence to draw a member between them
+        Delete      ///< Click a node or member to request its deletion
+    };
+
     explicit TrussCanvasWidget(QWidget* parent = nullptr);
     ~TrussCanvasWidget() override = default;
+
+    /**
+     * @brief Convert a screen pixel position to a structural world coordinate.
+     *
+     * Uses the inverse of @c m_worldToScreen.  Returns {0, 0} if the transform
+     * is not invertible.
+     *
+     * @param screenPos  Mouse position in widget (pixel) coordinates.
+     * @return           Corresponding world-space point (metres, Y+ upward).
+     */
+    [[nodiscard]] truss::core::Point2D screenToWorld(QPoint screenPos) const;
 
 public slots:
     /**
@@ -87,9 +114,59 @@ public slots:
     /// @brief Detach any current view and repaint to show the empty canvas hint.
     void clearCanvas();
 
+    /**
+     * @brief Switch the active editing tool mode.
+     * @param mode  The new tool mode.
+     */
+    void setMode(ToolMode mode);
+
+signals:
+    // -----------------------------------------------------------------------
+    // Model-mutation requests (wired to CanvasController)
+    // -----------------------------------------------------------------------
+
+    /// @brief Emitted in AddNode mode when the user clicks on empty canvas space.
+    void nodeDropRequested(truss::core::Point2D worldPos,
+                           truss::core::SupportType defaultSupport);
+
+    /// @brief Emitted in AddMember mode when the user clicks on two distinct nodes.
+    void memberDrawRequested(truss::core::NodeId startId,
+                             truss::core::NodeId endId);
+
+    /// @brief Emitted in Delete mode when the user clicks on a node.
+    void nodeDeleteRequested(truss::core::NodeId nodeId);
+
+    /// @brief Emitted in Delete mode when the user clicks on a member.
+    void memberDeleteRequested(truss::core::MemberId memberId);
+
+    // -----------------------------------------------------------------------
+    // Selection signals (wired to InspectorController)
+    // -----------------------------------------------------------------------
+
+    /// @brief Emitted in Select mode when the user clicks a node.
+    void nodeSelectionChanged(truss::core::NodeId nodeId);
+
+    /// @brief Emitted in Select mode when the user clicks a member.
+    void memberSelectionChanged(truss::core::MemberId memberId);
+
+    /// @brief Emitted in Select mode when the user clicks on empty canvas space.
+    void selectionCleared();
+
+    // -----------------------------------------------------------------------
+    // Auxiliary signals
+    // -----------------------------------------------------------------------
+
+    /// @brief Emitted on every mouse move to show world coordinates in status bar.
+    void cursorPositionChanged(truss::core::Point2D worldPos);
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
+    void mousePressEvent(QMouseEvent* event) override;
+    void mouseMoveEvent(QMouseEvent* event) override;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
+    void keyPressEvent(QKeyEvent* event) override;
 
 private:
     // -------------------------------------------------------------------
@@ -104,7 +181,7 @@ private:
     void drawOverlayText(QPainter& p) const;
 
     // -------------------------------------------------------------------
-    // Helpers
+    // Rendering helpers
     // -------------------------------------------------------------------
 
     /// @brief Convert world (metres, Y+ up) to screen (pixels, Y+ down).
@@ -129,7 +206,26 @@ private:
                         const QColor& colour) const;
 
     // -------------------------------------------------------------------
-    // State
+    // Interaction helpers
+    // -------------------------------------------------------------------
+
+    /**
+     * @brief Find a node within hit-testing radius at screen position @p p.
+     * @return Node id, or std::nullopt if nothing is close enough.
+     */
+    [[nodiscard]] std::optional<core::NodeId> findNodeAt(QPoint p) const;
+
+    /**
+     * @brief Find a member whose line passes within tolerance of screen position @p p.
+     * @return Member id, or std::nullopt if nothing is close enough.
+     */
+    [[nodiscard]] std::optional<core::MemberId> findMemberAt(QPoint p) const;
+
+    /// @brief Update the cursor shape to reflect the current tool mode.
+    void updateCursorForMode();
+
+    // -------------------------------------------------------------------
+    // Rendering state
     // -------------------------------------------------------------------
 
     /// Non-owning pointer to the current truss view; may be nullptr.
@@ -147,6 +243,24 @@ private:
     QRectF m_worldBounds{-1.0, -1.0, 7.0, 7.0};
 
     // -------------------------------------------------------------------
+    // Interaction state
+    // -------------------------------------------------------------------
+
+    ToolMode m_toolMode{ToolMode::Select};
+
+    /// True while the middle mouse button is held for panning.
+    bool   m_isPanning{false};
+    QPoint m_lastPanPos;
+
+    /// AddMember mode: set after the user clicks the first node.
+    std::optional<core::NodeId> m_pendingMemberStart;
+
+    /// Currently selected node (0 = none).
+    core::NodeId   m_selectedNodeId{0};
+    /// Currently selected member (0 = none).
+    core::MemberId m_selectedMemberId{0};
+
+    // -------------------------------------------------------------------
     // Visual constants
     // -------------------------------------------------------------------
     static constexpr double kNodeRadius       = 6.0;   ///< Node circle radius (px)
@@ -154,6 +268,11 @@ private:
     static constexpr double kSupportSize      = 14.0;  ///< Support symbol half-size (px)
     static constexpr double kArrowLength      = 40.0;  ///< Force arrow length (px)
     static constexpr double kMarginFraction   = 0.12;  ///< Canvas margin (fraction of dimension)
+    static constexpr double kHitRadius        = 10.0;  ///< Node hit-test radius (px)
+    static constexpr double kMemberHitTol     = 6.0;   ///< Member hit-test tolerance (px)
+    static constexpr double kZoomStep         = 1.15;  ///< Zoom factor per scroll step
+    static constexpr double kMinWorldSpan     = 0.1;   ///< Minimum world-space span (m)
+    static constexpr double kMaxWorldSpan     = 1000.0;///< Maximum world-space span (m)
 };
 
 }  // namespace truss::gui

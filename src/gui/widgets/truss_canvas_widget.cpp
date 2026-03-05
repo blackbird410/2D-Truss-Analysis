@@ -20,10 +20,13 @@
 
 #include <QColor>
 #include <QFont>
+#include <QKeyEvent>
+#include <QMouseEvent>
 #include <QPainter>
 #include <QPainterPath>
 #include <QPen>
 #include <QResizeEvent>
+#include <QWheelEvent>
 
 #include <algorithm>
 #include <cmath>
@@ -83,6 +86,8 @@ TrussCanvasWidget::TrussCanvasWidget(QWidget* parent)
     setMinimumSize(400, 300);
     setAutoFillBackground(false);
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    setMouseTracking(true);          // receive mouseMoveEvent without button held
+    setFocusPolicy(Qt::StrongFocus); // receive keyPressEvent
     rebuildTransform();
 }
 
@@ -110,6 +115,9 @@ void TrussCanvasWidget::clearCanvas()
 {
     m_view = nullptr;
     m_mode = DisplayMode::Geometry;
+    m_pendingMemberStart.reset();
+    m_selectedNodeId   = 0;
+    m_selectedMemberId = 0;
     update();
 }
 
@@ -474,6 +482,275 @@ void TrussCanvasWidget::drawForceArrow(QPainter& p,
     const QString label =
         QStringLiteral("%1 kN").arg(magnitude / 1000.0, 0, 'f', 1);
     p.drawText(tail + QPointF(4.0, -4.0), label);
+}
+
+// ============================================================
+// Phase 6 — Interaction layer
+// ============================================================
+
+// -------------------------------------------------------------------
+// Public slot: setMode
+// -------------------------------------------------------------------
+
+void TrussCanvasWidget::setMode(ToolMode mode)
+{
+    if (m_toolMode == mode) return;
+    m_toolMode = mode;
+    m_pendingMemberStart.reset(); // cancel any in-progress member draw
+    updateCursorForMode();
+    update(); // repaint pending-member highlight
+}
+
+// -------------------------------------------------------------------
+// Public method: screenToWorld
+// -------------------------------------------------------------------
+
+core::Point2D TrussCanvasWidget::screenToWorld(QPoint screenPos) const
+{
+    bool ok = false;
+    const QTransform inv = m_worldToScreen.inverted(&ok);
+    if (!ok) return {0.0, 0.0};
+    const QPointF w = inv.map(QPointF(screenPos));
+    return {w.x(), w.y()};
+}
+
+// -------------------------------------------------------------------
+// Mouse / key event handlers
+// -------------------------------------------------------------------
+
+void TrussCanvasWidget::mousePressEvent(QMouseEvent* event)
+{
+    // ---- Middle button: start pan ----
+    if (event->button() == Qt::MiddleButton) {
+        m_isPanning   = true;
+        m_lastPanPos  = event->pos();
+        setCursor(Qt::ClosedHandCursor);
+        event->accept();
+        return;
+    }
+
+    if (event->button() != Qt::LeftButton) {
+        QWidget::mousePressEvent(event);
+        return;
+    }
+
+    // ---- Left button: tool-dependent action ----
+    const QPoint pos = event->pos();
+
+    switch (m_toolMode) {
+
+    case ToolMode::Select: {
+        if (auto nodeId = findNodeAt(pos)) {
+            m_selectedNodeId   = *nodeId;
+            m_selectedMemberId = 0;
+            emit nodeSelectionChanged(*nodeId);
+        } else if (auto memberId = findMemberAt(pos)) {
+            m_selectedMemberId = *memberId;
+            m_selectedNodeId   = 0;
+            emit memberSelectionChanged(*memberId);
+        } else {
+            m_selectedNodeId   = 0;
+            m_selectedMemberId = 0;
+            emit selectionCleared();
+        }
+        update();
+        break;
+    }
+
+    case ToolMode::AddNode: {
+        // Only drop on empty space (prevent overlapping nodes)
+        if (!findNodeAt(pos)) {
+            const core::Point2D worldPos = screenToWorld(pos);
+            emit nodeDropRequested(worldPos, core::SupportType::Free);
+        }
+        break;
+    }
+
+    case ToolMode::AddMember: {
+        const auto nodeId = findNodeAt(pos);
+        if (!nodeId) break;  // must click on a node
+
+        if (!m_pendingMemberStart) {
+            // First click — record start node
+            m_pendingMemberStart = *nodeId;
+            update(); // highlight pending start
+        } else if (*m_pendingMemberStart != *nodeId) {
+            // Second click on a different node — emit
+            emit memberDrawRequested(*m_pendingMemberStart, *nodeId);
+            m_pendingMemberStart.reset();
+            update();
+        }
+        // If same node clicked again, cancel
+        else {
+            m_pendingMemberStart.reset();
+            update();
+        }
+        break;
+    }
+
+    case ToolMode::Delete: {
+        if (auto nodeId = findNodeAt(pos)) {
+            emit nodeDeleteRequested(*nodeId);
+        } else if (auto memberId = findMemberAt(pos)) {
+            emit memberDeleteRequested(*memberId);
+        }
+        break;
+    }
+
+    }  // switch
+
+    event->accept();
+}
+
+void TrussCanvasWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    // ---- Pan ----
+    if (m_isPanning && (event->buttons() & Qt::MiddleButton)) {
+        const QPoint delta = event->pos() - m_lastPanPos;
+        m_lastPanPos = event->pos();
+
+        if (width() > 0 && height() > 0) {
+            const double scaleX = m_worldBounds.width()  / width();
+            const double scaleY = m_worldBounds.height() / height();
+            // drag right → viewport shifts left (shows more right content)
+            m_worldBounds.translate(-delta.x() * scaleX,
+                                    -delta.y() * scaleY);
+            rebuildTransform();
+            update();
+        }
+        event->accept();
+        return;
+    }
+
+    // ---- Emit cursor world coordinate ----
+    emit cursorPositionChanged(screenToWorld(event->pos()));
+
+    QWidget::mouseMoveEvent(event);
+}
+
+void TrussCanvasWidget::mouseReleaseEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::MiddleButton && m_isPanning) {
+        m_isPanning = false;
+        updateCursorForMode();
+        event->accept();
+        return;
+    }
+    QWidget::mouseReleaseEvent(event);
+}
+
+void TrussCanvasWidget::wheelEvent(QWheelEvent* event)
+{
+    const int delta = event->angleDelta().y();
+    if (delta == 0) { QWidget::wheelEvent(event); return; }
+
+    const double zoomFactor = (delta > 0) ? (1.0 / kZoomStep) : kZoomStep;
+
+    // World position under cursor (stays fixed during zoom)
+    const core::Point2D worldCursor = screenToWorld(event->position().toPoint());
+
+    const double newW = m_worldBounds.width()  * zoomFactor;
+    const double newH = m_worldBounds.height() * zoomFactor;
+
+    // Clamp to sensible span limits
+    if (newW < kMinWorldSpan || newW > kMaxWorldSpan ||
+        newH < kMinWorldSpan || newH > kMaxWorldSpan) {
+        event->accept();
+        return;
+    }
+
+    // Keep cursor at the same world position
+    const double newLeft = worldCursor.x - (worldCursor.x - m_worldBounds.left())  * zoomFactor;
+    const double newTop  = worldCursor.y - (worldCursor.y - m_worldBounds.top())   * zoomFactor;
+
+    m_worldBounds = QRectF(newLeft, newTop, newW, newH);
+    rebuildTransform();
+    update();
+    event->accept();
+}
+
+void TrussCanvasWidget::keyPressEvent(QKeyEvent* event)
+{
+    if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace) {
+        if (m_selectedNodeId != 0) {
+            emit nodeDeleteRequested(m_selectedNodeId);
+            m_selectedNodeId = 0;
+        } else if (m_selectedMemberId != 0) {
+            emit memberDeleteRequested(m_selectedMemberId);
+            m_selectedMemberId = 0;
+        }
+        event->accept();
+        return;
+    }
+    QWidget::keyPressEvent(event);
+}
+
+// -------------------------------------------------------------------
+// Interaction helpers
+// -------------------------------------------------------------------
+
+std::optional<core::NodeId> TrussCanvasWidget::findNodeAt(QPoint p) const
+{
+    if (!m_view) return std::nullopt;
+    const QPointF qp(p);
+    for (const auto& n : m_view->getNodeViews()) {
+        const QPointF sp = toScreen(n.x, n.y);
+        const QPointF d  = qp - sp;
+        if (std::hypot(d.x(), d.y()) <= kHitRadius) {
+            return n.id;
+        }
+    }
+    return std::nullopt;
+}
+
+std::optional<core::MemberId> TrussCanvasWidget::findMemberAt(QPoint p) const
+{
+    if (!m_view) return std::nullopt;
+
+    const auto nodes   = m_view->getNodeViews();
+    const auto members = m_view->getMemberViews();
+
+    std::unordered_map<core::NodeId, QPointF> screenMap;
+    screenMap.reserve(nodes.size());
+    for (const auto& n : nodes) {
+        screenMap[n.id] = toScreen(n.x, n.y);
+    }
+
+    const QPointF qp(p);
+
+    for (const auto& m : members) {
+        const auto it1 = screenMap.find(m.startNodeId);
+        const auto it2 = screenMap.find(m.endNodeId);
+        if (it1 == screenMap.end() || it2 == screenMap.end()) continue;
+
+        const QPointF a = it1->second;
+        const QPointF b = it2->second;
+        const QPointF ab = b - a;
+        const QPointF ap = qp - a;
+
+        const double lenSq = ab.x() * ab.x() + ab.y() * ab.y();
+        if (lenSq < 1e-10) continue;
+
+        const double t = std::clamp(
+            (ap.x() * ab.x() + ap.y() * ab.y()) / lenSq, 0.0, 1.0);
+        const QPointF proj = a + t * ab;
+        const QPointF diff = qp - proj;
+
+        if (std::hypot(diff.x(), diff.y()) <= kMemberHitTol) {
+            return m.id;
+        }
+    }
+    return std::nullopt;
+}
+
+void TrussCanvasWidget::updateCursorForMode()
+{
+    switch (m_toolMode) {
+    case ToolMode::Select:    setCursor(Qt::ArrowCursor);     break;
+    case ToolMode::AddNode:   setCursor(Qt::CrossCursor);     break;
+    case ToolMode::AddMember: setCursor(Qt::CrossCursor);     break;
+    case ToolMode::Delete:    setCursor(Qt::ForbiddenCursor); break;
+    }
 }
 
 }  // namespace truss::gui
