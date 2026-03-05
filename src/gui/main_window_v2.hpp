@@ -74,9 +74,6 @@ private slots:
     void onStateChanged(const truss::gui::state::WorkspaceState& newState);
 
 private:
-    // -------------------------------------------------------------------
-    // Setup helpers (called from constructor)
-    // -------------------------------------------------------------------
     void setupCentralWidget();
     void setupMenuBar();
     void setupToolBar();
