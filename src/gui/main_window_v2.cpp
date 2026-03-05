@@ -14,6 +14,8 @@
 
 #include "gui/main_window_v2.hpp"
 
+#include "gui/controllers/canvas_controller.hpp"
+#include "gui/controllers/inspector_controller.hpp"
 #include "gui/controllers/project_controller_v2.hpp"
 #include "gui/panels/analysis_control_bar.hpp"
 #include "gui/panels/inspector_panel.hpp"
@@ -261,6 +263,8 @@ void MainWindowV2::setupStatusBar()
 
 void MainWindowV2::connectSignals()
 {
+    auto* canvasCtrl    = m_controller->canvasController();
+    auto* inspectorCtrl = m_controller->inspectorController();
     auto* projectCtrl   = m_controller->projectController();
     // ----------------------------------------------------------------
     // MainWindowController → panels
@@ -301,6 +305,35 @@ void MainWindowV2::connectSignals()
     connect(m_actThemeLight, &QAction::triggered, this, []() {
         ThemeLoader::applyTheme(*qApp, QStringLiteral(":/themes/light.qss"));
     });
+
+    // ----------------------------------------------------------------
+    // Canvas → CanvasController (model mutations)
+    // ----------------------------------------------------------------
+    connect(m_canvas, &TrussCanvasWidget::nodeDropRequested,
+            canvasCtrl, &ctrl::CanvasController::onNodeDropRequested);
+    connect(m_canvas, &TrussCanvasWidget::memberDrawRequested,
+            canvasCtrl, &ctrl::CanvasController::onMemberDrawRequested);
+    connect(m_canvas, &TrussCanvasWidget::nodeDeleteRequested,
+            canvasCtrl, &ctrl::CanvasController::onNodeDeleteRequested);
+    connect(m_canvas, &TrussCanvasWidget::memberDeleteRequested,
+            canvasCtrl, &ctrl::CanvasController::onMemberDeleteRequested);
+
+    // Canvas → InspectorController (selection)
+    connect(m_canvas, &TrussCanvasWidget::nodeSelectionChanged,
+            inspectorCtrl, &ctrl::InspectorController::onNodeSelectionChanged);
+    connect(m_canvas, &TrussCanvasWidget::memberSelectionChanged,
+            inspectorCtrl, &ctrl::InspectorController::onMemberSelectionChanged);
+    connect(m_canvas, &TrussCanvasWidget::selectionCleared,
+            inspectorCtrl, &ctrl::InspectorController::onSelectionCleared);
+
+    // Canvas → StatusBar (cursor position)
+    connect(m_canvas, &TrussCanvasWidget::cursorPositionChanged,
+            this, [this](truss::core::Point2D pos) {
+                m_cursorLabel->setText(
+                    QStringLiteral("%1, %2 m")
+                        .arg(pos.x, 0, 'f', 3)
+                        .arg(pos.y, 0, 'f', 3));
+            });
 
 }
 
