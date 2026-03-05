@@ -85,19 +85,13 @@ private:
     // -------------------------------------------------------------------
     // Owned widgets
     // -------------------------------------------------------------------
-    TrussCanvasWidget*  m_canvas{nullptr};         ///< Primary rendering area
+    TrussCanvasWidget*   m_canvas{nullptr};
+    InspectorPanel*      m_inspectorPanel{nullptr};
+    AnalysisControlBar*  m_analysisBar{nullptr};
+    ResultsDockPanel*    m_resultsDockPanel{nullptr};
+    QDockWidget*         m_resultsDock{nullptr};
+    QSplitter*           m_centralSplitter{nullptr};
 
-    /// Right-panel placeholder — replaced by InspectorPanel in Phase 5.
-    QWidget*            m_inspectorPlaceholder{nullptr};
-
-    /// Bottom dock widget — contains m_resultsPlaceholder (Phase 4),
-    /// replaced by full ResultsDockPanel in Phase 5.
-    QDockWidget*        m_resultsDock{nullptr};
-
-    /// Results content placeholder — replaced by ResultsDockPanel in Phase 5.
-    QWidget*            m_resultsPlaceholder{nullptr};
-
-    QSplitter*          m_centralSplitter{nullptr};///< Horizontal 65/35 splitter
 
     // -------------------------------------------------------------------
     // Status bar widgets
