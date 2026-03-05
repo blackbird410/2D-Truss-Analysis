@@ -26,6 +26,7 @@
 #include <QPainterPath>
 #include <QPen>
 #include <QResizeEvent>
+#include <QWheelEvent>
 
 #include <algorithm>
 #include <cmath>
@@ -636,6 +637,36 @@ void TrussCanvasWidget::mouseReleaseEvent(QMouseEvent* event)
         return;
     }
     QWidget::mouseReleaseEvent(event);
+}
+
+void TrussCanvasWidget::wheelEvent(QWheelEvent* event)
+{
+    const int delta = event->angleDelta().y();
+    if (delta == 0) { QWidget::wheelEvent(event); return; }
+
+    const double zoomFactor = (delta > 0) ? (1.0 / kZoomStep) : kZoomStep;
+
+    // World position under cursor (stays fixed during zoom)
+    const core::Point2D worldCursor = screenToWorld(event->position().toPoint());
+
+    const double newW = m_worldBounds.width()  * zoomFactor;
+    const double newH = m_worldBounds.height() * zoomFactor;
+
+    // Clamp to sensible span limits
+    if (newW < kMinWorldSpan || newW > kMaxWorldSpan ||
+        newH < kMinWorldSpan || newH > kMaxWorldSpan) {
+        event->accept();
+        return;
+    }
+
+    // Keep cursor at the same world position
+    const double newLeft = worldCursor.x - (worldCursor.x - m_worldBounds.left())  * zoomFactor;
+    const double newTop  = worldCursor.y - (worldCursor.y - m_worldBounds.top())   * zoomFactor;
+
+    m_worldBounds = QRectF(newLeft, newTop, newW, newH);
+    rebuildTransform();
+    update();
+    event->accept();
 }
 
 // -------------------------------------------------------------------

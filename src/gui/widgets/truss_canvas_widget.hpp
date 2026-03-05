@@ -165,6 +165,7 @@ protected:
     void mousePressEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseReleaseEvent(QMouseEvent* event) override;
+    void wheelEvent(QWheelEvent* event) override;
 
 private:
     // -------------------------------------------------------------------
@@ -264,6 +265,9 @@ private:
     static constexpr double kMarginFraction   = 0.12;  ///< Canvas margin (fraction of dimension)
     static constexpr double kHitRadius        = 10.0;  ///< Node hit-test radius (px)
     static constexpr double kMemberHitTol     = 6.0;   ///< Member hit-test tolerance (px)
+    static constexpr double kZoomStep         = 1.15;  ///< Zoom factor per scroll step
+    static constexpr double kMinWorldSpan     = 0.1;   ///< Minimum world-space span (m)
+    static constexpr double kMaxWorldSpan     = 1000.0;///< Maximum world-space span (m)
 };
 
 }  // namespace truss::gui
