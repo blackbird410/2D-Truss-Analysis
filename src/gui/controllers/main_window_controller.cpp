@@ -207,9 +207,9 @@ void MainWindowController::onAnalysisCompleted(std::size_t resultsHandle)
 void MainWindowController::onAnalysisFailed(const QString& errorMessage)
 {
     state::WorkspaceState next = m_state;
-    next.phase        = state::WorkspacePhase::ModelBuilding;
+    next.phase         = state::WorkspacePhase::ModelBuilding;
     next.resultsHandle = 0;
-    next.lastError    = errorMessage.toStdString();
+    next.lastError     = errorMessage.toStdString();
     setState(std::move(next));
 }
 

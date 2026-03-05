@@ -170,7 +170,7 @@ public slots:
     /**
      * @brief Called when a background analysis has failed.
      *
-     * Transitions the phase back to @c ModelBuilding and stores the error.
+     * Transitions back to ModelBuilding and stores the error message.
      *
      * @param errorMessage  Human-readable error description.
      */
