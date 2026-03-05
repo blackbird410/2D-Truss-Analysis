@@ -260,12 +260,10 @@ void MainWindowV2::onStateChanged(const truss::gui::state::WorkspaceState& newSt
     }
     m_phaseLabel->setText(phaseText);
 
-    // Dirty indicator
-    if (newState.isDirty) {
-        setWindowTitle(QStringLiteral("2D Truss Analysis *"));
-    } else {
-        setWindowTitle(QStringLiteral("2D Truss Analysis"));
-    }
+    // Dirty indicator in title bar
+    setWindowTitle(newState.isDirty
+        ? QStringLiteral("2D Truss Analysis *")
+        : QStringLiteral("2D Truss Analysis"));
 
     // Show last error in the status bar (transient)
     if (!newState.lastError.empty()) {
