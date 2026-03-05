@@ -601,6 +601,32 @@ void TrussCanvasWidget::mousePressEvent(QMouseEvent* event)
     event->accept();
 }
 
+void TrussCanvasWidget::mouseMoveEvent(QMouseEvent* event)
+{
+    // ---- Pan ----
+    if (m_isPanning && (event->buttons() & Qt::MiddleButton)) {
+        const QPoint delta = event->pos() - m_lastPanPos;
+        m_lastPanPos = event->pos();
+
+        if (width() > 0 && height() > 0) {
+            const double scaleX = m_worldBounds.width()  / width();
+            const double scaleY = m_worldBounds.height() / height();
+            // drag right → viewport shifts left (shows more right content)
+            m_worldBounds.translate(-delta.x() * scaleX,
+                                    -delta.y() * scaleY);
+            rebuildTransform();
+            update();
+        }
+        event->accept();
+        return;
+    }
+
+    // ---- Emit cursor world coordinate ----
+    emit cursorPositionChanged(screenToWorld(event->pos()));
+
+    QWidget::mouseMoveEvent(event);
+}
+
 // -------------------------------------------------------------------
 // Interaction helpers
 // -------------------------------------------------------------------
