@@ -18,6 +18,7 @@
 #include "gui/panels/inspector_panel.hpp"
 #include "gui/panels/results_dock_panel.hpp"
 #include "gui/widgets/truss_canvas_widget.hpp"
+#include "core/interfaces/itruss_view.hpp"
 
 #include <QAction>
 #include <QActionGroup>
@@ -258,8 +259,24 @@ void MainWindowV2::setupStatusBar()
 
 void MainWindowV2::connectSignals()
 {
+    // ----------------------------------------------------------------
+    // MainWindowController → panels
+    // ----------------------------------------------------------------
     connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
-            this, &MainWindowV2::onStateChanged);
+            this,              &MainWindowV2::onStateChanged);
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            m_inspectorPanel,  &InspectorPanel::onStateChanged);
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            m_analysisBar,     &AnalysisControlBar::onStateChanged);
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            m_resultsDockPanel,&ResultsDockPanel::onStateChanged);
+
+    // Canvas refresh from MainWindowController (after model update)
+    connect(m_controller.get(), &ctrl::MainWindowController::trussViewChanged,
+            m_canvas, [this](const truss::core::interfaces::ITrussView* view) {
+                m_canvas->refresh(view);
+            });
+
 }
 
 // ============================================================
