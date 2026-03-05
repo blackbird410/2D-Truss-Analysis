@@ -139,6 +139,19 @@ signals:
     /// @brief Emitted in Delete mode when the user clicks on a member.
     void memberDeleteRequested(truss::core::MemberId memberId);
 
+    // -----------------------------------------------------------------------
+    // Selection signals (wired to InspectorController)
+    // -----------------------------------------------------------------------
+
+    /// @brief Emitted in Select mode when the user clicks a node.
+    void nodeSelectionChanged(truss::core::NodeId nodeId);
+
+    /// @brief Emitted in Select mode when the user clicks a member.
+    void memberSelectionChanged(truss::core::MemberId memberId);
+
+    /// @brief Emitted in Select mode when the user clicks on empty canvas space.
+    void selectionCleared();
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
