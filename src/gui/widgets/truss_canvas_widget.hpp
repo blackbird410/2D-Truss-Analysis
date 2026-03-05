@@ -4,7 +4,8 @@
  *
  * Phase 4: Full rendering pipeline — Q_OBJECT, paintEvent (7-step pipeline),
  *          DisplayMode, refresh slot, viewport, Y-axis coordinate transform.
- * Phase 6: Interaction layer added (pan, zoom, node drop, member draw, select).
+ * Phase 6: Full interaction layer — pan (middle-button drag), zoom (scroll wheel),
+ *          node drop, member draw, select, delete.  Tool modes drive left-click behaviour.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -16,18 +17,22 @@
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
 
+#include <QPoint>
 #include <QRectF>
 #include <QTransform>
 #include <QWidget>
 
+#include <optional>
+#include <unordered_map>
+
 namespace truss::gui {
 
 /**
- * @brief Renders a 2D truss model with optional result overlays.
+ * @brief Interactive canvas widget for rendering and editing a 2D truss.
  *
  * TrussCanvasWidget owns a @c QTransform m_worldToScreen that maps structural
  * world coordinates (Y+ upward, metres) to Qt screen coordinates (Y+ downward,
- * pixels).  The mapping is rebuilt whenever the viewport or widget size changes.
+ * pixels).  The mapping is rebuilt on resize and after pan/zoom operations.
  *
  * @par Coordinate system
  * @code
@@ -37,13 +42,16 @@ namespace truss::gui {
  *               screen_y = -scale * (wy - world_top_structural) + top_margin_px
  * @endcode
  *
- * @par Display modes
+ * @par Display modes (overlay rendering)
  * - @c Geometry      — plain geometry, support symbols, force arrows
  * - @c StressRatio   — members colour-mapped by utilisation ratio (green→amber→red)
  * - @c DeformedShape — exaggerated deformation overlay in ghost colour (post-analysis)
  *
- * @todo Phase 6: Add mouse/keyboard interaction signals (nodeDropRequested,
- *       memberDrawRequested, selectionChanged, deleteRequested, cursorPositionChanged).
+ * @par Tool modes (left-click behaviour)
+ * - @c Select       — click to select a node or member; click empty space to deselect
+ * - @c AddNode      — click on canvas to drop a new node at that world coordinate
+ * - @c AddMember    — first click picks start node; second picks end node; emits memberDrawRequested
+ * - @c Delete       — click on a node or member to delete it
  */
 class TrussCanvasWidget : public QWidget {
     Q_OBJECT
@@ -104,7 +112,7 @@ private:
     void drawOverlayText(QPainter& p) const;
 
     // -------------------------------------------------------------------
-    // Helpers
+    // Rendering helpers
     // -------------------------------------------------------------------
 
     /// @brief Convert world (metres, Y+ up) to screen (pixels, Y+ down).
