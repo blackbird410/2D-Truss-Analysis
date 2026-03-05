@@ -277,7 +277,11 @@ void MainWindowV2::onStateChanged(const truss::gui::state::WorkspaceState& newSt
             QString::fromStdString(newState.lastError), 8000);
     }
 
-    // TODO Phase 6: Enable/disable toolbar actions based on newState.phase.
+    // Enable/disable toolbar tool actions based on editable state
+    const bool editable = newState.isEditable() || newState.phase == state::WorkspacePhase::Empty;
+    for (auto* act : {m_actToolNode, m_actToolMember, m_actToolDelete}) {
+        if (act) act->setEnabled(editable);
+    }
 }
 
 }  // namespace truss::gui
