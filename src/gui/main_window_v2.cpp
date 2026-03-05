@@ -16,6 +16,7 @@
 
 #include "gui/panels/analysis_control_bar.hpp"
 #include "gui/panels/inspector_panel.hpp"
+#include "gui/panels/results_dock_panel.hpp"
 #include "gui/widgets/truss_canvas_widget.hpp"
 
 #include <QAction>
@@ -115,21 +116,16 @@ void MainWindowV2::setupCentralWidget()
     setCentralWidget(m_centralSplitter);
 
     // --- Results Dock (bottom, dismissible) ---
-    m_resultsPlaceholder = new QWidget();
-    m_resultsPlaceholder->setObjectName(QStringLiteral("resultsPlaceholder"));
-    m_resultsPlaceholder->setMinimumHeight(120);
-
-    auto* rLabel = new QLabel(
-        QStringLiteral("Results Panel\n(Phase 5)"), m_resultsPlaceholder);
-    rLabel->setAlignment(Qt::AlignCenter);
-    rLabel->setStyleSheet(QStringLiteral("color: #5F5F5F; font-size: 11px;"));
-    auto* rLayout = new QVBoxLayout(m_resultsPlaceholder);
-    rLayout->addWidget(rLabel);
-    rLayout->setAlignment(Qt::AlignCenter);
+    m_resultsDockPanel = new ResultsDockPanel(
+        m_controller->nodeModel(),
+        m_controller->memberModel(),
+        m_controller->resultsModel(),
+        this);
+    m_resultsDockPanel->setObjectName(QStringLiteral("resultsDockPanel"));
 
     m_resultsDock = new QDockWidget(QStringLiteral("Results"), this);
     m_resultsDock->setObjectName(QStringLiteral("resultsDock"));
-    m_resultsDock->setWidget(m_resultsPlaceholder);
+    m_resultsDock->setWidget(m_resultsDockPanel);
     m_resultsDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
     m_resultsDock->setFeatures(QDockWidget::DockWidgetMovable |
                                QDockWidget::DockWidgetClosable |
