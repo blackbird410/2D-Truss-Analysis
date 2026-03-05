@@ -73,7 +73,7 @@ protected:
     void closeEvent(QCloseEvent* event) override;
 
 private slots:
-    /// @brief React to workspace state transitions emitted by the controller.
+    /// React to workspace state transitions from the controller.
     void onStateChanged(const truss::gui::state::WorkspaceState& newState);
 
 private:
