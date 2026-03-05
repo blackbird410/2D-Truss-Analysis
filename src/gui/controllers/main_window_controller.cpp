@@ -14,6 +14,15 @@
 
 #include "gui/controllers/main_window_controller.hpp"
 
+#include "gui/controllers/analysis_controller_v2.hpp"
+#include "gui/controllers/canvas_controller.hpp"
+#include "gui/controllers/export_controller.hpp"
+#include "gui/controllers/inspector_controller.hpp"
+#include "gui/controllers/project_controller_v2.hpp"
+#include "gui/models/member_table_model.hpp"
+#include "gui/models/node_table_model.hpp"
+#include "gui/models/results_table_model.hpp"
+#include "gui/models/validation_list_model.hpp"
 #include "interface/itruss_analysis_facade.hpp"
 
 namespace truss::gui::ctrl {
@@ -26,6 +35,17 @@ MainWindowController::MainWindowController(truss::interface::ITrussAnalysisFacad
                                            QObject* parent)
     : QObject(parent)
     , m_facade(&facade)
+    // Sub-controllers
+    , m_canvasController   (std::make_unique<CanvasController>   (facade, this))
+    , m_inspectorController(std::make_unique<InspectorController>(facade, this))
+    , m_analysisController (std::make_unique<AnalysisController> (facade, this))
+    , m_projectController  (std::make_unique<ProjectController>  (facade, m_confirmProvider, this))
+    , m_exportController   (std::make_unique<ExportController>   (facade, this))
+    // Qt Item Models
+    , m_nodeModel      (std::make_unique<model::NodeTableModel>      (this))
+    , m_memberModel    (std::make_unique<model::MemberTableModel>    (this))
+    , m_validationModel(std::make_unique<model::ValidationListModel> (this))
+    , m_resultsModel   (std::make_unique<model::ResultsTableModel>   (this))
 {
     // Workspace starts in the Empty phase; no model is loaded yet.
 }

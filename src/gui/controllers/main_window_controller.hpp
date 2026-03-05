@@ -15,10 +15,13 @@
 
 #pragma once
 
+#include "gui/interfaces/iconfirmation_provider.hpp"
 #include "gui/state/workspace_state.hpp"
 
 #include <QObject>
 #include <QString>
+
+#include <memory>
 
 namespace truss::interface { class ITrussAnalysisFacade; }
 
@@ -146,6 +149,22 @@ public slots:
 private:
     truss::interface::ITrussAnalysisFacade* m_facade{nullptr};
     state::WorkspaceState                   m_state;
+
+    // Confirmation provider (owned; used by ProjectController)
+    truss::gui::interfaces::ModalConfirmProvider m_confirmProvider;
+
+    // Sub-controllers (owned)
+    std::unique_ptr<CanvasController>    m_canvasController;
+    std::unique_ptr<InspectorController> m_inspectorController;
+    std::unique_ptr<AnalysisController>  m_analysisController;
+    std::unique_ptr<ProjectController>   m_projectController;
+    std::unique_ptr<ExportController>    m_exportController;
+
+    // Qt Item Models (owned)
+    std::unique_ptr<model::NodeTableModel>       m_nodeModel;
+    std::unique_ptr<model::MemberTableModel>     m_memberModel;
+    std::unique_ptr<model::ValidationListModel>  m_validationModel;
+    std::unique_ptr<model::ResultsTableModel>    m_resultsModel;
 };
 
 }  // namespace truss::gui::ctrl
