@@ -19,7 +19,12 @@
 #include "gui/controllers/export_controller.hpp"
 #include "gui/controllers/inspector_controller.hpp"
 #include "gui/controllers/project_controller_v2.hpp"
+#include "gui/models/member_table_model.hpp"
+#include "gui/models/node_table_model.hpp"
+#include "gui/models/results_table_model.hpp"
+#include "gui/models/validation_list_model.hpp"
 #include "gui/panels/analysis_control_bar.hpp"
+#include "gui/panels/analysis_options_dialog.hpp"
 #include "gui/panels/inspector_panel.hpp"
 #include "gui/panels/results_dock_panel.hpp"
 #include "gui/theme_loader.hpp"
@@ -28,6 +33,7 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QApplication>
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QLabel>
