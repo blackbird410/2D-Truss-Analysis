@@ -271,10 +271,10 @@ void MainWindowV2::onStateChanged(const truss::gui::state::WorkspaceState& newSt
         ? QStringLiteral("2D Truss Analysis *")
         : QStringLiteral("2D Truss Analysis"));
 
-    // Show last error in the status bar (transient)
+    // Last error / success in status bar (transient)
     if (!newState.lastError.empty()) {
         statusBar()->showMessage(
-            QString::fromStdString(newState.lastError), 5000);
+            QString::fromStdString(newState.lastError), 8000);
     }
 
     // TODO Phase 6: Enable/disable toolbar actions based on newState.phase.
