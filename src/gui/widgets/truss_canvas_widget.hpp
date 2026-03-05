@@ -129,6 +129,10 @@ signals:
     void nodeDropRequested(truss::core::Point2D worldPos,
                            truss::core::SupportType defaultSupport);
 
+    /// @brief Emitted in AddMember mode when the user clicks on two distinct nodes.
+    void memberDrawRequested(truss::core::NodeId startId,
+                             truss::core::NodeId endId);
+
 protected:
     void paintEvent(QPaintEvent* event) override;
     void resizeEvent(QResizeEvent* event) override;
