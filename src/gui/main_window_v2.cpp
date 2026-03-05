@@ -137,26 +137,22 @@ void MainWindowV2::setupMenuBar()
 {
     QMenuBar* mb = menuBar();
 
-    // File menu
+    // ---- File menu ----
     auto* fileMenu = mb->addMenu(QStringLiteral("&File"));
     fileMenu->setObjectName(QStringLiteral("menuFile"));
 
-    auto* actNew  = fileMenu->addAction(QStringLiteral("&New Project"));
-    auto* actOpen = fileMenu->addAction(QStringLiteral("&Open…"));
-    auto* actSave = fileMenu->addAction(QStringLiteral("&Save"));
+    m_actNew    = fileMenu->addAction(QStringLiteral("&New Project"));
+    m_actOpen   = fileMenu->addAction(QStringLiteral("&Open…"));
+    m_actSave   = fileMenu->addAction(QStringLiteral("&Save"));
+    m_actSaveAs = fileMenu->addAction(QStringLiteral("Save &As…"));
     fileMenu->addSeparator();
-    auto* actQuit = fileMenu->addAction(QStringLiteral("&Quit"));
+    m_actQuit   = fileMenu->addAction(QStringLiteral("&Quit"));
 
-    actNew->setShortcut(QKeySequence::New);
-    actOpen->setShortcut(QKeySequence::Open);
-    actSave->setShortcut(QKeySequence::Save);
-    actQuit->setShortcut(QKeySequence::Quit);
-
-    // Suppress unused-variable warnings — actions will be connected in Phase 6
-    Q_UNUSED(actNew)
-    Q_UNUSED(actOpen)
-    Q_UNUSED(actSave)
-    Q_UNUSED(actQuit)
+    m_actNew->setShortcut(QKeySequence::New);
+    m_actOpen->setShortcut(QKeySequence::Open);
+    m_actSave->setShortcut(QKeySequence::Save);
+    m_actSaveAs->setShortcut(QKeySequence::SaveAs);
+    m_actQuit->setShortcut(QKeySequence::Quit);
 
     // Edit menu
     auto* editMenu = mb->addMenu(QStringLiteral("&Edit"));
