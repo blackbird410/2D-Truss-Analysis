@@ -14,6 +14,7 @@
 
 #include "gui/main_window_v2.hpp"
 
+#include "gui/controllers/analysis_controller_v2.hpp"
 #include "gui/controllers/canvas_controller.hpp"
 #include "gui/controllers/inspector_controller.hpp"
 #include "gui/controllers/project_controller_v2.hpp"
@@ -265,6 +266,7 @@ void MainWindowV2::connectSignals()
 {
     auto* canvasCtrl    = m_controller->canvasController();
     auto* inspectorCtrl = m_controller->inspectorController();
+    auto* analysisCtrl  = m_controller->analysisController();
     auto* projectCtrl   = m_controller->projectController();
 
     // ----------------------------------------------------------------
@@ -351,6 +353,18 @@ void MainWindowV2::connectSignals()
             inspectorCtrl, &ctrl::InspectorController::onSupportChangeRequested);
     connect(m_inspectorPanel, &InspectorPanel::loadChangeRequested,
             inspectorCtrl, &ctrl::InspectorController::onLoadChangeRequested);
+
+    // ----------------------------------------------------------------
+    // AnalysisControlBar → AnalysisController
+    // ----------------------------------------------------------------
+    connect(m_analysisBar, &AnalysisControlBar::analyzeRequested,
+            analysisCtrl, &ctrl::AnalysisController::onAnalyzeRequested);
+    connect(m_analysisBar, &AnalysisControlBar::stopRequested,
+            analysisCtrl, &ctrl::AnalysisController::onStopRequested);
+    connect(m_analysisBar, &AnalysisControlBar::validateRequested,
+            this, &MainWindowV2::onValidateRequested);
+    connect(m_analysisBar, &AnalysisControlBar::optionsRequested,
+            this, &MainWindowV2::onOptionsRequested);
 
 }
 
