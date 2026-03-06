@@ -20,6 +20,7 @@
         <file alias="add_member.svg">icons/add_member.svg</file>
         <file alias="delete.svg">icons/delete.svg</file>
         <file alias="run_analysis.svg">icons/run_analysis.svg</file>
+        <file alias="stop.svg">icons/stop.svg</file>
         <file alias="export.svg">icons/export.svg</file>
         <!-- Notification severity badges -->
         <file alias="notif_info.svg">icons/notif_info.svg</file>
