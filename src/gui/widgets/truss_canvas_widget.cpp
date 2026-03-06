@@ -18,6 +18,7 @@
 
 #include "gui/widgets/truss_canvas_widget.hpp"
 
+#include <QApplication>
 #include <QColor>
 #include <QFont>
 #include <QFontDatabase>
@@ -99,6 +100,11 @@ TrussCanvasWidget::TrussCanvasWidget(QWidget* parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setMouseTracking(true);          // receive mouseMoveEvent without button held
     setFocusPolicy(Qt::StrongFocus); // receive keyPressEvent
+
+    // Determine initial theme from the application palette
+    const QColor windowColor = QApplication::palette().color(QPalette::Window);
+    m_isDark = (windowColor.lightness() < 128);
+
     rebuildTransform();
 }
 
