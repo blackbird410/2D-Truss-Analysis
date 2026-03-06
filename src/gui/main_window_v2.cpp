@@ -213,13 +213,14 @@ void MainWindowV2::setupToolBar()
     tb->setMovable(false);
     tb->setIconSize(QSize(24, 24));
 
-    // File group
-    auto* actTbNew  = tb->addAction(QIcon(QStringLiteral(":/icons/new_project.svg")),
-                                    QStringLiteral("New"));
-    auto* actTbOpen = tb->addAction(QIcon(QStringLiteral(":/icons/open_file.svg")),
-                                    QStringLiteral("Open"));
-    auto* actTbSave = tb->addAction(QIcon(QStringLiteral(":/icons/save.svg")),
-                                    QStringLiteral("Save"));
+    // File group — reuse the same QActions already created in setupMenuBar()
+    // so that connecting m_actNew/Open/Save once covers both menu and toolbar.
+    m_actNew->setIcon(QIcon(QStringLiteral(":/icons/new_project.svg")));
+    m_actOpen->setIcon(QIcon(QStringLiteral(":/icons/open_file.svg")));
+    m_actSave->setIcon(QIcon(QStringLiteral(":/icons/save.svg")));
+    tb->addAction(m_actNew);
+    tb->addAction(m_actOpen);
+    tb->addAction(m_actSave);
     tb->addSeparator();
 
     // Tool-mode group (exclusive checkable)
@@ -243,17 +244,12 @@ void MainWindowV2::setupToolBar()
     m_actToolSelect->setChecked(true);
     tb->addSeparator();
 
-    // Analysis group (for quick access — AnalysisControlBar is the primary UI)
-    auto* actTbRun  = tb->addAction(QIcon(QStringLiteral(":/icons/run_analysis.svg")),
-                                    QStringLiteral("Run"));
-    auto* actTbStop = tb->addAction(QIcon(QStringLiteral(":/icons/delete.svg")),
-                                    QStringLiteral("Stop"));
-
-    Q_UNUSED(actTbNew)   // connected below in connectSignals()
-    Q_UNUSED(actTbOpen)
-    Q_UNUSED(actTbSave)
-    Q_UNUSED(actTbRun)
-    Q_UNUSED(actTbStop)
+    // Analysis group — stored as members so connectSignals() can wire them
+    m_actRun  = tb->addAction(QIcon(QStringLiteral(":/icons/run_analysis.svg")),
+                               QStringLiteral("Run"));
+    m_actStop = tb->addAction(QIcon(QStringLiteral(":/icons/stop.svg")),
+                               QStringLiteral("Stop"));
+    m_actStop->setEnabled(false); // disabled until analysis is running
 }
 
 void MainWindowV2::setupStatusBar()
@@ -383,6 +379,16 @@ void MainWindowV2::connectSignals()
             this, &MainWindowV2::onValidateRequested);
     connect(m_analysisBar, &AnalysisControlBar::optionsRequested,
             this, &MainWindowV2::onOptionsRequested);
+
+    // Toolbar Run/Stop duplicate the AnalysisControlBar quick-access buttons
+    connect(m_actRun, &QAction::triggered,
+            this, [analysisCtrl]() {
+                // Invoke with default analysis options (same as AnalysisControlBar default)
+                analysisCtrl->onAnalyzeRequested(
+                    truss::core::analysis::AnalysisOptions{});
+            });
+    connect(m_actStop, &QAction::triggered,
+            analysisCtrl, &ctrl::AnalysisController::onStopRequested);
 
     // ----------------------------------------------------------------
     // ResultsDockPanel → ExportController (via file dialog in this window)
