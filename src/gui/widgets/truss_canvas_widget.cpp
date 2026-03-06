@@ -139,6 +139,36 @@ void TrussCanvasWidget::clearCanvas()
     update();
 }
 
+void TrussCanvasWidget::zoomToFit()
+{
+    if (!m_view || m_view->getNodeCount() == 0) {
+        // No geometry: restore a sensible default viewport
+        setViewport(QRectF(-1.0, -1.0, 7.0, 7.0));
+        return;
+    }
+
+    // Compute tight bounding box over all node positions
+    double minX = +1e30, minY = +1e30;
+    double maxX = -1e30, maxY = -1e30;
+    for (const auto& nv : m_view->getNodeViews()) {
+        minX = std::min(minX, nv.x);  minY = std::min(minY, nv.y);
+        maxX = std::max(maxX, nv.x);  maxY = std::max(maxY, nv.y);
+    }
+
+    // Guard against degenerate single-point / collinear geometry
+    if (maxX - minX < 1e-6) { minX -= 1.0; maxX += 1.0; }
+    if (maxY - minY < 1e-6) { minY -= 1.0; maxY += 1.0; }
+
+    // 15 % padding + at least 0.5 m so tiny trusses aren't crowded
+    const double span = std::max(maxX - minX, maxY - minY);
+    const double pad  = span * 0.15 + 0.5;
+
+    setViewport(QRectF(minX - pad,
+                       minY - pad,
+                       (maxX - minX) + 2.0 * pad,
+                       (maxY - minY) + 2.0 * pad));
+}
+
 // ============================================================
 // Event overrides
 // ============================================================
