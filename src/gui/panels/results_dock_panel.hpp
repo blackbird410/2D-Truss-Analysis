@@ -56,6 +56,17 @@ public:
 public slots:
     void onStateChanged(const truss::gui::state::WorkspaceState& state);
 
+    /**
+     * @brief Provide the results view for Stiffness Matrix population.
+     *
+     * Call with a valid pointer after each successful analysis, and with
+     * @c nullptr when results become invalid (new model, analysis failed).
+     * The pointer must remain valid until the next @c setResultsView() call.
+     *
+     * @param results  Non-owning pointer to the analysis results view, or nullptr.
+     */
+    void setResultsView(const truss::core::interfaces::IAnalysisResultsView* results);
+
 signals:
     /// Emitted from per-tab Export button. @p suggestedFilename has no directory.
     void exportRequested(truss::ExportFormat format, const QString& suggestedFilename);

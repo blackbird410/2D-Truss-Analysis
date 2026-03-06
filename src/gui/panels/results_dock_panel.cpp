@@ -169,6 +169,17 @@ void ResultsDockPanel::onTabChanged(int index)
     if (index == kStiffnessTab && !m_stiffnessPopulated) {
         m_stiffnessPopulated = true;
         // Phase 6 TODO: populate stiffness matrix widget from results view.
+
+void ResultsDockPanel::setResultsView(
+    const truss::core::interfaces::IAnalysisResultsView* results)
+{
+    m_resultsView = results;
+    m_stiffnessPopulated = false;  // mark dirty so it re-populates on next activation
+
+    if (results && m_tabs->currentIndex() == 3)
+        populateStiffnessMatrix();  // already on the tab — populate immediately
+}
+
 void ResultsDockPanel::populateStiffnessMatrix()
 {
     if (!m_resultsView || !m_stiffnessTableView) return;
