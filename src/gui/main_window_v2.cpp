@@ -319,10 +319,12 @@ void MainWindowV2::connectSignals()
     connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
             m_resultsDockPanel,&ResultsDockPanel::onStateChanged);
 
-    // Canvas refresh from MainWindowController (after model update)
+    // Canvas refresh from MainWindowController (after model update).
+    // Preserve whatever DisplayMode is currently active so switching to
+    // DeformedShape and then triggering a refresh doesn't reset to Geometry.
     connect(m_controller.get(), &ctrl::MainWindowController::trussViewChanged,
             m_canvas, [this](const truss::core::interfaces::ITrussView* view) {
-                m_canvas->refresh(view);
+                m_canvas->refresh(view, m_canvas->displayMode());
             });
 
     // Zoom-to-fit when a project is first loaded or created.
