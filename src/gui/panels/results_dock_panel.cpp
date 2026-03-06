@@ -142,12 +142,24 @@ void ResultsDockPanel::buildSystemSummaryTab()
 
 void ResultsDockPanel::buildStiffnessMatrixTab()
 {
-    // Lazy placeholder — content populated on first tab activation via onTabChanged
-    auto* placeholder = new QLabel{
-        QStringLiteral("Activate this tab to load the stiffness matrix."), this};
-    placeholder->setObjectName(QStringLiteral("stiffnessPlaceholder"));
-    placeholder->setAlignment(Qt::AlignCenter);
-    m_tabs->addTab(placeholder, QStringLiteral("Stiffness Matrix"));
+    // Start with an empty QTableView; actual matrix data is loaded lazily
+    // on the first tab activation via onTabChanged / setResultsView().
+    m_stiffnessTableView = new QTableView{this};
+    m_stiffnessTableView->setObjectName(QStringLiteral("stiffnessMatrixTable"));
+    m_stiffnessTableView->setAlternatingRowColors(true);
+    m_stiffnessTableView->horizontalHeader()
+        ->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_stiffnessTableView->verticalHeader()
+        ->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_stiffnessTableView->setSelectionBehavior(QAbstractItemView::SelectItems);
+
+    // Placeholder model (0 rows, 0 cols) until analysis results are available
+    m_stiffnessTableView->setModel(new QStandardItemModel(0, 0, m_stiffnessTableView));
+
+    auto* tab = makeTabWrapper(this, m_stiffnessTableView,
+                               QStringLiteral("Export JSON"),
+                               truss::ExportFormat::JSON, this);
+    m_tabs->addTab(tab, QStringLiteral("Stiffness Matrix"));
 }
 
 // ---------------------------------------------------------------------------
