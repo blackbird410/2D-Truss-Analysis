@@ -371,17 +371,26 @@ void TrussCanvasWidget::drawNodes(QPainter& p) const
         } else if (hasLoad) {
             fill = QColor(kLoadR, kLoadG, kLoadB);
         } else {
-            fill = QColor(kNodeR, kNodeG, kNodeB);
+            // Light theme: white fill gives clear contrast against the near-white canvas.
+            // Dark theme: #E8EAED light-grey on the dark canvas.
+            fill = m_isDark ? QColor(kNodeR, kNodeG, kNodeB)
+                            : QColor(0xFF, 0xFF, 0xFF);
         }
 
-        p.setPen(QPen(fill.lighter(130), 1.5));
+        // Border: light theme uses a dark slate outline for contrast (fill.lighter(130)
+        // on white would be nearly invisible).  Dark theme keeps lighter-fill trick.
+        const QColor border = m_isDark ? fill.lighter(130)
+                                       : QColor(0x37, 0x47, 0x4F);  // #37474F blue-grey-700
+        p.setPen(QPen(border, m_isDark ? 1.5 : 2.0));
         p.setBrush(fill);
         p.drawEllipse(sc, kNodeRadius, kNodeRadius);
 
-        // Node ID label inside the circle
-        const QColor bgCol = m_isDark ? QColor(kBgR, kBgG, kBgB)
-                                      : QColor(0xFA, 0xFA, 0xFA);
-        p.setPen(QPen(bgCol));
+        // Node ID label — needs sufficient contrast against the node fill.
+        // Dark theme: use the dark canvas bg colour as text (dark on light fill).
+        // Light theme: use blue-grey-900 for legible text on white fill.
+        const QColor textCol = m_isDark ? QColor(kBgR, kBgG, kBgB)
+                                        : QColor(0x26, 0x32, 0x38);  // #263238 blue-grey-900
+        p.setPen(QPen(textCol));
         { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(7); f.setWeight(QFont::Bold); p.setFont(f); }
         const QRectF labelRect(sc.x() - kNodeRadius, sc.y() - kNodeRadius,
                                kNodeRadius * 2.0, kNodeRadius * 2.0);
