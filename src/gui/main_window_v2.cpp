@@ -169,6 +169,13 @@ void MainWindowV2::setupMenuBar()
     m_actSaveAs->setShortcut(QKeySequence::SaveAs);
     m_actQuit->setShortcut(QKeySequence::Quit);
 
+    // On macOS, Qt may remap actions with standard shortcuts into the application-
+    // level menu, causing duplicate File entries.  Opting out keeps all actions
+    // in our explicit File menu without system interference.
+    for (auto* act : {m_actNew, m_actOpen, m_actSave, m_actSaveAs, m_actQuit}) {
+        act->setMenuRole(QAction::NoRole);
+    }
+
     // ---- Edit menu ----
     auto* editMenu = mb->addMenu(QStringLiteral("&Edit"));
     editMenu->setObjectName(QStringLiteral("menuEdit"));
