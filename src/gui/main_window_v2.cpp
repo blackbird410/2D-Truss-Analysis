@@ -327,6 +327,10 @@ void MainWindowV2::connectSignals()
                 m_canvas->refresh(view, m_canvas->displayMode());
             });
 
+    // Results view forwarded to ResultsDockPanel for Stiffness Matrix population
+    connect(m_controller.get(), &ctrl::MainWindowController::resultsViewChanged,
+            m_resultsDockPanel, &ResultsDockPanel::setResultsView);
+
     // Zoom-to-fit when a project is first loaded or created.
     // QueuedConnection ensures these fire *after* the trussViewChanged/refresh()
     // chain completes, so m_view is already set when zoomToFit() runs.

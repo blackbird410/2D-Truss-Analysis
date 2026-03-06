@@ -139,6 +139,15 @@ signals:
      */
     void trussViewChanged(const truss::core::interfaces::ITrussView* view);
 
+    /**
+     * @brief Emitted after a successful analysis with a pointer to the results view.
+     *
+     * Carry @c nullptr when results become invalid (new model loaded, analysis
+     * failed, project cleared).  Connected to ResultsDockPanel::setResultsView().
+     * The pointer is valid as long as the result handle is valid in the facade.
+     */
+    void resultsViewChanged(const truss::core::interfaces::IAnalysisResultsView* results);
+
 public slots:
     /**
      * @brief Called when the structural model has been modified.

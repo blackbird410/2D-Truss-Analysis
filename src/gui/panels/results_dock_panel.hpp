@@ -19,6 +19,8 @@
 class QTabWidget;
 class QTableView;
 
+namespace truss::core::interfaces { class IAnalysisResultsView; }
+
 namespace truss::gui::model {
 class MemberTableModel;
 class NodeTableModel;
@@ -54,6 +56,17 @@ public:
 public slots:
     void onStateChanged(const truss::gui::state::WorkspaceState& state);
 
+    /**
+     * @brief Provide the results view for Stiffness Matrix population.
+     *
+     * Call with a valid pointer after each successful analysis, and with
+     * @c nullptr when results become invalid (new model, analysis failed).
+     * The pointer must remain valid until the next @c setResultsView() call.
+     *
+     * @param results  Non-owning pointer to the analysis results view, or nullptr.
+     */
+    void setResultsView(const truss::core::interfaces::IAnalysisResultsView* results);
+
 signals:
     /// Emitted from per-tab Export button. @p suggestedFilename has no directory.
     void exportRequested(truss::ExportFormat format, const QString& suggestedFilename);
@@ -67,13 +80,19 @@ private:
     void buildSystemSummaryTab();
     void buildStiffnessMatrixTab();
 
+    // Private helper: lazily build the stiffness matrix table.
+    void populateStiffnessMatrix();
+
     QTabWidget*               m_tabs{nullptr};
     QTableView*               m_nodeTableView{nullptr};
     QTableView*               m_memberTableView{nullptr};
     QTableView*               m_resultsTableView{nullptr};
+    QTableView*               m_stiffnessTableView{nullptr};
     model::NodeTableModel*    m_nodeModel{nullptr};
     model::MemberTableModel*  m_memberModel{nullptr};
     model::ResultsTableModel* m_resultsModel{nullptr};
+    /// Non-owning; valid between setResultsView() calls.
+    const truss::core::interfaces::IAnalysisResultsView* m_resultsView{nullptr};
     bool                      m_stiffnessPopulated{false};
 };
 
