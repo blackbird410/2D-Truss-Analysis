@@ -33,6 +33,7 @@
 
 #include <QAction>
 #include <QActionGroup>
+#include <QIcon>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QFileDialog>
@@ -213,19 +214,26 @@ void MainWindowV2::setupToolBar()
     tb->setIconSize(QSize(24, 24));
 
     // File group
-    auto* actTbNew  = tb->addAction(QStringLiteral("New"));
-    auto* actTbOpen = tb->addAction(QStringLiteral("Open"));
-    auto* actTbSave = tb->addAction(QStringLiteral("Save"));
+    auto* actTbNew  = tb->addAction(QIcon(QStringLiteral(":/icons/new_project.svg")),
+                                    QStringLiteral("New"));
+    auto* actTbOpen = tb->addAction(QIcon(QStringLiteral(":/icons/open_file.svg")),
+                                    QStringLiteral("Open"));
+    auto* actTbSave = tb->addAction(QIcon(QStringLiteral(":/icons/save.svg")),
+                                    QStringLiteral("Save"));
     tb->addSeparator();
 
     // Tool-mode group (exclusive checkable)
     auto* toolGroup = new QActionGroup(this);
     toolGroup->setExclusive(true);
 
-    m_actToolSelect = tb->addAction(QStringLiteral("Select"));
-    m_actToolNode   = tb->addAction(QStringLiteral("Node"));
-    m_actToolMember = tb->addAction(QStringLiteral("Member"));
-    m_actToolDelete = tb->addAction(QStringLiteral("Delete"));
+    m_actToolSelect = tb->addAction(QIcon(QStringLiteral(":/icons/select.svg")),
+                                    QStringLiteral("Select"));
+    m_actToolNode   = tb->addAction(QIcon(QStringLiteral(":/icons/add_node.svg")),
+                                    QStringLiteral("Node"));
+    m_actToolMember = tb->addAction(QIcon(QStringLiteral(":/icons/add_member.svg")),
+                                    QStringLiteral("Member"));
+    m_actToolDelete = tb->addAction(QIcon(QStringLiteral(":/icons/delete.svg")),
+                                    QStringLiteral("Delete"));
 
     for (auto* act : {m_actToolSelect, m_actToolNode, m_actToolMember, m_actToolDelete}) {
         act->setCheckable(true);
@@ -236,8 +244,10 @@ void MainWindowV2::setupToolBar()
     tb->addSeparator();
 
     // Analysis group (for quick access — AnalysisControlBar is the primary UI)
-    auto* actTbRun  = tb->addAction(QStringLiteral("Run"));
-    auto* actTbStop = tb->addAction(QStringLiteral("Stop"));
+    auto* actTbRun  = tb->addAction(QIcon(QStringLiteral(":/icons/run_analysis.svg")),
+                                    QStringLiteral("Run"));
+    auto* actTbStop = tb->addAction(QIcon(QStringLiteral(":/icons/delete.svg")),
+                                    QStringLiteral("Stop"));
 
     Q_UNUSED(actTbNew)   // connected below in connectSignals()
     Q_UNUSED(actTbOpen)

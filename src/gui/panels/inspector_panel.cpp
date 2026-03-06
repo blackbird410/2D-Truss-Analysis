@@ -128,6 +128,11 @@ void InspectorPanel::buildNodeEditorPage()
     vbox->addWidget(loadBox);
     vbox->addStretch();
 
+    // ---- Tab order ----
+    QWidget::setTabOrder(m_supportCombo, m_fxSpin);
+    QWidget::setTabOrder(m_fxSpin,       m_fySpin);
+    QWidget::setTabOrder(m_fySpin,       m_applyLoadBtn);
+
     // ---- Connections ----
     connect(m_supportCombo,
             &QComboBox::currentIndexChanged,

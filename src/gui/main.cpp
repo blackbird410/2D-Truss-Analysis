@@ -5,9 +5,14 @@
  * Phase 6 composition root.  Creates a single TrussAnalysisFacade and hands it
  * to MainWindowV2, which internally constructs all sub-controllers, models, and
  * panels.  No presenters, adapters, or legacy controllers are created here.
+ *
+ * Phase 7: ThemeLoader::restoreLastTheme() is called after QApplication
+ * construction so the previously persisted theme is applied before the
+ * window is shown.
  */
 
 #include "gui/main_window_v2.hpp"
+#include "gui/theme_loader.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
 #include "interface/truss_analysis_facade.hpp"
 
@@ -51,6 +56,10 @@ int main(int argc, char* argv[])
         // MainWindowV2 creates all sub-controllers, models, and panels internally.
         truss::interface::TrussAnalysisFacade facade;
         truss::gui::MainWindowV2 window(facade);
+
+        // Restore the last-used theme (persisted via QSettings) before showing.
+        truss::gui::ThemeLoader::restoreLastTheme(app);
+
         window.show();
         return app.exec();
 

@@ -3,10 +3,15 @@
     resources.qrc — Qt resource file for TrussAnalysisGUI
 
     Phase 2: Dark and light QSS theme files under :/themes/
-    Phase 7: SVG toolbar icons under :/icons/ (preview below)
-
-    Phase 7 entries (do not uncomment until icons exist):
+    Phase 7: SVG toolbar icons under :/icons/
+-->
+<RCC version="1.0">
+    <qresource prefix="/themes">
+        <file alias="dark.qss">themes/dark.qss</file>
+        <file alias="light.qss">themes/light.qss</file>
+    </qresource>
     <qresource prefix="/icons">
+        <!-- Toolbar actions -->
         <file alias="new_project.svg">icons/new_project.svg</file>
         <file alias="open_file.svg">icons/open_file.svg</file>
         <file alias="save.svg">icons/save.svg</file>
@@ -16,11 +21,15 @@
         <file alias="delete.svg">icons/delete.svg</file>
         <file alias="run_analysis.svg">icons/run_analysis.svg</file>
         <file alias="export.svg">icons/export.svg</file>
-    </qresource>
--->
-<RCC version="1.0">
-    <qresource prefix="/themes">
-        <file alias="dark.qss">themes/dark.qss</file>
-        <file alias="light.qss">themes/light.qss</file>
+        <!-- Notification severity badges -->
+        <file alias="notif_info.svg">icons/notif_info.svg</file>
+        <file alias="notif_success.svg">icons/notif_success.svg</file>
+        <file alias="notif_warning.svg">icons/notif_warning.svg</file>
+        <file alias="notif_error.svg">icons/notif_error.svg</file>
+        <!-- Checkbox indicator -->
+        <file alias="checkmark.svg">icons/checkmark.svg</file>
+        <!-- QDockWidget title-bar buttons -->
+        <file alias="close.svg">icons/close.svg</file>
+        <file alias="undock.svg">icons/undock.svg</file>
     </qresource>
 </RCC>
