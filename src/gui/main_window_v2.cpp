@@ -244,17 +244,12 @@ void MainWindowV2::setupToolBar()
     m_actToolSelect->setChecked(true);
     tb->addSeparator();
 
-    // Analysis group (for quick access — AnalysisControlBar is the primary UI)
-    auto* actTbRun  = tb->addAction(QIcon(QStringLiteral(":/icons/run_analysis.svg")),
-                                    QStringLiteral("Run"));
-    auto* actTbStop = tb->addAction(QIcon(QStringLiteral(":/icons/delete.svg")),
-                                    QStringLiteral("Stop"));
-
-    Q_UNUSED(actTbNew)   // connected below in connectSignals()
-    Q_UNUSED(actTbOpen)
-    Q_UNUSED(actTbSave)
-    Q_UNUSED(actTbRun)
-    Q_UNUSED(actTbStop)
+    // Analysis group — stored as members so connectSignals() can wire them
+    m_actRun  = tb->addAction(QIcon(QStringLiteral(":/icons/run_analysis.svg")),
+                               QStringLiteral("Run"));
+    m_actStop = tb->addAction(QIcon(QStringLiteral(":/icons/stop.svg")),
+                               QStringLiteral("Stop"));
+    m_actStop->setEnabled(false); // disabled until analysis is running
 }
 
 void MainWindowV2::setupStatusBar()
