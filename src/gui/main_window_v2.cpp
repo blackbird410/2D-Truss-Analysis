@@ -432,6 +432,17 @@ void MainWindowV2::connectSignals()
     connect(m_actStop, &QAction::triggered,
             analysisCtrl, &ctrl::AnalysisController::onStopRequested);
 
+    // Display mode toolbar buttons → canvas
+    connect(m_actModeGeometry, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+    });
+    connect(m_actModeStress, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::StressRatio);
+    });
+    connect(m_actModeDeformed, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
+    });
+
     // ----------------------------------------------------------------
     // ResultsDockPanel → ExportController (via file dialog in this window)
     // ----------------------------------------------------------------
