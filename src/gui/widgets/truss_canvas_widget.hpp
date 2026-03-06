@@ -121,6 +121,15 @@ public slots:
     void setMode(ToolMode mode);
 
     /**
+     * @brief Compute the bounding box of all nodes and fit the viewport.
+     *
+     * Adds 15 % padding around the tight bounding box so structural geometry
+     * is not clipped by the canvas edge.  Falls back to the default 6 × 6 m
+     * view when no nodes are loaded.
+     */
+    void zoomToFit();
+
+    /**
      * @brief Explicitly set the canvas colour theme.
      *
      * Call this whenever the application theme changes so the canvas repaints

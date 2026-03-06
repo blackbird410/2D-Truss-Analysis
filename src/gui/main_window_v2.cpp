@@ -308,6 +308,18 @@ void MainWindowV2::connectSignals()
                 m_canvas->refresh(view);
             });
 
+    // Zoom-to-fit when a project is first loaded or created.
+    // QueuedConnection ensures these fire *after* the trussViewChanged/refresh()
+    // chain completes, so m_view is already set when zoomToFit() runs.
+    connect(projectCtrl, &ctrl::ProjectController::trussLoaded,
+            m_canvas, [this](std::size_t, const QString&) {
+                m_canvas->zoomToFit();
+            }, Qt::QueuedConnection);
+    connect(projectCtrl, &ctrl::ProjectController::trussCreated,
+            m_canvas, [this](std::size_t) {
+                m_canvas->zoomToFit();
+            }, Qt::QueuedConnection);
+
     // ----------------------------------------------------------------
     // Menu actions → ProjectController
     // ----------------------------------------------------------------
