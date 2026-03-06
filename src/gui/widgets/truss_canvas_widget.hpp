@@ -140,6 +140,16 @@ public slots:
      */
     void setColorTheme(bool isDark);
 
+    /**
+     * @brief Switch the active display overlay without replacing the view pointer.
+     *
+     * Use this to toggle between Geometry / StressRatio / DeformedShape after
+     * the view has already been set via refresh().  Triggers an immediate repaint.
+     *
+     * @param mode  The desired display mode.
+     */
+    void setDisplayMode(DisplayMode mode);
+
     /// @brief Return the currently active display overlay mode.
     [[nodiscard]] DisplayMode displayMode() const noexcept;
 

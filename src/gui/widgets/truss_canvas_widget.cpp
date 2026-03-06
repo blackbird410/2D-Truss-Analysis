@@ -199,6 +199,13 @@ void TrussCanvasWidget::setColorTheme(bool isDark)
     update();
 }
 
+void TrussCanvasWidget::setDisplayMode(DisplayMode mode)
+{
+    if (m_mode == mode) return;
+    m_mode = mode;
+    update();
+}
+
 TrussCanvasWidget::DisplayMode TrussCanvasWidget::displayMode() const noexcept
 {
     return m_mode;
