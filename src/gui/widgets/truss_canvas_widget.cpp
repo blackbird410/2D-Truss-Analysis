@@ -199,6 +199,18 @@ void TrussCanvasWidget::setColorTheme(bool isDark)
     update();
 }
 
+void TrussCanvasWidget::setDisplayMode(DisplayMode mode)
+{
+    if (m_mode == mode) return;
+    m_mode = mode;
+    update();
+}
+
+TrussCanvasWidget::DisplayMode TrussCanvasWidget::displayMode() const noexcept
+{
+    return m_mode;
+}
+
 void TrussCanvasWidget::paintEvent(QPaintEvent* /*event*/)
 {
     QPainter p(this);
@@ -275,19 +287,45 @@ void TrussCanvasWidget::drawMembers(QPainter& p) const
     // Build a fast id→NodeView lookup
     std::unordered_map<core::NodeId, const core::interfaces::NodeView*> nodeMap;
     nodeMap.reserve(nodes.size());
-    for (const auto& n : nodes) {
-        nodeMap[n.id] = &n;
+    for (const auto& n : nodes) { nodeMap[n.id] = &n; }
+
+    const bool   showDeformed = (m_mode == DisplayMode::DeformedShape);
+    const double dispScale    = showDeformed ? autoDispScale() : 0.0;
+
+    // ---- Pass 1 (DeformedShape only): original structure as semi-transparent ghost ----
+    if (showDeformed) {
+        // Ghost colour: semi-transparent — visible but clearly subordinate.
+        const QColor ghost = m_isDark ? QColor(0x8A, 0xB4, 0xF8, 60)
+                                      : QColor(0x78, 0x90, 0x9C, 90);
+        p.setPen(QPen(ghost, kMemberWidth * 0.6, Qt::DashLine, Qt::RoundCap));
+        for (const auto& mv : members) {
+            const auto itA = nodeMap.find(mv.startNodeId);
+            const auto itB = nodeMap.find(mv.endNodeId);
+            if (itA == nodeMap.end() || itB == nodeMap.end()) continue;
+            p.drawLine(toScreen(itA->second->x, itA->second->y),
+                       toScreen(itB->second->x, itB->second->y));
+        }
     }
 
+    // ---- Pass 2: member lines at displaced (or original) positions ----
     for (const auto& mv : members) {
         const auto itA = nodeMap.find(mv.startNodeId);
         const auto itB = nodeMap.find(mv.endNodeId);
         if (itA == nodeMap.end() || itB == nodeMap.end()) continue;
 
-        const QPointF sA = toScreen(itA->second->x, itA->second->y);
-        const QPointF sB = toScreen(itB->second->x, itB->second->y);
-        const QColor  col = memberColour(mv);
+        QPointF sA, sB;
+        if (showDeformed && dispScale > 0.0) {
+            // Displaced position: x' = x + scale * dx,  y' = y + scale * dy
+            sA = toScreen(itA->second->x + dispScale * itA->second->dx,
+                          itA->second->y + dispScale * itA->second->dy);
+            sB = toScreen(itB->second->x + dispScale * itB->second->dx,
+                          itB->second->y + dispScale * itB->second->dy);
+        } else {
+            sA = toScreen(itA->second->x, itA->second->y);
+            sB = toScreen(itB->second->x, itB->second->y);
+        }
 
+        const QColor col = memberColour(mv);
         p.setPen(QPen(col, kMemberWidth, Qt::SolidLine, Qt::RoundCap));
         p.drawLine(sA, sB);
 
@@ -296,6 +334,19 @@ void TrussCanvasWidget::drawMembers(QPainter& p) const
         p.setPen(QPen(col.lighter(160)));
         { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(8); p.setFont(f); }
         p.drawText(mid + QPointF(4.0, -3.0), QString::number(mv.id));
+    }
+
+    // ---- Pass 3: displacement scale factor annotation ----
+    if (showDeformed && dispScale > 0.0) {
+        const QColor infoCol = m_isDark ? QColor(kSupportR, kSupportG, kSupportB)
+                                        : QColor(0x15, 0x65, 0xC0);  // #1565C0 navy
+        p.setPen(QPen(infoCol));
+        QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+        f.setPointSize(9);
+        p.setFont(f);
+        p.drawText(QRect(8, 28, width() - 16, 20),
+                   Qt::AlignLeft | Qt::AlignTop,
+                   QStringLiteral("Disp. scale: %1×").arg(dispScale, 0, 'g', 3));
     }
 }
 
@@ -307,8 +358,17 @@ void TrussCanvasWidget::drawNodes(QPainter& p) const
 {
     if (!m_view) return;
 
+    // Deformed-shape mode: render nodes at displaced positions.
+    const bool   showDeformed = (m_mode == DisplayMode::DeformedShape);
+    const double dispScale    = showDeformed ? autoDispScale() : 0.0;
+
     for (const auto& nv : m_view->getNodeViews()) {
-        const QPointF sc = toScreen(nv.x, nv.y);
+        // World position: original or displaced
+        const double drawX = (showDeformed && dispScale > 0.0)
+                             ? (nv.x + dispScale * nv.dx) : nv.x;
+        const double drawY = (showDeformed && dispScale > 0.0)
+                             ? (nv.y + dispScale * nv.dy) : nv.y;
+        const QPointF sc = toScreen(drawX, drawY);
 
         // Draw support symbol beneath the node circle
         if (nv.support != core::SupportType::Free) {
@@ -323,17 +383,26 @@ void TrussCanvasWidget::drawNodes(QPainter& p) const
         } else if (hasLoad) {
             fill = QColor(kLoadR, kLoadG, kLoadB);
         } else {
-            fill = QColor(kNodeR, kNodeG, kNodeB);
+            // Light theme: white fill gives clear contrast against the near-white canvas.
+            // Dark theme: #E8EAED light-grey on the dark canvas.
+            fill = m_isDark ? QColor(kNodeR, kNodeG, kNodeB)
+                            : QColor(0xFF, 0xFF, 0xFF);
         }
 
-        p.setPen(QPen(fill.lighter(130), 1.5));
+        // Border: light theme uses a dark slate outline for contrast (fill.lighter(130)
+        // on white would be nearly invisible).  Dark theme keeps lighter-fill trick.
+        const QColor border = m_isDark ? fill.lighter(130)
+                                       : QColor(0x37, 0x47, 0x4F);  // #37474F blue-grey-700
+        p.setPen(QPen(border, m_isDark ? 1.5 : 2.0));
         p.setBrush(fill);
         p.drawEllipse(sc, kNodeRadius, kNodeRadius);
 
-        // Node ID label inside the circle
-        const QColor bgCol = m_isDark ? QColor(kBgR, kBgG, kBgB)
-                                      : QColor(0xFA, 0xFA, 0xFA);
-        p.setPen(QPen(bgCol));
+        // Node ID label — needs sufficient contrast against the node fill.
+        // Dark theme: use the dark canvas bg colour as text (dark on light fill).
+        // Light theme: use blue-grey-900 for legible text on white fill.
+        const QColor textCol = m_isDark ? QColor(kBgR, kBgG, kBgB)
+                                        : QColor(0x26, 0x32, 0x38);  // #263238 blue-grey-900
+        p.setPen(QPen(textCol));
         { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(7); f.setWeight(QFont::Bold); p.setFont(f); }
         const QRectF labelRect(sc.x() - kNodeRadius, sc.y() - kNodeRadius,
                                kNodeRadius * 2.0, kNodeRadius * 2.0);
@@ -427,6 +496,19 @@ QPointF TrussCanvasWidget::toScreen(double wx, double wy) const
     return m_worldToScreen.map(QPointF(wx, wy));
 }
 
+double TrussCanvasWidget::autoDispScale() const
+{
+    // Computes an amplification factor so that the maximum nodal displacement
+    // is rendered as 10 % of the current visible world span.  Returns 0 when
+    // no displacements are available (pre-analysis or all-zero).
+    if (!m_view) return 0.0;
+    double maxDisp = 0.0;
+    for (const auto& nv : m_view->getNodeViews())
+        maxDisp = std::max(maxDisp, std::hypot(nv.dx, nv.dy));
+    if (maxDisp < 1e-12) return 0.0;
+    return 0.1 * std::max(m_worldBounds.width(), m_worldBounds.height()) / maxDisp;
+}
+
 void TrussCanvasWidget::rebuildTransform()
 {
     const int w = (width()  > 0) ? width()  : 400;
@@ -468,13 +550,32 @@ void TrussCanvasWidget::rebuildTransform()
 
 QColor TrussCanvasWidget::memberColour(const core::interfaces::MemberView& mv) const
 {
-    if (m_mode == DisplayMode::StressRatio) {
+    if (m_mode == DisplayMode::StressRatio)
         return lerpStressColour(mv.utilizationRatio);
-    }
-    // Geometry / DeformedShape: colour by mechanical state
-    if (mv.yielded)   return QColor(0xFF, 0x17, 0x44);              // red — yielded
-    if (mv.inTension) return QColor(0x4F, 0xC3, 0xF7);              // light blue — tension
-    return QColor(kMemberR, kMemberG, kMemberB);                    // steel blue — compression
+
+    // Geometry / DeformedShape: colour by mechanical state.
+    // Architecture colour tokens (GUI-MODERNIZATION-ARCHITECTURE.md §5.4.1):
+    //   Yield       dark:#FF1744  light:#B71C1C
+    //   Tension     dark:#4FC3F7  light:#0288D1
+    //   Compression dark:#FF7043  light:#D84315
+    //   Pre-analysis / neutral: steel-blue
+
+    if (mv.yielded)
+        return m_isDark ? QColor(0xFF, 0x17, 0x44)   // #FF1744 — yielded (dark)
+                        : QColor(0xB7, 0x1C, 0x1C);  // #B71C1C — yielded (light)
+
+    if (mv.inTension)
+        return m_isDark ? QColor(0x4F, 0xC3, 0xF7)   // #4FC3F7 — tension cyan (dark)
+                        : QColor(0x02, 0x88, 0xD1);  // #0288D1 — tension blue (light)
+
+    // Compression: axialForce < 0 distinguishes post-analysis from pre-analysis zero-force
+    if (mv.axialForce < -1e-10)
+        return m_isDark ? QColor(0xFF, 0x70, 0x43)   // #FF7043 — compression orange-red (dark)
+                        : QColor(0xD8, 0x43, 0x15);  // #D84315 — compression deep-orange (light)
+
+    // Pre-analysis or zero-force member: neutral steel-blue
+    return m_isDark ? QColor(kMemberR, kMemberG, kMemberB)   // #8AB4F8 (dark)
+                    : QColor(0x54, 0x7A, 0xC4);               // #547AC4 subdued blue (light)
 }
 
 void TrussCanvasWidget::drawSupportSymbol(QPainter& p,

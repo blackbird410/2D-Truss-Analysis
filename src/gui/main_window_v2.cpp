@@ -257,6 +257,23 @@ void MainWindowV2::setupToolBar()
     m_actStop = tb->addAction(QIcon(QStringLiteral(":/icons/stop.svg")),
                                QStringLiteral("Stop"));
     m_actStop->setEnabled(false); // disabled until analysis is running
+
+    // Display mode group (exclusive checkable)
+    tb->addSeparator();
+    auto* modeGroup = new QActionGroup(this);
+    modeGroup->setExclusive(true);
+
+    m_actModeGeometry = tb->addAction(QIcon(QStringLiteral(":/icons/mode_geometry.svg")),
+                                      QStringLiteral("Geometry"));
+    m_actModeStress   = tb->addAction(QIcon(QStringLiteral(":/icons/mode_stress.svg")),
+                                      QStringLiteral("Stress Ratio"));
+    m_actModeDeformed = tb->addAction(QIcon(QStringLiteral(":/icons/mode_deformed.svg")),
+                                      QStringLiteral("Deformed"));
+    for (auto* act : {m_actModeGeometry, m_actModeStress, m_actModeDeformed}) {
+        act->setCheckable(true);
+        modeGroup->addAction(act);
+    }
+    m_actModeGeometry->setChecked(true);
 }
 
 void MainWindowV2::setupStatusBar()
@@ -302,11 +319,17 @@ void MainWindowV2::connectSignals()
     connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
             m_resultsDockPanel,&ResultsDockPanel::onStateChanged);
 
-    // Canvas refresh from MainWindowController (after model update)
+    // Canvas refresh from MainWindowController (after model update).
+    // Preserve whatever DisplayMode is currently active so switching to
+    // DeformedShape and then triggering a refresh doesn't reset to Geometry.
     connect(m_controller.get(), &ctrl::MainWindowController::trussViewChanged,
             m_canvas, [this](const truss::core::interfaces::ITrussView* view) {
-                m_canvas->refresh(view);
+                m_canvas->refresh(view, m_canvas->displayMode());
             });
+
+    // Results view forwarded to ResultsDockPanel for Stiffness Matrix population
+    connect(m_controller.get(), &ctrl::MainWindowController::resultsViewChanged,
+            m_resultsDockPanel, &ResultsDockPanel::setResultsView);
 
     // Zoom-to-fit when a project is first loaded or created.
     // QueuedConnection ensures these fire *after* the trussViewChanged/refresh()
@@ -412,6 +435,33 @@ void MainWindowV2::connectSignals()
             });
     connect(m_actStop, &QAction::triggered,
             analysisCtrl, &ctrl::AnalysisController::onStopRequested);
+
+    // Display mode toolbar buttons → canvas
+    connect(m_actModeGeometry, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+    });
+    connect(m_actModeStress, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::StressRatio);
+    });
+    connect(m_actModeDeformed, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
+    });
+
+    // Auto-switch to DeformedShape when analysis completes successfully
+    connect(analysisCtrl, &ctrl::AnalysisController::analysisCompleted,
+            this, [this](std::size_t) {
+                m_actModeDeformed->setChecked(true);
+                m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
+            });
+
+    // Reset display mode to Geometry when results are cleared (new project / edit)
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            this, [this](const truss::gui::state::WorkspaceState& s) {
+                if (!s.hasResults()) {
+                    m_actModeGeometry->setChecked(true);
+                    m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+                }
+            });
 
     // ----------------------------------------------------------------
     // ResultsDockPanel → ExportController (via file dialog in this window)

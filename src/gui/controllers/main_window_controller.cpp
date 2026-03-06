@@ -144,6 +144,9 @@ void MainWindowController::onTrussModified(std::size_t trussHandle)
     next.isDirty       = true;
     next.lastError.clear();
 
+    // New model invalidates previous analysis results
+    emit resultsViewChanged(nullptr);
+
     // Refresh node and member models from the new truss view
     const core::interfaces::ITrussView* viewPtr = nullptr;
     try {
@@ -189,6 +192,7 @@ void MainWindowController::onAnalysisCompleted(std::size_t resultsHandle)
         if (resultsHandle != 0) {
             const auto& results = m_facade->getResultsView(resultsHandle);
             m_resultsModel->refresh(results);
+            emit resultsViewChanged(&results);  // forward to ResultsDockPanel
         }
         if (next.trussHandle != 0) {
             const auto& view = m_facade->getTrussView(next.trussHandle);
@@ -196,6 +200,10 @@ void MainWindowController::onAnalysisCompleted(std::size_t resultsHandle)
             m_nodeModel->setHasResults(true);
             m_memberModel->refresh(view);
             m_memberModel->setHasResults(true);
+            // Forward the post-analysis view to the canvas.  This view now contains
+            // nodal displacements (dx, dy) and reaction forces (rx, ry) which are
+            // required for DeformedShape rendering and force/reaction arrows.
+            emit trussViewChanged(&view);
         }
     } catch (...) {
         // Silently ignore refresh failures (shouldn't happen with valid handles)
@@ -210,6 +218,7 @@ void MainWindowController::onAnalysisFailed(const QString& errorMessage)
     next.phase         = state::WorkspacePhase::ModelBuilding;
     next.resultsHandle = 0;
     next.lastError     = errorMessage.toStdString();
+    emit resultsViewChanged(nullptr);  // invalidate stiffness matrix tab
     setState(std::move(next));
 }
 

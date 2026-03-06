@@ -140,6 +140,19 @@ public slots:
      */
     void setColorTheme(bool isDark);
 
+    /**
+     * @brief Switch the active display overlay without replacing the view pointer.
+     *
+     * Use this to toggle between Geometry / StressRatio / DeformedShape after
+     * the view has already been set via refresh().  Triggers an immediate repaint.
+     *
+     * @param mode  The desired display mode.
+     */
+    void setDisplayMode(DisplayMode mode);
+
+    /// @brief Return the currently active display overlay mode.
+    [[nodiscard]] DisplayMode displayMode() const noexcept;
+
 signals:
     // -----------------------------------------------------------------------
     // Model-mutation requests (wired to CanvasController)
@@ -214,6 +227,15 @@ private:
 
     /// @brief Return the draw colour for a member given the current display mode.
     [[nodiscard]] QColor memberColour(const core::interfaces::MemberView& mv) const;
+
+    /**
+     * @brief Compute the displacement amplification factor for DeformedShape mode.
+     *
+     * Scales the largest nodal displacement to 10 % of the visible world span,
+     * giving an engineer-readable exaggeration regardless of truss size.
+     * Returns 0.0 when no displacements are present (pre-analysis or all-zero).
+     */
+    [[nodiscard]] double autoDispScale() const;
 
     /// @brief Draw a structural support symbol at a screen position.
     void drawSupportSymbol(QPainter& p,

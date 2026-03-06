@@ -89,17 +89,45 @@ QVariant ResultsTableModel::data(const QModelIndex& index, int role) const
 // Public slots
 // ---------------------------------------------------------------------------
 
-void ResultsTableModel::refresh(const IAnalysisResultsView& /*view*/)
+void ResultsTableModel::refresh(const IAnalysisResultsView& view)
 {
-    // TODO Phase 6: populate m_rows from view data:
-    //   { "Converged",        view.hasConverged() ? "Yes" : "No"   }
-    //   { "Iterations",       QString::number(view.getIterations()) }
-    //   { "Condition Number", QString::number(view.getConditionNumber(), 'g', 6) }
-    //   { "Max Displacement", QString::number(view.getMaxDisplacement()*1000, 'f', 4) + " mm" }
-    //   { "Max Stress",       QString::number(view.getMaxStress()/1e6, 'f', 3) + " MPa" }
-    //   { "Free DOFs",        QString::number(view.getFreeDofs()) }
-    //   { "Constrained DOFs", QString::number(view.getConstrainedDofs()) }
-    //   { "Total Strain",     QString::number(view.getTotalStrain(), 'g', 6) + " J" }
+    beginResetModel();
+    m_rows.clear();
+
+    auto add = [this](const char* key, const QString& val) {
+        m_rows.push_back({QString::fromUtf8(key), val});
+    };
+
+    // ---- Solver status ----
+    add("Converged",
+        view.hasConverged() ? QStringLiteral("Yes \u2713") : QStringLiteral("No \u2717"));
+    add("Iterations",
+        QString::number(view.getIterations()));
+    add("Residual Norm",
+        QString::number(view.getResidualNorm(), 'e', 4));
+    add("Condition Number",
+        QString::number(view.getConditionNumber(), 'g', 6));
+
+    // ---- Peak response ----
+    add("Max Displacement",
+        QStringLiteral("%1 mm")
+            .arg(view.getMaxDisplacement() * 1000.0, 0, 'f', 4));
+    add("Max Stress",
+        QStringLiteral("%1 MPa")
+            .arg(view.getMaxStress() / 1.0e6, 0, 'f', 3));
+    add("Total Strain Energy",
+        QStringLiteral("%1 J")
+            .arg(view.getTotalStrain(), 0, 'g', 6));
+
+    // ---- Degrees of freedom ----
+    add("Total DOFs",
+        QString::number(static_cast<long long>(view.getTotalDofs())));
+    add("Free DOFs",
+        QString::number(static_cast<long long>(view.getFreeDofs())));
+    add("Constrained DOFs",
+        QString::number(static_cast<long long>(view.getConstrainedDofs())));
+
+    endResetModel();
 }
 
 void ResultsTableModel::clear()
