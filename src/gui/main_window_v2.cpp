@@ -380,6 +380,16 @@ void MainWindowV2::connectSignals()
     connect(m_analysisBar, &AnalysisControlBar::optionsRequested,
             this, &MainWindowV2::onOptionsRequested);
 
+    // Toolbar Run/Stop duplicate the AnalysisControlBar quick-access buttons
+    connect(m_actRun, &QAction::triggered,
+            this, [analysisCtrl]() {
+                // Invoke with default analysis options (same as AnalysisControlBar default)
+                analysisCtrl->onAnalyzeRequested(
+                    truss::core::analysis::AnalysisOptions{});
+            });
+    connect(m_actStop, &QAction::triggered,
+            analysisCtrl, &ctrl::AnalysisController::onStopRequested);
+
     // ----------------------------------------------------------------
     // ResultsDockPanel → ExportController (via file dialog in this window)
     // ----------------------------------------------------------------
