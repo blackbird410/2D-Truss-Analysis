@@ -28,6 +28,8 @@
         <file alias="notif_error.svg">icons/notif_error.svg</file>
         <!-- Checkbox indicator -->
         <file alias="checkmark.svg">icons/checkmark.svg</file>
+        <!-- QComboBox drop-down arrow -->
+        <file alias="chevron_down.svg">icons/chevron_down.svg</file>
         <!-- QDockWidget title-bar buttons -->
         <file alias="close.svg">icons/close.svg</file>
         <file alias="undock.svg">icons/undock.svg</file>
