@@ -183,7 +183,8 @@ void TrussCanvasWidget::paintEvent(QPaintEvent* /*event*/)
 
 void TrussCanvasWidget::drawBackground(QPainter& p) const
 {
-    p.fillRect(rect(), QColor(kBgR, kBgG, kBgB));
+    p.fillRect(rect(), m_isDark ? QColor(kBgR, kBgG, kBgB)
+                                : QColor(0xFA, 0xFA, 0xFA));
 }
 
 // ============================================================
@@ -192,7 +193,9 @@ void TrussCanvasWidget::drawBackground(QPainter& p) const
 
 void TrussCanvasWidget::drawGrid(QPainter& p) const
 {
-    p.setPen(QPen(QColor(kGridR, kGridG, kGridB), 0.5, Qt::SolidLine));
+    const QColor gridCol = m_isDark ? QColor(kGridR, kGridG, kGridB)
+                                    : QColor(0xCC, 0xD0, 0xD8);
+    p.setPen(QPen(gridCol, 0.5, Qt::SolidLine));
 
     const double span = std::max(m_worldBounds.width(), m_worldBounds.height());
     if (span <= 0.0) return;
@@ -291,7 +294,9 @@ void TrussCanvasWidget::drawNodes(QPainter& p) const
         p.drawEllipse(sc, kNodeRadius, kNodeRadius);
 
         // Node ID label inside the circle
-        p.setPen(QPen(QColor(kBgR, kBgG, kBgB)));
+        const QColor bgCol = m_isDark ? QColor(kBgR, kBgG, kBgB)
+                                      : QColor(0xFA, 0xFA, 0xFA);
+        p.setPen(QPen(bgCol));
         { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(7); f.setWeight(QFont::Bold); p.setFont(f); }
         const QRectF labelRect(sc.x() - kNodeRadius, sc.y() - kNodeRadius,
                                kNodeRadius * 2.0, kNodeRadius * 2.0);
