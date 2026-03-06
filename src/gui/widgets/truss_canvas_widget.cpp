@@ -275,19 +275,45 @@ void TrussCanvasWidget::drawMembers(QPainter& p) const
     // Build a fast id→NodeView lookup
     std::unordered_map<core::NodeId, const core::interfaces::NodeView*> nodeMap;
     nodeMap.reserve(nodes.size());
-    for (const auto& n : nodes) {
-        nodeMap[n.id] = &n;
+    for (const auto& n : nodes) { nodeMap[n.id] = &n; }
+
+    const bool   showDeformed = (m_mode == DisplayMode::DeformedShape);
+    const double dispScale    = showDeformed ? autoDispScale() : 0.0;
+
+    // ---- Pass 1 (DeformedShape only): original structure as semi-transparent ghost ----
+    if (showDeformed) {
+        // Ghost colour: semi-transparent — visible but clearly subordinate.
+        const QColor ghost = m_isDark ? QColor(0x8A, 0xB4, 0xF8, 60)
+                                      : QColor(0x78, 0x90, 0x9C, 90);
+        p.setPen(QPen(ghost, kMemberWidth * 0.6, Qt::DashLine, Qt::RoundCap));
+        for (const auto& mv : members) {
+            const auto itA = nodeMap.find(mv.startNodeId);
+            const auto itB = nodeMap.find(mv.endNodeId);
+            if (itA == nodeMap.end() || itB == nodeMap.end()) continue;
+            p.drawLine(toScreen(itA->second->x, itA->second->y),
+                       toScreen(itB->second->x, itB->second->y));
+        }
     }
 
+    // ---- Pass 2: member lines at displaced (or original) positions ----
     for (const auto& mv : members) {
         const auto itA = nodeMap.find(mv.startNodeId);
         const auto itB = nodeMap.find(mv.endNodeId);
         if (itA == nodeMap.end() || itB == nodeMap.end()) continue;
 
-        const QPointF sA = toScreen(itA->second->x, itA->second->y);
-        const QPointF sB = toScreen(itB->second->x, itB->second->y);
-        const QColor  col = memberColour(mv);
+        QPointF sA, sB;
+        if (showDeformed && dispScale > 0.0) {
+            // Displaced position: x' = x + scale * dx,  y' = y + scale * dy
+            sA = toScreen(itA->second->x + dispScale * itA->second->dx,
+                          itA->second->y + dispScale * itA->second->dy);
+            sB = toScreen(itB->second->x + dispScale * itB->second->dx,
+                          itB->second->y + dispScale * itB->second->dy);
+        } else {
+            sA = toScreen(itA->second->x, itA->second->y);
+            sB = toScreen(itB->second->x, itB->second->y);
+        }
 
+        const QColor col = memberColour(mv);
         p.setPen(QPen(col, kMemberWidth, Qt::SolidLine, Qt::RoundCap));
         p.drawLine(sA, sB);
 
@@ -296,6 +322,19 @@ void TrussCanvasWidget::drawMembers(QPainter& p) const
         p.setPen(QPen(col.lighter(160)));
         { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(8); p.setFont(f); }
         p.drawText(mid + QPointF(4.0, -3.0), QString::number(mv.id));
+    }
+
+    // ---- Pass 3: displacement scale factor annotation ----
+    if (showDeformed && dispScale > 0.0) {
+        const QColor infoCol = m_isDark ? QColor(kSupportR, kSupportG, kSupportB)
+                                        : QColor(0x15, 0x65, 0xC0);  // #1565C0 navy
+        p.setPen(QPen(infoCol));
+        QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont);
+        f.setPointSize(9);
+        p.setFont(f);
+        p.drawText(QRect(8, 28, width() - 16, 20),
+                   Qt::AlignLeft | Qt::AlignTop,
+                   QStringLiteral("Disp. scale: %1×").arg(dispScale, 0, 'g', 3));
     }
 }
 
@@ -307,8 +346,17 @@ void TrussCanvasWidget::drawNodes(QPainter& p) const
 {
     if (!m_view) return;
 
+    // Deformed-shape mode: render nodes at displaced positions.
+    const bool   showDeformed = (m_mode == DisplayMode::DeformedShape);
+    const double dispScale    = showDeformed ? autoDispScale() : 0.0;
+
     for (const auto& nv : m_view->getNodeViews()) {
-        const QPointF sc = toScreen(nv.x, nv.y);
+        // World position: original or displaced
+        const double drawX = (showDeformed && dispScale > 0.0)
+                             ? (nv.x + dispScale * nv.dx) : nv.x;
+        const double drawY = (showDeformed && dispScale > 0.0)
+                             ? (nv.y + dispScale * nv.dy) : nv.y;
+        const QPointF sc = toScreen(drawX, drawY);
 
         // Draw support symbol beneath the node circle
         if (nv.support != core::SupportType::Free) {
