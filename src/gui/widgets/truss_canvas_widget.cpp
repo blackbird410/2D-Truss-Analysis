@@ -538,13 +538,32 @@ void TrussCanvasWidget::rebuildTransform()
 
 QColor TrussCanvasWidget::memberColour(const core::interfaces::MemberView& mv) const
 {
-    if (m_mode == DisplayMode::StressRatio) {
+    if (m_mode == DisplayMode::StressRatio)
         return lerpStressColour(mv.utilizationRatio);
-    }
-    // Geometry / DeformedShape: colour by mechanical state
-    if (mv.yielded)   return QColor(0xFF, 0x17, 0x44);              // red — yielded
-    if (mv.inTension) return QColor(0x4F, 0xC3, 0xF7);              // light blue — tension
-    return QColor(kMemberR, kMemberG, kMemberB);                    // steel blue — compression
+
+    // Geometry / DeformedShape: colour by mechanical state.
+    // Architecture colour tokens (GUI-MODERNIZATION-ARCHITECTURE.md §5.4.1):
+    //   Yield       dark:#FF1744  light:#B71C1C
+    //   Tension     dark:#4FC3F7  light:#0288D1
+    //   Compression dark:#FF7043  light:#D84315
+    //   Pre-analysis / neutral: steel-blue
+
+    if (mv.yielded)
+        return m_isDark ? QColor(0xFF, 0x17, 0x44)   // #FF1744 — yielded (dark)
+                        : QColor(0xB7, 0x1C, 0x1C);  // #B71C1C — yielded (light)
+
+    if (mv.inTension)
+        return m_isDark ? QColor(0x4F, 0xC3, 0xF7)   // #4FC3F7 — tension cyan (dark)
+                        : QColor(0x02, 0x88, 0xD1);  // #0288D1 — tension blue (light)
+
+    // Compression: axialForce < 0 distinguishes post-analysis from pre-analysis zero-force
+    if (mv.axialForce < -1e-10)
+        return m_isDark ? QColor(0xFF, 0x70, 0x43)   // #FF7043 — compression orange-red (dark)
+                        : QColor(0xD8, 0x43, 0x15);  // #D84315 — compression deep-orange (light)
+
+    // Pre-analysis or zero-force member: neutral steel-blue
+    return m_isDark ? QColor(kMemberR, kMemberG, kMemberB)   // #8AB4F8 (dark)
+                    : QColor(0x54, 0x7A, 0xC4);               // #547AC4 subdued blue (light)
 }
 
 void TrussCanvasWidget::drawSupportSymbol(QPainter& p,
