@@ -162,6 +162,13 @@ void TrussCanvasWidget::changeEvent(QEvent* event)
     QWidget::changeEvent(event);
 }
 
+void TrussCanvasWidget::setColorTheme(bool isDark)
+{
+    if (m_isDark == isDark) return;
+    m_isDark = isDark;
+    update();
+}
+
 void TrussCanvasWidget::paintEvent(QPaintEvent* /*event*/)
 {
     QPainter p(this);

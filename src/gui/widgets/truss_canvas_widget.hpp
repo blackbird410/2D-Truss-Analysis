@@ -120,6 +120,17 @@ public slots:
      */
     void setMode(ToolMode mode);
 
+    /**
+     * @brief Explicitly set the canvas colour theme.
+     *
+     * Call this whenever the application theme changes so the canvas repaints
+     * synchronously.  This is the primary theme-update path; @c changeEvent
+     * handles secondary platform-level palette propagation as a fallback.
+     *
+     * @param isDark  @c true for the dark theme, @c false for the light theme.
+     */
+    void setColorTheme(bool isDark);
+
 signals:
     // -----------------------------------------------------------------------
     // Model-mutation requests (wired to CanvasController)
