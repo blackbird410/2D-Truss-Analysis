@@ -54,6 +54,10 @@ constexpr int kGreenR = 0x34, kGreenG = 0xA8, kGreenB = 0x53; // #34A853
 constexpr int kAmberR = 0xFF, kAmberG = 0xC1, kAmberB = 0x07; // #FFC107
 constexpr int kRedR   = 0xEA, kRedG   = 0x43, kRedB   = 0x35; // #EA4335
 
+/// Grid snapping step for node placement (metres).
+/// Matches typical structural grid spacing; keeps coordinates engineer-friendly.
+constexpr double kGridSnapStep = 0.25;
+
 /// 3-stop colour interpolation: green(0) → amber(0.5) → red(1).
 QColor lerpStressColour(double t)
 {
@@ -72,6 +76,12 @@ QColor lerpStressColour(double t)
                       lerp(kAmberG, kRedG, f),
                       lerp(kAmberB, kRedB, f));
     }
+}
+
+/// Snap @p v to the nearest multiple of @p step.
+inline double snapToGrid(double v, double step)
+{
+    return std::round(v / step) * step;
 }
 
 }  // anonymous namespace
@@ -561,7 +571,11 @@ void TrussCanvasWidget::mousePressEvent(QMouseEvent* event)
     case ToolMode::AddNode: {
         // Only drop on empty space (prevent overlapping nodes)
         if (!findNodeAt(pos)) {
-            const core::Point2D worldPos = screenToWorld(pos);
+            core::Point2D worldPos = screenToWorld(pos);
+            // Snap to nearest grid point (0.25 m default) for engineer-friendly
+            // coordinates and clean structural geometry.
+            worldPos.x = snapToGrid(worldPos.x, kGridSnapStep);
+            worldPos.y = snapToGrid(worldPos.y, kGridSnapStep);
             emit nodeDropRequested(worldPos, core::SupportType::Free);
         }
         break;
