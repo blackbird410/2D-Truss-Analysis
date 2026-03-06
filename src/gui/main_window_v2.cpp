@@ -450,6 +450,15 @@ void MainWindowV2::connectSignals()
                 m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
             });
 
+    // Reset display mode to Geometry when results are cleared (new project / edit)
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            this, [this](const truss::gui::state::WorkspaceState& s) {
+                if (!s.hasResults()) {
+                    m_actModeGeometry->setChecked(true);
+                    m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+                }
+            });
+
     // ----------------------------------------------------------------
     // ResultsDockPanel → ExportController (via file dialog in this window)
     // ----------------------------------------------------------------
