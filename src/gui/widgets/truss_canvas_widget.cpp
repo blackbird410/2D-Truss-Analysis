@@ -20,6 +20,7 @@
 
 #include <QApplication>
 #include <QColor>
+#include <QEvent>
 #include <QFont>
 #include <QFontDatabase>
 #include <QKeyEvent>
@@ -146,6 +147,19 @@ void TrussCanvasWidget::resizeEvent(QResizeEvent* event)
 {
     QWidget::resizeEvent(event);
     rebuildTransform();
+}
+
+void TrussCanvasWidget::changeEvent(QEvent* event)
+{
+    // Fallback: react to OS-level palette changes (e.g. macOS system dark-mode
+    // toggle).  Use this->palette(), not QApplication::palette() — the widget's
+    // own palette is already updated before PaletteChange is dispatched.
+    if (event->type() == QEvent::PaletteChange) {
+        const QColor windowColor = palette().color(QPalette::Window);
+        m_isDark = (windowColor.lightness() < 128);
+        update();
+    }
+    QWidget::changeEvent(event);
 }
 
 void TrussCanvasWidget::paintEvent(QPaintEvent* /*event*/)
