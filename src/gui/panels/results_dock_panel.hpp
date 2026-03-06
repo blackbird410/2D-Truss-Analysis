@@ -19,6 +19,8 @@
 class QTabWidget;
 class QTableView;
 
+namespace truss::core::interfaces { class IAnalysisResultsView; }
+
 namespace truss::gui::model {
 class MemberTableModel;
 class NodeTableModel;
@@ -67,13 +69,19 @@ private:
     void buildSystemSummaryTab();
     void buildStiffnessMatrixTab();
 
+    // Private helper: lazily build the stiffness matrix table.
+    void populateStiffnessMatrix();
+
     QTabWidget*               m_tabs{nullptr};
     QTableView*               m_nodeTableView{nullptr};
     QTableView*               m_memberTableView{nullptr};
     QTableView*               m_resultsTableView{nullptr};
+    QTableView*               m_stiffnessTableView{nullptr};
     model::NodeTableModel*    m_nodeModel{nullptr};
     model::MemberTableModel*  m_memberModel{nullptr};
     model::ResultsTableModel* m_resultsModel{nullptr};
+    /// Non-owning; valid between setResultsView() calls.
+    const truss::core::interfaces::IAnalysisResultsView* m_resultsView{nullptr};
     bool                      m_stiffnessPopulated{false};
 };
 
