@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!-- Folder body -->
+  <path d="M2 6a1 1 0 0 1 1-1h5l2 2h11a1 1 0 0 1 1 1v11a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6z"
+        fill="none" stroke="currentColor" stroke-width="1.5" stroke-linejoin="round"/>
+</svg>
