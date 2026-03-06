@@ -140,6 +140,9 @@ public slots:
      */
     void setColorTheme(bool isDark);
 
+    /// @brief Return the currently active display overlay mode.
+    [[nodiscard]] DisplayMode displayMode() const noexcept;
+
 signals:
     // -----------------------------------------------------------------------
     // Model-mutation requests (wired to CanvasController)

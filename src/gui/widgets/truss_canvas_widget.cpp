@@ -199,6 +199,11 @@ void TrussCanvasWidget::setColorTheme(bool isDark)
     update();
 }
 
+TrussCanvasWidget::DisplayMode TrussCanvasWidget::displayMode() const noexcept
+{
+    return m_mode;
+}
+
 void TrussCanvasWidget::paintEvent(QPaintEvent* /*event*/)
 {
     QPainter p(this);
