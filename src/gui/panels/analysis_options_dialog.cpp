@@ -89,6 +89,13 @@ void AnalysisOptionsDialog::buildLayout()
         new QDialogButtonBox{QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this};
     root->addWidget(buttons);
 
+    // ---- Tab order ----
+    QWidget::setTabOrder(m_solverCombo,            m_toleranceSpin);
+    QWidget::setTabOrder(m_toleranceSpin,           m_maxIterSpin);
+    QWidget::setTabOrder(m_maxIterSpin,             m_computeReactionsCheck);
+    QWidget::setTabOrder(m_computeReactionsCheck,   m_checkStabilityCheck);
+    QWidget::setTabOrder(m_checkStabilityCheck,     m_verboseCheck);
+
     connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
     connect(m_solverCombo,
