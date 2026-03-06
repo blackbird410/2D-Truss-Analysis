@@ -11,6 +11,7 @@
 
 #include "gui/models/member_table_model.hpp"
 
+#include <QBrush>
 #include <QColor>
 #include <QString>
 
@@ -102,11 +103,35 @@ QVariant MemberTableModel::data(const QModelIndex& index, int role) const
     }
 
     // ------------------------------------------------------------------
-    // ForegroundRole — ratio colour interpolation (col 10 only)
+    // ForegroundRole — tension/compression/yield colour coding
+    // Colors mirror the canvas member colours so the table and canvas tell
+    // the same visual story.  Utilisation ratio column keeps the green→amber→red
+    // interpolation; force and stress columns use the state-based palette.
     // ------------------------------------------------------------------
     if (role == Qt::ForegroundRole) {
-        if (col == kColRatio && m_hasResults)
+        if (!m_hasResults) return {};
+        if (col == kColRatio)
             return ratioColor(m.utilizationRatio);
+        // Force and stress: colour by mechanical state
+        if (col == kColForce || col == kColStress) {
+            if (m.yielded)             return QColor(0xFF, 0x17, 0x44);  // red — yielded
+            if (m.inTension)           return QColor(0x4F, 0xC3, 0xF7);  // cyan — tension
+            if (m.axialForce < -1e-10) return QColor(0xFF, 0x70, 0x43);  // orange — compression
+        }
+        return {};
+    }
+
+    // ------------------------------------------------------------------
+    // BackgroundRole — semi-transparent state tint on the State column
+    // A light tint provides a quick at-a-glance row colour cue that reads
+    // correctly in both dark and light themes at alpha ≈40.
+    // ------------------------------------------------------------------
+    if (role == Qt::BackgroundRole && m_hasResults) {
+        if (col == kColState) {
+            if (m.yielded)             return QBrush(QColor(0xFF, 0x17, 0x44, 45));
+            if (m.inTension)           return QBrush(QColor(0x4F, 0xC3, 0xF7, 45));
+            if (m.axialForce < -1e-10) return QBrush(QColor(0xFF, 0x70, 0x43, 45));
+        }
         return {};
     }
 
