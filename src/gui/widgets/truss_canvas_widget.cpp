@@ -571,7 +571,11 @@ void TrussCanvasWidget::mousePressEvent(QMouseEvent* event)
     case ToolMode::AddNode: {
         // Only drop on empty space (prevent overlapping nodes)
         if (!findNodeAt(pos)) {
-            const core::Point2D worldPos = screenToWorld(pos);
+            core::Point2D worldPos = screenToWorld(pos);
+            // Snap to nearest grid point (0.25 m default) for engineer-friendly
+            // coordinates and clean structural geometry.
+            worldPos.x = snapToGrid(worldPos.x, kGridSnapStep);
+            worldPos.y = snapToGrid(worldPos.y, kGridSnapStep);
             emit nodeDropRequested(worldPos, core::SupportType::Free);
         }
         break;
