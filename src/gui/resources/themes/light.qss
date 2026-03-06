@@ -53,6 +53,8 @@ QWidget#analysisOptionsDialog {
 QDockWidget {
     background-color: #FFFFFF;
     color: #1A1A1A;
+    titlebar-close-icon: url(:/icons/close.svg);
+    titlebar-normal-icon: url(:/icons/undock.svg);
 }
 
 QDockWidget::title {
@@ -373,7 +375,7 @@ QLabel[role="heading"] {
 }
 
 QLabel[role="valueDisplay"] {
-    font-family: "Cascadia Code", "Fira Code", "Consolas", monospace;
+    font-family: "Cascadia Code", "Fira Code", "Menlo", "Monaco", "Consolas", monospace;
     color: #1565C0;
     font-size: 12px;
 }
@@ -468,3 +470,228 @@ QWidget#notifItem_error {
     border-left: 3px solid #C62828;
     border-radius: 4px;
 }
+
+/* ---------------------------------------------------------------------------
+ * Phase 7: QMenuBar + QMenu
+ * --------------------------------------------------------------------------- */
+QMenuBar {
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    border-bottom: 1px solid #D0D5DD;
+    padding: 2px 0;
+}
+
+QMenuBar::item {
+    padding: 4px 10px;
+    border-radius: 3px;
+}
+
+QMenuBar::item:selected {
+    background-color: #E3E8F0;
+}
+
+QMenuBar::item:pressed {
+    background-color: #D0D5DD;
+}
+
+QMenu {
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    border: 1px solid #D0D5DD;
+    padding: 4px 0;
+}
+
+QMenu::item {
+    padding: 5px 28px 5px 20px;
+    border-radius: 2px;
+}
+
+QMenu::item:selected {
+    background-color: #1565C0;
+    color: #FFFFFF;
+}
+
+QMenu::item:disabled {
+    color: #ADADAD;
+}
+
+QMenu::separator {
+    height: 1px;
+    background-color: #D0D5DD;
+    margin: 4px 8px;
+}
+
+QMenu::indicator {
+    width: 14px;
+    height: 14px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 7: QTabWidget + QTabBar
+ * --------------------------------------------------------------------------- */
+QTabWidget::pane {
+    border: 1px solid #D0D5DD;
+    background-color: #F5F5F5;
+    border-radius: 0 0 4px 4px;
+}
+
+QTabWidget::tab-bar {
+    alignment: left;
+}
+
+QTabBar::tab {
+    background-color: #FFFFFF;
+    color: #5F5F5F;
+    padding: 6px 14px;
+    border: 1px solid #D0D5DD;
+    border-bottom: none;
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+    min-width: 60px;
+}
+
+QTabBar::tab:selected {
+    background-color: #F5F5F5;
+    color: #1A1A1A;
+    border-bottom: 2px solid #1565C0;
+}
+
+QTabBar::tab:hover:!selected {
+    background-color: #E3E8F0;
+    color: #1A1A1A;
+}
+
+QTabBar::tab:disabled {
+    color: #ADADAD;
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 7: QCheckBox
+ * --------------------------------------------------------------------------- */
+QCheckBox {
+    color: #1A1A1A;
+    spacing: 6px;
+}
+
+QCheckBox::indicator {
+    width: 16px;
+    height: 16px;
+    border: 1px solid #D0D5DD;
+    border-radius: 3px;
+    background-color: #FFFFFF;
+}
+
+QCheckBox::indicator:checked {
+    background-color: #1565C0;
+    border-color: #1565C0;
+    image: url(:/icons/checkmark.svg);
+}
+
+QCheckBox::indicator:unchecked:hover {
+    border-color: #1565C0;
+}
+
+QCheckBox::indicator:indeterminate {
+    background-color: #1565C0;
+    border-color: #1565C0;
+}
+
+QCheckBox:disabled {
+    color: #ADADAD;
+}
+
+QCheckBox::indicator:disabled {
+    background-color: #F5F5F5;
+    border-color: #D0D5DD;
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 7: QProgressBar
+ * --------------------------------------------------------------------------- */
+QProgressBar {
+    background-color: #E3E8F0;
+    border: 1px solid #D0D5DD;
+    border-radius: 4px;
+    color: #1A1A1A;
+    text-align: center;
+}
+
+QProgressBar::chunk {
+    background-color: #1565C0;
+    border-radius: 3px;
+}
+
+/* ---------------------------------------------------------------------------
+ * Phase 7: Named widget rules
+ * --------------------------------------------------------------------------- */
+
+/* Status bar labels */
+QLabel#statusPhaseLabel,
+QLabel#statusStatsLabel,
+QLabel#statusCursorLabel {
+    color: #5F5F5F;
+    font-size: 11px;
+}
+
+/* Inspector section title */
+QLabel#inspector_sectionTitle {
+    color: #5F5F5F;
+    font-weight: bold;
+    font-size: 10px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+}
+
+/* AnalysisControlBar: run / stop / validate buttons */
+QPushButton#controlBar_runBtn {
+    background-color: #1565C0;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+QPushButton#controlBar_runBtn:hover {
+    background-color: #1976D2;
+}
+
+QPushButton#controlBar_runBtn:pressed {
+    background-color: #0D47A1;
+}
+
+QPushButton#controlBar_stopBtn {
+    background-color: #C62828;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+QPushButton#controlBar_stopBtn:hover {
+    background-color: #D32F2F;
+}
+
+QPushButton#controlBar_stopBtn:pressed {
+    background-color: #B71C1C;
+}
+
+QPushButton#controlBar_validateBtn {
+    background-color: #2E7D32;
+    color: #FFFFFF;
+    font-weight: bold;
+}
+
+QPushButton#controlBar_validateBtn:hover {
+    background-color: #388E3C;
+}
+
+/* AnalysisControlBar: slim progress bar */
+QProgressBar#controlBar_progressBar {
+    min-height: 6px;
+    max-height: 6px;
+    border-radius: 3px;
+    border: none;
+    background-color: #E3E8F0;
+}
+
+QProgressBar#controlBar_progressBar::chunk {
+    background-color: #1565C0;
+    border-radius: 3px;
+}
+
