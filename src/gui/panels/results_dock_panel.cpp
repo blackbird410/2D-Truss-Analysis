@@ -172,6 +172,8 @@ void ResultsDockPanel::onStateChanged(const truss::gui::state::WorkspaceState& s
     m_nodeTableView->setEnabled(hasResults);
     m_memberTableView->setEnabled(hasResults);
     m_resultsTableView->setEnabled(hasResults);
+    if (m_stiffnessTableView)
+        m_stiffnessTableView->setEnabled(hasResults);
 }
 
 void ResultsDockPanel::onTabChanged(int index)
