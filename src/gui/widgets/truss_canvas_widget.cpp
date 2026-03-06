@@ -20,6 +20,7 @@
 
 #include <QColor>
 #include <QFont>
+#include <QFontDatabase>
 #include <QKeyEvent>
 #include <QMouseEvent>
 #include <QPainter>
@@ -223,7 +224,7 @@ void TrussCanvasWidget::drawMembers(QPainter& p) const
         // Member ID label at midpoint
         const QPointF mid = (sA + sB) / 2.0;
         p.setPen(QPen(col.lighter(160)));
-        p.setFont(QFont(QStringLiteral("Consolas"), 8));
+        { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(8); p.setFont(f); }
         p.drawText(mid + QPointF(4.0, -3.0), QString::number(mv.id));
     }
 }
@@ -261,7 +262,7 @@ void TrussCanvasWidget::drawNodes(QPainter& p) const
 
         // Node ID label inside the circle
         p.setPen(QPen(QColor(kBgR, kBgG, kBgB)));
-        p.setFont(QFont(QStringLiteral("Consolas"), 7, QFont::Bold));
+        { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(7); f.setWeight(QFont::Bold); p.setFont(f); }
         const QRectF labelRect(sc.x() - kNodeRadius, sc.y() - kNodeRadius,
                                kNodeRadius * 2.0, kNodeRadius * 2.0);
         p.drawText(labelRect, Qt::AlignCenter, QString::number(nv.id));
@@ -323,7 +324,7 @@ void TrussCanvasWidget::drawOverlayText(QPainter& p) const
             .arg(static_cast<int>(m_view->getNodeCount()))
             .arg(static_cast<int>(m_view->getMemberCount()));
     p.setPen(QPen(QColor(0x9A, 0xA0, 0xA6)));
-    p.setFont(QFont(QStringLiteral("Consolas"), 9));
+    { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(9); p.setFont(f); }
     p.drawText(QRect(8, 8, width() - 16, 20), Qt::AlignLeft | Qt::AlignTop, stats);
 
     // Mode label — top-right
@@ -478,7 +479,7 @@ void TrussCanvasWidget::drawForceArrow(QPainter& p,
 
     // Force magnitude label
     p.setPen(QPen(colour));
-    p.setFont(QFont(QStringLiteral("Consolas"), 8));
+    { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(8); p.setFont(f); }
     const QString label =
         QStringLiteral("%1 kN").arg(magnitude / 1000.0, 0, 'f', 1);
     p.drawText(tail + QPointF(4.0, -4.0), label);
