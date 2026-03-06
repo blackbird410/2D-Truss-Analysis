@@ -443,6 +443,13 @@ void MainWindowV2::connectSignals()
         m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
     });
 
+    // Auto-switch to DeformedShape when analysis completes successfully
+    connect(analysisCtrl, &ctrl::AnalysisController::analysisCompleted,
+            this, [this](std::size_t) {
+                m_actModeDeformed->setChecked(true);
+                m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
+            });
+
     // ----------------------------------------------------------------
     // ResultsDockPanel → ExportController (via file dialog in this window)
     // ----------------------------------------------------------------
