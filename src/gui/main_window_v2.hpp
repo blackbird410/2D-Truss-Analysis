@@ -130,6 +130,11 @@ private:
     QAction* m_actRun{nullptr};
     QAction* m_actStop{nullptr};
 
+    // Display mode toolbar QActions (exclusive checkable)
+    QAction* m_actModeGeometry{nullptr};
+    QAction* m_actModeStress{nullptr};
+    QAction* m_actModeDeformed{nullptr};
+
     // -------------------------------------------------------------------
     // Controller
     // -------------------------------------------------------------------
