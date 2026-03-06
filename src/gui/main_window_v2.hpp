@@ -126,6 +126,10 @@ private:
     QAction* m_actToolMember{nullptr};
     QAction* m_actToolDelete{nullptr};
 
+    // Analysis toolbar QActions (stored so connectSignals() can wire them)
+    QAction* m_actRun{nullptr};
+    QAction* m_actStop{nullptr};
+
     // -------------------------------------------------------------------
     // Controller
     // -------------------------------------------------------------------
