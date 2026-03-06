@@ -178,11 +178,12 @@ void ResultsDockPanel::onStateChanged(const truss::gui::state::WorkspaceState& s
 
 void ResultsDockPanel::onTabChanged(int index)
 {
-    // Lazy stiffness matrix population on first activation (tab index 3)
+    // Lazy stiffness matrix population: populate when the user first activates
+    // the tab and results are available.
     constexpr int kStiffnessTab = 3;
-    if (index == kStiffnessTab && !m_stiffnessPopulated) {
-        m_stiffnessPopulated = true;
-        // Phase 6 TODO: populate stiffness matrix widget from results view.
+    if (index == kStiffnessTab && !m_stiffnessPopulated && m_resultsView)
+        populateStiffnessMatrix();
+}
 
 void ResultsDockPanel::setResultsView(
     const truss::core::interfaces::IAnalysisResultsView* results)
