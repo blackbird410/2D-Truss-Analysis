@@ -18,7 +18,9 @@
 
 #include "gui/widgets/truss_canvas_widget.hpp"
 
+#include <QApplication>
 #include <QColor>
+#include <QEvent>
 #include <QFont>
 #include <QFontDatabase>
 #include <QKeyEvent>
@@ -99,6 +101,11 @@ TrussCanvasWidget::TrussCanvasWidget(QWidget* parent)
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     setMouseTracking(true);          // receive mouseMoveEvent without button held
     setFocusPolicy(Qt::StrongFocus); // receive keyPressEvent
+
+    // Determine initial theme from the application palette
+    const QColor windowColor = QApplication::palette().color(QPalette::Window);
+    m_isDark = (windowColor.lightness() < 128);
+
     rebuildTransform();
 }
 
@@ -142,6 +149,26 @@ void TrussCanvasWidget::resizeEvent(QResizeEvent* event)
     rebuildTransform();
 }
 
+void TrussCanvasWidget::changeEvent(QEvent* event)
+{
+    // Fallback: react to OS-level palette changes (e.g. macOS system dark-mode
+    // toggle).  Use this->palette(), not QApplication::palette() — the widget's
+    // own palette is already updated before PaletteChange is dispatched.
+    if (event->type() == QEvent::PaletteChange) {
+        const QColor windowColor = palette().color(QPalette::Window);
+        m_isDark = (windowColor.lightness() < 128);
+        update();
+    }
+    QWidget::changeEvent(event);
+}
+
+void TrussCanvasWidget::setColorTheme(bool isDark)
+{
+    if (m_isDark == isDark) return;
+    m_isDark = isDark;
+    update();
+}
+
 void TrussCanvasWidget::paintEvent(QPaintEvent* /*event*/)
 {
     QPainter p(this);
@@ -163,7 +190,8 @@ void TrussCanvasWidget::paintEvent(QPaintEvent* /*event*/)
 
 void TrussCanvasWidget::drawBackground(QPainter& p) const
 {
-    p.fillRect(rect(), QColor(kBgR, kBgG, kBgB));
+    p.fillRect(rect(), m_isDark ? QColor(kBgR, kBgG, kBgB)
+                                : QColor(0xFA, 0xFA, 0xFA));
 }
 
 // ============================================================
@@ -172,7 +200,9 @@ void TrussCanvasWidget::drawBackground(QPainter& p) const
 
 void TrussCanvasWidget::drawGrid(QPainter& p) const
 {
-    p.setPen(QPen(QColor(kGridR, kGridG, kGridB), 0.5, Qt::SolidLine));
+    const QColor gridCol = m_isDark ? QColor(kGridR, kGridG, kGridB)
+                                    : QColor(0xCC, 0xD0, 0xD8);
+    p.setPen(QPen(gridCol, 0.5, Qt::SolidLine));
 
     const double span = std::max(m_worldBounds.width(), m_worldBounds.height());
     if (span <= 0.0) return;
@@ -271,7 +301,9 @@ void TrussCanvasWidget::drawNodes(QPainter& p) const
         p.drawEllipse(sc, kNodeRadius, kNodeRadius);
 
         // Node ID label inside the circle
-        p.setPen(QPen(QColor(kBgR, kBgG, kBgB)));
+        const QColor bgCol = m_isDark ? QColor(kBgR, kBgG, kBgB)
+                                      : QColor(0xFA, 0xFA, 0xFA);
+        p.setPen(QPen(bgCol));
         { QFont f = QFontDatabase::systemFont(QFontDatabase::FixedFont); f.setPointSize(7); f.setWeight(QFont::Bold); p.setFont(f); }
         const QRectF labelRect(sc.x() - kNodeRadius, sc.y() - kNodeRadius,
                                kNodeRadius * 2.0, kNodeRadius * 2.0);

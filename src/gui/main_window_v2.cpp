@@ -322,12 +322,16 @@ void MainWindowV2::connectSignals()
     connect(m_actQuit,   &QAction::triggered,
             this,        &QMainWindow::close);
 
-    // Theme actions
-    connect(m_actThemeDark, &QAction::triggered, this, []() {
+    // Theme actions — applyTheme updates the app stylesheet + palette, then we
+    // explicitly notify the canvas so it repaints synchronously without relying
+    // on Qt's cross-platform palette-change event propagation.
+    connect(m_actThemeDark, &QAction::triggered, this, [this]() {
         ThemeLoader::applyTheme(*qApp, QStringLiteral(":/themes/dark.qss"));
+        m_canvas->setColorTheme(true);
     });
-    connect(m_actThemeLight, &QAction::triggered, this, []() {
+    connect(m_actThemeLight, &QAction::triggered, this, [this]() {
         ThemeLoader::applyTheme(*qApp, QStringLiteral(":/themes/light.qss"));
+        m_canvas->setColorTheme(false);
     });
 
     // ----------------------------------------------------------------

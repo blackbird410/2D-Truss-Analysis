@@ -120,6 +120,17 @@ public slots:
      */
     void setMode(ToolMode mode);
 
+    /**
+     * @brief Explicitly set the canvas colour theme.
+     *
+     * Call this whenever the application theme changes so the canvas repaints
+     * synchronously.  This is the primary theme-update path; @c changeEvent
+     * handles secondary platform-level palette propagation as a fallback.
+     *
+     * @param isDark  @c true for the dark theme, @c false for the light theme.
+     */
+    void setColorTheme(bool isDark);
+
 signals:
     // -----------------------------------------------------------------------
     // Model-mutation requests (wired to CanvasController)
@@ -167,6 +178,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void wheelEvent(QWheelEvent* event) override;
     void keyPressEvent(QKeyEvent* event) override;
+    /// React to application-wide palette/style changes to keep colours consistent.
+    void changeEvent(QEvent* event) override;
 
 private:
     // -------------------------------------------------------------------
@@ -241,6 +254,9 @@ private:
     /// so top() = structural yMin, bottom() = structural yMax).
     /// Default: [−1, −1, 7, 7] m  (6 m × 6 m with 1 m padding each side).
     QRectF m_worldBounds{-1.0, -1.0, 7.0, 7.0};
+
+    /// True when the application palette is a dark theme; drives colour selection.
+    bool m_isDark{true};
 
     // -------------------------------------------------------------------
     // Interaction state

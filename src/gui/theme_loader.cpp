@@ -12,7 +12,9 @@
 #include "theme_loader.hpp"
 
 #include <QApplication>
+#include <QColor>
 #include <QFile>
+#include <QPalette>
 #include <QSettings>
 #include <QString>
 #include <QTextStream>
@@ -39,6 +41,22 @@ bool ThemeLoader::applyTheme(QApplication& app, const QString& resourcePath)
     }
 
     app.setStyleSheet(qss);
+
+    // Keep the application palette aligned with the theme so that widgets
+    // which read QPalette colours (e.g. TrussCanvasWidget) stay in sync.
+    // setStyleSheet() alone does NOT update QPalette, so we set it explicitly.
+    // This also propagates QEvent::PaletteChange to every widget, triggering
+    // repaints that depend on QPalette::Window lightness.
+    const bool isDark = resourcePath.contains(QLatin1String("dark"),
+                                               Qt::CaseInsensitive);
+    QPalette pal = QApplication::palette();
+    pal.setColor(QPalette::Window,
+                 isDark ? QColor(0x1E, 0x20, 0x28)   // #1E2028 dark bg
+                        : QColor(0xF5, 0xF5, 0xF5));  // #F5F5F5 light bg
+    pal.setColor(QPalette::WindowText,
+                 isDark ? QColor(0xE8, 0xEA, 0xED)   // #E8EAED dark text
+                        : QColor(0x1A, 0x1A, 0x1A));  // #1A1A1A light text
+    app.setPalette(pal);
 
     // Persist the user's choice.
     QSettings settings(QString::fromLatin1(kSettingsOrg),
