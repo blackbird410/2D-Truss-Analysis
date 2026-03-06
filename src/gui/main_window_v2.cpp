@@ -213,13 +213,14 @@ void MainWindowV2::setupToolBar()
     tb->setMovable(false);
     tb->setIconSize(QSize(24, 24));
 
-    // File group
-    auto* actTbNew  = tb->addAction(QIcon(QStringLiteral(":/icons/new_project.svg")),
-                                    QStringLiteral("New"));
-    auto* actTbOpen = tb->addAction(QIcon(QStringLiteral(":/icons/open_file.svg")),
-                                    QStringLiteral("Open"));
-    auto* actTbSave = tb->addAction(QIcon(QStringLiteral(":/icons/save.svg")),
-                                    QStringLiteral("Save"));
+    // File group — reuse the same QActions already created in setupMenuBar()
+    // so that connecting m_actNew/Open/Save once covers both menu and toolbar.
+    m_actNew->setIcon(QIcon(QStringLiteral(":/icons/new_project.svg")));
+    m_actOpen->setIcon(QIcon(QStringLiteral(":/icons/open_file.svg")));
+    m_actSave->setIcon(QIcon(QStringLiteral(":/icons/save.svg")));
+    tb->addAction(m_actNew);
+    tb->addAction(m_actOpen);
+    tb->addAction(m_actSave);
     tb->addSeparator();
 
     // Tool-mode group (exclusive checkable)
