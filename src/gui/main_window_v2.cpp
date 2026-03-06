@@ -257,6 +257,23 @@ void MainWindowV2::setupToolBar()
     m_actStop = tb->addAction(QIcon(QStringLiteral(":/icons/stop.svg")),
                                QStringLiteral("Stop"));
     m_actStop->setEnabled(false); // disabled until analysis is running
+
+    // Display mode group (exclusive checkable)
+    tb->addSeparator();
+    auto* modeGroup = new QActionGroup(this);
+    modeGroup->setExclusive(true);
+
+    m_actModeGeometry = tb->addAction(QIcon(QStringLiteral(":/icons/mode_geometry.svg")),
+                                      QStringLiteral("Geometry"));
+    m_actModeStress   = tb->addAction(QIcon(QStringLiteral(":/icons/mode_stress.svg")),
+                                      QStringLiteral("Stress Ratio"));
+    m_actModeDeformed = tb->addAction(QIcon(QStringLiteral(":/icons/mode_deformed.svg")),
+                                      QStringLiteral("Deformed"));
+    for (auto* act : {m_actModeGeometry, m_actModeStress, m_actModeDeformed}) {
+        act->setCheckable(true);
+        modeGroup->addAction(act);
+    }
+    m_actModeGeometry->setChecked(true);
 }
 
 void MainWindowV2::setupStatusBar()
