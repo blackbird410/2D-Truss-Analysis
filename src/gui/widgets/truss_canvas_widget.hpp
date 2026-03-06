@@ -215,6 +215,15 @@ private:
     /// @brief Return the draw colour for a member given the current display mode.
     [[nodiscard]] QColor memberColour(const core::interfaces::MemberView& mv) const;
 
+    /**
+     * @brief Compute the displacement amplification factor for DeformedShape mode.
+     *
+     * Scales the largest nodal displacement to 10 % of the visible world span,
+     * giving an engineer-readable exaggeration regardless of truss size.
+     * Returns 0.0 when no displacements are present (pre-analysis or all-zero).
+     */
+    [[nodiscard]] double autoDispScale() const;
+
     /// @brief Draw a structural support symbol at a screen position.
     void drawSupportSymbol(QPainter& p,
                            const QPointF& screenPos,

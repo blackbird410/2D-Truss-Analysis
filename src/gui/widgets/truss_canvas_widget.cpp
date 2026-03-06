@@ -427,6 +427,19 @@ QPointF TrussCanvasWidget::toScreen(double wx, double wy) const
     return m_worldToScreen.map(QPointF(wx, wy));
 }
 
+double TrussCanvasWidget::autoDispScale() const
+{
+    // Computes an amplification factor so that the maximum nodal displacement
+    // is rendered as 10 % of the current visible world span.  Returns 0 when
+    // no displacements are available (pre-analysis or all-zero).
+    if (!m_view) return 0.0;
+    double maxDisp = 0.0;
+    for (const auto& nv : m_view->getNodeViews())
+        maxDisp = std::max(maxDisp, std::hypot(nv.dx, nv.dy));
+    if (maxDisp < 1e-12) return 0.0;
+    return 0.1 * std::max(m_worldBounds.width(), m_worldBounds.height()) / maxDisp;
+}
+
 void TrussCanvasWidget::rebuildTransform()
 {
     const int w = (width()  > 0) ? width()  : 400;
