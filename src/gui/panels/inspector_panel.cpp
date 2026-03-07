@@ -258,4 +258,29 @@ void InspectorPanel::onSupportComboChanged(int index) {
     emit supportChangeRequested(m_selectedNodeId, static_cast<SupportType>(index));
 }
 
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+MaterialSpec InspectorPanel::materialSpecFromIndex(int matIdx) const {
+    MaterialSpec spec;
+    if (matIdx >= 0 && matIdx < static_cast<int>(m_materialPresets.size())) {
+        const auto& p = m_materialPresets[matIdx];
+        spec.youngsModulusPa = p.properties.youngModulus;
+        spec.name = p.name;
+    } else {
+        // Fallback to structural steel if library is empty
+        spec.youngsModulusPa = 200e9;
+        spec.name = "Steel";
+    }
+    return spec;
+}
+
+SectionSpec InspectorPanel::sectionSpecFromArea(double areaCm2) const {
+    SectionSpec sec;
+    sec.areaM2 = areaCm2 * 1e-4;  // cm² → m²
+    sec.profile = "Custom";
+    return sec;
+}
+
 }  // namespace truss::gui

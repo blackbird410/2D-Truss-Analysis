@@ -32,6 +32,8 @@ using truss::core::NodeId;
 using truss::core::SupportType;
 using truss::core::interfaces::MemberView;
 using truss::core::interfaces::NodeView;
+using truss::application::MaterialPreset;
+using truss::application::SectionPreset;
 using truss::application::MaterialSpec;
 using truss::application::SectionSpec;
 
@@ -92,6 +94,15 @@ private:
     void buildNoSelectionPage();
     void buildNodeEditorPage();
     void buildMemberEditorPage();
+
+    // Helper: build a MaterialSpec + SectionSpec from the given combo indices
+    // and the current area spinbox value.  Used on both pages.
+    MaterialSpec materialSpecFromIndex(int matIdx) const;
+    SectionSpec sectionSpecFromArea(double areaCm2) const;
+
+    // Material / section library data (populated via populateMaterialLibrary)
+    std::vector<MaterialPreset> m_materialPresets;
+    std::vector<SectionPreset> m_sectionPresets;
 
     // Node editor widgets
     QLabel* m_nodeIdLabel{nullptr};
