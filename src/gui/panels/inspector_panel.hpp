@@ -75,6 +75,15 @@ signals:
     void memberPropertiesChangeRequested(MemberId memberId,
                                          MaterialSpec mat,
                                          SectionSpec sec);
+
+    /**
+     * @brief Emitted when the default new-member material or area changes.
+     *
+     * Connect to CanvasController::onDefaultMaterialChanged so that newly
+     * drawn members use the values picked on the no-selection page.
+     */
+    void defaultMaterialChanged(MaterialSpec mat, SectionSpec sec);
+
 private slots:
     void onApplyLoadClicked();
     void onSupportComboChanged(int index);
