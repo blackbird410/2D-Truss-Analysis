@@ -356,10 +356,16 @@ void InspectorPanel::onStateChanged(const truss::gui::state::WorkspaceState& sta
     const bool editable = (state.phase == WorkspacePhase::ModelBuilding ||
                            state.phase == WorkspacePhase::ResultsReady);
 
+    // Node editor
     m_supportCombo->setEnabled(editable);
     m_fxSpin->setEnabled(editable);
     m_fySpin->setEnabled(editable);
     m_applyLoadBtn->setEnabled(editable);
+
+    // Member editor (widgets may not yet be lazily created)
+    if (m_materialCombo) m_materialCombo->setEnabled(editable);
+    if (m_memberA_Spin) m_memberA_Spin->setEnabled(editable);
+    if (m_applyMemberBtn) m_applyMemberBtn->setEnabled(editable);
 }
 
 // ---------------------------------------------------------------------------
