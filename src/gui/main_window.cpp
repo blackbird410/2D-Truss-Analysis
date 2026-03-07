@@ -245,9 +245,10 @@ void MainWindow::setupToolBar() {
     m_actToolSelect->setChecked(true);
     tb->addSeparator();
 
-    // Analysis group — stored as members so connectSignals() can wire them
-    m_actRun = tb->addAction(QIcon(QStringLiteral(":/icons/run_analysis.svg")),
-                             QStringLiteral("Run"));
+    // Analysis group — m_actRun was created in setupMenuBar() (shared menu+toolbar);
+    // here we attach the icon and add it to the toolbar.
+    m_actRun->setIcon(QIcon(QStringLiteral(":/icons/run_analysis.svg")));
+    tb->addAction(m_actRun);
     m_actStop = tb->addAction(QIcon(QStringLiteral(":/icons/stop.svg")), QStringLiteral("Stop"));
     m_actStop->setEnabled(false);  // disabled until analysis is running
 
