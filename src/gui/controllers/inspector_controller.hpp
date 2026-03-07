@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "application/truss_edit_dtos.hpp"
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
 
@@ -57,6 +58,22 @@ public slots:
     void onSelectionCleared();
     void onSupportChangeRequested(NodeId nodeId, SupportType type);
     void onLoadChangeRequested(NodeId nodeId, Force2D load);
+    /**
+     * @brief Update member material and cross-section via remove + re-add.
+     *
+     * Connected to InspectorPanel::memberPropertiesChangeRequested.  Because
+     * the facade interface does not expose an updateMember operation, this slot
+     * implements the change by removing the existing member and re-adding it
+     * with the new specs.  The member receives a new ID; all listeners are
+     * notified via the trussModified signal.
+     *
+     * @param memberId  ID of the member to update.
+     * @param mat       New material specification (E in Pa, name).
+     * @param sec       New section specification (area in m²).
+     */
+    void onMemberPropertiesChangeRequested(MemberId memberId,
+                                           truss::application::MaterialSpec mat,
+                                           truss::application::SectionSpec sec);
     /// Update the active truss handle (called by MainWindowController).
     void onTrussHandleUpdated(std::size_t trussHandle);
 
@@ -70,6 +87,11 @@ signals:
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;
     std::size_t m_trussHandle{0};
+
+    // Last member view retrieved during onMemberSelectionChanged.
+    // Needed by onMemberPropertiesChangeRequested to obtain startNodeId / endNodeId
+    // when re-creating the member with new properties.
+    MemberView m_currentMemberView{};
 };
 
 }  // namespace truss::gui::ctrl

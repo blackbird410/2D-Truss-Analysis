@@ -9,6 +9,7 @@
 
 #include "gui/controllers/inspector_controller.hpp"
 
+#include "application/truss_edit_dtos.hpp"
 #include "interface/itruss_analysis_facade.hpp"
 
 #include <algorithm>
@@ -48,6 +49,7 @@ void InspectorController::onMemberSelectionChanged(MemberId memberId) {
         return mv.id == memberId;
     });
     if (it != members.end()) {
+        m_currentMemberView = *it;  // cache for onMemberPropertiesChangeRequested
         emit memberViewReady(*it);
     }
 }
@@ -85,6 +87,46 @@ void InspectorController::onLoadChangeRequested(NodeId nodeId, Force2D load) {
     } else {
         emit operationFailed(
             QString::fromStdString("Failed to apply load: " + result.errorMessage));
+    }
+}
+
+void InspectorController::onMemberPropertiesChangeRequested(
+    MemberId memberId,
+    truss::application::MaterialSpec mat,
+    truss::application::SectionSpec sec) {
+    if (m_trussHandle == 0) {
+        emit operationFailed(QStringLiteral("No active truss."));
+        return;
+    }
+
+    // Remove existing member, then re-add with updated properties.
+    // The new member receives a fresh ID from the facade.
+    const NodeId startId = m_currentMemberView.startNodeId;
+    const NodeId endId   = m_currentMemberView.endNodeId;
+
+    if (startId == 0 || endId == 0) {
+        emit operationFailed(QStringLiteral("Cannot update member: node IDs unavailable."));
+        return;
+    }
+
+    auto removeResult = m_facade.removeMember(m_trussHandle, memberId);
+    if (!removeResult) {
+        emit operationFailed(
+            QString::fromStdString("Failed to remove member for update: " +
+                                   removeResult.errorMessage));
+        return;
+    }
+
+    auto addResult = m_facade.addMember(m_trussHandle, startId, endId, mat, sec);
+    if (addResult) {
+        // Update cached view so subsequent apply-clicks use the new topology.
+        m_currentMemberView.id = addResult.value;
+        m_currentMemberView.startNodeId = startId;
+        m_currentMemberView.endNodeId   = endId;
+        emit trussModified(m_trussHandle);
+    } else {
+        emit operationFailed(
+            QString::fromStdString("Failed to re-add member: " + addResult.errorMessage));
     }
 }
 
