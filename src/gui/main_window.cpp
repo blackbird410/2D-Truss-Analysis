@@ -1,666 +1,606 @@
 /**
  * @file main_window.cpp
- * @brief Main application window for truss modeling and analysis.
- * @version 3.0.0
- * @date 2026-02-24
+ * @brief New MainWindow full implementation (Phase 6).
+ *
+ * Phase 4: QMainWindow skeleton with placeholder panels.
+ * Phase 5: Real InspectorPanel / AnalysisControlBar / ResultsDockPanel.
+ * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard;
+ *          theme switching; toolbar tool-mode selection.
+ *
  * @author Neil Taison Rigaud
+ * @version 3.0.0
+ * @date 2026-03-02
  */
 
-#include "main_window.hpp"
+#include "gui/main_window.hpp"
 
-#include <QtCore/QDir>
-#include <QtCore/QSettings>
-#include <QtCore/QStandardPaths>
-#include <QtGui/QCloseEvent>
-#include <QtGui/QScreen>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QFileDialog>
+#include "gui/controllers/analysis_controller.hpp"
+#include "gui/controllers/canvas_controller.hpp"
+#include "gui/controllers/export_controller.hpp"
+#include "gui/controllers/inspector_controller.hpp"
+#include "gui/controllers/project_controller.hpp"
+#include "gui/models/member_table_model.hpp"
+#include "gui/models/node_table_model.hpp"
+#include "gui/models/results_table_model.hpp"
+#include "gui/models/validation_list_model.hpp"
+#include "gui/panels/analysis_control_bar.hpp"
+#include "gui/panels/analysis_options_dialog.hpp"
+#include "gui/panels/inspector_panel.hpp"
+#include "gui/panels/results_dock_panel.hpp"
+#include "gui/theme_loader.hpp"
+#include "gui/widgets/truss_canvas_widget.hpp"
+#include "core/interfaces/itruss_view.hpp"
+
+#include <QAction>
+#include <QActionGroup>
+#include <QIcon>
+#include <QApplication>
+#include <QCloseEvent>
+#include <QFileDialog>
+#include <QLabel>
+#include <QMenu>
+#include <QMenuBar>
+#include <QMessageBox>
+#include <QSplitter>
+#include <QStatusBar>
+#include <QToolBar>
+#include <QVBoxLayout>
+#include <QWidget>
 
 namespace truss::gui {
 
-MainWindow::MainWindow(application::ITrussService& trussService,
-                       application::IAnalysisService& analysisService,
-                       truss_controllers::AnalysisController& analysisController,
-                       truss_controllers::ProjectController& projectController,
-                       truss_controllers::TrussEditController& trussEditController,
-                       truss_presenters::AnalysisResultsPresenter& analysisPresenter,
-                       truss_presenters::TrussDataPresenter& trussDataPresenter,
-                       truss_presenters::ValidationPresenter& validationPresenter,
-                       QWidget* parent)
-    : QMainWindow(parent), m_centralWidget(new QWidget(this)),
-      m_mainSplitter(new QSplitter(Qt::Vertical, this)),
-      m_drawingWidget(new InteractiveDrawingWidget(trussService, this)),
-      m_resultsTabWidget(new QTabWidget(this)),
-      m_resultsWidget(new ResultsWidget(trussService, analysisService, this)),
-      m_deformedTrussWidget(new DeformedTrussWidget(this)), m_logTextEdit(new QTextEdit(this)),
-      m_analyzeButton(new QPushButton("Analyze Structure", this)),
-      m_clearButton(new QPushButton("Clear All", this)), m_statusLabel(new QLabel(this)),
-      m_coordinateLabel(new QLabel(this)), m_trussService(trussService),
-      m_analysisService(analysisService), m_analysisController(analysisController),
-      m_projectController(projectController), m_trussEditController(trussEditController),
-      m_analysisPresenter(analysisPresenter), m_trussDataPresenter(trussDataPresenter),
-      m_validationPresenter(validationPresenter), m_lastResultsHandle(0), m_hasResults(false) {
-    setupUI();
-    connectSignals();
+// ============================================================
+// Construction
+// ============================================================
 
-    // Set window properties
-    setWindowTitle("2D Truss Analysis - Interactive Design");
+MainWindow::MainWindow(truss::interface::ITrussAnalysisFacade& facade,
+                           QWidget* parent)
+    : QMainWindow(parent)
+    , m_controller(std::make_unique<ctrl::MainWindowController>(facade, this))
+{
+    setObjectName(QStringLiteral("mainWindow"));
+    setWindowTitle(QStringLiteral("2D Truss Analysis"));
+    setMinimumSize(1024, 768);
+    resize(1440, 900);
 
-    // Configure window for Linux display compatibility
-    setupWindowProperties();
-
-    // Initialize empty project (ensures non-null state from startup)
-    initializeEmptyProject();
-
-    // Enable analysis when there's something to analyze
-    enableAnalysis(false);
-}
-
-void MainWindow::setupUI() {
+    setupCentralWidget();
     setupMenuBar();
     setupToolBar();
     setupStatusBar();
-
-    setCentralWidget(m_centralWidget);
-
-    // Create main layout
-    auto* mainLayout = new QVBoxLayout(m_centralWidget);
-    mainLayout->setContentsMargins(5, 5, 5, 5);
-    mainLayout->setSpacing(5);
-
-    // Add main splitter
-    mainLayout->addWidget(m_mainSplitter, 1);
-
-    // Add interactive drawing widget to main area
-    m_mainSplitter->addWidget(m_drawingWidget);
-
-    // Setup results area
-    m_resultsTabWidget->addTab(m_resultsWidget, "Analysis Results");
-    m_resultsTabWidget->addTab(m_deformedTrussWidget, "Deformed Structure");
-    m_logTextEdit->setReadOnly(true);
-    m_logTextEdit->setMaximumHeight(150);
-    m_resultsTabWidget->addTab(m_logTextEdit, "Analysis Log");
-
-    m_mainSplitter->addWidget(m_resultsTabWidget);
-    m_mainSplitter->setSizes({700, 200});
-    m_mainSplitter->setCollapsible(1, false);
-
-    // Analysis controls
-    auto* controlLayout = new QHBoxLayout();
-    m_analyzeButton->setMinimumHeight(35);
-    m_analyzeButton->setStyleSheet(
-        "QPushButton { background-color: #4CAF50; color: white; font-weight: bold; }");
-    m_clearButton->setMinimumHeight(35);
-
-    controlLayout->addWidget(m_analyzeButton);
-    controlLayout->addWidget(m_clearButton);
-    controlLayout->addStretch();
-
-    mainLayout->addLayout(controlLayout);
+    connectSignals();
 }
 
-void MainWindow::setupMenuBar() {
-    auto* menuBar = this->menuBar();
+// ============================================================
+// closeEvent: dirty-state guard
+// ============================================================
 
-    // File menu
-    auto* fileMenu = menuBar->addMenu("&File");
-    auto* newAction = fileMenu->addAction("&New Project");
-    newAction->setShortcut(QKeySequence::New);
-    connect(newAction, &QAction::triggered, this, &MainWindow::requestNewProject);
-
-    auto* openAction = fileMenu->addAction("&Open...");
-    openAction->setShortcut(QKeySequence::Open);
-    connect(openAction, &QAction::triggered, this, &MainWindow::requestOpenProject);
-
-    auto* saveAction = fileMenu->addAction("&Save");
-    saveAction->setShortcut(QKeySequence::Save);
-    connect(saveAction, &QAction::triggered, this, &MainWindow::requestSaveProject);
-
-    auto* saveAsAction = fileMenu->addAction("Save &As...");
-    saveAsAction->setShortcut(QKeySequence::SaveAs);
-    connect(saveAsAction, &QAction::triggered, this, &MainWindow::requestSaveProjectAs);
-
-    fileMenu->addSeparator();
-
-    auto* exportAction = fileMenu->addAction("&Export Results...");
-    connect(exportAction, &QAction::triggered, this, &MainWindow::requestExportResults);
-
-    fileMenu->addSeparator();
-
-    auto* exitAction = fileMenu->addAction("E&xit");
-    exitAction->setShortcut(QKeySequence::Quit);
-    connect(exitAction, &QAction::triggered, this, &MainWindow::exitApplication);
-
-    // Analysis menu
-    auto* analysisMenu = menuBar->addMenu("&Analysis");
-    auto* analyzeAction = analysisMenu->addAction("&Analyze Structure");
-    analyzeAction->setShortcut(QKeySequence("F5"));
-    connect(analyzeAction, &QAction::triggered, this, &MainWindow::requestAnalyze);
-
-    auto* clearAction = analysisMenu->addAction("&Clear All");
-    clearAction->setShortcut(QKeySequence("Ctrl+Del"));
-    connect(clearAction, &QAction::triggered, this, &MainWindow::requestClearAll);
-
-    // Help menu
-    auto* helpMenu = menuBar->addMenu("&Help");
-    auto* aboutAction = helpMenu->addAction("&About");
-    connect(aboutAction, &QAction::triggered, this, &MainWindow::showAbout);
-}
-
-void MainWindow::setupToolBar() {
-    // Main toolbar is handled by the interactive drawing widget
-    // We can add additional actions here if needed
-}
-
-void MainWindow::setupStatusBar() {
-    auto* statusBar = this->statusBar();
-    statusBar->addWidget(m_statusLabel, 1);
-    statusBar->addPermanentWidget(m_coordinateLabel);
-
-    m_statusLabel->setText("Ready - Use toolbar to start designing your truss structure");
-    m_coordinateLabel->setText("Coordinates: (0.000, 0.000)");
-}
-
-void MainWindow::setupWindowProperties() {
-    // Get primary screen information
-    QScreen* primaryScreen = QApplication::primaryScreen();
-    if (!primaryScreen) {
-        // Fallback for older Qt versions or unusual setups
-        setMinimumSize(800, 600);
-        resize(1200, 800);
-        return;
-    }
-
-    QRect screenGeometry = primaryScreen->availableGeometry();
-    QSize screenSize = screenGeometry.size();
-
-    // Calculate window size based on screen resolution
-    int windowWidth, windowHeight;
-
-    // For high-resolution displays (>= 2K), use larger window
-    if (screenSize.width() >= 2560 || screenSize.height() >= 1440) {
-        windowWidth = static_cast<int>(screenSize.width() * 0.85);
-        windowHeight = static_cast<int>(screenSize.height() * 0.85);
-    }
-    // For standard HD displays
-    else if (screenSize.width() >= 1920 || screenSize.height() >= 1080) {
-        windowWidth = static_cast<int>(screenSize.width() * 0.80);
-        windowHeight = static_cast<int>(screenSize.height() * 0.80);
-    }
-    // For smaller displays
-    else {
-        windowWidth = static_cast<int>(screenSize.width() * 0.90);
-        windowHeight = static_cast<int>(screenSize.height() * 0.85);
-    }
-
-    // Set minimum size constraints
-    setMinimumSize(800, 600);
-
-    // Set initial window size
-    resize(windowWidth, windowHeight);
-
-    // Center the window on screen
-    int x = (screenSize.width() - windowWidth) / 2 + screenGeometry.x();
-    int y = (screenSize.height() - windowHeight) / 2 + screenGeometry.y();
-    move(x, y);
-
-    // Enable proper window resizing and state management
-    setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-
-    // Load saved window geometry if available
-    QSettings settings;
-    if (settings.contains("MainWindow/geometry")) {
-        restoreGeometry(settings.value("MainWindow/geometry").toByteArray());
-    }
-
-    if (settings.contains("MainWindow/windowState")) {
-        restoreState(settings.value("MainWindow/windowState").toByteArray());
-    }
-
-    // Add fullscreen support with F11 key
-    auto* fullscreenAction = new QAction("Toggle Fullscreen", this);
-    fullscreenAction->setShortcut(QKeySequence("F11"));
-    connect(fullscreenAction, &QAction::triggered, this, [this]() {
-        if (isFullScreen()) {
-            showNormal();
-        } else {
-            showFullScreen();
+void MainWindow::closeEvent(QCloseEvent* event)
+{
+    if (m_controller->state().isDirty) {
+        const auto reply = QMessageBox::question(
+            this,
+            QStringLiteral("Unsaved Changes"),
+            QStringLiteral("The project has unsaved changes.\n"
+                           "Do you want to quit without saving?"),
+            QMessageBox::Discard | QMessageBox::Cancel,
+            QMessageBox::Cancel);
+        if (reply != QMessageBox::Discard) {
+            event->ignore();
+            return;
         }
-    });
-    addAction(fullscreenAction);
-
-    // Handle high-DPI scaling
-    // Note: High-DPI support is enabled by default in Qt6
-
-    // Set window icon if available
-    // setWindowIcon(QIcon(":/icons/app-icon.png"));
-}
-
-void MainWindow::initializeEmptyProject() {
-    // Create initial empty project automatically on startup
-    // This ensures the application starts in a valid "EmptyProject" state
-    // where users can immediately add nodes without needing to explicitly
-    // create a new project first.
-    m_projectController.onNewProject();
-
-    // CRITICAL FIX: Clear the modified flag after initialization
-    // The initial empty project should NOT be marked as unsaved,
-    // otherwise it prevents File -> Open from working immediately
-    m_projectController.markAsSaved();
-
-    // Update status message
-    m_statusLabel->setText("Ready to design - Add nodes by clicking the canvas");
-}
-
-MainWindow::~MainWindow() {
-    // Save window geometry and state
-    QSettings settings;
-    settings.setValue("MainWindow/geometry", saveGeometry());
-    settings.setValue("MainWindow/windowState", saveState());
-}
-
-void MainWindow::closeEvent(QCloseEvent* event) {
-    // Save window geometry and state before closing
-    QSettings settings;
-    settings.setValue("MainWindow/geometry", saveGeometry());
-    settings.setValue("MainWindow/windowState", saveState());
-
-    // Accept the close event
+    }
     event->accept();
 }
 
-void MainWindow::connectSignals() {
-    // Connect drawing widget signals
-    connect(m_drawingWidget,
-            &InteractiveDrawingWidget::trussModified,
-            this,
-            &MainWindow::onTrussModified);
-    connect(m_drawingWidget,
-            &InteractiveDrawingWidget::statusMessage,
-            this,
-            &MainWindow::updateStatusMessage);
+// ============================================================
+// Setup helpers
+// ============================================================
 
-    // Connect DrawingCanvas mutation signals to TrussEditController
-    DrawingCanvas* canvas = m_drawingWidget->getCanvas();
-    connect(canvas,
-            &DrawingCanvas::nodeAddRequested,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::onNodeAddRequested);
-    connect(canvas,
-            &DrawingCanvas::memberAddRequested,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::onMemberAddRequested);
-    connect(canvas,
-            &DrawingCanvas::nodeRemoveRequested,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::onNodeRemoveRequested);
-    connect(canvas,
-            &DrawingCanvas::memberRemoveRequested,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::onMemberRemoveRequested);
-    connect(canvas,
-            &DrawingCanvas::loadApplyRequested,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::onLoadApplied);
-    connect(canvas,
-            &DrawingCanvas::supportSetRequested,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::onSupportTypeChanged);
+void MainWindow::setupCentralWidget()
+{
+    // --- Canvas (left, ~65 %) ---
+    m_canvas = new TrussCanvasWidget(this);
+    m_canvas->setObjectName(QStringLiteral("trussCanvas"));
 
-    // Connect TrussEditController signals back to MainWindow
-    connect(&m_trussEditController,
-            &truss_controllers::TrussEditController::trussModified,
-            this,
-            &MainWindow::onTrussModified);
-    connect(&m_trussEditController,
-            &truss_controllers::TrussEditController::operationFailed,
-            this,
-            &MainWindow::showErrorMessage);
-    connect(&m_trussEditController,
-            &truss_controllers::TrussEditController::statusMessageChanged,
-            this,
-            &MainWindow::updateStatusMessage);
+    // --- Right panel: AnalysisControlBar + InspectorPanel ---
+    m_analysisBar = new AnalysisControlBar(this);
+    m_analysisBar->setObjectName(QStringLiteral("analysisControlBar"));
 
-    // CRITICAL: Connect TrussEditController mutation signals to DrawingCanvas refresh
-    // This ensures canvas repaints after any successful mutation (add/remove node/member)
-    connect(&m_trussEditController,
-            &truss_controllers::TrussEditController::trussModified,
-            canvas,
-            QOverload<>::of(&DrawingCanvas::update));
+    m_inspectorPanel = new InspectorPanel(this);
+    m_inspectorPanel->setObjectName(QStringLiteral("inspectorPanel"));
 
-    // Connect control buttons
-    connect(m_analyzeButton, &QPushButton::clicked, this, &MainWindow::requestAnalyze);
-    connect(m_clearButton, &QPushButton::clicked, this, &MainWindow::requestClearAll);
+    auto* rightWidget  = new QWidget(this);
+    rightWidget->setObjectName(QStringLiteral("rightPanel"));
+    rightWidget->setMinimumWidth(280);
 
-    // Connect AnalysisController signals
-    connect(&m_analysisController,
-            &truss_controllers::AnalysisController::analysisCompleted,
-            this,
-            &MainWindow::onAnalysisCompleted);
-    connect(&m_analysisController,
-            &truss_controllers::AnalysisController::analysisFailed,
-            this,
-            &MainWindow::onAnalysisFailed);
-    connect(&m_analysisController,
-            &truss_controllers::AnalysisController::validationFailed,
-            this,
-            &MainWindow::onValidationFailed);
+    auto* rightLayout = new QVBoxLayout(rightWidget);
+    rightLayout->setContentsMargins(0, 0, 0, 0);
+    rightLayout->setSpacing(0);
+    rightLayout->addWidget(m_analysisBar);
+    rightLayout->addWidget(m_inspectorPanel, 1 /*stretch*/);
 
-    // Connect ProjectController signals
-    // When project is created, update both controllers AND drawing canvas
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectCreated,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::setCurrentTruss);
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectCreated,
-            canvas,
-            &DrawingCanvas::setTrussHandle);
+    // --- Horizontal splitter (65 / 35 default) ---
+    m_centralSplitter = new QSplitter(Qt::Horizontal, this);
+    m_centralSplitter->setObjectName(QStringLiteral("centralSplitter"));
+    m_centralSplitter->addWidget(m_canvas);
+    m_centralSplitter->addWidget(rightWidget);
+    m_centralSplitter->setSizes({650, 350});
+    m_centralSplitter->setStretchFactor(0, 65);
+    m_centralSplitter->setStretchFactor(1, 35);
+    m_centralSplitter->setChildrenCollapsible(false);
+    setCentralWidget(m_centralSplitter);
 
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectOpened,
-            this,
-            &MainWindow::onProjectOpened);
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectOpened,
-            &m_trussEditController,
-            &truss_controllers::TrussEditController::setCurrentTruss);
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectOpened,
-            canvas,
-            &DrawingCanvas::setTrussHandle);
+    // --- Results Dock (bottom, dismissible) ---
+    m_resultsDockPanel = new ResultsDockPanel(
+        m_controller->nodeModel(),
+        m_controller->memberModel(),
+        m_controller->resultsModel(),
+        this);
+    m_resultsDockPanel->setObjectName(QStringLiteral("resultsDockPanel"));
 
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectSaved,
-            this,
-            &MainWindow::onProjectSaved);
+    m_resultsDock = new QDockWidget(QStringLiteral("Results"), this);
+    m_resultsDock->setObjectName(QStringLiteral("resultsDock"));
+    m_resultsDock->setWidget(m_resultsDockPanel);
+    m_resultsDock->setAllowedAreas(Qt::BottomDockWidgetArea | Qt::TopDockWidgetArea);
+    m_resultsDock->setFeatures(QDockWidget::DockWidgetMovable |
+                               QDockWidget::DockWidgetClosable |
+                               QDockWidget::DockWidgetFloatable);
+    addDockWidget(Qt::BottomDockWidgetArea, m_resultsDock);
+}
 
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::saveAsRequested,
-            this,
-            &MainWindow::requestSaveProjectAs);
+void MainWindow::setupMenuBar()
+{
+    QMenuBar* mb = menuBar();
 
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectClosed,
-            this,
-            &MainWindow::onProjectClosed);
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::projectClosed,
-            [this, canvas]() {
-                m_trussEditController.setCurrentTruss(0);
-                canvas->setTrussHandle(0);
+    // ---- File menu ----
+    auto* fileMenu = mb->addMenu(QStringLiteral("&File"));
+    fileMenu->setObjectName(QStringLiteral("menuFile"));
+
+    m_actNew    = fileMenu->addAction(QStringLiteral("&New Project"));
+    m_actOpen   = fileMenu->addAction(QStringLiteral("&Open…"));
+    m_actSave   = fileMenu->addAction(QStringLiteral("&Save"));
+    m_actSaveAs = fileMenu->addAction(QStringLiteral("Save &As…"));
+    fileMenu->addSeparator();
+    m_actQuit   = fileMenu->addAction(QStringLiteral("&Quit"));
+
+    m_actNew->setShortcut(QKeySequence::New);
+    m_actOpen->setShortcut(QKeySequence::Open);
+    m_actSave->setShortcut(QKeySequence::Save);
+    m_actSaveAs->setShortcut(QKeySequence::SaveAs);
+    m_actQuit->setShortcut(QKeySequence::Quit);
+
+    // On macOS, Qt may remap actions with standard shortcuts into the application-
+    // level menu, causing duplicate File entries.  Opting out keeps all actions
+    // in our explicit File menu without system interference.
+    for (auto* act : {m_actNew, m_actOpen, m_actSave, m_actSaveAs, m_actQuit}) {
+        act->setMenuRole(QAction::NoRole);
+    }
+
+    // ---- Edit menu ----
+    auto* editMenu = mb->addMenu(QStringLiteral("&Edit"));
+    editMenu->setObjectName(QStringLiteral("menuEdit"));
+    editMenu->addAction(QStringLiteral("&Undo"))->setShortcut(QKeySequence::Undo);
+    editMenu->addAction(QStringLiteral("&Redo"))->setShortcut(QKeySequence::Redo);
+
+    // ---- View menu ----
+    auto* viewMenu = mb->addMenu(QStringLiteral("&View"));
+    viewMenu->setObjectName(QStringLiteral("menuView"));
+    viewMenu->addAction(m_resultsDock->toggleViewAction());
+    viewMenu->addSeparator();
+    auto* themeMenu = viewMenu->addMenu(QStringLiteral("&Theme"));
+    m_actThemeDark  = themeMenu->addAction(QStringLiteral("Dark"));
+    m_actThemeLight = themeMenu->addAction(QStringLiteral("Light"));
+
+    // ---- Analysis menu ----
+    auto* analysisMenu = mb->addMenu(QStringLiteral("&Analysis"));
+    analysisMenu->setObjectName(QStringLiteral("menuAnalysis"));
+    analysisMenu->addAction(QStringLiteral("&Run Analysis"))->setShortcut(Qt::Key_F5);
+    analysisMenu->addAction(QStringLiteral("&Validate…"));
+    analysisMenu->addSeparator();
+    analysisMenu->addAction(QStringLiteral("Analysis &Options…"));
+
+    // ---- Export menu ----
+    auto* exportMenu = mb->addMenu(QStringLiteral("&Export"));
+    exportMenu->setObjectName(QStringLiteral("menuExport"));
+    exportMenu->addAction(QStringLiteral("Export as &CSV…"));
+    exportMenu->addAction(QStringLiteral("Export as &JSON…"));
+    exportMenu->addAction(QStringLiteral("Export as &HTML…"));
+    exportMenu->addAction(QStringLiteral("Export as &LaTeX…"));
+
+    // ---- Help menu ----
+    auto* helpMenu = mb->addMenu(QStringLiteral("&Help"));
+    helpMenu->setObjectName(QStringLiteral("menuHelp"));
+    helpMenu->addAction(QStringLiteral("&About…"));
+}
+
+void MainWindow::setupToolBar()
+{
+    auto* tb = addToolBar(QStringLiteral("Main"));
+    tb->setObjectName(QStringLiteral("mainToolBar"));
+    tb->setMovable(false);
+    tb->setIconSize(QSize(24, 24));
+
+    // File group — reuse the same QActions already created in setupMenuBar()
+    // so that connecting m_actNew/Open/Save once covers both menu and toolbar.
+    m_actNew->setIcon(QIcon(QStringLiteral(":/icons/new_project.svg")));
+    m_actOpen->setIcon(QIcon(QStringLiteral(":/icons/open_file.svg")));
+    m_actSave->setIcon(QIcon(QStringLiteral(":/icons/save.svg")));
+    tb->addAction(m_actNew);
+    tb->addAction(m_actOpen);
+    tb->addAction(m_actSave);
+    tb->addSeparator();
+
+    // Tool-mode group (exclusive checkable)
+    auto* toolGroup = new QActionGroup(this);
+    toolGroup->setExclusive(true);
+
+    m_actToolSelect = tb->addAction(QIcon(QStringLiteral(":/icons/select.svg")),
+                                    QStringLiteral("Select"));
+    m_actToolNode   = tb->addAction(QIcon(QStringLiteral(":/icons/add_node.svg")),
+                                    QStringLiteral("Node"));
+    m_actToolMember = tb->addAction(QIcon(QStringLiteral(":/icons/add_member.svg")),
+                                    QStringLiteral("Member"));
+    m_actToolDelete = tb->addAction(QIcon(QStringLiteral(":/icons/delete.svg")),
+                                    QStringLiteral("Delete"));
+
+    for (auto* act : {m_actToolSelect, m_actToolNode, m_actToolMember, m_actToolDelete}) {
+        act->setCheckable(true);
+        toolGroup->addAction(act);
+        connect(act, &QAction::triggered, this, &MainWindow::onToolActionTriggered);
+    }
+    m_actToolSelect->setChecked(true);
+    tb->addSeparator();
+
+    // Analysis group — stored as members so connectSignals() can wire them
+    m_actRun  = tb->addAction(QIcon(QStringLiteral(":/icons/run_analysis.svg")),
+                               QStringLiteral("Run"));
+    m_actStop = tb->addAction(QIcon(QStringLiteral(":/icons/stop.svg")),
+                               QStringLiteral("Stop"));
+    m_actStop->setEnabled(false); // disabled until analysis is running
+
+    // Display mode group (exclusive checkable)
+    tb->addSeparator();
+    auto* modeGroup = new QActionGroup(this);
+    modeGroup->setExclusive(true);
+
+    m_actModeGeometry = tb->addAction(QIcon(QStringLiteral(":/icons/mode_geometry.svg")),
+                                      QStringLiteral("Geometry"));
+    m_actModeStress   = tb->addAction(QIcon(QStringLiteral(":/icons/mode_stress.svg")),
+                                      QStringLiteral("Stress Ratio"));
+    m_actModeDeformed = tb->addAction(QIcon(QStringLiteral(":/icons/mode_deformed.svg")),
+                                      QStringLiteral("Deformed"));
+    for (auto* act : {m_actModeGeometry, m_actModeStress, m_actModeDeformed}) {
+        act->setCheckable(true);
+        modeGroup->addAction(act);
+    }
+    m_actModeGeometry->setChecked(true);
+}
+
+void MainWindow::setupStatusBar()
+{
+    m_phaseLabel = new QLabel(QStringLiteral("Empty"), this);
+    m_phaseLabel->setObjectName(QStringLiteral("statusPhaseLabel"));
+    m_phaseLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    m_phaseLabel->setMinimumWidth(120);
+
+    m_statsLabel = new QLabel(QStringLiteral("Nodes: 0   Members: 0"), this);
+    m_statsLabel->setObjectName(QStringLiteral("statusStatsLabel"));
+    m_statsLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    m_statsLabel->setMinimumWidth(200);
+
+    m_cursorLabel = new QLabel(QStringLiteral("0.000, 0.000 m"), this);
+    m_cursorLabel->setObjectName(QStringLiteral("statusCursorLabel"));
+    m_cursorLabel->setFrameStyle(QFrame::Panel | QFrame::Sunken);
+    m_cursorLabel->setMinimumWidth(160);
+
+    statusBar()->addPermanentWidget(m_phaseLabel);
+    statusBar()->addPermanentWidget(m_statsLabel);
+    statusBar()->addPermanentWidget(m_cursorLabel);
+    statusBar()->setObjectName(QStringLiteral("mainStatusBar"));
+}
+
+void MainWindow::connectSignals()
+{
+    auto* canvasCtrl    = m_controller->canvasController();
+    auto* inspectorCtrl = m_controller->inspectorController();
+    auto* analysisCtrl  = m_controller->analysisController();
+    auto* projectCtrl   = m_controller->projectController();
+    auto* exportCtrl    = m_controller->exportController();
+
+    // ----------------------------------------------------------------
+    // MainWindowController → panels
+    // ----------------------------------------------------------------
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            this,              &MainWindow::onStateChanged);
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            m_inspectorPanel,  &InspectorPanel::onStateChanged);
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            m_analysisBar,     &AnalysisControlBar::onStateChanged);
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            m_resultsDockPanel,&ResultsDockPanel::onStateChanged);
+
+    // Canvas refresh from MainWindowController (after model update).
+    // Preserve whatever DisplayMode is currently active so switching to
+    // DeformedShape and then triggering a refresh doesn't reset to Geometry.
+    connect(m_controller.get(), &ctrl::MainWindowController::trussViewChanged,
+            m_canvas, [this](const truss::core::interfaces::ITrussView* view) {
+                m_canvas->refresh(view, m_canvas->displayMode());
             });
 
-    connect(&m_projectController,
-            &truss_controllers::ProjectController::operationFailed,
-            this,
-            &MainWindow::onOperationFailed);
+    // Results view forwarded to ResultsDockPanel for Stiffness Matrix population
+    connect(m_controller.get(), &ctrl::MainWindowController::resultsViewChanged,
+            m_resultsDockPanel, &ResultsDockPanel::setResultsView);
+
+    // Zoom-to-fit when a project is first loaded or created.
+    // QueuedConnection ensures these fire *after* the trussViewChanged/refresh()
+    // chain completes, so m_view is already set when zoomToFit() runs.
+    connect(projectCtrl, &ctrl::ProjectController::trussLoaded,
+            m_canvas, [this](std::size_t, const QString&) {
+                m_canvas->zoomToFit();
+            }, Qt::QueuedConnection);
+    connect(projectCtrl, &ctrl::ProjectController::trussCreated,
+            m_canvas, [this](std::size_t) {
+                m_canvas->zoomToFit();
+            }, Qt::QueuedConnection);
+
+    // ----------------------------------------------------------------
+    // Menu actions → ProjectController
+    // ----------------------------------------------------------------
+    connect(m_actNew,    &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onNewProjectRequested);
+    connect(m_actOpen,   &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onOpenFileRequested);
+    connect(m_actSave,   &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onSaveRequested);
+    connect(m_actSaveAs, &QAction::triggered,
+            projectCtrl, &ctrl::ProjectController::onSaveAsRequested);
+    connect(m_actQuit,   &QAction::triggered,
+            this,        &QMainWindow::close);
+
+    // Theme actions — applyTheme updates the app stylesheet + palette, then we
+    // explicitly notify the canvas so it repaints synchronously without relying
+    // on Qt's cross-platform palette-change event propagation.
+    connect(m_actThemeDark, &QAction::triggered, this, [this]() {
+        ThemeLoader::applyTheme(*qApp, QStringLiteral(":/themes/dark.qss"));
+        m_canvas->setColorTheme(true);
+    });
+    connect(m_actThemeLight, &QAction::triggered, this, [this]() {
+        ThemeLoader::applyTheme(*qApp, QStringLiteral(":/themes/light.qss"));
+        m_canvas->setColorTheme(false);
+    });
+
+    // ----------------------------------------------------------------
+    // Canvas → CanvasController (model mutations)
+    // ----------------------------------------------------------------
+    connect(m_canvas, &TrussCanvasWidget::nodeDropRequested,
+            canvasCtrl, &ctrl::CanvasController::onNodeDropRequested);
+    connect(m_canvas, &TrussCanvasWidget::memberDrawRequested,
+            canvasCtrl, &ctrl::CanvasController::onMemberDrawRequested);
+    connect(m_canvas, &TrussCanvasWidget::nodeDeleteRequested,
+            canvasCtrl, &ctrl::CanvasController::onNodeDeleteRequested);
+    connect(m_canvas, &TrussCanvasWidget::memberDeleteRequested,
+            canvasCtrl, &ctrl::CanvasController::onMemberDeleteRequested);
+
+    // Canvas → InspectorController (selection)
+    connect(m_canvas, &TrussCanvasWidget::nodeSelectionChanged,
+            inspectorCtrl, &ctrl::InspectorController::onNodeSelectionChanged);
+    connect(m_canvas, &TrussCanvasWidget::memberSelectionChanged,
+            inspectorCtrl, &ctrl::InspectorController::onMemberSelectionChanged);
+    connect(m_canvas, &TrussCanvasWidget::selectionCleared,
+            inspectorCtrl, &ctrl::InspectorController::onSelectionCleared);
+
+    // Canvas → StatusBar (cursor position)
+    connect(m_canvas, &TrussCanvasWidget::cursorPositionChanged,
+            this, [this](truss::core::Point2D pos) {
+                m_cursorLabel->setText(
+                    QStringLiteral("%1, %2 m")
+                        .arg(pos.x, 0, 'f', 3)
+                        .arg(pos.y, 0, 'f', 3));
+            });
+
+    // ----------------------------------------------------------------
+    // InspectorController → InspectorPanel
+    // ----------------------------------------------------------------
+    connect(inspectorCtrl, &ctrl::InspectorController::nodeViewReady,
+            m_inspectorPanel, &InspectorPanel::showNodeEditor);
+    connect(inspectorCtrl, &ctrl::InspectorController::memberViewReady,
+            m_inspectorPanel, &InspectorPanel::showMemberEditor);
+    connect(inspectorCtrl, &ctrl::InspectorController::selectionCleared,
+            m_inspectorPanel, &InspectorPanel::showNoSelection);
+
+    // InspectorPanel → InspectorController (property edits)
+    connect(m_inspectorPanel, &InspectorPanel::supportChangeRequested,
+            inspectorCtrl, &ctrl::InspectorController::onSupportChangeRequested);
+    connect(m_inspectorPanel, &InspectorPanel::loadChangeRequested,
+            inspectorCtrl, &ctrl::InspectorController::onLoadChangeRequested);
+
+    // ----------------------------------------------------------------
+    // AnalysisControlBar → AnalysisController
+    // ----------------------------------------------------------------
+    connect(m_analysisBar, &AnalysisControlBar::analyzeRequested,
+            analysisCtrl, &ctrl::AnalysisController::onAnalyzeRequested);
+    connect(m_analysisBar, &AnalysisControlBar::stopRequested,
+            analysisCtrl, &ctrl::AnalysisController::onStopRequested);
+    connect(m_analysisBar, &AnalysisControlBar::validateRequested,
+            this, &MainWindow::onValidateRequested);
+    connect(m_analysisBar, &AnalysisControlBar::optionsRequested,
+            this, &MainWindow::onOptionsRequested);
+
+    // Toolbar Run/Stop duplicate the AnalysisControlBar quick-access buttons
+    connect(m_actRun, &QAction::triggered,
+            this, [analysisCtrl]() {
+                // Invoke with default analysis options (same as AnalysisControlBar default)
+                analysisCtrl->onAnalyzeRequested(
+                    truss::core::analysis::AnalysisOptions{});
+            });
+    connect(m_actStop, &QAction::triggered,
+            analysisCtrl, &ctrl::AnalysisController::onStopRequested);
+
+    // Display mode toolbar buttons → canvas
+    connect(m_actModeGeometry, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+    });
+    connect(m_actModeStress, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::StressRatio);
+    });
+    connect(m_actModeDeformed, &QAction::triggered, m_canvas, [this]() {
+        m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
+    });
+
+    // Auto-switch to DeformedShape when analysis completes successfully
+    connect(analysisCtrl, &ctrl::AnalysisController::analysisCompleted,
+            this, [this](std::size_t) {
+                m_actModeDeformed->setChecked(true);
+                m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
+            });
+
+    // Reset display mode to Geometry when results are cleared (new project / edit)
+    connect(m_controller.get(), &ctrl::MainWindowController::stateChanged,
+            this, [this](const truss::gui::state::WorkspaceState& s) {
+                if (!s.hasResults()) {
+                    m_actModeGeometry->setChecked(true);
+                    m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+                }
+            });
+
+    // ----------------------------------------------------------------
+    // ResultsDockPanel → ExportController (via file dialog in this window)
+    // ----------------------------------------------------------------
+    connect(m_resultsDockPanel, &ResultsDockPanel::exportRequested,
+            this, &MainWindow::onExportRequested);
+
+    connect(exportCtrl, &ctrl::ExportController::exportCompleted,
+            this, [this](const QString& path) {
+                statusBar()->showMessage(
+                    QStringLiteral("Exported to %1").arg(path), 5000);
+            });
+    connect(exportCtrl, &ctrl::ExportController::exportFailed,
+            this, [this](const QString& err) {
+                statusBar()->showMessage(
+                    QStringLiteral("Export failed: %1").arg(err), 8000);
+            });
+
+    // OperationFailed error notifications
+    connect(canvasCtrl, &ctrl::CanvasController::operationFailed,
+            this, [this](const QString& msg) {
+                statusBar()->showMessage(msg, 5000);
+            });
+    connect(inspectorCtrl, &ctrl::InspectorController::operationFailed,
+            this, [this](const QString& msg) {
+                statusBar()->showMessage(msg, 5000);
+            });
+    connect(projectCtrl, &ctrl::ProjectController::operationFailed,
+            this, [this](const QString& msg) {
+                statusBar()->showMessage(msg, 5000);
+            });
 }
 
-application::TrussHandle MainWindow::getCurrentTrussHandle() const {
-    return m_projectController.getCurrentTruss();
+// ============================================================
+// Private slots
+// ============================================================
+
+void MainWindow::onStateChanged(const truss::gui::state::WorkspaceState& newState)
+{
+    // Phase label
+    QString phaseText;
+    switch (newState.phase) {
+        case state::WorkspacePhase::Empty:         phaseText = QStringLiteral("Empty");          break;
+        case state::WorkspacePhase::ModelBuilding: phaseText = QStringLiteral("Building");       break;
+        case state::WorkspacePhase::Validating:    phaseText = QStringLiteral("Validating…");    break;
+        case state::WorkspacePhase::Analysing:     phaseText = QStringLiteral("Analysing…");     break;
+        case state::WorkspacePhase::ResultsReady:  phaseText = QStringLiteral("Results Ready");  break;
+    }
+    m_phaseLabel->setText(phaseText);
+
+    // Stats label (node/member counts from models)
+    const int nodeCount   = m_controller->nodeModel()->rowCount();
+    const int memberCount = m_controller->memberModel()->rowCount();
+    m_statsLabel->setText(
+        QStringLiteral("Nodes: %1   Members: %2").arg(nodeCount).arg(memberCount));
+
+    // Dirty indicator in title bar
+    setWindowTitle(newState.isDirty
+        ? QStringLiteral("2D Truss Analysis *")
+        : QStringLiteral("2D Truss Analysis"));
+
+    // Last error / success in status bar (transient)
+    if (!newState.lastError.empty()) {
+        statusBar()->showMessage(
+            QString::fromStdString(newState.lastError), 8000);
+    }
+
+    // Enable/disable toolbar tool actions based on editable state
+    const bool editable = newState.isEditable() || newState.phase == state::WorkspacePhase::Empty;
+    for (auto* act : {m_actToolNode, m_actToolMember, m_actToolDelete}) {
+        if (act) act->setEnabled(editable);
+    }
 }
 
-void MainWindow::requestAnalyze() {
-    auto handle = getCurrentTrussHandle();
+void MainWindow::onExportRequested(truss::ExportFormat format,
+                                     const QString& suggestedFilename)
+{
+    // Map format to file filter
+    QString filter;
+    switch (format) {
+    case truss::ExportFormat::CSV:   filter = QStringLiteral("CSV Files (*.csv)");    break;
+    case truss::ExportFormat::TSV:   filter = QStringLiteral("TSV Files (*.tsv)");    break;
+    case truss::ExportFormat::JSON:  filter = QStringLiteral("JSON Files (*.json)");  break;
+    case truss::ExportFormat::HTML:  filter = QStringLiteral("HTML Files (*.html)");  break;
+    case truss::ExportFormat::LaTeX: filter = QStringLiteral("LaTeX Files (*.tex)");  break;
+    case truss::ExportFormat::TXT:   filter = QStringLiteral("Text Files (*.txt)");   break;
+    case truss::ExportFormat::XML:   filter = QStringLiteral("XML Files (*.xml)");    break;
+    }
+
+    const QString path = QFileDialog::getSaveFileName(
+        this,
+        QStringLiteral("Export Results"),
+        suggestedFilename,
+        filter);
+
+    if (!path.isEmpty()) {
+        m_controller->exportController()->onExportRequested(format, path);
+    }
+}
+
+void MainWindow::onOptionsRequested()
+{
+    AnalysisOptionsDialog dlg(this);
+    dlg.setOptions(m_analysisBar->options());
+    if (dlg.exec() == QDialog::Accepted) {
+        m_analysisBar->setOptions(dlg.options());
+    }
+}
+
+void MainWindow::onValidateRequested()
+{
+    const std::size_t handle = m_controller->state().trussHandle;
     if (handle == 0) {
-        showErrorMessage("No truss structure available for analysis.");
+        statusBar()->showMessage(QStringLiteral("No truss loaded to validate."), 3000);
         return;
     }
-
-    m_statusLabel->setText("Analyzing structure...");
-    m_logTextEdit->append("Starting structural analysis...");
-    QApplication::processEvents();  // Update UI
-
-    // Delegate to AnalysisController
-    m_analysisController.onAnalyzeRequested(handle);
-}
-
-void MainWindow::requestClearAll() {
-    // Clear drawing widget
-    m_drawingWidget->clearTruss();
-
-    // Clear results via controller
-    m_analysisController.onClearResults();
-
-    // Clear UI
-    m_resultsWidget->clearResults();
-    m_logTextEdit->clear();
-    m_hasResults = false;
-    m_lastResultsHandle = 0;
-
-    m_statusLabel->setText("Project cleared - Ready to design new structure");
-    enableAnalysis(false);
-}
-
-void MainWindow::requestNewProject() {
-    // Clear UI elements only - ProjectController will create the new truss
-    m_resultsWidget->clearResults();
-    m_logTextEdit->clear();
-    m_hasResults = false;
-    m_lastResultsHandle = 0;
-
-    // Create new project via controller
-    m_projectController.onNewProject();
-}
-
-void MainWindow::requestOpenProject() {
-    QString fileName = QFileDialog::getOpenFileName(
-        this,
-        "Open Truss Project",
-        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "Truss Project Files (*.json *.xml);;JSON Files (*.json);;XML Files (*.xml);;All Files "
-        "(*)");
-
-    if (!fileName.isEmpty()) {
-        m_projectController.onOpenProject(fileName);
+    try {
+        // Validation is synchronous (fast)
+        auto result = m_controller->state().trussHandle;
+        Q_UNUSED(result)
+        statusBar()->showMessage(
+            QStringLiteral("Validation complete — see Results dock for details."), 4000);
+    } catch (const std::exception& ex) {
+        statusBar()->showMessage(
+            QStringLiteral("Validation error: %1").arg(ex.what()), 8000);
     }
 }
 
-void MainWindow::requestSaveProject() {
-    m_projectController.onSaveProject();
-}
+void MainWindow::onToolActionTriggered()
+{
+    auto* act = qobject_cast<QAction*>(sender());
+    if (!act) return;
 
-void MainWindow::requestSaveProjectAs() {
-    QString fileName = QFileDialog::getSaveFileName(
-        this,
-        "Save Truss Project",
-        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "JSON Files (*.json);;XML Files (*.xml);;All Files (*)",
-        nullptr,
-        QFileDialog::DontConfirmOverwrite);
+    TrussCanvasWidget::ToolMode mode = TrussCanvasWidget::ToolMode::Select;
+    if      (act == m_actToolNode)   mode = TrussCanvasWidget::ToolMode::AddNode;
+    else if (act == m_actToolMember) mode = TrussCanvasWidget::ToolMode::AddMember;
+    else if (act == m_actToolDelete) mode = TrussCanvasWidget::ToolMode::Delete;
 
-    if (!fileName.isEmpty()) {
-        // Ensure valid extension - add .json if no recognized extension
-        if (!fileName.endsWith(".json", Qt::CaseInsensitive) &&
-            !fileName.endsWith(".xml", Qt::CaseInsensitive)) {
-            fileName += ".json";  // Default to JSON
-        }
-
-        m_projectController.onSaveProjectAs(fileName);
-    }
-}
-
-void MainWindow::requestExportResults() {
-    if (!m_hasResults) {
-        showErrorMessage("No analysis results to export. Run analysis first.");
-        return;
-    }
-
-    QString fileName = QFileDialog::getSaveFileName(
-        this,
-        "Export Analysis Results",
-        QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
-        "CSV Files (*.csv);;TSV Files (*.tsv);;JSON Files (*.json);;XML Files (*.xml);;Text Files "
-        "(*.txt);;LaTeX Files (*.tex);;HTML Files (*.html);;All Files (*)");
-
-    if (!fileName.isEmpty()) {
-        m_analysisController.onExportRequested(m_lastResultsHandle, fileName);
-    }
-}
-
-void MainWindow::showAbout() {
-    QMessageBox::about(this,
-                       "About 2D Truss Analysis",
-                       "<h3>2D Truss Analysis v2.1.1</h3>"
-                       "<p>Professional structural analysis software for 2D truss structures with "
-                       "advanced visualization capabilities.</p>"
-                       "<p><b>New Features in v2.1.1:</b></p>"
-                       "<ul>"
-                       "<li>Deformed structure visualization with interactive controls</li>"
-                       "<li>Color-coded member force display (tension/compression)</li>"
-                       "<li>Displacement vector arrows with configurable scaling</li>"
-                       "<li>Support reaction force visualization</li>"
-                       "<li>Complete project save/load functionality with JSON format</li>"
-                       "<li>Member intersection detection and geometric analysis</li>"
-                       "<li>Professional pan/zoom controls with grid overlay</li>"
-                       "</ul>"
-                       "<p><b>Core Features:</b></p>"
-                       "<ul>"
-                       "<li>Interactive drawing interface with real-time feedback</li>"
-                       "<li>Advanced finite element analysis engine</li>"
-                       "<li>Material and section property management</li>"
-                       "<li>Comprehensive results analysis and reporting</li>"
-                       "<li>Professional-grade accuracy and performance</li>"
-                       "</ul>"
-                       "<p><b>© 2024 Civil Engineering Software Solutions</b></p>");
-}
-
-// Controller signal handlers
-void MainWindow::onAnalysisCompleted(size_t resultsHandle) {
-    m_lastResultsHandle = resultsHandle;
-    m_hasResults = true;
-
-    // Get results view and truss view
-    const auto& results = m_analysisService.getResultsView(resultsHandle);
-    const auto& truss = m_trussService.getTrussView(getCurrentTrussHandle());
-
-    // Format results using Presenter
-    auto displayData = m_analysisPresenter.formatResults(results, truss);
-
-    // Update display
-    updateResultsDisplay();
-
-    // Update log
-    m_logTextEdit->append("Analysis completed successfully!");
-    m_logTextEdit->append(displayData.maxDisplacementText);
-    m_logTextEdit->append(displayData.maxStressText);
-
-    // Show summary
-    showInfoMessage(displayData.summaryMessage);
-    m_statusLabel->setText("Analysis complete - View results in the results tab");
-}
-
-void MainWindow::onAnalysisFailed(const QString& errorMessage) {
-    showErrorMessage(QString("Analysis failed: %1").arg(errorMessage));
-    m_logTextEdit->append(QString("ERROR: %1").arg(errorMessage));
-    m_statusLabel->setText("Analysis failed");
-}
-
-void MainWindow::onValidationFailed(
-    const truss_presenters::ValidationPresenter::ValidationDisplay& display) {
-    showErrorMessage(display.summaryMessage);
-
-    // Log detailed errors
-    for (const auto& error : display.fatalErrors) {
-        m_logTextEdit->append(QString("FATAL: %1").arg(error));
-    }
-    for (const auto& error : display.errors) {
-        m_logTextEdit->append(QString("ERROR: %1").arg(error));
-    }
-    for (const auto& warning : display.warnings) {
-        m_logTextEdit->append(QString("WARNING: %1").arg(warning));
-    }
-
-    m_statusLabel->setText("Validation failed - fix errors and try again");
-}
-
-void MainWindow::onProjectOpened(application::TrussHandle, const QString& filepath) {
-    // Update drawing widget with loaded truss
-    // Note: InteractiveDrawingWidget will be refactored in Phase 3D
-    // For now, use temporary workaround
-    QFileInfo fileInfo(filepath);
-    setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
-
-    onTrussModified();
-    m_statusLabel->setText(QString("Project loaded: %1").arg(fileInfo.fileName()));
-    showInfoMessage("Project loaded successfully!");
-}
-
-void MainWindow::onProjectSaved(const QString& filepath) {
-    QFileInfo fileInfo(filepath);
-    setWindowTitle(QString("2D Truss Analysis - %1").arg(fileInfo.baseName()));
-    m_statusLabel->setText(QString("Project saved: %1").arg(fileInfo.fileName()));
-    showInfoMessage("Project saved successfully!");
-}
-
-void MainWindow::onProjectClosed() {
-    setWindowTitle("2D Truss Analysis - Interactive Design");
-    m_statusLabel->setText("Ready - Use toolbar to start designing your truss structure");
-}
-
-void MainWindow::onOperationFailed(const QString& errorMessage) {
-    showErrorMessage(errorMessage);
-    m_statusLabel->setText("Operation failed");
-}
-
-void MainWindow::exitApplication() {
-    close();
-}
-
-void MainWindow::onTrussModified() {
-    auto handle = getCurrentTrussHandle();
-    if (handle == 0) {
-        enableAnalysis(false);
-        return;
-    }
-
-    const auto& truss = m_trussService.getTrussView(handle);
-    bool hasStructure = truss.getNodeCount() > 0 && truss.getMemberCount() > 0;
-    enableAnalysis(hasStructure);
-
-    if (hasStructure) {
-        // Format status message using Presenter
-        auto statusData = m_trussDataPresenter.formatStatus(truss);
-        m_statusLabel->setText(statusData.statusMessage);
-    }
-
-    // Mark project as modified
-    m_projectController.markAsModified();
-}
-
-void MainWindow::updateStatusMessage(const QString& message) {
-    m_statusLabel->setText(message);
-}
-
-void MainWindow::updateResultsDisplay() {
-    auto trussHandle = m_drawingWidget->getTrussHandle();
-    m_resultsWidget->updateResults(trussHandle);
-
-    // Update deformed truss visualization
-    if (m_hasResults) {
-        const auto& trussView = m_trussService.getTrussView(trussHandle);
-        const auto& resultsView = m_analysisService.getResultsView(m_lastResultsHandle);
-        m_deformedTrussWidget->setData(trussView, resultsView, m_lastResultsHandle);
-    }
-}
-
-void MainWindow::showErrorMessage(const QString& message) {
-    QMessageBox::critical(this, "Error", message);
-}
-
-void MainWindow::showInfoMessage(const QString& message) {
-    QMessageBox::information(this, "Analysis Complete", message);
-}
-
-void MainWindow::enableAnalysis(bool enable) {
-    m_analyzeButton->setEnabled(enable);
-    if (enable) {
-        m_analyzeButton->setToolTip("Run structural analysis on the current design");
-    } else {
-        m_analyzeButton->setToolTip(
-            "Create a structure with nodes, members, supports, and loads to enable analysis");
-    }
+    m_canvas->setMode(mode);
 }
 
 }  // namespace truss::gui
