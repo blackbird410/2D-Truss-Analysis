@@ -11,6 +11,7 @@
 
 #pragma once
 
+#include "application/truss_edit_dtos.hpp"
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
 #include "gui/state/workspace_state.hpp"
@@ -31,6 +32,8 @@ using truss::core::NodeId;
 using truss::core::SupportType;
 using truss::core::interfaces::MemberView;
 using truss::core::interfaces::NodeView;
+using truss::application::MaterialSpec;
+using truss::application::SectionSpec;
 
 /**
  * @brief Context-sensitive property editor panel (right side of main window).
@@ -63,6 +66,15 @@ signals:
     void supportChangeRequested(NodeId nodeId, SupportType newType);
     void loadChangeRequested(NodeId nodeId, Force2D load);
 
+    /**
+     * @brief Emitted when the user clicks "Apply Changes" on the member editor.
+     *
+     * Carries the selected member ID plus the new material and section specs.
+     * Connect to InspectorController::onMemberPropertiesChangeRequested.
+     */
+    void memberPropertiesChangeRequested(MemberId memberId,
+                                         MaterialSpec mat,
+                                         SectionSpec sec);
 private slots:
     void onApplyLoadClicked();
     void onSupportComboChanged(int index);
