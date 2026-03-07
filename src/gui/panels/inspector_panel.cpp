@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
+#include <QFrame>
 #include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
@@ -380,6 +381,37 @@ void InspectorPanel::onApplyLoadClicked() {
 
 void InspectorPanel::onSupportComboChanged(int index) {
     emit supportChangeRequested(m_selectedNodeId, static_cast<SupportType>(index));
+}
+
+// ---------------------------------------------------------------------------
+// Material library integration
+// ---------------------------------------------------------------------------
+
+void InspectorPanel::populateMaterialLibrary(const std::vector<MaterialPreset>& materials,
+                                              const std::vector<SectionPreset>& sections) {
+    // Store presets; the material combo is populated lazily by
+    // ensureMemberEditorInteractive() on first showMemberEditor() call.
+    m_materialPresets = materials;
+    m_sectionPresets  = sections;
+
+    // If the interactive widgets are already live (e.g. if populateMaterialLibrary
+    // is called a second time after the member editor was opened), repopulate now.
+    if (m_materialCombo) {
+        QSignalBlocker bMat{m_materialCombo};
+        m_materialCombo->clear();
+        for (const auto& preset : m_materialPresets) {
+            const QString name = QString::fromStdString(preset.name);
+            const QString tip  = QStringLiteral("E = %1 GPa \u2014 %2")
+                                     .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
+                                     .arg(QString::fromStdString(preset.description));
+            m_materialCombo->addItem(name);
+            m_materialCombo->setItemData(m_materialCombo->count() - 1, tip, Qt::ToolTipRole);
+        }
+        if (!m_materialPresets.empty()) {
+            m_memberE_Label->setText(
+                QString::number(m_materialPresets[0].properties.youngModulus / 1e9, 'f', 1));
+        }
+    }
 }
 
 void InspectorPanel::onApplyMemberClicked() {

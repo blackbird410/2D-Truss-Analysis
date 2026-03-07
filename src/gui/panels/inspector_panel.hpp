@@ -11,12 +11,15 @@
 
 #pragma once
 
+#include "application/material_library_service.hpp"
 #include "application/truss_edit_dtos.hpp"
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
 #include "gui/state/workspace_state.hpp"
 
 #include <QStackedWidget>
+
+#include <vector>
 
 class QLabel;
 class QComboBox;
@@ -42,12 +45,17 @@ using truss::application::SectionSpec;
  * @brief Context-sensitive property editor panel (right side of main window).
  *
  * Uses QStackedWidget internally with three pages:
- *  - Page 0 (kPageNoSelection):  Prompt to select a canvas element.
+ *  - Page 0 (kPageNoSelection):  Prompt to select a canvas element + default
+ *                                 new-member material/section picker.
  *  - Page 1 (kPageNodeEditor):   Position/support/load editor for a selected node.
- *  - Page 2 (kPageMemberEditor): Read-only material/geometry/result view for a member.
+ *  - Page 2 (kPageMemberEditor): Editable material/section + read-only results
+ *                                 for a selected member.
  *
- * The panel emits signals when the user modifies a support type or applies a
- * load; the controlling InspectorController connects those signals to the facade.
+ * Call populateMaterialLibrary() once after construction to fill the material
+ * and section combo boxes on both pages from the application's MaterialLibraryService.
+ *
+ * The panel emits signals when the user modifies properties; the controlling
+ * InspectorController connects those signals to the facade.
  */
 class InspectorPanel : public QStackedWidget {
     Q_OBJECT
@@ -58,6 +66,19 @@ public:
     static constexpr int kPageMemberEditor = 2;
 
     explicit InspectorPanel(QWidget* parent = nullptr);
+
+    /**
+     * @brief Populate material and section combo boxes from the library.
+     *
+     * Must be called once after construction (from MainWindow::connectSignals)
+     * before any member can be selected.  Fills the combo boxes on both the
+     * no-selection (default) page and the member-editor page.
+     *
+     * @param materials  All material presets from MaterialLibraryService.
+     * @param sections   All section presets from MaterialLibraryService.
+     */
+    void populateMaterialLibrary(const std::vector<MaterialPreset>& materials,
+                                 const std::vector<SectionPreset>& sections);
 
 public slots:
     void showNoSelection();
