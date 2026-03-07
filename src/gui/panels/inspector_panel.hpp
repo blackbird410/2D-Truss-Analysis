@@ -30,16 +30,16 @@ class QPushButton;
 
 namespace truss::gui {
 
+using truss::application::MaterialPreset;
+using truss::application::MaterialSpec;
+using truss::application::SectionPreset;
+using truss::application::SectionSpec;
 using truss::core::Force2D;
 using truss::core::MemberId;
 using truss::core::NodeId;
 using truss::core::SupportType;
 using truss::core::interfaces::MemberView;
 using truss::core::interfaces::NodeView;
-using truss::application::MaterialPreset;
-using truss::application::SectionPreset;
-using truss::application::MaterialSpec;
-using truss::application::SectionSpec;
 
 /**
  * @brief Context-sensitive property editor panel (right side of main window).
@@ -96,9 +96,7 @@ signals:
      * Carries the selected member ID plus the new material and section specs.
      * Connect to InspectorController::onMemberPropertiesChangeRequested.
      */
-    void memberPropertiesChangeRequested(MemberId memberId,
-                                         MaterialSpec mat,
-                                         SectionSpec sec);
+    void memberPropertiesChangeRequested(MemberId memberId, MaterialSpec mat, SectionSpec sec);
 
     /**
      * @brief Emitted when the default new-member material or area changes.
@@ -153,15 +151,15 @@ private:
 
     // Member editor widgets
     QLabel* m_memberIdLabel{nullptr};
-    QComboBox* m_materialCombo{nullptr};    ///< Material selection (editable)
-    QLabel* m_memberE_Label{nullptr};       ///< Young's modulus (auto-filled, read-only)
-    QDoubleSpinBox* m_memberA_Spin{nullptr};///< Cross-section area in cm² (editable)
+    QComboBox* m_materialCombo{nullptr};      ///< Material selection (editable)
+    QLabel* m_memberE_Label{nullptr};         ///< Young's modulus (auto-filled, read-only)
+    QDoubleSpinBox* m_memberA_Spin{nullptr};  ///< Cross-section area in cm² (editable)
     QLabel* m_memberLenLabel{nullptr};
     QLabel* m_memberAngleLabel{nullptr};
     QLabel* m_memberForceLabel{nullptr};
     QLabel* m_memberStressLabel{nullptr};
     QLabel* m_memberRatioLabel{nullptr};
-    QPushButton* m_applyMemberBtn{nullptr}; ///< Commit property changes
+    QPushButton* m_applyMemberBtn{nullptr};  ///< Commit property changes
 
     // Retained state
     NodeId m_selectedNodeId{0};

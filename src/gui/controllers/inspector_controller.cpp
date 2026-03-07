@@ -90,10 +90,9 @@ void InspectorController::onLoadChangeRequested(NodeId nodeId, Force2D load) {
     }
 }
 
-void InspectorController::onMemberPropertiesChangeRequested(
-    MemberId memberId,
-    truss::application::MaterialSpec mat,
-    truss::application::SectionSpec sec) {
+void InspectorController::onMemberPropertiesChangeRequested(MemberId memberId,
+                                                            truss::application::MaterialSpec mat,
+                                                            truss::application::SectionSpec sec) {
     if (m_trussHandle == 0) {
         emit operationFailed(QStringLiteral("No active truss."));
         return;
@@ -102,7 +101,7 @@ void InspectorController::onMemberPropertiesChangeRequested(
     // Remove existing member, then re-add with updated properties.
     // The new member receives a fresh ID from the facade.
     const NodeId startId = m_currentMemberView.startNodeId;
-    const NodeId endId   = m_currentMemberView.endNodeId;
+    const NodeId endId = m_currentMemberView.endNodeId;
 
     if (startId == 0 || endId == 0) {
         emit operationFailed(QStringLiteral("Cannot update member: node IDs unavailable."));
@@ -111,9 +110,8 @@ void InspectorController::onMemberPropertiesChangeRequested(
 
     auto removeResult = m_facade.removeMember(m_trussHandle, memberId);
     if (!removeResult) {
-        emit operationFailed(
-            QString::fromStdString("Failed to remove member for update: " +
-                                   removeResult.errorMessage));
+        emit operationFailed(QString::fromStdString("Failed to remove member for update: " +
+                                                    removeResult.errorMessage));
         return;
     }
 
@@ -122,7 +120,7 @@ void InspectorController::onMemberPropertiesChangeRequested(
         // Update cached view so subsequent apply-clicks use the new topology.
         m_currentMemberView.id = addResult.value;
         m_currentMemberView.startNodeId = startId;
-        m_currentMemberView.endNodeId   = endId;
+        m_currentMemberView.endNodeId = endId;
         emit trussModified(m_trussHandle);
     } else {
         emit operationFailed(

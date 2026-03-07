@@ -67,7 +67,7 @@ public slots:
      * @param sec  New default section spec (area in m², profile label).
      */
     void onDefaultMaterialChanged(truss::application::MaterialSpec mat,
-                                   truss::application::SectionSpec sec);
+                                  truss::application::SectionSpec sec);
 
 signals:
     void trussModified(std::size_t trussHandle);
@@ -80,7 +80,7 @@ private:
     // Current default material / section for new members.
     // Seeded to Steel / 100 cm² on construction; updated via onDefaultMaterialChanged.
     truss::application::MaterialSpec m_currentMat{200e9, "Steel"};
-    truss::application::SectionSpec  m_currentSec{100e-4, "Generic"};
+    truss::application::SectionSpec m_currentSec{100e-4, "Generic"};
 };
 
 }  // namespace truss::gui::ctrl

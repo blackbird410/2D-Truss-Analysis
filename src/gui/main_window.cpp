@@ -594,9 +594,9 @@ void MainWindow::connectSignals() {
         if (const auto steel = library.getMaterial("Steel")) {
             application::MaterialSpec mat;
             mat.youngsModulusPa = steel->youngModulus;
-            mat.name            = "Steel";
+            mat.name = "Steel";
             application::SectionSpec sec;
-            sec.areaM2  = 100e-4;   // 100 cm²
+            sec.areaM2 = 100e-4;  // 100 cm²
             sec.profile = "Generic";
             canvasCtrl->onDefaultMaterialChanged(mat, sec);
         }

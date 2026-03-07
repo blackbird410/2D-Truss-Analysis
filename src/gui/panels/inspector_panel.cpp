@@ -205,8 +205,8 @@ void InspectorPanel::buildMemberEditorPage() {
 
     // Store layout/box pointers for use by ensureMemberEditorInteractive()
     m_memberFormLayout = form;
-    m_memberFormBox    = formBox;
-    m_memberBtnLayout  = btnLayout;
+    m_memberFormBox = formBox;
+    m_memberBtnLayout = btnLayout;
 
     addWidget(page);  // index 2
 }
@@ -237,7 +237,8 @@ void InspectorPanel::ensureMemberEditorInteractive() {
     m_memberFormLayout->insertRow(3, QStringLiteral("A [cm\u00b2]:"), m_memberA_Spin);
 
     // ---- Apply button ----
-    m_applyMemberBtn = new QPushButton{QStringLiteral("Apply Changes"), m_memberFormBox->parentWidget()};
+    m_applyMemberBtn = new QPushButton{QStringLiteral("Apply Changes"),
+                                       m_memberFormBox->parentWidget()};
     m_applyMemberBtn->setObjectName(QStringLiteral("inspector_applyMemberBtn"));
     m_applyMemberBtn->setToolTip(
         QStringLiteral("Update member with selected material and area.  "
@@ -261,9 +262,9 @@ void InspectorPanel::ensureMemberEditorInteractive() {
         QSignalBlocker bMat{m_materialCombo};
         for (const auto& preset : m_materialPresets) {
             const QString name = QString::fromStdString(preset.name);
-            const QString tip  = QStringLiteral("E = %1 GPa \u2014 %2")
-                                     .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
-                                     .arg(QString::fromStdString(preset.description));
+            const QString tip = QStringLiteral("E = %1 GPa \u2014 %2")
+                                    .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
+                                    .arg(QString::fromStdString(preset.description));
             m_materialCombo->addItem(name);
             m_materialCombo->setItemData(m_materialCombo->count() - 1, tip, Qt::ToolTipRole);
         }
@@ -311,9 +312,11 @@ void InspectorPanel::showMemberEditor(const MemberView& member) {
     // ---- Material combo: pre-select the closest match by Young's modulus ----
     if (!m_materialPresets.empty()) {
         int bestIdx = 0;
-        double bestDiff = std::abs(m_materialPresets[0].properties.youngModulus - member.youngModulus);
+        double bestDiff = std::abs(m_materialPresets[0].properties.youngModulus -
+                                   member.youngModulus);
         for (int i = 1; i < static_cast<int>(m_materialPresets.size()); ++i) {
-            double diff = std::abs(m_materialPresets[i].properties.youngModulus - member.youngModulus);
+            double diff = std::abs(m_materialPresets[i].properties.youngModulus -
+                                   member.youngModulus);
             if (diff < bestDiff) {
                 bestDiff = diff;
                 bestIdx = i;
@@ -364,9 +367,12 @@ void InspectorPanel::onStateChanged(const truss::gui::state::WorkspaceState& sta
     m_applyLoadBtn->setEnabled(editable);
 
     // Member editor (widgets may not yet be lazily created)
-    if (m_materialCombo) m_materialCombo->setEnabled(editable);
-    if (m_memberA_Spin) m_memberA_Spin->setEnabled(editable);
-    if (m_applyMemberBtn) m_applyMemberBtn->setEnabled(editable);
+    if (m_materialCombo)
+        m_materialCombo->setEnabled(editable);
+    if (m_memberA_Spin)
+        m_memberA_Spin->setEnabled(editable);
+    if (m_applyMemberBtn)
+        m_applyMemberBtn->setEnabled(editable);
 }
 
 // ---------------------------------------------------------------------------
@@ -388,11 +394,11 @@ void InspectorPanel::onSupportComboChanged(int index) {
 // ---------------------------------------------------------------------------
 
 void InspectorPanel::populateMaterialLibrary(const std::vector<MaterialPreset>& materials,
-                                              const std::vector<SectionPreset>& sections) {
+                                             const std::vector<SectionPreset>& sections) {
     // Store presets; the material combo is populated lazily by
     // ensureMemberEditorInteractive() on first showMemberEditor() call.
     m_materialPresets = materials;
-    m_sectionPresets  = sections;
+    m_sectionPresets = sections;
 
     // If the interactive widgets are already live (e.g. if populateMaterialLibrary
     // is called a second time after the member editor was opened), repopulate now.
@@ -401,9 +407,9 @@ void InspectorPanel::populateMaterialLibrary(const std::vector<MaterialPreset>& 
         m_materialCombo->clear();
         for (const auto& preset : m_materialPresets) {
             const QString name = QString::fromStdString(preset.name);
-            const QString tip  = QStringLiteral("E = %1 GPa \u2014 %2")
-                                     .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
-                                     .arg(QString::fromStdString(preset.description));
+            const QString tip = QStringLiteral("E = %1 GPa \u2014 %2")
+                                    .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
+                                    .arg(QString::fromStdString(preset.description));
             m_materialCombo->addItem(name);
             m_materialCombo->setItemData(m_materialCombo->count() - 1, tip, Qt::ToolTipRole);
         }

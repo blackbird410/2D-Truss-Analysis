@@ -80,7 +80,7 @@ void CanvasController::onMemberDeleteRequested(truss::core::MemberId id) {
 }
 
 void CanvasController::onDefaultMaterialChanged(truss::application::MaterialSpec mat,
-                                                 truss::application::SectionSpec sec) {
+                                                truss::application::SectionSpec sec) {
     m_currentMat = mat;
     m_currentSec = sec;
 }

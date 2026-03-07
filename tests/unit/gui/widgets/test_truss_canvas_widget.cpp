@@ -460,14 +460,14 @@ public:
         m_nodes.push_back(n);
     }
 
-    const std::string&         getName()        const override { return m_name; }
-    std::vector<NodeView>      getNodeViews()   const override { return m_nodes; }
-    std::size_t                getNodeCount()   const override { return m_nodes.size(); }
-    std::vector<MemberView>    getMemberViews() const override { return {}; }
-    std::size_t                getMemberCount() const override { return 0; }
-    std::size_t                getTotalDofs()   const override { return 2; }
-    std::size_t                getFreeDofs()    const override { return 2; }
-    std::size_t                getConstrainedDofs() const override { return 0; }
+    const std::string& getName() const override { return m_name; }
+    std::vector<NodeView> getNodeViews() const override { return m_nodes; }
+    std::size_t getNodeCount() const override { return m_nodes.size(); }
+    std::vector<MemberView> getMemberViews() const override { return {}; }
+    std::size_t getMemberCount() const override { return 0; }
+    std::size_t getTotalDofs() const override { return 2; }
+    std::size_t getFreeDofs() const override { return 2; }
+    std::size_t getConstrainedDofs() const override { return 0; }
 
 private:
     std::string m_name{"DeformedNode"};
@@ -478,8 +478,7 @@ private:
 
 TEST_F(TrussCanvasWidgetTest, AutoDispScale_NoView_ReturnsZero) {
     // Without any view attached, autoDispScale() must return 0 (no-op).
-    EXPECT_DOUBLE_EQ(widget->autoDispScale(), 0.0)
-        << "Expected 0.0 when no view is attached";
+    EXPECT_DOUBLE_EQ(widget->autoDispScale(), 0.0) << "Expected 0.0 when no view is attached";
 }
 
 TEST_F(TrussCanvasWidgetTest, AutoDispScale_ZeroDisplacements_ReturnsZero) {
@@ -554,4 +553,3 @@ TEST_F(TrussCanvasWidgetTest, DeformedShapeWithClampedScale_DoesNotCrash) {
         EXPECT_FALSE(px.isNull());
     });
 }
-
