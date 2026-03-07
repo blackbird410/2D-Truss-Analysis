@@ -840,15 +840,21 @@ void TrussCanvasWidget::wheelEvent(QWheelEvent* event) {
     event->accept();
 }
 
+void TrussCanvasWidget::triggerDeleteSelected() {
+    if (m_selectedNodeId != 0) {
+        emit nodeDeleteRequested(m_selectedNodeId);
+        m_selectedNodeId = 0;
+        update();
+    } else if (m_selectedMemberId != 0) {
+        emit memberDeleteRequested(m_selectedMemberId);
+        m_selectedMemberId = 0;
+        update();
+    }
+}
+
 void TrussCanvasWidget::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace) {
-        if (m_selectedNodeId != 0) {
-            emit nodeDeleteRequested(m_selectedNodeId);
-            m_selectedNodeId = 0;
-        } else if (m_selectedMemberId != 0) {
-            emit memberDeleteRequested(m_selectedMemberId);
-            m_selectedMemberId = 0;
-        }
+        triggerDeleteSelected();
         event->accept();
         return;
     }
