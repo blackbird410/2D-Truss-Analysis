@@ -300,13 +300,43 @@ void InspectorPanel::showNodeEditor(const NodeView& node) {
 }
 
 void InspectorPanel::showMemberEditor(const MemberView& member) {
+    // Lazily create interactive widgets on first use.
+    ensureMemberEditorInteractive();
+
     m_selectedMemberId = member.id;
 
     m_memberIdLabel->setText(QString::number(member.id));
-    m_memberE_Label->setText(QString::number(member.youngModulus / 1e9, 'f', 1));
-    m_memberA_Label->setText(QString::number(member.area * 1e4, 'f', 2));
+
+    // ---- Material combo: pre-select the closest match by Young's modulus ----
+    if (!m_materialPresets.empty()) {
+        int bestIdx = 0;
+        double bestDiff = std::abs(m_materialPresets[0].properties.youngModulus - member.youngModulus);
+        for (int i = 1; i < static_cast<int>(m_materialPresets.size()); ++i) {
+            double diff = std::abs(m_materialPresets[i].properties.youngModulus - member.youngModulus);
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                bestIdx = i;
+            }
+        }
+        QSignalBlocker blockCombo{m_materialCombo};
+        m_materialCombo->setCurrentIndex(bestIdx);
+        m_memberE_Label->setText(
+            QString::number(m_materialPresets[bestIdx].properties.youngModulus / 1e9, 'f', 1));
+    } else {
+        m_memberE_Label->setText(QString::number(member.youngModulus / 1e9, 'f', 1));
+    }
+
+    // ---- Area spinbox: convert m² → cm² for display ----
+    {
+        QSignalBlocker blockSpin{m_memberA_Spin};
+        m_memberA_Spin->setValue(member.area * 1e4);
+    }
+
+    // ---- Read-only geometry ----
     m_memberLenLabel->setText(QString::number(member.length, 'f', 4));
     m_memberAngleLabel->setText(QString::number(qRadiansToDegrees(member.angle), 'f', 2));
+
+    // ---- Analysis results (dash if not yet analysed) ----
     m_memberForceLabel->setText(member.axialForce != 0.0
                                     ? QString::number(member.axialForce / 1000.0, 'f', 3)
                                     : QStringLiteral("\u2014"));
