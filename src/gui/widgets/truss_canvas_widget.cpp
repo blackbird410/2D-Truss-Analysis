@@ -720,6 +720,10 @@ void TrussCanvasWidget::mousePressEvent(QMouseEvent* event) {
                 m_selectedMemberId = 0;
                 emit selectionCleared();
             }
+            // Explicitly reclaim keyboard focus so the Delete key shortcut
+            // (handled in keyPressEvent) remains available immediately after
+            // selection, even if a Qt signal handler shifted focus elsewhere.
+            setFocus(Qt::MouseFocusReason);
             update();
             break;
         }
@@ -840,15 +844,21 @@ void TrussCanvasWidget::wheelEvent(QWheelEvent* event) {
     event->accept();
 }
 
+void TrussCanvasWidget::triggerDeleteSelected() {
+    if (m_selectedNodeId != 0) {
+        emit nodeDeleteRequested(m_selectedNodeId);
+        m_selectedNodeId = 0;
+        update();
+    } else if (m_selectedMemberId != 0) {
+        emit memberDeleteRequested(m_selectedMemberId);
+        m_selectedMemberId = 0;
+        update();
+    }
+}
+
 void TrussCanvasWidget::keyPressEvent(QKeyEvent* event) {
     if (event->key() == Qt::Key_Delete || event->key() == Qt::Key_Backspace) {
-        if (m_selectedNodeId != 0) {
-            emit nodeDeleteRequested(m_selectedNodeId);
-            m_selectedNodeId = 0;
-        } else if (m_selectedMemberId != 0) {
-            emit memberDeleteRequested(m_selectedMemberId);
-            m_selectedMemberId = 0;
-        }
+        triggerDeleteSelected();
         event->accept();
         return;
     }

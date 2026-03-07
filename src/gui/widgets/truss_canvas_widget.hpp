@@ -122,6 +122,17 @@ public slots:
     void setMode(ToolMode mode);
 
     /**
+     * @brief Delete the currently selected node or member, if any.
+     *
+     * Emits @c nodeDeleteRequested or @c memberDeleteRequested and clears
+     * the internal selection state.  Safe to call when nothing is selected
+     * (does nothing).  This is a public slot so the application-level
+     * keyboard event filter in @c MainWindow can dispatch the Delete key
+     * without requiring the canvas to hold keyboard focus.
+     */
+    void triggerDeleteSelected();
+
+    /**
      * @brief Compute the bounding box of all nodes and fit the viewport.
      *
      * Adds 15 % padding around the tight bounding box so structural geometry
