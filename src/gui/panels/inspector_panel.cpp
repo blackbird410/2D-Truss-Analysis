@@ -258,6 +258,20 @@ void InspectorPanel::onSupportComboChanged(int index) {
     emit supportChangeRequested(m_selectedNodeId, static_cast<SupportType>(index));
 }
 
+void InspectorPanel::onApplyMemberClicked() {
+    const int idx = m_materialCombo->currentIndex();
+    emit memberPropertiesChangeRequested(m_selectedMemberId,
+                                         materialSpecFromIndex(idx),
+                                         sectionSpecFromArea(m_memberA_Spin->value()));
+}
+
+void InspectorPanel::onMaterialComboChanged(int index) {
+    if (index >= 0 && index < static_cast<int>(m_materialPresets.size())) {
+        m_memberE_Label->setText(
+            QString::number(m_materialPresets[index].properties.youngModulus / 1e9, 'f', 1));
+    }
+}
+
 // ---------------------------------------------------------------------------
 // Helpers
 // ---------------------------------------------------------------------------

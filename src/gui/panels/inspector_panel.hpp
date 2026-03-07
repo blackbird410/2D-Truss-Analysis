@@ -21,8 +21,8 @@
 class QLabel;
 class QComboBox;
 class QDoubleSpinBox;
-class QPushButton;
 class QFormLayout;
+class QPushButton;
 
 namespace truss::gui {
 
@@ -89,6 +89,8 @@ signals:
 private slots:
     void onApplyLoadClicked();
     void onSupportComboChanged(int index);
+    void onApplyMemberClicked();
+    void onMaterialComboChanged(int index);
 
 private:
     void buildNoSelectionPage();
@@ -115,13 +117,15 @@ private:
 
     // Member editor widgets
     QLabel* m_memberIdLabel{nullptr};
-    QLabel* m_memberE_Label{nullptr};
-    QLabel* m_memberA_Label{nullptr};
+    QComboBox* m_materialCombo{nullptr};    ///< Material selection (editable)
+    QLabel* m_memberE_Label{nullptr};       ///< Young's modulus (auto-filled, read-only)
+    QDoubleSpinBox* m_memberA_Spin{nullptr};///< Cross-section area in cm² (editable)
     QLabel* m_memberLenLabel{nullptr};
     QLabel* m_memberAngleLabel{nullptr};
     QLabel* m_memberForceLabel{nullptr};
     QLabel* m_memberStressLabel{nullptr};
     QLabel* m_memberRatioLabel{nullptr};
+    QPushButton* m_applyMemberBtn{nullptr}; ///< Commit property changes
 
     // Retained state
     NodeId m_selectedNodeId{0};
