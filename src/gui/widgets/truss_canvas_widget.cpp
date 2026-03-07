@@ -60,6 +60,32 @@ constexpr int kRedR = 0xEA, kRedG = 0x43, kRedB = 0x35;        // #EA4335
 /// Matches typical structural grid spacing; keeps coordinates engineer-friendly.
 constexpr double kGridSnapStep = 0.25;
 
+// ── Deformed-shape display scaling ───────────────────────────────────────────
+//
+// Professional structural analysis tools (SAP2000, ABAQUS/CAE, RFEM) render
+// deformed shapes with an amplification factor that achieves a target *visual*
+// displacement equal to ~10 % of the model's bounding-box span.  To prevent
+// both:
+//   (a) misleading hyperbolic exaggeration when displacements are tiny (very
+//       stiff structures or early-stage pre-analysis checks), and
+//   (b) visual shrinkage when real displacements already exceed the target,
+// the computed factor is clamped to the range [kMinDispScale, kMaxDispScale].
+//
+// kMaxDispScale = 500 matches the practical upper limit in ABAQUS/CAE and is
+// consistent with the "Auto" deformation limit recommended in SAP2000 for steel
+// structures (200–500×).  kMinDispScale = 1.0 ensures the deformed shape is
+// never depicted as smaller than the true structural response.
+
+/// Target: render the maximum nodal displacement as this fraction of the span.
+constexpr double kDispVisualFraction = 0.10;
+
+/// Floor: never shrink real displacements that already exceed the visual target.
+constexpr double kMinDispScale = 1.0;
+
+/// Cap: prevents misleading exaggeration for very stiff / lightly loaded
+/// structures.  Consistent with ABAQUS/CAE auto-scale upper limit.
+constexpr double kMaxDispScale = 500.0;
+
 /// 3-stop colour interpolation: green(0) → amber(0.5) → red(1).
 QColor lerpStressColour(double t) {
     t = std::clamp(t, 0.0, 1.0);
@@ -333,8 +359,23 @@ void TrussCanvasWidget::drawMembers(QPainter& p) const {
         p.drawText(mid + QPointF(4.0, -3.0), QString::number(mv.id));
     }
 
-    // ---- Pass 3: displacement scale factor annotation ----
+    // ---- Pass 3: deformation scale annotation ──────────────────────────────
+    //
+    // Two values are displayed so the user can relate the visual exaggeration to
+    // the physical response:
+    //   • Disp. scale  — the amplification factor applied to δ in the drawing
+    //   • Max δ        — the true maximum nodal displacement in mm
+    //
+    // E.g. "Disp. scale: 45.0×   Max δ: 1.234 mm" tells the engineer that the
+    // drawn deflection is 45× larger than reality, and the real peak deflection
+    // is 1.234 mm — enough context to judge serviceability at a glance.
     if (showDeformed && dispScale > 0.0) {
+        // Re-use the 'nodes' vector already obtained at the top of this function.
+        double maxDisp = 0.0;
+        for (const auto& nv : nodes)
+            maxDisp = std::max(maxDisp, std::hypot(nv.dx, nv.dy));
+        const double maxDispMm = maxDisp * 1000.0;  // convert m → mm
+
         const QColor infoCol = m_isDark ? QColor(kSupportR, kSupportG, kSupportB)
                                         : QColor(0x15, 0x65, 0xC0);  // #1565C0 navy
         p.setPen(QPen(infoCol));
@@ -343,7 +384,9 @@ void TrussCanvasWidget::drawMembers(QPainter& p) const {
         p.setFont(f);
         p.drawText(QRect(8, 28, width() - 16, 20),
                    Qt::AlignLeft | Qt::AlignTop,
-                   QStringLiteral("Disp. scale: %1×").arg(dispScale, 0, 'g', 3));
+                   QStringLiteral("Disp. scale: %1×   Max δ: %2 mm")
+                       .arg(dispScale, 0, 'g', 4)
+                       .arg(maxDispMm, 0, 'g', 4));
     }
 }
 
@@ -500,8 +543,19 @@ QPointF TrussCanvasWidget::toScreen(double wx, double wy) const {
 
 double TrussCanvasWidget::autoDispScale() const {
     // Computes an amplification factor so that the maximum nodal displacement
-    // is rendered as 10 % of the current visible world span.  Returns 0 when
-    // no displacements are available (pre-analysis or all-zero).
+    // is rendered as kDispVisualFraction (10 %) of the current visible world span,
+    // then clamps the result to [kMinDispScale, kMaxDispScale].
+    //
+    // Clamping rationale (see constant definitions above):
+    //   Upper cap (500×): A 4 m truss with δ_max = 0.01 mm would otherwise yield
+    //     scale = 0.10 × 4 / 0.00001 = 40 000×, rendering sub-micron elastic
+    //     deformations as metre-scale displacements — physically misleading.
+    //   Lower floor (1×): When δ_max > 10 % of the model span the structure
+    //     undergoes large displacements; showing them at 1:1 is accurate and
+    //     avoids artefactually shrinking the deformed geometry.
+    //
+    // Returns 0.0 when no displacement data are available (pre-analysis or
+    // all-zero DOF results).
     if (!m_view)
         return 0.0;
     double maxDisp = 0.0;
@@ -509,7 +563,9 @@ double TrussCanvasWidget::autoDispScale() const {
         maxDisp = std::max(maxDisp, std::hypot(nv.dx, nv.dy));
     if (maxDisp < 1e-12)
         return 0.0;
-    return 0.1 * std::max(m_worldBounds.width(), m_worldBounds.height()) / maxDisp;
+    const double span = std::max(m_worldBounds.width(), m_worldBounds.height());
+    const double ideal = kDispVisualFraction * span / maxDisp;
+    return std::clamp(ideal, kMinDispScale, kMaxDispScale);
 }
 
 void TrussCanvasWidget::rebuildTransform() {
