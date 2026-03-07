@@ -385,3 +385,53 @@ TEST_F(TrussCanvasWidgetTest, TwoLeftClicksInAddMemberModeEmitsMemberDrawRequest
     // verify no crash.
     SUCCEED();
 }
+
+// ============================================================
+// Tests — Phase 7: triggerDeleteSelected (keyboard shortcut slot)
+// ============================================================
+
+TEST_F(TrussCanvasWidgetTest, TriggerDeleteSelectedWithNoSelectionDoesNotCrash) {
+    // Nothing is selected; triggerDeleteSelected() must be a silent no-op.
+    QSignalSpy spyNode(widget.get(), &TrussCanvasWidget::nodeDeleteRequested);
+    QSignalSpy spyMember(widget.get(), &TrussCanvasWidget::memberDeleteRequested);
+
+    ASSERT_NO_FATAL_FAILURE(widget->triggerDeleteSelected());
+
+    EXPECT_EQ(spyNode.count(), 0)
+        << "nodeDeleteRequested must not fire when nothing is selected";
+    EXPECT_EQ(spyMember.count(), 0)
+        << "memberDeleteRequested must not fire when nothing is selected";
+}
+
+TEST_F(TrussCanvasWidgetTest, TriggerDeleteSelectedCalledTwiceDoesNotCrash) {
+    // Two consecutive calls must both be safe no-ops (no selection either time).
+    ASSERT_NO_FATAL_FAILURE({
+        widget->triggerDeleteSelected();
+        widget->triggerDeleteSelected();
+    });
+}
+
+TEST_F(TrussCanvasWidgetTest, DeleteKeyPressWithCanvasFocusCallsTriggerDeleteSelected) {
+    // When the canvas widget has keyboard focus, pressing Delete must route
+    // through keyPressEvent → triggerDeleteSelected().  With no selection the
+    // signal count must remain 0 (no crash, no spurious emission).
+    QSignalSpy spyNode(widget.get(), &TrussCanvasWidget::nodeDeleteRequested);
+    QSignalSpy spyMember(widget.get(), &TrussCanvasWidget::memberDeleteRequested);
+
+    widget->show();
+    widget->setFocus();
+    QTest::keyClick(widget.get(), Qt::Key_Delete);
+
+    // With no selection, no signals should be emitted — but no crash either.
+    EXPECT_EQ(spyNode.count(), 0);
+    EXPECT_EQ(spyMember.count(), 0);
+}
+
+TEST_F(TrussCanvasWidgetTest, BackspaceKeyPressWithCanvasFocusIsHandledWithoutCrash) {
+    // Backspace is treated identically to Delete inside triggerDeleteSelected().
+    widget->show();
+    widget->setFocus();
+    ASSERT_NO_FATAL_FAILURE(QTest::keyClick(widget.get(), Qt::Key_Backspace));
+}
+
+
