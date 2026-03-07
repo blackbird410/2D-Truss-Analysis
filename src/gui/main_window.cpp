@@ -31,18 +31,23 @@
 #include "gui/theme_loader.hpp"
 #include "gui/widgets/truss_canvas_widget.hpp"
 
+#include <QAbstractSpinBox>
 #include <QAction>
 #include <QActionGroup>
 #include <QApplication>
 #include <QCloseEvent>
 #include <QFileDialog>
 #include <QIcon>
+#include <QKeyEvent>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMenu>
 #include <QMenuBar>
 #include <QMessageBox>
+#include <QPlainTextEdit>
 #include <QSplitter>
 #include <QStatusBar>
+#include <QTextEdit>
 #include <QToolBar>
 #include <QVBoxLayout>
 #include <QWidget>
@@ -237,6 +242,22 @@ void MainWindow::setupToolBar() {
     m_actToolDelete = tb->addAction(QIcon(QStringLiteral(":/icons/delete.svg")),
                                     QStringLiteral("Delete"));
 
+    // Keyboard shortcuts for tool-mode switching.
+    //
+    // N, M, Esc are NOT registered via QAction::setShortcut() because
+    // Qt::WindowShortcut resolution for printable single-character keys can
+    // be blocked when a child widget (QTableView, QDoubleSpinBox) holds focus
+    // and Qt marks the shortcut as "ambiguous".  Instead, these keys are
+    // dispatched centrally by MainWindow::eventFilter() which applies an
+    // explicit text-input focus guard.
+    //
+    // Tooltips carry the key hint for user discoverability (replacing what
+    // QAction would normally auto-append from setShortcut()).
+    m_actToolSelect->setToolTip(QStringLiteral("Select (Esc)"));
+    m_actToolNode->setToolTip(QStringLiteral("Add Node (N)"));
+    m_actToolMember->setToolTip(QStringLiteral("Add Member (M)"));
+    m_actToolDelete->setToolTip(QStringLiteral("Delete selected (Delete)"));
+
     for (auto* act : {m_actToolSelect, m_actToolNode, m_actToolMember, m_actToolDelete}) {
         act->setCheckable(true);
         toolGroup->addAction(act);
@@ -268,6 +289,14 @@ void MainWindow::setupToolBar() {
         modeGroup->addAction(act);
     }
     m_actModeGeometry->setChecked(true);
+
+    // Zoom-to-fit.
+    // Z is dispatched by MainWindow::eventFilter() (same reasoning as N/M/Esc).
+    // The tooltip provides the keyboard hint without a registered shortcut.
+    tb->addSeparator();
+    m_actZoomFit = tb->addAction(QIcon(QStringLiteral(":/icons/zoom_fit.svg")),
+                                 QStringLiteral("Zoom to Fit"));
+    m_actZoomFit->setToolTip(QStringLiteral("Zoom to Fit (Z)"));
 }
 
 void MainWindow::setupStatusBar() {
@@ -474,6 +503,9 @@ void MainWindow::connectSignals() {
     connect(
         m_actStop, &QAction::triggered, analysisCtrl, &ctrl::AnalysisController::onStopRequested);
 
+    // Zoom-to-fit shortcut → canvas
+    connect(m_actZoomFit, &QAction::triggered, m_canvas, &TrussCanvasWidget::zoomToFit);
+
     // Display mode toolbar buttons → canvas
     connect(m_actModeGeometry, &QAction::triggered, m_canvas, [this]() {
         m_canvas->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
@@ -657,4 +689,121 @@ void MainWindow::onToolActionTriggered() {
     m_canvas->setMode(mode);
 }
 
+// ============================================================
+// Event filter — centralised single-key shortcut dispatch
+// ============================================================
+
+bool MainWindow::eventFilter(QObject* /*watched*/, QEvent* event) {
+    if (event->type() != QEvent::KeyPress)
+        return false;
+
+    // Only intercept events that belong to this top-level window.
+    // This prevents the filter from interfering with modal dialogs
+    // (e.g. AnalysisOptionsDialog) that share the same qApp.
+    QWidget* fw = QApplication::focusWidget();
+    if (!fw || fw->window() != this)
+        return false;
+
+    auto* ke = static_cast<QKeyEvent*>(event);
+    const Qt::KeyboardModifiers mods = ke->modifiers();
+
+    // ── Ctrl-modified shortcuts (Ctrl = ⌘ on macOS) ─────────────────────────
+    // QAction::setShortcut(QKeySequence::New/Open/Save) plus Qt::WindowShortcut
+    // is theoretically sufficient, but child widgets (QTableView, QAbstractSpinBox)
+    // can respond to QEvent::ShortcutOverride and cause Qt to mark the shortcut as
+    // "ambiguous", silently dropping the dispatch.  Intercepting here at the
+    // application level guarantees delivery regardless of focus placement.
+    //
+    // Returning true consumes the KeyPress so QShortcutMap never sees it,
+    // preventing double-firing.  The menu shortcut hint text (Ctrl+N etc.) is
+    // preserved through the QAction::setShortcut() calls in setupMenuBar().
+    if (mods == Qt::ControlModifier) {
+        switch (ke->key()) {
+        case Qt::Key_N:
+            if (m_actNew && m_actNew->isEnabled()) {
+                m_actNew->trigger();
+                return true;
+            }
+            break;
+        case Qt::Key_O:
+            if (m_actOpen && m_actOpen->isEnabled()) {
+                m_actOpen->trigger();
+                return true;
+            }
+            break;
+        case Qt::Key_S:
+            if (m_actSave && m_actSave->isEnabled()) {
+                m_actSave->trigger();
+                return true;
+            }
+            break;
+        default:
+            break;
+        }
+        // All other Ctrl+key combos (Ctrl+Z, Ctrl+C, etc.) pass through.
+        return false;
+    }
+
+    // ── Bare single-key shortcuts ─────────────────────────────────────────────
+    // Modifier-combos (Ctrl+S/O/N) are handled above.
+    // Function keys (F5) remain on QAction::setShortcut() exclusively.
+    if (mods != Qt::NoModifier)
+        return false;
+
+    // Guard: leave the key for the focused text-input widget to process.
+    const bool inTextInput = isTextInputFocused();
+
+    switch (ke->key()) {
+    case Qt::Key_N:
+        if (!inTextInput && m_actToolNode && m_actToolNode->isEnabled()) {
+            m_actToolNode->trigger();
+            return true;
+        }
+        break;
+    case Qt::Key_M:
+        if (!inTextInput && m_actToolMember && m_actToolMember->isEnabled()) {
+            m_actToolMember->trigger();
+            return true;
+        }
+        break;
+    case Qt::Key_Escape:
+        if (!inTextInput && m_actToolSelect) {
+            m_actToolSelect->trigger();
+            return true;
+        }
+        break;
+    case Qt::Key_Z:
+        if (!inTextInput && m_actZoomFit) {
+            m_actZoomFit->trigger();
+            return true;
+        }
+        break;
+    case Qt::Key_Delete:
+    case Qt::Key_Backspace:
+        if (!inTextInput && m_canvas) {
+            m_canvas->triggerDeleteSelected();
+            return true;
+        }
+        break;
+    default:
+        break;
+    }
+    return false;
+}
+
+// ============================================================
+// Private helpers
+// ============================================================
+
+bool MainWindow::isTextInputFocused() const {
+    const QWidget* fw = QApplication::focusWidget();
+    if (!fw)
+        return false;
+    return qobject_cast<const QLineEdit*>(fw) != nullptr
+        || qobject_cast<const QAbstractSpinBox*>(fw) != nullptr
+        || qobject_cast<const QTextEdit*>(fw) != nullptr
+        || qobject_cast<const QPlainTextEdit*>(fw) != nullptr;
+}
+
 }  // namespace truss::gui
+
