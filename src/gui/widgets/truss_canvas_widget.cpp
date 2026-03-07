@@ -720,6 +720,10 @@ void TrussCanvasWidget::mousePressEvent(QMouseEvent* event) {
                 m_selectedMemberId = 0;
                 emit selectionCleared();
             }
+            // Explicitly reclaim keyboard focus so the Delete key shortcut
+            // (handled in keyPressEvent) remains available immediately after
+            // selection, even if a Qt signal handler shifted focus elsewhere.
+            setFocus(Qt::MouseFocusReason);
             update();
             break;
         }
