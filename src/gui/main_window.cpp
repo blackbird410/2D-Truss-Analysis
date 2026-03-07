@@ -185,7 +185,11 @@ void MainWindow::setupMenuBar() {
     // ---- Analysis menu ----
     auto* analysisMenu = mb->addMenu(QStringLiteral("&Analysis"));
     analysisMenu->setObjectName(QStringLiteral("menuAnalysis"));
-    analysisMenu->addAction(QStringLiteral("&Run Analysis"))->setShortcut(Qt::Key_F5);
+    // m_actRun is shared between this menu entry and the toolbar button so that
+    // a single QAction drives both the menu item and the toolbar, and the F5
+    // shortcut is registered exactly once.
+    m_actRun = analysisMenu->addAction(QStringLiteral("&Run Analysis"));
+    m_actRun->setShortcut(Qt::Key_F5);
     analysisMenu->addAction(QStringLiteral("&Validate…"));
     analysisMenu->addSeparator();
     analysisMenu->addAction(QStringLiteral("Analysis &Options…"));
