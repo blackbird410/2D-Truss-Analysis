@@ -87,6 +87,27 @@ public:
      */
     [[nodiscard]] truss::core::Point2D screenToWorld(QPoint screenPos) const;
 
+    /**
+     * @brief Compute the displacement amplification factor for DeformedShape mode.
+     *
+     * Targets a visual displacement of 10 % of the visible world span
+     * (matching the default behaviour of SAP2000 / ABAQUS/CAE), then clamps
+     * the result to **[1.0, 500.0]**:
+     *
+     *  - **Floor 1.0** — when real displacements already exceed the visual target
+     *    the shape is shown at 1:1 rather than being artefactually shrunk.
+     *  - **Cap 500** — prevents sub-millimetre elastic deformations from being
+     *    rendered as multi-metre excursions (typical for very stiff structures
+     *    or early-stage pre-analysis checks).
+     *
+     * Returns 0.0 when no displacement data are present (pre-analysis or all
+     * nodal DOF values are zero).
+     *
+     * This is a public const query so that callers (tests, status bar, etc.)
+     * can inspect the current scale without triggering a repaint.
+     */
+    [[nodiscard]] double autoDispScale() const;
+
 public slots:
     /**
      * @brief Update the data source and trigger a repaint.
@@ -237,15 +258,6 @@ private:
 
     /// @brief Return the draw colour for a member given the current display mode.
     [[nodiscard]] QColor memberColour(const core::interfaces::MemberView& mv) const;
-
-    /**
-     * @brief Compute the displacement amplification factor for DeformedShape mode.
-     *
-     * Scales the largest nodal displacement to 10 % of the visible world span,
-     * giving an engineer-readable exaggeration regardless of truss size.
-     * Returns 0.0 when no displacements are present (pre-analysis or all-zero).
-     */
-    [[nodiscard]] double autoDispScale() const;
 
     /// @brief Draw a structural support symbol at a screen position.
     void drawSupportSymbol(QPainter& p, const QPointF& screenPos, core::SupportType support) const;
