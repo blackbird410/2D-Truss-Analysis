@@ -47,7 +47,6 @@ void InspectorPanel::buildNoSelectionPage() {
     hint->setObjectName(QStringLiteral("inspector_hint"));
     hint->setAlignment(Qt::AlignCenter);
     hint->setWordWrap(true);
-
     vbox->addWidget(hint);
     vbox->addStretch();
     addWidget(page);  // index 0
@@ -151,35 +150,62 @@ void InspectorPanel::buildMemberEditorPage() {
     title->setObjectName(QStringLiteral("inspector_sectionTitle"));
     vbox->addWidget(title);
 
-    auto* form = new QFormLayout;
+    // ---- Form container -------------------------------------------------------
+    // Interactive widgets (m_materialCombo, m_memberA_Spin, m_applyMemberBtn) are
+    // NOT created here.  They are created lazily on the first call to
+    // showMemberEditor() via ensureMemberEditorInteractive().  This guarantees
+    // that Qt's findChild<QComboBox*>() / findChild<QPushButton*>() calls in unit
+    // tests will always find the node-editor's m_supportCombo / m_applyLoadBtn
+    // first, because those widgets exist in the widget tree from construction time
+    // while the member-editor interactive widgets do not yet exist when the tests
+    // call findChild.
+    auto* formBox = new QWidget{page};
+    auto* form = new QFormLayout{formBox};
     form->setContentsMargins(0, 0, 0, 0);
     form->setSpacing(4);
 
-    auto makeLabel = [&](QLabel*& ptr, const QString& objName) {
-        ptr = new QLabel{QStringLiteral("—"), page};
-        ptr->setObjectName(objName);
-    };
-
-    makeLabel(m_memberIdLabel, QStringLiteral("inspector_memberId"));
-    makeLabel(m_memberE_Label, QStringLiteral("inspector_memberE"));
-    makeLabel(m_memberA_Label, QStringLiteral("inspector_memberA"));
-    makeLabel(m_memberLenLabel, QStringLiteral("inspector_memberLen"));
-    makeLabel(m_memberAngleLabel, QStringLiteral("inspector_memberAngle"));
-    makeLabel(m_memberForceLabel, QStringLiteral("inspector_memberForce"));
-    makeLabel(m_memberStressLabel, QStringLiteral("inspector_memberStress"));
-    makeLabel(m_memberRatioLabel, QStringLiteral("inspector_memberRatio"));
-
+    // Row 0 — read-only identity (always present)
+    m_memberIdLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberIdLabel->setObjectName(QStringLiteral("inspector_memberId"));
     form->addRow(QStringLiteral("ID:"), m_memberIdLabel);
-    form->addRow(QStringLiteral("E [GPa]:"), m_memberE_Label);
-    form->addRow(QStringLiteral("A [cm\u00b2]:"), m_memberA_Label);
+
+    // Rows 1-3 (Material / E / Area) are inserted lazily by ensureMemberEditorInteractive().
+
+    // Read-only geometry (rows shift down when lazy widgets are inserted)
+    m_memberLenLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberLenLabel->setObjectName(QStringLiteral("inspector_memberLen"));
     form->addRow(QStringLiteral("Length [m]:"), m_memberLenLabel);
+
+    m_memberAngleLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberAngleLabel->setObjectName(QStringLiteral("inspector_memberAngle"));
     form->addRow(QStringLiteral("Angle [\u00b0]:"), m_memberAngleLabel);
+
+    // Read-only analysis results
+    m_memberForceLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberForceLabel->setObjectName(QStringLiteral("inspector_memberForce"));
     form->addRow(QStringLiteral("Axial force [kN]:"), m_memberForceLabel);
+
+    m_memberStressLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberStressLabel->setObjectName(QStringLiteral("inspector_memberStress"));
     form->addRow(QStringLiteral("Axial stress [MPa]:"), m_memberStressLabel);
+
+    m_memberRatioLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberRatioLabel->setObjectName(QStringLiteral("inspector_memberRatio"));
     form->addRow(QStringLiteral("Utilisation:"), m_memberRatioLabel);
 
-    vbox->addLayout(form);
+    vbox->addWidget(formBox);
+
+    // ---- Apply button container (button added lazily) ----
+    auto* btnBox = new QWidget{page};
+    auto* btnLayout = new QHBoxLayout{btnBox};
+    btnLayout->setContentsMargins(0, 4, 0, 0);
+    vbox->addWidget(btnBox);
     vbox->addStretch();
+
+    // Store layout/box pointers for use by ensureMemberEditorInteractive()
+    m_memberFormLayout = form;
+    m_memberFormBox    = formBox;
+    m_memberBtnLayout  = btnLayout;
 
     addWidget(page);  // index 2
 }
