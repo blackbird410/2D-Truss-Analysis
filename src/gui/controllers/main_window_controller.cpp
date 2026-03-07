@@ -14,11 +14,11 @@
 
 #include "gui/controllers/main_window_controller.hpp"
 
-#include "gui/controllers/analysis_controller_v2.hpp"
+#include "gui/controllers/analysis_controller.hpp"
 #include "gui/controllers/canvas_controller.hpp"
 #include "gui/controllers/export_controller.hpp"
 #include "gui/controllers/inspector_controller.hpp"
-#include "gui/controllers/project_controller_v2.hpp"
+#include "gui/controllers/project_controller.hpp"
 #include "gui/models/member_table_model.hpp"
 #include "gui/models/node_table_model.hpp"
 #include "gui/models/results_table_model.hpp"
@@ -49,7 +49,7 @@ MainWindowController::MainWindowController(truss::interface::ITrussAnalysisFacad
 {
     // ----------------------------------------------------------------
     // Inter-controller signal wiring
-    // (Panel ↔ controller wiring is done in MainWindowV2::connectSignals)
+    // (Panel ↔ controller wiring is done in MainWindow::connectSignals)
     // ----------------------------------------------------------------
 
     // CanvasController → MainWindowController

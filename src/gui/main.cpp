@@ -3,7 +3,7 @@
  * @brief Main entry point for the 2D Truss Analysis GUI application.
  *
  * Phase 6 composition root.  Creates a single TrussAnalysisFacade and hands it
- * to MainWindowV2, which internally constructs all sub-controllers, models, and
+ * to MainWindow, which internally constructs all sub-controllers, models, and
  * panels.  No presenters, adapters, or legacy controllers are created here.
  *
  * Phase 7: ThemeLoader::restoreLastTheme() is called after QApplication
@@ -11,7 +11,7 @@
  * window is shown.
  */
 
-#include "gui/main_window_v2.hpp"
+#include "gui/main_window.hpp"
 #include "gui/theme_loader.hpp"
 #include "infrastructure/logging/logger_factory.hpp"
 #include "interface/truss_analysis_facade.hpp"
@@ -53,9 +53,9 @@ int main(int argc, char* argv[])
 
     try {
         // Facade owns all application services.
-        // MainWindowV2 creates all sub-controllers, models, and panels internally.
+        // MainWindow creates all sub-controllers, models, and panels internally.
         truss::interface::TrussAnalysisFacade facade;
-        truss::gui::MainWindowV2 window(facade);
+        truss::gui::MainWindow window(facade);
 
         // Restore the last-used theme (persisted via QSettings) before showing.
         truss::gui::ThemeLoader::restoreLastTheme(app);

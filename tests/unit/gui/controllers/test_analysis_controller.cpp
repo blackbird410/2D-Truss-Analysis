@@ -1,309 +1,157 @@
 /**
  * @file test_analysis_controller.cpp
- * @brief Unit tests for AnalysisController with dependency injection.
- * @version 3.0.0
- * @date 2026-02-24
+ * @brief Unit tests for AnalysisController (Phase 5 — background QThread).
+ *
+ * Verifies:
+ *  - onAnalyzeRequested emits analysisStarted immediately.
+ *  - Successful analysis delivers analysisCompleted with the results handle.
+ *  - Failed analysis delivers analysisFailed with an error message.
+ *  - No truss handle emits analysisFailed synchronously without starting a thread.
+ *  - currentResultsHandle() returns the last successful handle after completion.
+ *
+ * @note Tests that involve the worker thread use QSignalSpy::wait(timeout)
+ *       to block until the queued result is delivered to the main thread.
+ *
  * @author Neil Taison Rigaud
+ * @version 3.0.0
+ * @date 2026-03-04
  */
 
 #include "gui/controllers/analysis_controller.hpp"
-#include "gui/presenters/analysis_results_presenter.hpp"
-#include "gui/presenters/validation_presenter.hpp"
-#include "mocks/mock_analysis_application_service.hpp"
-#include "mocks/mock_truss_application_service.hpp"
+#include "mocks/mock_truss_analysis_facade.hpp"
 
+#include "core/analysis/analysis_orchestrator.hpp"
+#include "core/model/truss.hpp"
+
+#include <QApplication>
+#include <QCoreApplication>
 #include <QSignalSpy>
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-using namespace truss_controllers;
-using namespace truss::application;
-using namespace truss::test;
-using namespace truss_presenters;
-using ::testing::_;
+using namespace truss::gui::ctrl;
+using truss::application::Result;
+using truss::core::Truss;
+using truss::core::analysis::AnalysisOptions;
+using truss::test::MockTrussAnalysisFacade;
+using ::testing::NiceMock;
 using ::testing::Return;
 using ::testing::ReturnRef;
+using ::testing::_;
 
-/**
- * @brief Test fixture for AnalysisController with mock services
- */
-class AnalysisControllerTest : public ::testing::Test {
+// ============================================================
+// QApplication bootstrap
+// ============================================================
+
+namespace {
+QApplication& ensureQApp()
+{
+    static int   s_argc    = 1;
+    static char  s_argv0[] = "unit_tests";
+    static char* s_argv[]  = {s_argv0, nullptr};
+    static QApplication* s_app = []() -> QApplication* {
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        return new QApplication(s_argc, s_argv);
+    }();
+    return *s_app;
+}
+}  // namespace
+
+// ============================================================
+// Fixture
+// ============================================================
+
+class AnalysisControllerV2Test : public ::testing::Test {
 protected:
-    void SetUp() override {
-        mockTrussService = std::make_unique<MockTrussApplicationService>();
-        mockAnalysisService = std::make_unique<MockAnalysisApplicationService>();
-        analysisPresenter = std::make_unique<AnalysisResultsPresenter>();
-        validationPresenter = std::make_unique<ValidationPresenter>();
-
-        controller = std::make_unique<AnalysisController>(mockTrussService.get(),
-                                                          mockAnalysisService.get(),
-                                                          *analysisPresenter,
-                                                          *validationPresenter);
+    void SetUp() override
+    {
+        ensureQApp();
+        ctrl = std::make_unique<AnalysisController>(facade);
+        ctrl->onTrussHandleUpdated(kHandle);
     }
+    void TearDown() override { ctrl.reset(); }
 
-    void TearDown() override {
-        controller.reset();
-        validationPresenter.reset();
-        analysisPresenter.reset();
-        mockAnalysisService.reset();
-        mockTrussService.reset();
-    }
+    static constexpr std::size_t kHandle = 3;
 
-    std::unique_ptr<MockTrussApplicationService> mockTrussService;
-    std::unique_ptr<MockAnalysisApplicationService> mockAnalysisService;
-    std::unique_ptr<AnalysisResultsPresenter> analysisPresenter;
-    std::unique_ptr<ValidationPresenter> validationPresenter;
-    std::unique_ptr<AnalysisController> controller;
-
-    const TrussHandle testHandle = 100;
-    const ResultsHandle testResultsHandle = 200;
+    NiceMock<MockTrussAnalysisFacade>   facade;
+    Truss                               localTruss{"TestTruss"};
+    std::unique_ptr<AnalysisController> ctrl;
 };
 
-/**
- * @test Constructor throws on null truss service
- */
-TEST_F(AnalysisControllerTest, ConstructorThrowsOnNullTrussService) {
-    EXPECT_THROW(
-        {
-            AnalysisController controller(
-                nullptr, mockAnalysisService.get(), *analysisPresenter, *validationPresenter);
-        },
-        std::invalid_argument);
+// ============================================================
+// Tests
+// ============================================================
+
+TEST_F(AnalysisControllerV2Test, NoHandle_EmitsAnalysisFailedSynchronously)
+{
+    ctrl->onTrussHandleUpdated(0);
+
+    EXPECT_CALL(facade, getTrussMutable(_)).Times(0);
+
+    QSignalSpy spy{ctrl.get(), &AnalysisController::analysisFailed};
+    ctrl->onAnalyzeRequested(AnalysisOptions{});
+
+    ASSERT_EQ(spy.count(), 1);
+    EXPECT_FALSE(spy.first().first().toString().isEmpty());
 }
 
-/**
- * @test Constructor throws on null analysis service
- */
-TEST_F(AnalysisControllerTest, ConstructorThrowsOnNullAnalysisService) {
-    EXPECT_THROW(
-        {
-            AnalysisController controller(
-                mockTrussService.get(), nullptr, *analysisPresenter, *validationPresenter);
-        },
-        std::invalid_argument);
+TEST_F(AnalysisControllerV2Test, AnalyzeRequested_EmitsAnalysisStarted)
+{
+    EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
+    EXPECT_CALL(facade, analyze(_, _))
+        .WillOnce(Return(Result<std::size_t>::Success(42)));
+
+    QSignalSpy spyStarted{ctrl.get(), &AnalysisController::analysisStarted};
+    QSignalSpy spyDone{ctrl.get(), &AnalysisController::analysisCompleted};
+
+    ctrl->onAnalyzeRequested(AnalysisOptions{});
+
+    // analysisStarted is emitted on the main thread synchronously before the thread starts
+    ASSERT_EQ(spyStarted.count(), 1);
+
+    // Wait for worker thread to complete (Qt::QueuedConnection delivers on next event loop tick)
+    spyDone.wait(3000);
+    EXPECT_EQ(spyDone.count(), 1);
 }
 
-/**
- * @test Analysis with invalid handle emits failure
- */
-TEST_F(AnalysisControllerTest, AnalysisWithInvalidHandleEmitsFailure) {
-    QSignalSpy failedSpy(controller.get(), &AnalysisController::analysisFailed);
+TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnSuccess_EmitsAnalysisCompleted)
+{
+    EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
+    EXPECT_CALL(facade, analyze(_, _))
+        .WillOnce(Return(Result<std::size_t>::Success(77)));
 
-    controller->onAnalyzeRequested(0);
+    QSignalSpy spy{ctrl.get(), &AnalysisController::analysisCompleted};
+    ctrl->onAnalyzeRequested(AnalysisOptions{});
+    spy.wait(3000);
 
-    EXPECT_EQ(failedSpy.count(), 1);
-    EXPECT_TRUE(failedSpy.at(0).at(0).toString().contains("Invalid"));
+    ASSERT_EQ(spy.count(), 1);
+    EXPECT_EQ(spy.first().first().value<std::size_t>(), std::size_t{77});
 }
 
-/**
- * @test Successful analysis workflow
- */
-TEST_F(AnalysisControllerTest, SuccessfulAnalysisWorkflow) {
-    // Setup validation success
-    truss::core::validation::ValidationResult validResult;
-    // validResult is valid by default (no issues added)
+TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnFailure_EmitsAnalysisFailed)
+{
+    EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
+    EXPECT_CALL(facade, analyze(_, _))
+        .WillOnce(Return(Result<std::size_t>::Failure("singular matrix")));
 
-    EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
+    QSignalSpy spy{ctrl.get(), &AnalysisController::analysisFailed};
+    ctrl->onAnalyzeRequested(AnalysisOptions{});
+    spy.wait(3000);
 
-    // Setup mutable truss access
-    static truss::core::Truss mockTruss;
-    EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle)).WillOnce(ReturnRef(mockTruss));
-
-    // Setup analysis success
-    EXPECT_CALL(*mockAnalysisService, analyze(_, _))
-        .WillOnce(Return(Result<ResultsHandle>::Success(testResultsHandle)));
-
-    QSignalSpy startedSpy(controller.get(), &AnalysisController::analysisStarted);
-    QSignalSpy completedSpy(controller.get(), &AnalysisController::analysisCompleted);
-
-    controller->onAnalyzeRequested(testHandle);
-
-    EXPECT_EQ(startedSpy.count(), 1);
-    EXPECT_EQ(completedSpy.count(), 1);
-    EXPECT_EQ(completedSpy.at(0).at(0).value<ResultsHandle>(), testResultsHandle);
+    ASSERT_EQ(spy.count(), 1);
+    EXPECT_FALSE(spy.first().first().toString().isEmpty());
 }
 
-/**
- * @test Validation failure stops analysis
- */
-TEST_F(AnalysisControllerTest, ValidationFailureStopsAnalysis) {
-    // Setup validation failure
-    truss::core::validation::ValidationResult invalidResult;
-    invalidResult.addIssue(truss::core::validation::ValidationIssue(
-        truss::core::validation::ValidationSeverity::Error, "Structure", "No supports defined"));
+TEST_F(AnalysisControllerV2Test, CurrentResultsHandle_ReflectsLastSuccessfulResult)
+{
+    EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
+    EXPECT_CALL(facade, analyze(_, _))
+        .WillOnce(Return(Result<std::size_t>::Success(55)));
 
-    EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(
-            Return(Result<truss::core::validation::ValidationResult>::Success(invalidResult)));
+    QSignalSpy spy{ctrl.get(), &AnalysisController::analysisCompleted};
+    ctrl->onAnalyzeRequested(AnalysisOptions{});
+    spy.wait(3000);
 
-    // Analysis should NOT be called
-    EXPECT_CALL(*mockAnalysisService, analyze(_, _)).Times(0);
-
-    QSignalSpy validationFailedSpy(controller.get(), &AnalysisController::validationFailed);
-    QSignalSpy completedSpy(controller.get(), &AnalysisController::analysisCompleted);
-
-    controller->onAnalyzeRequested(testHandle);
-
-    EXPECT_EQ(validationFailedSpy.count(), 1);
-    EXPECT_EQ(completedSpy.count(), 0);
-}
-
-/**
- * @test Validation service failure emits analysis failed
- */
-TEST_F(AnalysisControllerTest, ValidationServiceFailureEmitsAnalysisFailed) {
-    EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(
-            Return(Result<truss::core::validation::ValidationResult>::Failure("Service error")));
-
-    QSignalSpy failedSpy(controller.get(), &AnalysisController::analysisFailed);
-
-    controller->onAnalyzeRequested(testHandle);
-
-    EXPECT_EQ(failedSpy.count(), 1);
-    EXPECT_TRUE(failedSpy.at(0).at(0).toString().contains("Service error"));
-}
-
-/**
- * @test Analysis service failure emits analysis failed
- */
-TEST_F(AnalysisControllerTest, AnalysisServiceFailureEmitsAnalysisFailed) {
-    // Setup validation success
-    truss::core::validation::ValidationResult validResult;
-    // validResult is valid by default (no issues added)
-
-    EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
-
-    static truss::core::Truss mockTruss;
-    EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle)).WillOnce(ReturnRef(mockTruss));
-
-    // Setup analysis failure
-    EXPECT_CALL(*mockAnalysisService, analyze(_, _))
-        .WillOnce(Return(Result<ResultsHandle>::Failure("Matrix singular")));
-
-    QSignalSpy failedSpy(controller.get(), &AnalysisController::analysisFailed);
-
-    controller->onAnalyzeRequested(testHandle);
-
-    EXPECT_EQ(failedSpy.count(), 1);
-    EXPECT_TRUE(failedSpy.at(0).at(0).toString().contains("Matrix singular"));
-}
-
-/**
- * @test Export without results handle fails
- */
-TEST_F(AnalysisControllerTest, ExportWithoutResultsHandleFails) {
-    QSignalSpy exportFailedSpy(controller.get(), &AnalysisController::exportFailed);
-
-    controller->onExportRequested(0, "/path/to/output.json");
-
-    EXPECT_EQ(exportFailedSpy.count(), 1);
-    EXPECT_TRUE(exportFailedSpy.at(0).at(0).toString().contains("No analysis results"));
-}
-
-/**
- * @test Export requires truss handle
- */
-TEST_F(AnalysisControllerTest, ExportRequiresTrussHandle) {
-    QSignalSpy exportFailedSpy(controller.get(), &AnalysisController::exportFailed);
-
-    // Try export without doing analysis first (no truss handle set)
-    controller->onExportRequested(testResultsHandle, "/path/to/output.json");
-
-    EXPECT_EQ(exportFailedSpy.count(), 1);
-    EXPECT_TRUE(exportFailedSpy.at(0).at(0).toString().contains("No truss model"));
-}
-
-/**
- * @test Successful export workflow
- */
-TEST_F(AnalysisControllerTest, SuccessfulExportWorkflow) {
-    // First do successful analysis to set up truss handle
-    truss::core::validation::ValidationResult validResult;
-    // validResult is valid by default (no issues added)
-
-    EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
-
-    static truss::core::Truss mockTruss;
-    EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle))
-        .Times(2)  // Once for analysis, once for export
-        .WillRepeatedly(ReturnRef(mockTruss));
-
-    EXPECT_CALL(*mockAnalysisService, analyze(_, _))
-        .WillOnce(Return(Result<ResultsHandle>::Success(testResultsHandle)));
-
-    controller->onAnalyzeRequested(testHandle);
-
-    // Now export
-    QString filepath = "/path/to/output.json";
-    EXPECT_CALL(*mockAnalysisService, exportResults(testResultsHandle, _, _, _))
-        .WillOnce(Return(Result<bool>::Success(true)));
-
-    QSignalSpy exportCompletedSpy(controller.get(), &AnalysisController::exportCompleted);
-
-    controller->onExportRequested(testResultsHandle, filepath);
-
-    EXPECT_EQ(exportCompletedSpy.count(), 1);
-    EXPECT_EQ(exportCompletedSpy.at(0).at(0).toString(), filepath);
-}
-
-/**
- * @test Export failure emits export failed
- */
-TEST_F(AnalysisControllerTest, ExportFailureEmitsExportFailed) {
-    // Setup analysis first
-    truss::core::validation::ValidationResult validResult;
-    // validResult is valid by default (no issues added)
-
-    EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
-
-    static truss::core::Truss mockTruss;
-    EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle))
-        .Times(2)
-        .WillRepeatedly(ReturnRef(mockTruss));
-
-    EXPECT_CALL(*mockAnalysisService, analyze(_, _))
-        .WillOnce(Return(Result<ResultsHandle>::Success(testResultsHandle)));
-
-    controller->onAnalyzeRequested(testHandle);
-
-    // Export failure
-    EXPECT_CALL(*mockAnalysisService, exportResults(testResultsHandle, _, _, _))
-        .WillOnce(Return(Result<bool>::Failure("Write permission denied")));
-
-    QSignalSpy exportFailedSpy(controller.get(), &AnalysisController::exportFailed);
-
-    controller->onExportRequested(testResultsHandle, "/path/to/output.json");
-
-    EXPECT_EQ(exportFailedSpy.count(), 1);
-    EXPECT_TRUE(exportFailedSpy.at(0).at(0).toString().contains("Write permission denied"));
-}
-
-/**
- * @test Signal emissions for status updates
- */
-TEST_F(AnalysisControllerTest, SignalEmissionsForStatusUpdates) {
-    truss::core::validation::ValidationResult validResult;
-    // validResult is valid by default (no issues added)
-
-    EXPECT_CALL(*mockTrussService, validateTruss(testHandle))
-        .WillOnce(Return(Result<truss::core::validation::ValidationResult>::Success(validResult)));
-
-    static truss::core::Truss mockTruss;
-    EXPECT_CALL(*mockTrussService, getTrussMutable(testHandle)).WillOnce(ReturnRef(mockTruss));
-
-    EXPECT_CALL(*mockAnalysisService, analyze(_, _))
-        .WillOnce(Return(Result<ResultsHandle>::Success(testResultsHandle)));
-
-    QSignalSpy statusSpy(controller.get(), &AnalysisController::statusMessageChanged);
-
-    controller->onAnalyzeRequested(testHandle);
-
-    // Should have multiple status updates
-    EXPECT_GE(statusSpy.count(), 2);  // At least "Validating..." and "Running analysis..."
+    EXPECT_EQ(ctrl->currentResultsHandle(), std::size_t{55});
 }

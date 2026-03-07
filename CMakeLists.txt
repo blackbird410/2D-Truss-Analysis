@@ -419,25 +419,9 @@ if(BUILD_TESTING)
     # Conditionally add GUI tests and sources only if BUILD_GUI is enabled
     if(BUILD_GUI)
         list(APPEND UNIT_TEST_SOURCES
-            # GUI-dependent validation tests
-            tests/unit/core/validation/test_mock_compatibility.cpp
-            tests/unit/core/validation/test_mock_analysis_compatibility.cpp
-            # GUI layer tests (Controller API Stabilization)
-            tests/unit/gui/controllers/test_truss_edit_controller.cpp
-            tests/unit/gui/controllers/test_truss_edit_controller_advanced.cpp
-            tests/unit/gui/controllers/test_project_controller.cpp
-            tests/unit/gui/controllers/test_analysis_controller.cpp
-            tests/unit/gui/presenters/test_truss_data_presenter.cpp
             # Phase 2: NotificationRail panel tests
             tests/unit/gui/panels/test_notification_rail.cpp
-            # GUI source files needed for GUI tests
-            src/gui/presenters/truss_data_presenter.cpp
-            src/gui/presenters/analysis_results_presenter.cpp
-            src/gui/presenters/validation_presenter.cpp
-            src/gui/controllers/truss_edit_controller.cpp
-            src/gui/controllers/analysis_controller.cpp
-            src/gui/controllers/project_controller.cpp
-            # Phase 2: panel / utility sources under test
+            # Phase 2: sources under test
             src/gui/panels/notification_rail.cpp
             # Phase 3: Qt Item Model tests
             tests/unit/gui/models/test_node_table_model.cpp
@@ -458,8 +442,8 @@ if(BUILD_TESTING)
             # Phase 5: Feature Module Implementation — controller tests
             tests/unit/gui/controllers/test_canvas_controller.cpp
             tests/unit/gui/controllers/test_inspector_controller.cpp
-            tests/unit/gui/controllers/test_analysis_controller_v2.cpp
-            tests/unit/gui/controllers/test_project_controller_v2.cpp
+            tests/unit/gui/controllers/test_analysis_controller.cpp
+            tests/unit/gui/controllers/test_project_controller.cpp
             tests/unit/gui/controllers/test_export_controller.cpp
             # Phase 5: Feature Module Implementation — panel tests
             tests/unit/gui/panels/test_inspector_panel.cpp
@@ -473,8 +457,8 @@ if(BUILD_TESTING)
             # Phase 5: sources under test — controllers
             src/gui/controllers/canvas_controller.cpp
             src/gui/controllers/inspector_controller.cpp
-            src/gui/controllers/analysis_controller_v2.cpp
-            src/gui/controllers/project_controller_v2.cpp
+            src/gui/controllers/analysis_controller.cpp
+            src/gui/controllers/project_controller.cpp
             src/gui/controllers/export_controller.cpp
             # Phase 6: State Management & Interaction Logic — tests
             # workspace_state.hpp is header-only; no extra source files required.
@@ -532,15 +516,7 @@ if(BUILD_TESTING)
     # Conditionally add GUI integration tests only if BUILD_GUI is enabled
     if(BUILD_GUI)
         list(APPEND INTEGRATION_TEST_SOURCES
-            tests/integration/test_gui_lifecycle.cpp
-            tests/integration/test_ui_load_diagnosis.cpp
-            tests/integration/test_load_viewport_fix.cpp
-            tests/integration/test_gui_file_load.cpp
             tests/integration/test_e2e_workflows.cpp
-            # GUI controllers needed for GUI lifecycle tests
-            src/gui/controllers/truss_edit_controller.cpp
-            src/gui/controllers/project_controller.cpp
-            src/gui/presenters/truss_data_presenter.cpp
         )
     endif()
     
@@ -579,47 +555,61 @@ if(BUILD_TESTING)
 
 endif()
 
-# GUI Integration Tests (Qt Test framework) - only if Qt is available
+# GUI Integration Tests (GTest framework) - only if Qt is available
 if(BUILD_GUI)
-    message(STATUS "Building GUI integration tests")
-    
-    # GUI Integration Tests (Qt Test framework)
+    message(STATUS "Building GUI integration tests (GTest)")
+
+    # GUI Integration Tests (GTest + new architecture signal/slot wiring)
     add_executable(gui_integration_test
         tests/integration/test_gui_integration.cpp
-        # GUI source files needed for integration tests
-        src/gui/presenters/truss_data_presenter.cpp
-        src/gui/presenters/analysis_results_presenter.cpp
-        src/gui/presenters/validation_presenter.cpp
-        src/gui/controllers/truss_edit_controller.cpp
+        # New-architecture sources under test
+        src/gui/controllers/main_window_controller.cpp
+        src/gui/controllers/canvas_controller.cpp
         src/gui/controllers/analysis_controller.cpp
         src/gui/controllers/project_controller.cpp
+        src/gui/controllers/inspector_controller.cpp
+        src/gui/controllers/export_controller.cpp
+        src/gui/models/node_table_model.cpp
+        src/gui/models/member_table_model.cpp
+        src/gui/models/validation_list_model.cpp
+        src/gui/models/results_table_model.cpp
+        src/gui/panels/notification_rail.cpp
+        src/gui/panels/analysis_options_dialog.cpp
+        src/gui/panels/inspector_panel.cpp
+        src/gui/panels/analysis_control_bar.cpp
+        src/gui/panels/results_dock_panel.cpp
+        src/gui/widgets/truss_canvas_widget.cpp
     )
-    
+
     target_link_libraries(gui_integration_test PRIVATE
         TrussApplication
         TrussCore
+        TrussInterface
+        GTest::gtest
+        GTest::gmock
         Qt6::Test
         Qt6::Widgets
         Qt6::Core
     )
-    
+
     target_include_directories(gui_integration_test PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/gui
         ${CMAKE_SOURCE_DIR}/src/application
+        ${CMAKE_SOURCE_DIR}/tests
     )
-    
+
     add_test(NAME gui_integration_tests COMMAND gui_integration_test)
     set_tests_properties(gui_integration_tests PROPERTIES
         TIMEOUT 120
-        LABELS "gui;integration;qt"
+        LABELS "gui;integration;gtest"
     )
-    
+
     # Add GUI tests to all_gtest_tests if they exist
     if(TARGET all_gtest_tests)
         add_dependencies(all_gtest_tests gui_integration_test)
     endif()
-    
+
 endif()
 
 # Set target properties for CLI executable
@@ -631,49 +621,27 @@ if(BUILD_GUI)
     # GUI executable
     add_executable(TrussAnalysisGUI
     src/gui/main.cpp
-    src/gui/main_window.cpp
     src/gui/main_window.hpp
-    # Widgets
-    src/gui/widgets/node_input_widget.cpp
-    src/gui/widgets/node_input_widget.hpp
-    src/gui/widgets/member_input_widget.cpp
-    src/gui/widgets/member_input_widget.hpp
-    src/gui/widgets/load_input_widget.cpp
-    src/gui/widgets/load_input_widget.hpp
-    src/gui/widgets/data_table_widget.cpp
-    src/gui/widgets/data_table_widget.hpp
-    src/gui/widgets/results_widget.cpp
-    src/gui/widgets/results_widget.hpp
-    src/gui/widgets/plot_widget.cpp
-    src/gui/widgets/plot_widget.hpp
-    src/gui/widgets/interactive_drawing_widget.cpp
-    src/gui/widgets/interactive_drawing_widget.hpp
-    src/gui/widgets/deformed_truss_widget.cpp
-    src/gui/widgets/deformed_truss_widget.hpp
-    # Phase 3A - Presenters
-    src/gui/presenters/analysis_results_presenter.cpp
-    src/gui/presenters/truss_data_presenter.cpp
-    src/gui/presenters/validation_presenter.cpp
-    # Phase 3A - Controllers
-    src/gui/controllers/truss_edit_controller.cpp
-    src/gui/controllers/analysis_controller.cpp
-    src/gui/controllers/project_controller.cpp
-    # -----------------------------------------------------------------------
-    # Phase 1: New GUI Architecture Stubs
-    # These headers are listed here for IDE indexing and build-system awareness.
-    # No Q_OBJECT macros are present in Phase 1 stubs; AUTOMOC will not process
-    # them. Implementation and Q_OBJECT are added in the phases noted per file.
-    # -----------------------------------------------------------------------
+    src/gui/main_window.cpp
     # State
     src/gui/state/workspace_state.hpp
-    # Widgets (new)
+    # Interfaces
+    src/gui/interfaces/iconfirmation_provider.hpp
+    # Widgets
     src/gui/widgets/truss_canvas_widget.hpp
-    # Panels (new — src/gui/panels/)
+    src/gui/widgets/truss_canvas_widget.cpp
+    # Panels
     src/gui/panels/inspector_panel.hpp
+    src/gui/panels/inspector_panel.cpp
     src/gui/panels/analysis_control_bar.hpp
+    src/gui/panels/analysis_control_bar.cpp
     src/gui/panels/results_dock_panel.hpp
+    src/gui/panels/results_dock_panel.cpp
     src/gui/panels/analysis_options_dialog.hpp
-    # Models (new — src/gui/models/)
+    src/gui/panels/analysis_options_dialog.cpp
+    src/gui/panels/notification_rail.hpp
+    src/gui/panels/notification_rail.cpp
+    # Models
     src/gui/models/node_table_model.hpp
     src/gui/models/node_table_model.cpp
     src/gui/models/member_table_model.hpp
@@ -682,51 +650,24 @@ if(BUILD_GUI)
     src/gui/models/validation_list_model.cpp
     src/gui/models/results_table_model.hpp
     src/gui/models/results_table_model.cpp
-    # Controllers (new — non-conflicting names)
+    # Controllers
     src/gui/controllers/main_window_controller.hpp
+    src/gui/controllers/main_window_controller.cpp
     src/gui/controllers/canvas_controller.hpp
+    src/gui/controllers/canvas_controller.cpp
     src/gui/controllers/inspector_controller.hpp
+    src/gui/controllers/inspector_controller.cpp
+    src/gui/controllers/analysis_controller.hpp
+    src/gui/controllers/analysis_controller.cpp
+    src/gui/controllers/project_controller.hpp
+    src/gui/controllers/project_controller.cpp
     src/gui/controllers/export_controller.hpp
-    # Controllers (new — _v2 suffix until legacy counterparts are deleted in Phase 8)
-    src/gui/controllers/analysis_controller_v2.hpp
-    src/gui/controllers/project_controller_v2.hpp
-    # -----------------------------------------------------------------------
-    # Phase 2: Qt Infrastructure Setup
-    # -----------------------------------------------------------------------
-    # NotificationRail — full Q_OBJECT implementation
-    src/gui/panels/notification_rail.hpp
-    src/gui/panels/notification_rail.cpp
-    # ThemeLoader utility
+    src/gui/controllers/export_controller.cpp
+    # Theme
     src/gui/theme_loader.hpp
     src/gui/theme_loader.cpp
     # Qt resources (AUTORCC — compiles QSS themes into the binary)
     src/gui/resources/resources.qrc
-    # -----------------------------------------------------------------------
-    # Phase 4: Core Window & Navigation Framework
-    # -----------------------------------------------------------------------
-    # TrussCanvasWidget — full Q_OBJECT rendering pipeline
-    src/gui/widgets/truss_canvas_widget.cpp
-    # MainWindowController — Q_OBJECT, WorkspaceState owner
-    src/gui/controllers/main_window_controller.cpp
-    # New MainWindow skeleton (temp v2 suffix; renamed to main_window in Phase 8)
-    src/gui/main_window_v2.hpp
-    src/gui/main_window_v2.cpp
-    # -----------------------------------------------------------------------
-    # Phase 5: Feature Module Implementation
-    # -----------------------------------------------------------------------
-    # IConfirmationProvider interface
-    src/gui/interfaces/iconfirmation_provider.hpp
-    # Panels — full Q_OBJECT implementations
-    src/gui/panels/analysis_options_dialog.cpp
-    src/gui/panels/inspector_panel.cpp
-    src/gui/panels/analysis_control_bar.cpp
-    src/gui/panels/results_dock_panel.cpp
-    # Controllers — full Q_OBJECT implementations
-    src/gui/controllers/canvas_controller.cpp
-    src/gui/controllers/inspector_controller.cpp
-    src/gui/controllers/analysis_controller_v2.cpp
-    src/gui/controllers/project_controller_v2.cpp
-    src/gui/controllers/export_controller.cpp
 )
 
 target_link_libraries(TrussAnalysisGUI PRIVATE
