@@ -14,13 +14,6 @@
 
 namespace truss::gui::ctrl {
 
-// Default material / section used for all new members (material picker not yet exposed in UI).
-// These are reasonable structural-steel defaults.
-namespace {
-constexpr double kDefaultYoungsModulusPa = 200e9;  // 200 GPa — structural steel
-constexpr double kDefaultAreaM2 = 100e-4;          // 100 cm² = 0.01 m²
-}  // namespace
-
 CanvasController::CanvasController(truss::interface::ITrussAnalysisFacade& facade, QObject* parent)
     : QObject{parent}, m_facade{facade} {}
 
@@ -50,18 +43,8 @@ void CanvasController::onMemberDrawRequested(truss::core::NodeId startId,
         return;
     }
 
-    using truss::application::MaterialSpec;
-    using truss::application::SectionSpec;
-
-    MaterialSpec mat;
-    mat.youngsModulusPa = kDefaultYoungsModulusPa;
-    mat.name = "Steel";
-
-    SectionSpec sec;
-    sec.areaM2 = kDefaultAreaM2;
-    sec.profile = "Generic";
-
-    auto result = m_facade.addMember(m_trussHandle, startId, endId, mat, sec);
+    // Use the current default material / section (updated via onDefaultMaterialChanged).
+    auto result = m_facade.addMember(m_trussHandle, startId, endId, m_currentMat, m_currentSec);
     if (result) {
         emit trussModified(m_trussHandle);
     } else {
@@ -94,6 +77,12 @@ void CanvasController::onMemberDeleteRequested(truss::core::MemberId id) {
         emit operationFailed(
             QString::fromStdString("Failed to remove member: " + result.errorMessage));
     }
+}
+
+void CanvasController::onDefaultMaterialChanged(truss::application::MaterialSpec mat,
+                                                truss::application::SectionSpec sec) {
+    m_currentMat = mat;
+    m_currentSec = sec;
 }
 
 }  // namespace truss::gui::ctrl

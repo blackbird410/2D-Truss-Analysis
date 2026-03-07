@@ -35,8 +35,9 @@ namespace truss::gui::ctrl {
  * and emits trussModified(handle) on success or operationFailed(message) on
  * failure.  The active handle is updated via onTrussHandleUpdated.
  *
- * New members are created with a default Steel material / 100 cm² section
- * (sensible defaults pending a full material picker in Phase 6).
+ * The default material/section for new members starts as Steel/100 cm² and
+ * is updated at runtime by wiring InspectorPanel::defaultMaterialChanged to
+ * onDefaultMaterialChanged.  This replaces the old compile-time constants.
  */
 class CanvasController : public QObject {
     Q_OBJECT
@@ -56,6 +57,17 @@ public slots:
     void onMemberDeleteRequested(truss::core::MemberId id);
     /// Update the active truss handle (called by MainWindowController on every truss change).
     void onTrussHandleUpdated(std::size_t trussHandle);
+    /**
+     * @brief Update the default material and section for newly drawn members.
+     *
+     * Connected to InspectorPanel::defaultMaterialChanged so that the
+     * no-selection page acts as a live picker for new-member defaults.
+     *
+     * @param mat  New default material spec (E in Pa, name).
+     * @param sec  New default section spec (area in m², profile label).
+     */
+    void onDefaultMaterialChanged(truss::application::MaterialSpec mat,
+                                  truss::application::SectionSpec sec);
 
 signals:
     void trussModified(std::size_t trussHandle);
@@ -64,6 +76,11 @@ signals:
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;
     std::size_t m_trussHandle{0};
+
+    // Current default material / section for new members.
+    // Seeded to Steel / 100 cm² on construction; updated via onDefaultMaterialChanged.
+    truss::application::MaterialSpec m_currentMat{200e9, "Steel"};
+    truss::application::SectionSpec m_currentSec{100e-4, "Generic"};
 };
 
 }  // namespace truss::gui::ctrl

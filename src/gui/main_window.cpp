@@ -14,6 +14,7 @@
 
 #include "gui/main_window.hpp"
 
+#include "application/material_library_service.hpp"
 #include "core/interfaces/itruss_view.hpp"
 #include "gui/controllers/analysis_controller.hpp"
 #include "gui/controllers/canvas_controller.hpp"
@@ -578,6 +579,40 @@ void MainWindow::connectSignals() {
             &ctrl::ProjectController::operationFailed,
             this,
             [this](const QString& msg) { statusBar()->showMessage(msg, 5000); });
+
+    // ----------------------------------------------------------------
+    // Material library integration
+    // ----------------------------------------------------------------
+    // Populate inspector combos from the standard library, then seed
+    // CanvasController with the first material's defaults.
+    {
+        application::MaterialLibraryService library;
+        m_inspectorPanel->populateMaterialLibrary(library.getAvailableMaterials(),
+                                                  library.getAvailableSections());
+
+        // Seed CanvasController with Steel / 100 cm² (matches in-class initialiser)
+        if (const auto steel = library.getMaterial("Steel")) {
+            application::MaterialSpec mat;
+            mat.youngsModulusPa = steel->youngModulus;
+            mat.name = "Steel";
+            application::SectionSpec sec;
+            sec.areaM2 = 100e-4;  // 100 cm²
+            sec.profile = "Generic";
+            canvasCtrl->onDefaultMaterialChanged(mat, sec);
+        }
+    }
+
+    // InspectorPanel default-material changes → CanvasController
+    connect(m_inspectorPanel,
+            &InspectorPanel::defaultMaterialChanged,
+            canvasCtrl,
+            &ctrl::CanvasController::onDefaultMaterialChanged);
+
+    // InspectorPanel member-property changes → InspectorController (remove+recreate)
+    connect(m_inspectorPanel,
+            &InspectorPanel::memberPropertiesChangeRequested,
+            inspectorCtrl,
+            &ctrl::InspectorController::onMemberPropertiesChangeRequested);
 }
 
 // ============================================================

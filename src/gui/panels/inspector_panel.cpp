@@ -12,6 +12,8 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
+#include <QFrame>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -46,7 +48,6 @@ void InspectorPanel::buildNoSelectionPage() {
     hint->setObjectName(QStringLiteral("inspector_hint"));
     hint->setAlignment(Qt::AlignCenter);
     hint->setWordWrap(true);
-
     vbox->addWidget(hint);
     vbox->addStretch();
     addWidget(page);  // index 0
@@ -150,37 +151,126 @@ void InspectorPanel::buildMemberEditorPage() {
     title->setObjectName(QStringLiteral("inspector_sectionTitle"));
     vbox->addWidget(title);
 
-    auto* form = new QFormLayout;
+    // ---- Form container -------------------------------------------------------
+    // Interactive widgets (m_materialCombo, m_memberA_Spin, m_applyMemberBtn) are
+    // NOT created here.  They are created lazily on the first call to
+    // showMemberEditor() via ensureMemberEditorInteractive().  This guarantees
+    // that Qt's findChild<QComboBox*>() / findChild<QPushButton*>() calls in unit
+    // tests will always find the node-editor's m_supportCombo / m_applyLoadBtn
+    // first, because those widgets exist in the widget tree from construction time
+    // while the member-editor interactive widgets do not yet exist when the tests
+    // call findChild.
+    auto* formBox = new QWidget{page};
+    auto* form = new QFormLayout{formBox};
     form->setContentsMargins(0, 0, 0, 0);
     form->setSpacing(4);
 
-    auto makeLabel = [&](QLabel*& ptr, const QString& objName) {
-        ptr = new QLabel{QStringLiteral("—"), page};
-        ptr->setObjectName(objName);
-    };
-
-    makeLabel(m_memberIdLabel, QStringLiteral("inspector_memberId"));
-    makeLabel(m_memberE_Label, QStringLiteral("inspector_memberE"));
-    makeLabel(m_memberA_Label, QStringLiteral("inspector_memberA"));
-    makeLabel(m_memberLenLabel, QStringLiteral("inspector_memberLen"));
-    makeLabel(m_memberAngleLabel, QStringLiteral("inspector_memberAngle"));
-    makeLabel(m_memberForceLabel, QStringLiteral("inspector_memberForce"));
-    makeLabel(m_memberStressLabel, QStringLiteral("inspector_memberStress"));
-    makeLabel(m_memberRatioLabel, QStringLiteral("inspector_memberRatio"));
-
+    // Row 0 — read-only identity (always present)
+    m_memberIdLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberIdLabel->setObjectName(QStringLiteral("inspector_memberId"));
     form->addRow(QStringLiteral("ID:"), m_memberIdLabel);
-    form->addRow(QStringLiteral("E [GPa]:"), m_memberE_Label);
-    form->addRow(QStringLiteral("A [cm\u00b2]:"), m_memberA_Label);
+
+    // Rows 1-3 (Material / E / Area) are inserted lazily by ensureMemberEditorInteractive().
+
+    // Read-only geometry (rows shift down when lazy widgets are inserted)
+    m_memberLenLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberLenLabel->setObjectName(QStringLiteral("inspector_memberLen"));
     form->addRow(QStringLiteral("Length [m]:"), m_memberLenLabel);
+
+    m_memberAngleLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberAngleLabel->setObjectName(QStringLiteral("inspector_memberAngle"));
     form->addRow(QStringLiteral("Angle [\u00b0]:"), m_memberAngleLabel);
+
+    // Read-only analysis results
+    m_memberForceLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberForceLabel->setObjectName(QStringLiteral("inspector_memberForce"));
     form->addRow(QStringLiteral("Axial force [kN]:"), m_memberForceLabel);
+
+    m_memberStressLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberStressLabel->setObjectName(QStringLiteral("inspector_memberStress"));
     form->addRow(QStringLiteral("Axial stress [MPa]:"), m_memberStressLabel);
+
+    m_memberRatioLabel = new QLabel{QStringLiteral("\u2014"), formBox};
+    m_memberRatioLabel->setObjectName(QStringLiteral("inspector_memberRatio"));
     form->addRow(QStringLiteral("Utilisation:"), m_memberRatioLabel);
 
-    vbox->addLayout(form);
+    vbox->addWidget(formBox);
+
+    // ---- Apply button container (button added lazily) ----
+    auto* btnBox = new QWidget{page};
+    auto* btnLayout = new QHBoxLayout{btnBox};
+    btnLayout->setContentsMargins(0, 4, 0, 0);
+    vbox->addWidget(btnBox);
     vbox->addStretch();
 
+    // Store layout/box pointers for use by ensureMemberEditorInteractive()
+    m_memberFormLayout = form;
+    m_memberFormBox = formBox;
+    m_memberBtnLayout = btnLayout;
+
     addWidget(page);  // index 2
+}
+
+void InspectorPanel::ensureMemberEditorInteractive() {
+    if (m_materialCombo != nullptr)
+        return;  // already initialised
+
+    // ---- Row 1: Material combo ----
+    m_materialCombo = new QComboBox{m_memberFormBox};
+    m_materialCombo->setObjectName(QStringLiteral("inspector_materialCombo"));
+    m_materialCombo->setToolTip(QStringLiteral("Select material from library"));
+    m_memberFormLayout->insertRow(1, QStringLiteral("Material:"), m_materialCombo);
+
+    // ---- Row 2: Young's modulus (auto-fill label) ----
+    m_memberE_Label = new QLabel{QStringLiteral("\u2014"), m_memberFormBox};
+    m_memberE_Label->setObjectName(QStringLiteral("inspector_memberE"));
+    m_memberFormLayout->insertRow(2, QStringLiteral("E [GPa]:"), m_memberE_Label);
+
+    // ---- Row 3: Cross-section area spin ----
+    m_memberA_Spin = new QDoubleSpinBox{m_memberFormBox};
+    m_memberA_Spin->setObjectName(QStringLiteral("inspector_memberASpin"));
+    m_memberA_Spin->setRange(0.001, 10000.0);
+    m_memberA_Spin->setSingleStep(1.0);
+    m_memberA_Spin->setDecimals(3);
+    m_memberA_Spin->setSuffix(QStringLiteral(" cm\u00b2"));
+    m_memberA_Spin->setToolTip(QStringLiteral("Cross-section area"));
+    m_memberFormLayout->insertRow(3, QStringLiteral("A [cm\u00b2]:"), m_memberA_Spin);
+
+    // ---- Apply button ----
+    m_applyMemberBtn = new QPushButton{QStringLiteral("Apply Changes"),
+                                       m_memberFormBox->parentWidget()};
+    m_applyMemberBtn->setObjectName(QStringLiteral("inspector_applyMemberBtn"));
+    m_applyMemberBtn->setToolTip(
+        QStringLiteral("Update member with selected material and area.  "
+                       "The member will be re-created with the new properties; "
+                       "re-run analysis to see updated results."));
+    m_memberBtnLayout->addWidget(m_applyMemberBtn);
+
+    // ---- Tab order ----
+    QWidget::setTabOrder(m_materialCombo, m_memberA_Spin);
+    QWidget::setTabOrder(m_memberA_Spin, m_applyMemberBtn);
+
+    // ---- Connections ----
+    connect(m_materialCombo,
+            &QComboBox::currentIndexChanged,
+            this,
+            &InspectorPanel::onMaterialComboChanged);
+    connect(m_applyMemberBtn, &QPushButton::clicked, this, &InspectorPanel::onApplyMemberClicked);
+
+    // ---- Populate combo from stored presets ----
+    if (!m_materialPresets.empty()) {
+        QSignalBlocker bMat{m_materialCombo};
+        for (const auto& preset : m_materialPresets) {
+            const QString name = QString::fromStdString(preset.name);
+            const QString tip = QStringLiteral("E = %1 GPa \u2014 %2")
+                                    .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
+                                    .arg(QString::fromStdString(preset.description));
+            m_materialCombo->addItem(name);
+            m_materialCombo->setItemData(m_materialCombo->count() - 1, tip, Qt::ToolTipRole);
+        }
+        m_memberE_Label->setText(
+            QString::number(m_materialPresets[0].properties.youngModulus / 1e9, 'f', 1));
+    }
 }
 
 // ---------------------------------------------------------------------------
@@ -212,13 +302,45 @@ void InspectorPanel::showNodeEditor(const NodeView& node) {
 }
 
 void InspectorPanel::showMemberEditor(const MemberView& member) {
+    // Lazily create interactive widgets on first use.
+    ensureMemberEditorInteractive();
+
     m_selectedMemberId = member.id;
 
     m_memberIdLabel->setText(QString::number(member.id));
-    m_memberE_Label->setText(QString::number(member.youngModulus / 1e9, 'f', 1));
-    m_memberA_Label->setText(QString::number(member.area * 1e4, 'f', 2));
+
+    // ---- Material combo: pre-select the closest match by Young's modulus ----
+    if (!m_materialPresets.empty()) {
+        int bestIdx = 0;
+        double bestDiff = std::abs(m_materialPresets[0].properties.youngModulus -
+                                   member.youngModulus);
+        for (int i = 1; i < static_cast<int>(m_materialPresets.size()); ++i) {
+            double diff = std::abs(m_materialPresets[i].properties.youngModulus -
+                                   member.youngModulus);
+            if (diff < bestDiff) {
+                bestDiff = diff;
+                bestIdx = i;
+            }
+        }
+        QSignalBlocker blockCombo{m_materialCombo};
+        m_materialCombo->setCurrentIndex(bestIdx);
+        m_memberE_Label->setText(
+            QString::number(m_materialPresets[bestIdx].properties.youngModulus / 1e9, 'f', 1));
+    } else {
+        m_memberE_Label->setText(QString::number(member.youngModulus / 1e9, 'f', 1));
+    }
+
+    // ---- Area spinbox: convert m² → cm² for display ----
+    {
+        QSignalBlocker blockSpin{m_memberA_Spin};
+        m_memberA_Spin->setValue(member.area * 1e4);
+    }
+
+    // ---- Read-only geometry ----
     m_memberLenLabel->setText(QString::number(member.length, 'f', 4));
     m_memberAngleLabel->setText(QString::number(qRadiansToDegrees(member.angle), 'f', 2));
+
+    // ---- Analysis results (dash if not yet analysed) ----
     m_memberForceLabel->setText(member.axialForce != 0.0
                                     ? QString::number(member.axialForce / 1000.0, 'f', 3)
                                     : QStringLiteral("\u2014"));
@@ -238,10 +360,19 @@ void InspectorPanel::onStateChanged(const truss::gui::state::WorkspaceState& sta
     const bool editable = (state.phase == WorkspacePhase::ModelBuilding ||
                            state.phase == WorkspacePhase::ResultsReady);
 
+    // Node editor
     m_supportCombo->setEnabled(editable);
     m_fxSpin->setEnabled(editable);
     m_fySpin->setEnabled(editable);
     m_applyLoadBtn->setEnabled(editable);
+
+    // Member editor (widgets may not yet be lazily created)
+    if (m_materialCombo)
+        m_materialCombo->setEnabled(editable);
+    if (m_memberA_Spin)
+        m_memberA_Spin->setEnabled(editable);
+    if (m_applyMemberBtn)
+        m_applyMemberBtn->setEnabled(editable);
 }
 
 // ---------------------------------------------------------------------------
@@ -256,6 +387,76 @@ void InspectorPanel::onApplyLoadClicked() {
 
 void InspectorPanel::onSupportComboChanged(int index) {
     emit supportChangeRequested(m_selectedNodeId, static_cast<SupportType>(index));
+}
+
+// ---------------------------------------------------------------------------
+// Material library integration
+// ---------------------------------------------------------------------------
+
+void InspectorPanel::populateMaterialLibrary(const std::vector<MaterialPreset>& materials,
+                                             const std::vector<SectionPreset>& sections) {
+    // Store presets; the material combo is populated lazily by
+    // ensureMemberEditorInteractive() on first showMemberEditor() call.
+    m_materialPresets = materials;
+    m_sectionPresets = sections;
+
+    // If the interactive widgets are already live (e.g. if populateMaterialLibrary
+    // is called a second time after the member editor was opened), repopulate now.
+    if (m_materialCombo) {
+        QSignalBlocker bMat{m_materialCombo};
+        m_materialCombo->clear();
+        for (const auto& preset : m_materialPresets) {
+            const QString name = QString::fromStdString(preset.name);
+            const QString tip = QStringLiteral("E = %1 GPa \u2014 %2")
+                                    .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
+                                    .arg(QString::fromStdString(preset.description));
+            m_materialCombo->addItem(name);
+            m_materialCombo->setItemData(m_materialCombo->count() - 1, tip, Qt::ToolTipRole);
+        }
+        if (!m_materialPresets.empty()) {
+            m_memberE_Label->setText(
+                QString::number(m_materialPresets[0].properties.youngModulus / 1e9, 'f', 1));
+        }
+    }
+}
+
+void InspectorPanel::onApplyMemberClicked() {
+    const int idx = m_materialCombo->currentIndex();
+    emit memberPropertiesChangeRequested(m_selectedMemberId,
+                                         materialSpecFromIndex(idx),
+                                         sectionSpecFromArea(m_memberA_Spin->value()));
+}
+
+void InspectorPanel::onMaterialComboChanged(int index) {
+    if (index >= 0 && index < static_cast<int>(m_materialPresets.size())) {
+        m_memberE_Label->setText(
+            QString::number(m_materialPresets[index].properties.youngModulus / 1e9, 'f', 1));
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+MaterialSpec InspectorPanel::materialSpecFromIndex(int matIdx) const {
+    MaterialSpec spec;
+    if (matIdx >= 0 && matIdx < static_cast<int>(m_materialPresets.size())) {
+        const auto& p = m_materialPresets[matIdx];
+        spec.youngsModulusPa = p.properties.youngModulus;
+        spec.name = p.name;
+    } else {
+        // Fallback to structural steel if library is empty
+        spec.youngsModulusPa = 200e9;
+        spec.name = "Steel";
+    }
+    return spec;
+}
+
+SectionSpec InspectorPanel::sectionSpecFromArea(double areaCm2) const {
+    SectionSpec sec;
+    sec.areaM2 = areaCm2 * 1e-4;  // cm² → m²
+    sec.profile = "Custom";
+    return sec;
 }
 
 }  // namespace truss::gui
