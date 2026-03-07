@@ -1,160 +1,155 @@
 /**
  * @file project_controller.cpp
- * @brief GUI controller managing project lifecycle and file operations for truss models.
+ * @brief ProjectController implementation (Phase 5).
  *
- * @version 3.0.0
- * @date 2026-02-24
  * @author Neil Taison Rigaud
+ * @version 3.0.0
+ * @date 2026-03-04
  */
 
-#include "project_controller.hpp"
+#include "gui/controllers/project_controller.hpp"
 
-#include <filesystem>
-#include <stdexcept>
+#include "interface/itruss_analysis_facade.hpp"
 
-namespace truss_controllers {
+#include <QFileDialog>
 
-ProjectController::ProjectController(truss::application::ITrussService* trussService,
-                                     QObject* parent)
-    : QObject(parent), m_trussService(trussService), m_currentHandle(0), m_currentFilepath(),
-      m_hasUnsavedChanges(false) {
-    if (!m_trussService) {
-        throw std::invalid_argument("ProjectController: null service pointer");
+namespace truss::gui::ctrl {
+
+ProjectController::ProjectController(truss::interface::ITrussAnalysisFacade&        facade,
+                                      truss::gui::interfaces::IConfirmationProvider& confirmProvider,
+                                      QObject*                                        parent)
+    : QObject{parent}, m_facade{facade}, m_confirm{confirmProvider}
+{}
+
+void ProjectController::setDirty(bool dirty) noexcept
+{
+    m_isDirty = dirty;
+}
+
+void ProjectController::onTrussHandleUpdated(std::size_t trussHandle)
+{
+    m_trussHandle = trussHandle;
+}
+
+// ---------------------------------------------------------------------------
+// New project
+// ---------------------------------------------------------------------------
+
+void ProjectController::onNewProjectRequested()
+{
+    if (m_isDirty && m_trussHandle != 0) {
+        const bool confirmed = m_confirm.confirm(
+            QStringLiteral("Unsaved Changes"),
+            QStringLiteral("The current project has unsaved changes.\n"
+                           "Discard them and create a new project?"));
+        if (!confirmed) return;
     }
-}
 
-void ProjectController::markAsModified() {
-    m_hasUnsavedChanges = true;
-}
-
-void ProjectController::markAsSaved() {
-    m_hasUnsavedChanges = false;
-}
-
-void ProjectController::onNewProject() {
-    // Check for unsaved changes
-    if (m_hasUnsavedChanges) {
-        emit unsavedChangesConfirmationRequested();
-        // User will need to respond and call this again if they want to proceed
-        return;
+    if (m_trussHandle != 0) {
+        m_facade.clearTruss(m_trussHandle);
     }
 
-    // Create new empty truss
-    auto result = m_trussService->createTruss("Untitled");
-
-    if (result.success) {
-        m_currentHandle = result.value;
-        m_currentFilepath.clear();
-        m_hasUnsavedChanges = false;
-
-        emit projectCreated(m_currentHandle);
-        emit statusMessageChanged("New project created");
+    auto result = m_facade.createTruss("Untitled Truss");
+    if (result) {
+        m_trussHandle       = result.value;
+        m_currentFilePath.clear();
+        m_isDirty           = false;
+        emit trussCreated(m_trussHandle);
     } else {
-        emit operationFailed(QString::fromStdString(result.errorMessage));
+        emit operationFailed(
+            QString::fromStdString("Failed to create truss: " + result.errorMessage));
     }
 }
 
-void ProjectController::onOpenProject(const QString& filepath) {
-    // Check for unsaved changes
-    if (m_hasUnsavedChanges) {
-        emit unsavedChangesConfirmationRequested();
-        return;
+// ---------------------------------------------------------------------------
+// Open file
+// ---------------------------------------------------------------------------
+
+void ProjectController::onOpenFileRequested()
+{
+    if (m_isDirty && m_trussHandle != 0) {
+        const bool confirmed = m_confirm.confirm(
+            QStringLiteral("Unsaved Changes"),
+            QStringLiteral("The current project has unsaved changes.\n"
+                           "Discard them and open a different file?"));
+        if (!confirmed) return;
     }
 
-    // Check if file exists
-    if (!std::filesystem::exists(filepath.toStdString())) {
-        emit operationFailed(QString("File not found: %1").arg(filepath));
-        return;
-    }
+    const QString filePath = QFileDialog::getOpenFileName(
+        nullptr,
+        QStringLiteral("Open Truss Project"),
+        QStringLiteral("."),
+        QStringLiteral("Truss files (*.json *.xml);;All files (*)"));
 
-    emit statusMessageChanged("Opening project...");
+    if (filePath.isEmpty()) return;  // user cancelled
 
-    // Load truss from file
-    QByteArray utf8Data = filepath.toUtf8();
-    std::u8string u8str(reinterpret_cast<const char8_t*>(utf8Data.constData()), utf8Data.size());
-    auto result = m_trussService->loadTruss(std::filesystem::path(u8str));
-
-    if (result.success) {
-        m_currentHandle = result.value;
-        m_currentFilepath = filepath;
-        m_hasUnsavedChanges = false;
-
-        emit projectOpened(m_currentHandle, filepath);
-        emit statusMessageChanged(QString("Project opened: %1").arg(filepath));
+    auto result = m_facade.loadTruss(std::filesystem::path{filePath.toStdString()});
+    if (result) {
+        if (m_trussHandle != 0) {
+            m_facade.clearTruss(m_trussHandle);
+        }
+        m_trussHandle     = result.value;
+        m_currentFilePath = filePath;
+        m_isDirty         = false;
+        emit trussLoaded(m_trussHandle, filePath);
     } else {
-        emit operationFailed(QString::fromStdString(result.errorMessage));
-        emit statusMessageChanged("Failed to open project");
+        emit operationFailed(
+            QString::fromStdString("Failed to load file: " + result.errorMessage));
     }
 }
 
-void ProjectController::onSaveProject() {
-    if (m_currentHandle == 0) {
-        emit operationFailed("No project to save");
+// ---------------------------------------------------------------------------
+// Save / Save-as
+// ---------------------------------------------------------------------------
+
+void ProjectController::onSaveRequested()
+{
+    if (m_trussHandle == 0) return;
+
+    if (m_currentFilePath.isEmpty()) {
+        onSaveAsRequested();
         return;
     }
 
-    // If no filepath exists, request Save As
-    if (m_currentFilepath.isEmpty()) {
-        emit saveAsRequested();
-        return;
-    }
+    auto result = m_facade.saveTruss(
+        m_trussHandle,
+        std::filesystem::path{m_currentFilePath.toStdString()},
+        /*overwrite=*/true);
 
-    // Save to existing filepath
-    if (saveToFile(m_currentFilepath)) {
-        emit projectSaved(m_currentFilepath);
-        emit statusMessageChanged(QString("Project saved: %1").arg(m_currentFilepath));
-    }
-}
-
-void ProjectController::onSaveProjectAs(const QString& filepath) {
-    if (m_currentHandle == 0) {
-        emit operationFailed("No project to save");
-        return;
-    }
-
-    if (filepath.isEmpty()) {
-        emit operationFailed("No filepath specified");
-        return;
-    }
-
-    if (saveToFile(filepath)) {
-        m_currentFilepath = filepath;
-        emit projectSaved(filepath);
-        emit statusMessageChanged(QString("Project saved: %1").arg(filepath));
-    }
-}
-
-[[maybe_unused]] void ProjectController::onCloseProject() {
-    // Check for unsaved changes
-    if (m_hasUnsavedChanges) {
-        emit unsavedChangesConfirmationRequested();
-        return;
-    }
-
-    // Clear current state
-    m_currentHandle = 0;
-    m_currentFilepath.clear();
-    m_hasUnsavedChanges = false;
-
-    emit projectClosed();
-    emit statusMessageChanged("Project closed");
-}
-
-bool ProjectController::saveToFile(const QString& filepath) {
-    emit statusMessageChanged("Saving project...");
-
-    QByteArray utf8Data = filepath.toUtf8();
-    std::u8string u8str(reinterpret_cast<const char8_t*>(utf8Data.constData()), utf8Data.size());
-    auto result = m_trussService->saveTruss(m_currentHandle, std::filesystem::path(u8str));
-
-    if (result.success) {
-        m_hasUnsavedChanges = false;
-        return true;
+    if (result) {
+        m_isDirty = false;
+        emit projectSaved(m_currentFilePath);
     } else {
-        emit operationFailed(QString::fromStdString(result.errorMessage));
-        emit statusMessageChanged("Save failed");
-        return false;
+        emit operationFailed(
+            QString::fromStdString("Save failed: " + result.errorMessage));
     }
 }
 
-}  // namespace truss_controllers
+void ProjectController::onSaveAsRequested()
+{
+    if (m_trussHandle == 0) return;
+
+    const QString filePath = QFileDialog::getSaveFileName(
+        nullptr,
+        QStringLiteral("Save Truss Project"),
+        m_currentFilePath.isEmpty() ? QStringLiteral("untitled.json") : m_currentFilePath,
+        QStringLiteral("JSON (*.json);;XML (*.xml);;All files (*)"));
+
+    if (filePath.isEmpty()) return;  // user cancelled
+
+    auto result = m_facade.saveTruss(
+        m_trussHandle,
+        std::filesystem::path{filePath.toStdString()},
+        /*overwrite=*/true);
+
+    if (result) {
+        m_currentFilePath = filePath;
+        m_isDirty         = false;
+        emit projectSaved(m_currentFilePath);
+    } else {
+        emit operationFailed(
+            QString::fromStdString("Save failed: " + result.errorMessage));
+    }
+}
+
+}  // namespace truss::gui::ctrl

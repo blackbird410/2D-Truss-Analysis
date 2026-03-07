@@ -1,137 +1,80 @@
 /**
  * @file analysis_controller.hpp
- * @brief GUI controller coordinating validation, analysis, and export requests.
+ * @brief New AnalysisController (truss::gui::ctrl namespace) replacing the
+ *        legacy truss_controllers::AnalysisController from Phase 8 onward.
  *
- * @version 3.0.0
- * @date 2026-02-24
+ * Phase 5: Full Q_OBJECT implementation with background QThread worker.
+ *
  * @author Neil Taison Rigaud
+ * @version 3.0.0
+ * @date 2026-03-04
  */
 
 #pragma once
 
-#include "application/interfaces/ianalysis_service.hpp"
-#include "application/interfaces/itruss_service.hpp"
-#include "gui/presenters/analysis_results_presenter.hpp"
-#include "gui/presenters/validation_presenter.hpp"
+#include "core/analysis/analysis_orchestrator.hpp"
 
 #include <QObject>
 #include <QString>
 
-namespace truss_controllers {
+#include <cstddef>
+
+class QThread;
+
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
+
+namespace truss::gui::ctrl {
 
 /**
- * @brief Coordinates structural analysis workflow
+ * @brief Orchestrates analysis workflow on a background QThread.
  *
- * This controller handles the analysis workflow: validation, analysis execution,
- * results retrieval, and export operations. It mediates between Views and
- * Application layer services.
+ * Constructs AnalysisWorker, moves it to a QThread, and manages the
+ * full analysis lifecycle:
+ *  1. Takes a value copy of the current truss on the main thread (thread-safety)
+ *  2. Emits analysisStarted() to update UI to Analysing phase
+ *  3. Worker calls IAnalysisService::analyze(trussCopy, opts) on a background thread
+ *  4. On completion emits analysisCompleted(ResultsHandle)
+ *  5. On failure emits analysisFailed(errorMessage)
+ *
+ * @note AnalysisWorker is defined in the .cpp; including this header does not
+ *       require QThread to be complete — hence forward declaration is sufficient.
  */
 class AnalysisController : public QObject {
     Q_OBJECT
 
 public:
-    /**
-     * @brief Construct AnalysisController
-     *
-     * @param trussService Pointer to ITrussService interface (enables DI and mocking)
-     * @param analysisService Pointer to IAnalysisService interface (enables DI and mocking)
-     * @param analysisPresenter Reference to AnalysisResultsPresenter
-     * @param validationPresenter Reference to ValidationPresenter
-     * @param parent Qt parent object
-     *
-     * @throws std::invalid_argument if trussService or analysisService is nullptr
-     */
-    explicit AnalysisController(truss::application::ITrussService* trussService,
-                                truss::application::IAnalysisService* analysisService,
-                                truss_presenters::AnalysisResultsPresenter& analysisPresenter,
-                                truss_presenters::ValidationPresenter& validationPresenter,
-                                QObject* parent = nullptr);
+    explicit AnalysisController(truss::interface::ITrussAnalysisFacade& facade,
+                                 QObject*                                 parent = nullptr);
+    ~AnalysisController() override;
 
-    /**
-     * @brief Get current results handle
-     *
-     * @return size_t Current results handle (0 if invalid)
-     */
-    [[maybe_unused]] size_t getCurrentResults() const { return m_currentResultsHandle; }
+    /// @brief Handle of the most recent successful analysis result (0 = none).
+    [[nodiscard]] std::size_t currentResultsHandle() const noexcept;
 
 public slots:
-    /**
-     * @brief Handle request to analyze truss
-     *
-     * This performs validation first, then executes analysis if valid.
-     *
-     * @param trussHandle Handle to truss to analyze
-     */
-    void onAnalyzeRequested(truss::application::TrussHandle trussHandle);
-
-    /**
-     * @brief Handle request to export analysis results
-     *
-     * @param resultsHandle Handle to results to export
-     * @param filepath Export file path (extension determines format)
-     */
-    void onExportRequested(size_t resultsHandle, const QString& filepath);
-
-    /**
-     * @brief Handle request to clear analysis results
-     */
-    void onClearResults();
+    void onAnalyzeRequested(const truss::core::analysis::AnalysisOptions& opts);
+    /// Request to stop an in-progress analysis.
+    void onStopRequested();
+    /// Update the active truss handle (called by MainWindowController).
+    void onTrussHandleUpdated(std::size_t trussHandle);
 
 signals:
-    /**
-     * @brief Emitted when analysis starts
-     */
     void analysisStarted();
-
-    /**
-     * @brief Emitted when analysis completes successfully
-     *
-     * @param handle Handle to new analysis results
-     */
-    void analysisCompleted(size_t handle);
-
-    /**
-     * @brief Emitted when analysis fails
-     *
-     * @param errorMessage User-friendly error message
-     */
+    void analysisCompleted(std::size_t resultsHandle);
     void analysisFailed(const QString& errorMessage);
 
-    /**
-     * @brief Emitted when validation fails
-     *
-     * @param display Formatted validation display data
-     */
-    void validationFailed(const truss_presenters::ValidationPresenter::ValidationDisplay& display);
-
-    /**
-     * @brief Emitted when export completes successfully
-     *
-     * @param filepath Path where results were exported
-     */
-    void exportCompleted(const QString& filepath);
-
-    /**
-     * @brief Emitted when export fails
-     *
-     * @param errorMessage User-friendly error message
-     */
-    void exportFailed(const QString& errorMessage);
-
-    /**
-     * @brief Emitted to update status message
-     *
-     * @param message Status message
-     */
-    void statusMessageChanged(const QString& message);
+private slots:
+    void onWorkerFinished(std::size_t resultsHandle);
+    void onWorkerFailed(const QString& error);
 
 private:
-    truss::application::ITrussService* m_trussService;
-    truss::application::IAnalysisService* m_analysisService;
-    truss_presenters::AnalysisResultsPresenter& m_analysisPresenter;
-    truss_presenters::ValidationPresenter& m_validationPresenter;
-    size_t m_currentResultsHandle;
-    truss::application::TrussHandle m_currentTrussHandle;
+    void cleanupThread();
+
+    truss::interface::ITrussAnalysisFacade& m_facade;
+    std::size_t                              m_trussHandle{0};
+    std::size_t                              m_resultsHandle{0};
+    QThread*                                 m_thread{nullptr};
 };
 
-}  // namespace truss_controllers
+}  // namespace truss::gui::ctrl
