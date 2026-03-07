@@ -10,6 +10,7 @@
 #include "gui/panels/analysis_control_bar.hpp"
 
 #include <QHBoxLayout>
+#include <QIcon>
 #include <QProgressBar>
 #include <QPushButton>
 #include <QStackedWidget>
@@ -55,15 +56,19 @@ void AnalysisControlBar::buildLayout() {
     hbox->addWidget(m_actionStack, 1);
 
     // ---- Validate button ----
-    m_validateBtn = new QPushButton{QStringLiteral("✔  Validate"), this};
+    m_validateBtn = new QPushButton{this};
     m_validateBtn->setObjectName(QStringLiteral("controlBar_validateBtn"));
+    m_validateBtn->setIcon(QIcon{QStringLiteral(":/icons/validate.svg")});
+    m_validateBtn->setText(QStringLiteral(" Validate"));
+    m_validateBtn->setToolTip(QStringLiteral("Validate truss structure"));
     hbox->addWidget(m_validateBtn);
 
     // ---- Options button ----
-    m_optionsBtn = new QPushButton{QStringLiteral("⚙"), this};
+    m_optionsBtn = new QPushButton{this};
     m_optionsBtn->setObjectName(QStringLiteral("controlBar_optionsBtn"));
+    m_optionsBtn->setIcon(QIcon{QStringLiteral(":/icons/analysis_options.svg")});
     m_optionsBtn->setToolTip(QStringLiteral("Analysis options"));
-    m_optionsBtn->setFixedWidth(32);
+    m_optionsBtn->setFixedWidth(36);
     hbox->addWidget(m_optionsBtn);
 
     // ---- Connections ----
