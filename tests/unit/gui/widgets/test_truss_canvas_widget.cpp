@@ -397,8 +397,7 @@ TEST_F(TrussCanvasWidgetTest, TriggerDeleteSelectedWithNoSelectionDoesNotCrash) 
 
     ASSERT_NO_FATAL_FAILURE(widget->triggerDeleteSelected());
 
-    EXPECT_EQ(spyNode.count(), 0)
-        << "nodeDeleteRequested must not fire when nothing is selected";
+    EXPECT_EQ(spyNode.count(), 0) << "nodeDeleteRequested must not fire when nothing is selected";
     EXPECT_EQ(spyMember.count(), 0)
         << "memberDeleteRequested must not fire when nothing is selected";
 }
@@ -433,5 +432,3 @@ TEST_F(TrussCanvasWidgetTest, BackspaceKeyPressWithCanvasFocusIsHandledWithoutCr
     widget->setFocus();
     ASSERT_NO_FATAL_FAILURE(QTest::keyClick(widget.get(), Qt::Key_Backspace));
 }
-
-

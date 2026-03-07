@@ -735,26 +735,26 @@ bool MainWindow::eventFilter(QObject* /*watched*/, QEvent* event) {
     // preserved through the QAction::setShortcut() calls in setupMenuBar().
     if (mods == Qt::ControlModifier) {
         switch (ke->key()) {
-        case Qt::Key_N:
-            if (m_actNew && m_actNew->isEnabled()) {
-                m_actNew->trigger();
-                return true;
-            }
-            break;
-        case Qt::Key_O:
-            if (m_actOpen && m_actOpen->isEnabled()) {
-                m_actOpen->trigger();
-                return true;
-            }
-            break;
-        case Qt::Key_S:
-            if (m_actSave && m_actSave->isEnabled()) {
-                m_actSave->trigger();
-                return true;
-            }
-            break;
-        default:
-            break;
+            case Qt::Key_N:
+                if (m_actNew && m_actNew->isEnabled()) {
+                    m_actNew->trigger();
+                    return true;
+                }
+                break;
+            case Qt::Key_O:
+                if (m_actOpen && m_actOpen->isEnabled()) {
+                    m_actOpen->trigger();
+                    return true;
+                }
+                break;
+            case Qt::Key_S:
+                if (m_actSave && m_actSave->isEnabled()) {
+                    m_actSave->trigger();
+                    return true;
+                }
+                break;
+            default:
+                break;
         }
         // All other Ctrl+key combos (Ctrl+Z, Ctrl+C, etc.) pass through.
         return false;
@@ -770,39 +770,39 @@ bool MainWindow::eventFilter(QObject* /*watched*/, QEvent* event) {
     const bool inTextInput = isTextInputFocused();
 
     switch (ke->key()) {
-    case Qt::Key_N:
-        if (!inTextInput && m_actToolNode && m_actToolNode->isEnabled()) {
-            m_actToolNode->trigger();
-            return true;
-        }
-        break;
-    case Qt::Key_M:
-        if (!inTextInput && m_actToolMember && m_actToolMember->isEnabled()) {
-            m_actToolMember->trigger();
-            return true;
-        }
-        break;
-    case Qt::Key_Escape:
-        if (!inTextInput && m_actToolSelect) {
-            m_actToolSelect->trigger();
-            return true;
-        }
-        break;
-    case Qt::Key_Z:
-        if (!inTextInput && m_actZoomFit) {
-            m_actZoomFit->trigger();
-            return true;
-        }
-        break;
-    case Qt::Key_Delete:
-    case Qt::Key_Backspace:
-        if (!inTextInput && m_canvas) {
-            m_canvas->triggerDeleteSelected();
-            return true;
-        }
-        break;
-    default:
-        break;
+        case Qt::Key_N:
+            if (!inTextInput && m_actToolNode && m_actToolNode->isEnabled()) {
+                m_actToolNode->trigger();
+                return true;
+            }
+            break;
+        case Qt::Key_M:
+            if (!inTextInput && m_actToolMember && m_actToolMember->isEnabled()) {
+                m_actToolMember->trigger();
+                return true;
+            }
+            break;
+        case Qt::Key_Escape:
+            if (!inTextInput && m_actToolSelect) {
+                m_actToolSelect->trigger();
+                return true;
+            }
+            break;
+        case Qt::Key_Z:
+            if (!inTextInput && m_actZoomFit) {
+                m_actZoomFit->trigger();
+                return true;
+            }
+            break;
+        case Qt::Key_Delete:
+        case Qt::Key_Backspace:
+            if (!inTextInput && m_canvas) {
+                m_canvas->triggerDeleteSelected();
+                return true;
+            }
+            break;
+        default:
+            break;
     }
     return false;
 }
@@ -815,11 +815,10 @@ bool MainWindow::isTextInputFocused() const {
     const QWidget* fw = QApplication::focusWidget();
     if (!fw)
         return false;
-    return qobject_cast<const QLineEdit*>(fw) != nullptr
-        || qobject_cast<const QAbstractSpinBox*>(fw) != nullptr
-        || qobject_cast<const QTextEdit*>(fw) != nullptr
-        || qobject_cast<const QPlainTextEdit*>(fw) != nullptr;
+    return qobject_cast<const QLineEdit*>(fw) != nullptr ||
+           qobject_cast<const QAbstractSpinBox*>(fw) != nullptr ||
+           qobject_cast<const QTextEdit*>(fw) != nullptr ||
+           qobject_cast<const QPlainTextEdit*>(fw) != nullptr;
 }
 
 }  // namespace truss::gui
-
