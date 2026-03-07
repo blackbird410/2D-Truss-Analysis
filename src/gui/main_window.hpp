@@ -67,7 +67,15 @@ class MainWindow : public QMainWindow {
 
 public:
     explicit MainWindow(truss::interface::ITrussAnalysisFacade& facade, QWidget* parent = nullptr);
-    ~MainWindow() override = default;
+
+    /**
+     * @brief Destructor removes the application-level event filter.
+     *
+     * The event filter installed on @c qApp in the constructor must be
+     * explicitly removed before the MainWindow is destroyed to prevent a
+     * dangling-pointer dereference if any key event arrives during teardown.
+     */
+    ~MainWindow() override;
 
 protected:
     void closeEvent(QCloseEvent* event) override;

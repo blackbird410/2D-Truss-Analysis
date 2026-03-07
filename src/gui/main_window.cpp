@@ -71,6 +71,22 @@ MainWindow::MainWindow(truss::interface::ITrussAnalysisFacade& facade, QWidget* 
     setupToolBar();
     setupStatusBar();
     connectSignals();
+
+    // Install an application-level event filter to centralize dispatch of
+    // single-key shortcuts (N, M, Esc, Z, Delete) that cannot be registered
+    // via QAction::setShortcut() reliably — child widgets such as QTableView
+    // and QDoubleSpinBox can block Qt::WindowShortcut resolution for printable
+    // keys.  The filter is removed in ~MainWindow() to prevent dangling-pointer
+    // dereferences during teardown.
+    qApp->installEventFilter(this);
+}
+
+// ============================================================
+// Destructor
+// ============================================================
+
+MainWindow::~MainWindow() {
+    qApp->removeEventFilter(this);
 }
 
 // ============================================================
