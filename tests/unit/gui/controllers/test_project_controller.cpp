@@ -28,24 +28,24 @@
 
 using namespace truss::gui::ctrl;
 using namespace truss::gui::interfaces;
-using truss::application::Result;
-using truss::test::MockTrussAnalysisFacade;
+using ::testing::_;
 using ::testing::NiceMock;
 using ::testing::Return;
-using ::testing::_;
+using truss::application::Result;
+using truss::test::MockTrussAnalysisFacade;
 
 // ============================================================
 // QApplication bootstrap
 // ============================================================
 
 namespace {
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
+            return e;
         return new QApplication(s_argc, s_argv);
     }();
     return *s_app;
@@ -59,41 +59,38 @@ QApplication& ensureQApp()
 /// Fixture with AutoConfirmProvider(true) — simulates user always clicking OK.
 class ProjectControllerConfirmTest : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         confirmYes = std::make_unique<AutoConfirmProvider>(true);
         ctrl = std::make_unique<ProjectController>(facade, *confirmYes);
     }
     void TearDown() override { ctrl.reset(); }
 
-    NiceMock<MockTrussAnalysisFacade>     facade;
-    std::unique_ptr<AutoConfirmProvider>  confirmYes;
-    std::unique_ptr<ProjectController>    ctrl;
+    NiceMock<MockTrussAnalysisFacade> facade;
+    std::unique_ptr<AutoConfirmProvider> confirmYes;
+    std::unique_ptr<ProjectController> ctrl;
 };
 
 /// Fixture with AutoConfirmProvider(false) — simulates user always clicking Cancel.
 class ProjectControllerDenyTest : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         confirmNo = std::make_unique<AutoConfirmProvider>(false);
         ctrl = std::make_unique<ProjectController>(facade, *confirmNo);
     }
     void TearDown() override { ctrl.reset(); }
 
-    NiceMock<MockTrussAnalysisFacade>     facade;
-    std::unique_ptr<AutoConfirmProvider>  confirmNo;
-    std::unique_ptr<ProjectController>    ctrl;
+    NiceMock<MockTrussAnalysisFacade> facade;
+    std::unique_ptr<AutoConfirmProvider> confirmNo;
+    std::unique_ptr<ProjectController> ctrl;
 };
 
 // ============================================================
 // Tests
 // ============================================================
 
-TEST_F(ProjectControllerConfirmTest, NewProject_CleanState_CallsCreateTrussAndEmitsCreated)
-{
+TEST_F(ProjectControllerConfirmTest, NewProject_CleanState_CallsCreateTrussAndEmitsCreated) {
     EXPECT_CALL(facade, createTruss(_))
         .WillOnce(Return(Result<std::size_t>::Success(std::size_t{10})));
 
@@ -104,8 +101,7 @@ TEST_F(ProjectControllerConfirmTest, NewProject_CleanState_CallsCreateTrussAndEm
     EXPECT_EQ(spy.first().first().value<std::size_t>(), std::size_t{10});
 }
 
-TEST_F(ProjectControllerConfirmTest, NewProject_DirtyAndUserConfirms_CallsCreateTruss)
-{
+TEST_F(ProjectControllerConfirmTest, NewProject_DirtyAndUserConfirms_CallsCreateTruss) {
     ctrl->setDirty(true);
 
     EXPECT_CALL(facade, createTruss(_))
@@ -117,8 +113,7 @@ TEST_F(ProjectControllerConfirmTest, NewProject_DirtyAndUserConfirms_CallsCreate
     ASSERT_EQ(spy.count(), 1);
 }
 
-TEST_F(ProjectControllerDenyTest, NewProject_DirtyAndUserDenies_DoesNotCallCreateTruss)
-{
+TEST_F(ProjectControllerDenyTest, NewProject_DirtyAndUserDenies_DoesNotCallCreateTruss) {
     ctrl->onTrussHandleUpdated(1);  // must have a handle for the dirty guard to fire
     ctrl->setDirty(true);
 
@@ -130,8 +125,7 @@ TEST_F(ProjectControllerDenyTest, NewProject_DirtyAndUserDenies_DoesNotCallCreat
     EXPECT_EQ(spy.count(), 0);
 }
 
-TEST_F(ProjectControllerConfirmTest, TrussHandleUpdated_PersistsHandle)
-{
+TEST_F(ProjectControllerConfirmTest, TrussHandleUpdated_PersistsHandle) {
     ctrl->onTrussHandleUpdated(42);
 
     // Verify that a subsequent new project replaces the existing truss with handle 42.
@@ -147,8 +141,7 @@ TEST_F(ProjectControllerConfirmTest, TrussHandleUpdated_PersistsHandle)
     EXPECT_EQ(spy.first().first().value<std::size_t>(), std::size_t{43});
 }
 
-TEST_F(ProjectControllerConfirmTest, NewProject_CreateTrussFailure_EmitsOperationFailed)
-{
+TEST_F(ProjectControllerConfirmTest, NewProject_CreateTrussFailure_EmitsOperationFailed) {
     EXPECT_CALL(facade, createTruss(_))
         .WillOnce(Return(Result<std::size_t>::Failure("storage full")));
 
@@ -161,8 +154,7 @@ TEST_F(ProjectControllerConfirmTest, NewProject_CreateTrussFailure_EmitsOperatio
     EXPECT_FALSE(spyFail.first().first().toString().isEmpty());
 }
 
-TEST_F(ProjectControllerConfirmTest, SetDirty_False_DoesNotShowConfirmationOnNew)
-{
+TEST_F(ProjectControllerConfirmTest, SetDirty_False_DoesNotShowConfirmationOnNew) {
     ctrl->setDirty(true);
     ctrl->setDirty(false);
 

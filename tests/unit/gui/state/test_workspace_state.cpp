@@ -23,38 +23,32 @@ using namespace truss::gui::state;
 // Tests — default construction
 // ============================================================
 
-TEST(WorkspaceStateTest, DefaultPhaseIsEmpty)
-{
+TEST(WorkspaceStateTest, DefaultPhaseIsEmpty) {
     WorkspaceState s;
     EXPECT_EQ(s.phase, WorkspacePhase::Empty);
 }
 
-TEST(WorkspaceStateTest, DefaultTrussHandleIsZero)
-{
+TEST(WorkspaceStateTest, DefaultTrussHandleIsZero) {
     WorkspaceState s;
     EXPECT_EQ(s.trussHandle, 0u);
 }
 
-TEST(WorkspaceStateTest, DefaultResultsHandleIsZero)
-{
+TEST(WorkspaceStateTest, DefaultResultsHandleIsZero) {
     WorkspaceState s;
     EXPECT_EQ(s.resultsHandle, 0u);
 }
 
-TEST(WorkspaceStateTest, DefaultIsDirtyIsFalse)
-{
+TEST(WorkspaceStateTest, DefaultIsDirtyIsFalse) {
     WorkspaceState s;
     EXPECT_FALSE(s.isDirty);
 }
 
-TEST(WorkspaceStateTest, DefaultProjectNameIsEmpty)
-{
+TEST(WorkspaceStateTest, DefaultProjectNameIsEmpty) {
     WorkspaceState s;
     EXPECT_TRUE(s.projectName.empty());
 }
 
-TEST(WorkspaceStateTest, DefaultLastErrorIsEmpty)
-{
+TEST(WorkspaceStateTest, DefaultLastErrorIsEmpty) {
     WorkspaceState s;
     EXPECT_TRUE(s.lastError.empty());
 }
@@ -63,14 +57,12 @@ TEST(WorkspaceStateTest, DefaultLastErrorIsEmpty)
 // Tests — hasTruss()
 // ============================================================
 
-TEST(WorkspaceStateTest, HasTrussReturnsFalseWhenHandleIsZero)
-{
+TEST(WorkspaceStateTest, HasTrussReturnsFalseWhenHandleIsZero) {
     WorkspaceState s;
     EXPECT_FALSE(s.hasTruss());
 }
 
-TEST(WorkspaceStateTest, HasTrussReturnsTrueWhenHandleNonZero)
-{
+TEST(WorkspaceStateTest, HasTrussReturnsTrueWhenHandleNonZero) {
     WorkspaceState s;
     s.trussHandle = 1u;
     EXPECT_TRUE(s.hasTruss());
@@ -80,14 +72,12 @@ TEST(WorkspaceStateTest, HasTrussReturnsTrueWhenHandleNonZero)
 // Tests — hasResults()
 // ============================================================
 
-TEST(WorkspaceStateTest, HasResultsReturnsFalseWhenHandleIsZero)
-{
+TEST(WorkspaceStateTest, HasResultsReturnsFalseWhenHandleIsZero) {
     WorkspaceState s;
     EXPECT_FALSE(s.hasResults());
 }
 
-TEST(WorkspaceStateTest, HasResultsReturnsTrueWhenHandleNonZero)
-{
+TEST(WorkspaceStateTest, HasResultsReturnsTrueWhenHandleNonZero) {
     WorkspaceState s;
     s.resultsHandle = 7u;
     EXPECT_TRUE(s.hasResults());
@@ -97,15 +87,13 @@ TEST(WorkspaceStateTest, HasResultsReturnsTrueWhenHandleNonZero)
 // Tests — isAnalysing()
 // ============================================================
 
-TEST(WorkspaceStateTest, IsAnalysingReturnsTrueOnlyForAnalysingPhase)
-{
+TEST(WorkspaceStateTest, IsAnalysingReturnsTrueOnlyForAnalysingPhase) {
     WorkspaceState s;
     s.phase = WorkspacePhase::Analysing;
     EXPECT_TRUE(s.isAnalysing());
 }
 
-TEST(WorkspaceStateTest, IsAnalysingReturnsFalseForOtherPhases)
-{
+TEST(WorkspaceStateTest, IsAnalysingReturnsFalseForOtherPhases) {
     for (auto phase : {WorkspacePhase::Empty,
                        WorkspacePhase::ModelBuilding,
                        WorkspacePhase::Validating,
@@ -120,15 +108,13 @@ TEST(WorkspaceStateTest, IsAnalysingReturnsFalseForOtherPhases)
 // Tests — isResultsReady()
 // ============================================================
 
-TEST(WorkspaceStateTest, IsResultsReadyReturnsTrueOnlyForResultsReadyPhase)
-{
+TEST(WorkspaceStateTest, IsResultsReadyReturnsTrueOnlyForResultsReadyPhase) {
     WorkspaceState s;
     s.phase = WorkspacePhase::ResultsReady;
     EXPECT_TRUE(s.isResultsReady());
 }
 
-TEST(WorkspaceStateTest, IsResultsReadyReturnsFalseForOtherPhases)
-{
+TEST(WorkspaceStateTest, IsResultsReadyReturnsFalseForOtherPhases) {
     for (auto phase : {WorkspacePhase::Empty,
                        WorkspacePhase::ModelBuilding,
                        WorkspacePhase::Validating,
@@ -143,29 +129,25 @@ TEST(WorkspaceStateTest, IsResultsReadyReturnsFalseForOtherPhases)
 // Tests — isEditable()
 // ============================================================
 
-TEST(WorkspaceStateTest, IsEditableReturnsTrueForModelBuilding)
-{
+TEST(WorkspaceStateTest, IsEditableReturnsTrueForModelBuilding) {
     WorkspaceState s;
     s.phase = WorkspacePhase::ModelBuilding;
     EXPECT_TRUE(s.isEditable());
 }
 
-TEST(WorkspaceStateTest, IsEditableReturnsTrueForResultsReady)
-{
+TEST(WorkspaceStateTest, IsEditableReturnsTrueForResultsReady) {
     WorkspaceState s;
     s.phase = WorkspacePhase::ResultsReady;
     EXPECT_TRUE(s.isEditable());
 }
 
-TEST(WorkspaceStateTest, IsEditableReturnsFalseForEmpty)
-{
+TEST(WorkspaceStateTest, IsEditableReturnsFalseForEmpty) {
     WorkspaceState s;
     s.phase = WorkspacePhase::Empty;
     EXPECT_FALSE(s.isEditable());
 }
 
-TEST(WorkspaceStateTest, IsEditableReturnsFalseWhileAnalysing)
-{
+TEST(WorkspaceStateTest, IsEditableReturnsFalseWhileAnalysing) {
     WorkspaceState s;
     s.phase = WorkspacePhase::Analysing;
     EXPECT_FALSE(s.isEditable());
@@ -175,54 +157,48 @@ TEST(WorkspaceStateTest, IsEditableReturnsFalseWhileAnalysing)
 // Tests — value equality (operator== / operator!=)
 // ============================================================
 
-TEST(WorkspaceStateTest, DefaultConstructedStatesAreEqual)
-{
+TEST(WorkspaceStateTest, DefaultConstructedStatesAreEqual) {
     WorkspaceState a;
     WorkspaceState b;
     EXPECT_EQ(a, b);
 }
 
-TEST(WorkspaceStateTest, StatesWithDifferentPhasesAreNotEqual)
-{
+TEST(WorkspaceStateTest, StatesWithDifferentPhasesAreNotEqual) {
     WorkspaceState a;
     WorkspaceState b;
     b.phase = WorkspacePhase::ModelBuilding;
     EXPECT_NE(a, b);
 }
 
-TEST(WorkspaceStateTest, StatesWithDifferentHandlesAreNotEqual)
-{
+TEST(WorkspaceStateTest, StatesWithDifferentHandlesAreNotEqual) {
     WorkspaceState a;
     WorkspaceState b;
     b.trussHandle = 99u;
     EXPECT_NE(a, b);
 }
 
-TEST(WorkspaceStateTest, StatesWithDifferentIsDirtyAreNotEqual)
-{
+TEST(WorkspaceStateTest, StatesWithDifferentIsDirtyAreNotEqual) {
     WorkspaceState a;
     WorkspaceState b;
     b.isDirty = true;
     EXPECT_NE(a, b);
 }
 
-TEST(WorkspaceStateTest, StatesWithDifferentLastErrorAreNotEqual)
-{
+TEST(WorkspaceStateTest, StatesWithDifferentLastErrorAreNotEqual) {
     WorkspaceState a;
     WorkspaceState b;
     b.lastError = "singular matrix";
     EXPECT_NE(a, b);
 }
 
-TEST(WorkspaceStateTest, CopiedStateEqualsOriginal)
-{
+TEST(WorkspaceStateTest, CopiedStateEqualsOriginal) {
     WorkspaceState a;
-    a.phase         = WorkspacePhase::ResultsReady;
-    a.trussHandle   = 5u;
+    a.phase = WorkspacePhase::ResultsReady;
+    a.trussHandle = 5u;
     a.resultsHandle = 2u;
-    a.isDirty       = true;
-    a.projectName   = "bridge.truss";
-    a.lastError     = "";
+    a.isDirty = true;
+    a.projectName = "bridge.truss";
+    a.lastError = "";
 
     WorkspaceState b = a;
     EXPECT_EQ(a, b);

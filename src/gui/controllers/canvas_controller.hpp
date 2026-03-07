@@ -43,7 +43,7 @@ class CanvasController : public QObject {
 
 public:
     explicit CanvasController(truss::interface::ITrussAnalysisFacade& facade,
-                               QObject*                                parent = nullptr);
+                              QObject* parent = nullptr);
 
 public slots:
     /// Drop a node at @p pos with given support type.
@@ -63,7 +63,7 @@ signals:
 
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;
-    std::size_t                              m_trussHandle{0};
+    std::size_t m_trussHandle{0};
 };
 
 }  // namespace truss::gui::ctrl

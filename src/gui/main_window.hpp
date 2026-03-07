@@ -1,11 +1,11 @@
 /**
  * @file main_window.hpp
- * @brief New MainWindow with full Phase 6 signal/slot wiring.
+ * @brief MainWindow — top-level application window with full signal/slot wiring.
  *
- * Phase 4: QMainWindow skeleton — QSplitter (65/35), bottom QDockWidget,
- *          menu bar stubs, toolbar stubs, status bar, MainWindowController.
- * Phase 5: InspectorPanel / AnalysisControlBar / ResultsDockPanel replace placeholders.
- * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard; toolbar wiring.
+ * QMainWindow with QSplitter (65/35), bottom QDockWidget, menu bar,
+ * toolbar, InspectorPanel, AnalysisControlBar, ResultsDockPanel, and
+ * NotificationRail.  All actions, keyboard shortcuts, and dirty-state
+ * guards are wired through MainWindowController.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -27,13 +27,15 @@
 
 #include <memory>
 
-namespace truss::interface { class ITrussAnalysisFacade; }
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
 namespace truss::gui {
 class TrussCanvasWidget;
 class InspectorPanel;
 class AnalysisControlBar;
 class ResultsDockPanel;
-}
+}  // namespace truss::gui
 
 namespace truss::gui {
 
@@ -62,8 +64,7 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(truss::interface::ITrussAnalysisFacade& facade,
-                          QWidget* parent = nullptr);
+    explicit MainWindow(truss::interface::ITrussAnalysisFacade& facade, QWidget* parent = nullptr);
     ~MainWindow() override = default;
 
 protected:
@@ -95,12 +96,12 @@ private:
     // -------------------------------------------------------------------
     // Owned widgets
     // -------------------------------------------------------------------
-    TrussCanvasWidget*   m_canvas{nullptr};
-    InspectorPanel*      m_inspectorPanel{nullptr};
-    AnalysisControlBar*  m_analysisBar{nullptr};
-    ResultsDockPanel*    m_resultsDockPanel{nullptr};
-    QDockWidget*         m_resultsDock{nullptr};
-    QSplitter*           m_centralSplitter{nullptr};
+    TrussCanvasWidget* m_canvas{nullptr};
+    InspectorPanel* m_inspectorPanel{nullptr};
+    AnalysisControlBar* m_analysisBar{nullptr};
+    ResultsDockPanel* m_resultsDockPanel{nullptr};
+    QDockWidget* m_resultsDock{nullptr};
+    QSplitter* m_centralSplitter{nullptr};
 
     // Status bar labels
     QLabel* m_phaseLabel{nullptr};

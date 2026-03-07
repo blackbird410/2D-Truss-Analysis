@@ -21,8 +21,7 @@ namespace truss::gui::model {
 // Construction / destruction
 // ---------------------------------------------------------------------------
 
-ValidationListModel::ValidationListModel(QObject* parent)
-    : QAbstractListModel(parent) {}
+ValidationListModel::ValidationListModel(QObject* parent) : QAbstractListModel(parent) {}
 
 ValidationListModel::~ValidationListModel() = default;
 
@@ -30,15 +29,13 @@ ValidationListModel::~ValidationListModel() = default;
 // QAbstractListModel overrides
 // ---------------------------------------------------------------------------
 
-int ValidationListModel::rowCount(const QModelIndex& parent) const
-{
+int ValidationListModel::rowCount(const QModelIndex& parent) const {
     if (parent.isValid())
         return 0;
     return static_cast<int>(m_issues.size());
 }
 
-QVariant ValidationListModel::data(const QModelIndex& index, int role) const
-{
+QVariant ValidationListModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid())
         return {};
 
@@ -86,15 +83,13 @@ QVariant ValidationListModel::data(const QModelIndex& index, int role) const
 // Public slots
 // ---------------------------------------------------------------------------
 
-void ValidationListModel::refresh(const ValidationResult& result)
-{
+void ValidationListModel::refresh(const ValidationResult& result) {
     beginResetModel();
     m_issues = result.getIssues();
     endResetModel();
 }
 
-void ValidationListModel::clear()
-{
+void ValidationListModel::clear() {
     if (m_issues.empty())
         return;
     beginResetModel();
@@ -106,19 +101,22 @@ void ValidationListModel::clear()
 // Private helpers
 // ---------------------------------------------------------------------------
 
-QColor ValidationListModel::severityColor(ValidationSeverity severity) const
-{
+QColor ValidationListModel::severityColor(ValidationSeverity severity) const {
     switch (severity) {
-        case ValidationSeverity::Info:    return QColor(0x42, 0x85, 0xF4);  // steel-blue  #4285F4
-        case ValidationSeverity::Warning: return QColor(0xFF, 0xC1, 0x07);  // amber       #FFC107
-        case ValidationSeverity::Error:   return QColor(0xEA, 0x43, 0x35);  // red         #EA4335
-        case ValidationSeverity::Fatal:   return QColor(0x8B, 0x00, 0x00);  // dark-red    #8B0000
-        default:                          return QColor(0x9E, 0x9E, 0x9E);  // grey
+        case ValidationSeverity::Info:
+            return QColor(0x42, 0x85, 0xF4);  // steel-blue  #4285F4
+        case ValidationSeverity::Warning:
+            return QColor(0xFF, 0xC1, 0x07);  // amber       #FFC107
+        case ValidationSeverity::Error:
+            return QColor(0xEA, 0x43, 0x35);  // red         #EA4335
+        case ValidationSeverity::Fatal:
+            return QColor(0x8B, 0x00, 0x00);  // dark-red    #8B0000
+        default:
+            return QColor(0x9E, 0x9E, 0x9E);  // grey
     }
 }
 
-QPixmap ValidationListModel::severityIcon(ValidationSeverity severity) const
-{
+QPixmap ValidationListModel::severityIcon(ValidationSeverity severity) const {
     constexpr int kSize = 12;
     QPixmap pix(kSize, kSize);
     pix.fill(Qt::transparent);
@@ -131,4 +129,4 @@ QPixmap ValidationListModel::severityIcon(ValidationSeverity severity) const
     return pix;
 }
 
-} // namespace truss::gui::model
+}  // namespace truss::gui::model

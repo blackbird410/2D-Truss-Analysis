@@ -2,8 +2,6 @@
  * @file node_table_model.cpp
  * @brief Implementation of NodeTableModel.
  *
- * Phase 3: Qt Item Models.
- *
  * @author Neil Taison Rigaud
  * @version 3.0.0
  * @date 2026-03-03
@@ -30,8 +28,7 @@ const QColor NodeTableModel::kLoadedBg = QColor(255, 193, 7, 90);
 // Construction / destruction
 // ---------------------------------------------------------------------------
 
-NodeTableModel::NodeTableModel(QObject* parent)
-    : QAbstractTableModel(parent) {}
+NodeTableModel::NodeTableModel(QObject* parent) : QAbstractTableModel(parent) {}
 
 NodeTableModel::~NodeTableModel() = default;
 
@@ -39,24 +36,19 @@ NodeTableModel::~NodeTableModel() = default;
 // QAbstractTableModel overrides
 // ---------------------------------------------------------------------------
 
-int NodeTableModel::rowCount(const QModelIndex& parent) const
-{
+int NodeTableModel::rowCount(const QModelIndex& parent) const {
     if (parent.isValid())
         return 0;
     return static_cast<int>(m_rows.size());
 }
 
-int NodeTableModel::columnCount(const QModelIndex& parent) const
-{
+int NodeTableModel::columnCount(const QModelIndex& parent) const {
     if (parent.isValid())
         return 0;
     return kColumnCount;
 }
 
-QVariant NodeTableModel::headerData(int section,
-                                    Qt::Orientation orientation,
-                                    int role) const
-{
+QVariant NodeTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role != Qt::DisplayRole)
         return {};
 
@@ -64,9 +56,16 @@ QVariant NodeTableModel::headerData(int section,
         return section + 1;
 
     static const char* kHeaders[kColumnCount] = {
-        "ID",      "X [m]",   "Y [m]",   "Support",
-        "Fx [kN]", "Fy [kN]", "dx [mm]", "dy [mm]",
-        "Rx [kN]", "Ry [kN]",
+        "ID",
+        "X [m]",
+        "Y [m]",
+        "Support",
+        "Fx [kN]",
+        "Fy [kN]",
+        "dx [mm]",
+        "dy [mm]",
+        "Rx [kN]",
+        "Ry [kN]",
     };
 
     if (section < 0 || section >= kColumnCount)
@@ -74,8 +73,7 @@ QVariant NodeTableModel::headerData(int section,
     return kHeaders[section];
 }
 
-QVariant NodeTableModel::data(const QModelIndex& index, int role) const
-{
+QVariant NodeTableModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid())
         return {};
 
@@ -169,15 +167,13 @@ QVariant NodeTableModel::data(const QModelIndex& index, int role) const
 // Public slots
 // ---------------------------------------------------------------------------
 
-void NodeTableModel::refresh(const ITrussView& view)
-{
+void NodeTableModel::refresh(const ITrussView& view) {
     beginResetModel();
     m_rows = view.getNodeViews();
     endResetModel();
 }
 
-void NodeTableModel::setHasResults(bool hasResults)
-{
+void NodeTableModel::setHasResults(bool hasResults) {
     if (m_hasResults == hasResults)
         return;
     beginResetModel();
@@ -189,21 +185,24 @@ void NodeTableModel::setHasResults(bool hasResults)
 // Private helpers
 // ---------------------------------------------------------------------------
 
-QString NodeTableModel::formatSupport(truss::core::SupportType s) const
-{
+QString NodeTableModel::formatSupport(truss::core::SupportType s) const {
     switch (s) {
-        case truss::core::SupportType::Free:    return QStringLiteral("Free");
-        case truss::core::SupportType::Pinned:  return QStringLiteral("Pinned (X+Y)");
-        case truss::core::SupportType::RollerX: return QStringLiteral("Roller X");
-        case truss::core::SupportType::RollerY: return QStringLiteral("Roller Y");
-        default:                                return QStringLiteral("Unknown");
+        case truss::core::SupportType::Free:
+            return QStringLiteral("Free");
+        case truss::core::SupportType::Pinned:
+            return QStringLiteral("Pinned (X+Y)");
+        case truss::core::SupportType::RollerX:
+            return QStringLiteral("Roller X");
+        case truss::core::SupportType::RollerY:
+            return QStringLiteral("Roller Y");
+        default:
+            return QStringLiteral("Unknown");
     }
 }
 
-bool NodeTableModel::isLoaded(const NodeView& n) const
-{
+bool NodeTableModel::isLoaded(const NodeView& n) const {
     constexpr double kEpsilon = 1e-10;
     return (std::abs(n.fx) > kEpsilon) || (std::abs(n.fy) > kEpsilon);
 }
 
-} // namespace truss::gui::model
+}  // namespace truss::gui::model

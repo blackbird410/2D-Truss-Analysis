@@ -23,14 +23,18 @@
 
 #include <memory>
 
-namespace truss::interface { class ITrussAnalysisFacade; }
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
 
 namespace truss::core::interfaces {
 class ITrussView;
 class IAnalysisResultsView;
-}
+}  // namespace truss::core::interfaces
 
-namespace truss::core::validation { class ValidationResult; }
+namespace truss::core::validation {
+class ValidationResult;
+}
 
 namespace truss::gui::ctrl {
 class CanvasController;
@@ -38,14 +42,14 @@ class InspectorController;
 class AnalysisController;
 class ProjectController;
 class ExportController;
-}
+}  // namespace truss::gui::ctrl
 
 namespace truss::gui::model {
 class NodeTableModel;
 class MemberTableModel;
 class ValidationListModel;
 class ResultsTableModel;
-}
+}  // namespace truss::gui::model
 
 namespace truss::gui::ctrl {
 
@@ -87,10 +91,10 @@ public:
     ~MainWindowController() override;
 
     // Disable copy and move — controller has identity semantics
-    MainWindowController(const MainWindowController&)            = delete;
+    MainWindowController(const MainWindowController&) = delete;
     MainWindowController& operator=(const MainWindowController&) = delete;
-    MainWindowController(MainWindowController&&)                  = delete;
-    MainWindowController& operator=(MainWindowController&&)       = delete;
+    MainWindowController(MainWindowController&&) = delete;
+    MainWindowController& operator=(MainWindowController&&) = delete;
 
     // -----------------------------------------------------------------------
     // State accessors
@@ -110,20 +114,20 @@ public:
     // Sub-controller accessors
     // -----------------------------------------------------------------------
 
-    [[nodiscard]] CanvasController*    canvasController()    const noexcept;
+    [[nodiscard]] CanvasController* canvasController() const noexcept;
     [[nodiscard]] InspectorController* inspectorController() const noexcept;
-    [[nodiscard]] AnalysisController*  analysisController()  const noexcept;
-    [[nodiscard]] ProjectController*   projectController()   const noexcept;
-    [[nodiscard]] ExportController*    exportController()    const noexcept;
+    [[nodiscard]] AnalysisController* analysisController() const noexcept;
+    [[nodiscard]] ProjectController* projectController() const noexcept;
+    [[nodiscard]] ExportController* exportController() const noexcept;
 
     // -----------------------------------------------------------------------
     // Qt Item Model accessors (non-owning pointers — lifetime is this object)
     // -----------------------------------------------------------------------
 
-    [[nodiscard]] model::NodeTableModel*       nodeModel()        const noexcept;
-    [[nodiscard]] model::MemberTableModel*     memberModel()      const noexcept;
-    [[nodiscard]] model::ValidationListModel*  validationModel()  const noexcept;
-    [[nodiscard]] model::ResultsTableModel*    resultsModel()     const noexcept;
+    [[nodiscard]] model::NodeTableModel* nodeModel() const noexcept;
+    [[nodiscard]] model::MemberTableModel* memberModel() const noexcept;
+    [[nodiscard]] model::ValidationListModel* validationModel() const noexcept;
+    [[nodiscard]] model::ResultsTableModel* resultsModel() const noexcept;
 
 signals:
     /**
@@ -194,23 +198,23 @@ public slots:
 
 private:
     truss::interface::ITrussAnalysisFacade* m_facade{nullptr};
-    state::WorkspaceState                   m_state;
+    state::WorkspaceState m_state;
 
     // Confirmation provider (owned; used by ProjectController)
     truss::gui::interfaces::ModalConfirmProvider m_confirmProvider;
 
     // Sub-controllers (owned)
-    std::unique_ptr<CanvasController>    m_canvasController;
+    std::unique_ptr<CanvasController> m_canvasController;
     std::unique_ptr<InspectorController> m_inspectorController;
-    std::unique_ptr<AnalysisController>  m_analysisController;
-    std::unique_ptr<ProjectController>   m_projectController;
-    std::unique_ptr<ExportController>    m_exportController;
+    std::unique_ptr<AnalysisController> m_analysisController;
+    std::unique_ptr<ProjectController> m_projectController;
+    std::unique_ptr<ExportController> m_exportController;
 
     // Qt Item Models (owned)
-    std::unique_ptr<model::NodeTableModel>       m_nodeModel;
-    std::unique_ptr<model::MemberTableModel>     m_memberModel;
-    std::unique_ptr<model::ValidationListModel>  m_validationModel;
-    std::unique_ptr<model::ResultsTableModel>    m_resultsModel;
+    std::unique_ptr<model::NodeTableModel> m_nodeModel;
+    std::unique_ptr<model::MemberTableModel> m_memberModel;
+    std::unique_ptr<model::ValidationListModel> m_validationModel;
+    std::unique_ptr<model::ResultsTableModel> m_resultsModel;
 };
 
 }  // namespace truss::gui::ctrl

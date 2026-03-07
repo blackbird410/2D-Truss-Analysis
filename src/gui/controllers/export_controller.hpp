@@ -40,7 +40,7 @@ class ExportController : public QObject {
 
 public:
     explicit ExportController(truss::interface::ITrussAnalysisFacade& facade,
-                               QObject*                                parent = nullptr);
+                              QObject* parent = nullptr);
 
 public slots:
     void onExportRequested(truss::ExportFormat format, const QString& filePath);
@@ -53,7 +53,7 @@ signals:
 
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;
-    std::size_t                              m_resultsHandle{0};
+    std::size_t m_resultsHandle{0};
 };
 
 }  // namespace truss::gui::ctrl

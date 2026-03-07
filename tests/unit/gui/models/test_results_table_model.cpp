@@ -23,11 +23,10 @@
 // ---------------------------------------------------------------------------
 namespace {
 
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
         if (auto* existing = qobject_cast<QApplication*>(QCoreApplication::instance()))
             return existing;
@@ -36,7 +35,7 @@ QApplication& ensureQApp()
     return *s_app;
 }
 
-} // namespace
+}  // namespace
 
 // ---------------------------------------------------------------------------
 // Test fixture
@@ -52,56 +51,47 @@ protected:
 // Phase 3 skeleton contract
 // ---------------------------------------------------------------------------
 
-TEST_F(ResultsTableModelTest, InitialRowCountIsZero)
-{
+TEST_F(ResultsTableModelTest, InitialRowCountIsZero) {
     EXPECT_EQ(model.rowCount(), 0);
 }
 
-TEST_F(ResultsTableModelTest, ColumnCountIsAlwaysTwo)
-{
+TEST_F(ResultsTableModelTest, ColumnCountIsAlwaysTwo) {
     EXPECT_EQ(model.columnCount(), 2);
     EXPECT_EQ(model.columnCount(), truss::gui::model::ResultsTableModel::kColumnCount);
 }
 
-TEST_F(ResultsTableModelTest, HorizontalHeaders_PropertyAndValue)
-{
+TEST_F(ResultsTableModelTest, HorizontalHeaders_PropertyAndValue) {
     const auto key = model.headerData(
-        truss::gui::model::ResultsTableModel::kColKey,
-        Qt::Horizontal, Qt::DisplayRole);
+        truss::gui::model::ResultsTableModel::kColKey, Qt::Horizontal, Qt::DisplayRole);
     ASSERT_TRUE(key.isValid());
     EXPECT_EQ(key.toString(), QStringLiteral("Property"));
 
     const auto val = model.headerData(
-        truss::gui::model::ResultsTableModel::kColValue,
-        Qt::Horizontal, Qt::DisplayRole);
+        truss::gui::model::ResultsTableModel::kColValue, Qt::Horizontal, Qt::DisplayRole);
     ASSERT_TRUE(val.isValid());
     EXPECT_EQ(val.toString(), QStringLiteral("Value"));
 }
 
-TEST_F(ResultsTableModelTest, InvalidIndexReturnsInvalidVariant)
-{
+TEST_F(ResultsTableModelTest, InvalidIndexReturnsInvalidVariant) {
     EXPECT_FALSE(model.data(QModelIndex{}).isValid());
-    EXPECT_FALSE(model.data(model.index(0, 0)).isValid()); // row 0 doesn't exist
+    EXPECT_FALSE(model.data(model.index(0, 0)).isValid());  // row 0 doesn't exist
 }
 
-TEST_F(ResultsTableModelTest, OutOfRangeSectionHeaderIsInvalid)
-{
+TEST_F(ResultsTableModelTest, OutOfRangeSectionHeaderIsInvalid) {
     EXPECT_FALSE(model.headerData(99, Qt::Horizontal, Qt::DisplayRole).isValid());
 }
 
-TEST_F(ResultsTableModelTest, ClearOnEmptyModelDoesNotCrash)
-{
+TEST_F(ResultsTableModelTest, ClearOnEmptyModelDoesNotCrash) {
     EXPECT_NO_FATAL_FAILURE(model.clear());
     EXPECT_EQ(model.rowCount(), 0);
 }
 
-TEST_F(ResultsTableModelTest, ParentIndexGuard)
-{
+TEST_F(ResultsTableModelTest, ParentIndexGuard) {
     // For a flat table model the standard tree guard is:
     //   rowCount(validParent) == 0, columnCount(validParent) == 0
     // A valid parent can only exist in a non-empty model.
     // When the model is empty, index(0,0) is itself invalid, so we
     // verify the default (root) path returns the correct counts instead.
-    EXPECT_EQ(model.rowCount(QModelIndex{}),    0);
+    EXPECT_EQ(model.rowCount(QModelIndex{}), 0);
     EXPECT_EQ(model.columnCount(QModelIndex{}), 2);
 }

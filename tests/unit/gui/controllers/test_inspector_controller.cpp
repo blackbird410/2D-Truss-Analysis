@@ -16,11 +16,10 @@
  * @date 2026-03-04
  */
 
-#include "gui/controllers/inspector_controller.hpp"
-#include "mocks/mock_truss_analysis_facade.hpp"
-
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
+#include "gui/controllers/inspector_controller.hpp"
+#include "mocks/mock_truss_analysis_facade.hpp"
 
 #include <QApplication>
 #include <QCoreApplication>
@@ -28,11 +27,15 @@
 
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
-
 #include <string>
 #include <vector>
 
 using namespace truss::gui::ctrl;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
+using truss::application::Result;
 using truss::core::Force2D;
 using truss::core::MemberId;
 using truss::core::NodeId;
@@ -40,25 +43,20 @@ using truss::core::SupportType;
 using truss::core::interfaces::ITrussView;
 using truss::core::interfaces::MemberView;
 using truss::core::interfaces::NodeView;
-using truss::application::Result;
 using truss::test::MockTrussAnalysisFacade;
-using ::testing::_;
-using ::testing::NiceMock;
-using ::testing::Return;
-using ::testing::ReturnRef;
 
 // ============================================================
 // QApplication bootstrap
 // ============================================================
 
 namespace {
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
+            return e;
         return new QApplication(s_argc, s_argv);
     }();
     return *s_app;
@@ -70,51 +68,65 @@ QApplication& ensureQApp()
 
 class StubTrussView final : public ITrussView {
 public:
-    StubTrussView()
-    {
+    StubTrussView() {
         NodeView n1;
-        n1.id = 1; n1.x = 0.0; n1.y = 0.0;
+        n1.id = 1;
+        n1.x = 0.0;
+        n1.y = 0.0;
         n1.support = SupportType::Pinned;
         m_nodes.push_back(n1);
 
         NodeView n2;
-        n2.id = 2; n2.x = 4.0; n2.y = 0.0;
+        n2.id = 2;
+        n2.x = 4.0;
+        n2.y = 0.0;
         n2.support = SupportType::RollerX;
         m_nodes.push_back(n2);
 
         NodeView n3;
-        n3.id = 3; n3.x = 2.0; n3.y = 3.0;
+        n3.id = 3;
+        n3.x = 2.0;
+        n3.y = 3.0;
         n3.support = SupportType::Free;
-        n3.fx = 0.0; n3.fy = -50000.0;
+        n3.fx = 0.0;
+        n3.fy = -50000.0;
         m_nodes.push_back(n3);
 
         MemberView m1;
-        m1.id = 1; m1.startNodeId = 1; m1.endNodeId = 3;
-        m1.youngModulus = 200e9; m1.area = 0.001;
-        m1.length = 3.606; m1.angle = 0.98;
+        m1.id = 1;
+        m1.startNodeId = 1;
+        m1.endNodeId = 3;
+        m1.youngModulus = 200e9;
+        m1.area = 0.001;
+        m1.length = 3.606;
+        m1.angle = 0.98;
         m_members.push_back(m1);
 
         MemberView m2;
-        m2.id = 2; m2.startNodeId = 2; m2.endNodeId = 3;
-        m2.youngModulus = 200e9; m2.area = 0.001;
-        m2.length = 3.606; m2.angle = 2.16;
+        m2.id = 2;
+        m2.startNodeId = 2;
+        m2.endNodeId = 3;
+        m2.youngModulus = 200e9;
+        m2.area = 0.001;
+        m2.length = 3.606;
+        m2.angle = 2.16;
         m_members.push_back(m2);
     }
 
     const std::string& getName() const override { return m_name; }
 
-    std::vector<NodeView>   getNodeViews()   const override { return m_nodes;   }
-    std::size_t             getNodeCount()   const override { return m_nodes.size(); }
+    std::vector<NodeView> getNodeViews() const override { return m_nodes; }
+    std::size_t getNodeCount() const override { return m_nodes.size(); }
     std::vector<MemberView> getMemberViews() const override { return m_members; }
-    std::size_t             getMemberCount() const override { return m_members.size(); }
+    std::size_t getMemberCount() const override { return m_members.size(); }
 
-    std::size_t getTotalDofs()       const override { return getNodeCount() * 2; }
-    std::size_t getFreeDofs()        const override { return 2; }
+    std::size_t getTotalDofs() const override { return getNodeCount() * 2; }
+    std::size_t getFreeDofs() const override { return 2; }
     std::size_t getConstrainedDofs() const override { return getTotalDofs() - getFreeDofs(); }
 
 private:
-    std::string             m_name{"StubTruss"};
-    std::vector<NodeView>   m_nodes;
+    std::string m_name{"StubTruss"};
+    std::vector<NodeView> m_nodes;
     std::vector<MemberView> m_members;
 };
 
@@ -126,8 +138,7 @@ private:
 
 class InspectorControllerTest : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         ctrl = std::make_unique<InspectorController>(facade);
         ctrl->onTrussHandleUpdated(kHandle);
@@ -137,7 +148,7 @@ protected:
     static constexpr std::size_t kHandle = 7;
 
     NiceMock<MockTrussAnalysisFacade> facade;
-    StubTrussView                     stubView;
+    StubTrussView stubView;
     std::unique_ptr<InspectorController> ctrl;
 };
 
@@ -145,8 +156,7 @@ protected:
 // Selection → view-ready signals
 // ============================================================
 
-TEST_F(InspectorControllerTest, NodeSelection_EmitsNodeViewReadyWithCorrectId)
-{
+TEST_F(InspectorControllerTest, NodeSelection_EmitsNodeViewReadyWithCorrectId) {
     EXPECT_CALL(facade, getTrussView(kHandle))
         .WillOnce(ReturnRef(static_cast<const ITrussView&>(stubView)));
 
@@ -158,8 +168,7 @@ TEST_F(InspectorControllerTest, NodeSelection_EmitsNodeViewReadyWithCorrectId)
     EXPECT_EQ(emitted.id, NodeId{1});
 }
 
-TEST_F(InspectorControllerTest, MemberSelection_EmitsMemberViewReadyWithCorrectId)
-{
+TEST_F(InspectorControllerTest, MemberSelection_EmitsMemberViewReadyWithCorrectId) {
     EXPECT_CALL(facade, getTrussView(kHandle))
         .WillOnce(ReturnRef(static_cast<const ITrussView&>(stubView)));
 
@@ -171,15 +180,13 @@ TEST_F(InspectorControllerTest, MemberSelection_EmitsMemberViewReadyWithCorrectI
     EXPECT_EQ(emitted.id, MemberId{2});
 }
 
-TEST_F(InspectorControllerTest, SelectionCleared_EmitsSelectionClearedSignal)
-{
+TEST_F(InspectorControllerTest, SelectionCleared_EmitsSelectionClearedSignal) {
     QSignalSpy spy{ctrl.get(), &InspectorController::selectionCleared};
     ctrl->onSelectionCleared();
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(InspectorControllerTest, NodeSelection_UnknownId_DoesNotEmitAnySignal)
-{
+TEST_F(InspectorControllerTest, NodeSelection_UnknownId_DoesNotEmitAnySignal) {
     EXPECT_CALL(facade, getTrussView(kHandle))
         .WillOnce(ReturnRef(static_cast<const ITrussView&>(stubView)));
 
@@ -196,8 +203,7 @@ TEST_F(InspectorControllerTest, NodeSelection_UnknownId_DoesNotEmitAnySignal)
 // Support & load edits → facade calls
 // ============================================================
 
-TEST_F(InspectorControllerTest, SupportChange_CallsSetNodeSupportAndEmitsModified)
-{
+TEST_F(InspectorControllerTest, SupportChange_CallsSetNodeSupportAndEmitsModified) {
     EXPECT_CALL(facade, setNodeSupport(kHandle, NodeId{1}, SupportType::RollerY))
         .WillOnce(Return(Result<bool>::Success(true)));
 
@@ -207,8 +213,7 @@ TEST_F(InspectorControllerTest, SupportChange_CallsSetNodeSupportAndEmitsModifie
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(InspectorControllerTest, LoadChange_NonZero_CallsApplyNodeLoadAndEmitsModified)
-{
+TEST_F(InspectorControllerTest, LoadChange_NonZero_CallsApplyNodeLoadAndEmitsModified) {
     EXPECT_CALL(facade, applyNodeLoad(kHandle, NodeId{3}, _))
         .WillOnce(Return(Result<bool>::Success(true)));
 
@@ -218,8 +223,7 @@ TEST_F(InspectorControllerTest, LoadChange_NonZero_CallsApplyNodeLoadAndEmitsMod
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(InspectorControllerTest, LoadChange_ZeroLoad_CallsClearNodeLoad)
-{
+TEST_F(InspectorControllerTest, LoadChange_ZeroLoad_CallsClearNodeLoad) {
     EXPECT_CALL(facade, clearNodeLoad(kHandle, NodeId{3}))
         .WillOnce(Return(Result<bool>::Success(true)));
     EXPECT_CALL(facade, applyNodeLoad(_, _, _)).Times(0);
@@ -234,8 +238,7 @@ TEST_F(InspectorControllerTest, LoadChange_ZeroLoad_CallsClearNodeLoad)
 // No truss handle
 // ============================================================
 
-TEST_F(InspectorControllerTest, SelectionWithNoHandle_IgnoresSilently)
-{
+TEST_F(InspectorControllerTest, SelectionWithNoHandle_IgnoresSilently) {
     ctrl->onTrussHandleUpdated(0);
 
     EXPECT_CALL(facade, getTrussView(_)).Times(0);

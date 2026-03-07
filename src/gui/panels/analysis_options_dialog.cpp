@@ -1,6 +1,6 @@
 /**
  * @file analysis_options_dialog.cpp
- * @brief AnalysisOptionsDialog implementation (Phase 5).
+ * @brief AnalysisOptionsDialog implementation.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -21,22 +21,20 @@
 
 namespace truss::gui {
 
-AnalysisOptionsDialog::AnalysisOptionsDialog(QWidget* parent) : QDialog{parent}
-{
+AnalysisOptionsDialog::AnalysisOptionsDialog(QWidget* parent) : QDialog{parent} {
     setWindowTitle(QStringLiteral("Analysis Options"));
     setObjectName(QStringLiteral("analysisOptionsDialog"));
     setWindowFlags(windowFlags() & ~Qt::WindowContextHelpButtonHint);
     buildLayout();
 }
 
-void AnalysisOptionsDialog::buildLayout()
-{
+void AnalysisOptionsDialog::buildLayout() {
     auto* root = new QVBoxLayout{this};
     root->setContentsMargins(12, 12, 12, 12);
     root->setSpacing(8);
 
     // ---- Solver group ----
-    auto* solverBox    = new QGroupBox{QStringLiteral("Solver"), this};
+    auto* solverBox = new QGroupBox{QStringLiteral("Solver"), this};
     auto* solverLayout = new QFormLayout{solverBox};
     solverLayout->setSpacing(6);
 
@@ -63,7 +61,7 @@ void AnalysisOptionsDialog::buildLayout()
     root->addWidget(solverBox);
 
     // ---- Output options group ----
-    auto* optBox    = new QGroupBox{QStringLiteral("Output Options"), this};
+    auto* optBox = new QGroupBox{QStringLiteral("Output Options"), this};
     auto* optLayout = new QVBoxLayout{optBox};
     optLayout->setSpacing(4);
 
@@ -85,16 +83,15 @@ void AnalysisOptionsDialog::buildLayout()
     root->addWidget(optBox);
 
     // ---- Dialog buttons ----
-    auto* buttons =
-        new QDialogButtonBox{QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this};
+    auto* buttons = new QDialogButtonBox{QDialogButtonBox::Ok | QDialogButtonBox::Cancel, this};
     root->addWidget(buttons);
 
     // ---- Tab order ----
-    QWidget::setTabOrder(m_solverCombo,            m_toleranceSpin);
-    QWidget::setTabOrder(m_toleranceSpin,           m_maxIterSpin);
-    QWidget::setTabOrder(m_maxIterSpin,             m_computeReactionsCheck);
-    QWidget::setTabOrder(m_computeReactionsCheck,   m_checkStabilityCheck);
-    QWidget::setTabOrder(m_checkStabilityCheck,     m_verboseCheck);
+    QWidget::setTabOrder(m_solverCombo, m_toleranceSpin);
+    QWidget::setTabOrder(m_toleranceSpin, m_maxIterSpin);
+    QWidget::setTabOrder(m_maxIterSpin, m_computeReactionsCheck);
+    QWidget::setTabOrder(m_computeReactionsCheck, m_checkStabilityCheck);
+    QWidget::setTabOrder(m_checkStabilityCheck, m_verboseCheck);
 
     connect(buttons, &QDialogButtonBox::accepted, this, &QDialog::accept);
     connect(buttons, &QDialogButtonBox::rejected, this, &QDialog::reject);
@@ -106,27 +103,24 @@ void AnalysisOptionsDialog::buildLayout()
     onSolverTypeChanged(m_solverCombo->currentIndex());
 }
 
-void AnalysisOptionsDialog::onSolverTypeChanged(int index)
-{
+void AnalysisOptionsDialog::onSolverTypeChanged(int index) {
     const bool iterative = (index == 1);
     m_toleranceSpin->setEnabled(iterative);
     m_maxIterSpin->setEnabled(iterative);
 }
 
-core::analysis::AnalysisOptions AnalysisOptionsDialog::options() const
-{
+core::analysis::AnalysisOptions AnalysisOptionsDialog::options() const {
     core::analysis::AnalysisOptions opts;
-    opts.useDirectSolver      = (m_solverCombo->currentIndex() == 0);
+    opts.useDirectSolver = (m_solverCombo->currentIndex() == 0);
     opts.convergenceTolerance = m_toleranceSpin->value();
-    opts.maxIterations        = m_maxIterSpin->value();
-    opts.computeReactions     = m_computeReactionsCheck->isChecked();
-    opts.checkStability       = m_checkStabilityCheck->isChecked();
-    opts.verbose              = m_verboseCheck->isChecked();
+    opts.maxIterations = m_maxIterSpin->value();
+    opts.computeReactions = m_computeReactionsCheck->isChecked();
+    opts.checkStability = m_checkStabilityCheck->isChecked();
+    opts.verbose = m_verboseCheck->isChecked();
     return opts;
 }
 
-void AnalysisOptionsDialog::setOptions(const core::analysis::AnalysisOptions& opts)
-{
+void AnalysisOptionsDialog::setOptions(const core::analysis::AnalysisOptions& opts) {
     m_solverCombo->setCurrentIndex(opts.useDirectSolver ? 0 : 1);
     m_toleranceSpin->setValue(opts.convergenceTolerance);
     m_maxIterSpin->setValue(opts.maxIterations);

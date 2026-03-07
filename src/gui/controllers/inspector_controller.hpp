@@ -26,12 +26,12 @@ class ITrussAnalysisFacade;
 
 namespace truss::gui::ctrl {
 
-using truss::core::interfaces::MemberView;
-using truss::core::interfaces::NodeView;
 using truss::core::Force2D;
 using truss::core::MemberId;
 using truss::core::NodeId;
 using truss::core::SupportType;
+using truss::core::interfaces::MemberView;
+using truss::core::interfaces::NodeView;
 
 /**
  * @brief Drives InspectorPanel content in response to canvas selection changes
@@ -49,7 +49,7 @@ class InspectorController : public QObject {
 
 public:
     explicit InspectorController(truss::interface::ITrussAnalysisFacade& facade,
-                                  QObject*                                 parent = nullptr);
+                                 QObject* parent = nullptr);
 
 public slots:
     void onNodeSelectionChanged(NodeId nodeId);
@@ -69,7 +69,7 @@ signals:
 
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;
-    std::size_t                              m_trussHandle{0};
+    std::size_t m_trussHandle{0};
 };
 
 }  // namespace truss::gui::ctrl

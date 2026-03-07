@@ -1,6 +1,6 @@
 /**
  * @file results_dock_panel.cpp
- * @brief ResultsDockPanel implementation (Phase 5).
+ * @brief ResultsDockPanel implementation.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -15,13 +15,13 @@
 #include "gui/models/results_table_model.hpp"
 
 #include <QAbstractItemView>
-#include <QHeaderView>
 #include <QHBoxLayout>
+#include <QHeaderView>
 #include <QLabel>
 #include <QPushButton>
+#include <QStackedWidget>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include <QStackedWidget>
 #include <QTabWidget>
 #include <QTableView>
 #include <QVBoxLayout>
@@ -33,15 +33,12 @@ namespace truss::gui {
 // Constructor
 // ---------------------------------------------------------------------------
 
-ResultsDockPanel::ResultsDockPanel(model::NodeTableModel*    nodeModel,
-                                    model::MemberTableModel*  memberModel,
-                                    model::ResultsTableModel* resultsModel,
-                                    QWidget*                  parent)
-    : QWidget{parent}
-    , m_nodeModel{nodeModel}
-    , m_memberModel{memberModel}
-    , m_resultsModel{resultsModel}
-{
+ResultsDockPanel::ResultsDockPanel(model::NodeTableModel* nodeModel,
+                                   model::MemberTableModel* memberModel,
+                                   model::ResultsTableModel* resultsModel,
+                                   QWidget* parent)
+    : QWidget{parent}, m_nodeModel{nodeModel}, m_memberModel{memberModel},
+      m_resultsModel{resultsModel} {
     setObjectName(QStringLiteral("resultsDockPanel"));
 
     auto* vbox = new QVBoxLayout{this};
@@ -66,19 +63,19 @@ ResultsDockPanel::ResultsDockPanel(model::NodeTableModel*    nodeModel,
 // with an Export button at the bottom.
 // ---------------------------------------------------------------------------
 
-static QWidget* makeTabWrapper(QWidget* parent, QWidget* content,
-                                const QString& exportLabel,
-                                truss::ExportFormat format,
-                                ResultsDockPanel* panel)
-{
+static QWidget* makeTabWrapper(QWidget* parent,
+                               QWidget* content,
+                               const QString& exportLabel,
+                               truss::ExportFormat format,
+                               ResultsDockPanel* panel) {
     auto* wrapper = new QWidget{parent};
-    auto* vbox    = new QVBoxLayout{wrapper};
+    auto* vbox = new QVBoxLayout{wrapper};
     vbox->setContentsMargins(0, 0, 0, 4);
     vbox->setSpacing(0);
     vbox->addWidget(content, 1);
 
-    auto* btnRow  = new QWidget{wrapper};
-    auto* hbox    = new QHBoxLayout{btnRow};
+    auto* btnRow = new QWidget{wrapper};
+    auto* hbox = new QHBoxLayout{btnRow};
     hbox->setContentsMargins(8, 4, 8, 4);
     hbox->addStretch();
     auto* exportBtn = new QPushButton{exportLabel, btnRow};
@@ -93,8 +90,7 @@ static QWidget* makeTabWrapper(QWidget* parent, QWidget* content,
     return wrapper;
 }
 
-void ResultsDockPanel::buildNodeResultsTab()
-{
+void ResultsDockPanel::buildNodeResultsTab() {
     m_nodeTableView = new QTableView{this};
     m_nodeTableView->setObjectName(QStringLiteral("nodeResultsTable"));
     m_nodeTableView->setModel(m_nodeModel);
@@ -103,14 +99,12 @@ void ResultsDockPanel::buildNodeResultsTab()
     m_nodeTableView->verticalHeader()->hide();
     m_nodeTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    auto* tab = makeTabWrapper(this, m_nodeTableView,
-                               QStringLiteral("Export CSV"),
-                               truss::ExportFormat::CSV, this);
+    auto* tab = makeTabWrapper(
+        this, m_nodeTableView, QStringLiteral("Export CSV"), truss::ExportFormat::CSV, this);
     m_tabs->addTab(tab, QStringLiteral("Node Results"));
 }
 
-void ResultsDockPanel::buildMemberResultsTab()
-{
+void ResultsDockPanel::buildMemberResultsTab() {
     m_memberTableView = new QTableView{this};
     m_memberTableView->setObjectName(QStringLiteral("memberResultsTable"));
     m_memberTableView->setModel(m_memberModel);
@@ -119,14 +113,12 @@ void ResultsDockPanel::buildMemberResultsTab()
     m_memberTableView->verticalHeader()->hide();
     m_memberTableView->setSelectionBehavior(QAbstractItemView::SelectRows);
 
-    auto* tab = makeTabWrapper(this, m_memberTableView,
-                               QStringLiteral("Export CSV"),
-                               truss::ExportFormat::CSV, this);
+    auto* tab = makeTabWrapper(
+        this, m_memberTableView, QStringLiteral("Export CSV"), truss::ExportFormat::CSV, this);
     m_tabs->addTab(tab, QStringLiteral("Member Results"));
 }
 
-void ResultsDockPanel::buildSystemSummaryTab()
-{
+void ResultsDockPanel::buildSystemSummaryTab() {
     m_resultsTableView = new QTableView{this};
     m_resultsTableView->setObjectName(QStringLiteral("systemSummaryTable"));
     m_resultsTableView->setModel(m_resultsModel);
@@ -134,31 +126,26 @@ void ResultsDockPanel::buildSystemSummaryTab()
     m_resultsTableView->horizontalHeader()->setStretchLastSection(true);
     m_resultsTableView->verticalHeader()->hide();
 
-    auto* tab = makeTabWrapper(this, m_resultsTableView,
-                               QStringLiteral("Export JSON"),
-                               truss::ExportFormat::JSON, this);
+    auto* tab = makeTabWrapper(
+        this, m_resultsTableView, QStringLiteral("Export JSON"), truss::ExportFormat::JSON, this);
     m_tabs->addTab(tab, QStringLiteral("System Summary"));
 }
 
-void ResultsDockPanel::buildStiffnessMatrixTab()
-{
+void ResultsDockPanel::buildStiffnessMatrixTab() {
     // Start with an empty QTableView; actual matrix data is loaded lazily
     // on the first tab activation via onTabChanged / setResultsView().
     m_stiffnessTableView = new QTableView{this};
     m_stiffnessTableView->setObjectName(QStringLiteral("stiffnessMatrixTable"));
     m_stiffnessTableView->setAlternatingRowColors(true);
-    m_stiffnessTableView->horizontalHeader()
-        ->setSectionResizeMode(QHeaderView::ResizeToContents);
-    m_stiffnessTableView->verticalHeader()
-        ->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_stiffnessTableView->horizontalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+    m_stiffnessTableView->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
     m_stiffnessTableView->setSelectionBehavior(QAbstractItemView::SelectItems);
 
     // Placeholder model (0 rows, 0 cols) until analysis results are available
     m_stiffnessTableView->setModel(new QStandardItemModel(0, 0, m_stiffnessTableView));
 
-    auto* tab = makeTabWrapper(this, m_stiffnessTableView,
-                               QStringLiteral("Export JSON"),
-                               truss::ExportFormat::JSON, this);
+    auto* tab = makeTabWrapper(
+        this, m_stiffnessTableView, QStringLiteral("Export JSON"), truss::ExportFormat::JSON, this);
     m_tabs->addTab(tab, QStringLiteral("Stiffness Matrix"));
 }
 
@@ -166,8 +153,7 @@ void ResultsDockPanel::buildStiffnessMatrixTab()
 // Slots
 // ---------------------------------------------------------------------------
 
-void ResultsDockPanel::onStateChanged(const truss::gui::state::WorkspaceState& state)
-{
+void ResultsDockPanel::onStateChanged(const truss::gui::state::WorkspaceState& state) {
     const bool hasResults = state.hasResults();
     m_nodeTableView->setEnabled(hasResults);
     m_memberTableView->setEnabled(hasResults);
@@ -176,8 +162,7 @@ void ResultsDockPanel::onStateChanged(const truss::gui::state::WorkspaceState& s
         m_stiffnessTableView->setEnabled(hasResults);
 }
 
-void ResultsDockPanel::onTabChanged(int index)
-{
+void ResultsDockPanel::onTabChanged(int index) {
     // Lazy stiffness matrix population: populate when the user first activates
     // the tab and results are available.
     constexpr int kStiffnessTab = 3;
@@ -186,8 +171,7 @@ void ResultsDockPanel::onTabChanged(int index)
 }
 
 void ResultsDockPanel::setResultsView(
-    const truss::core::interfaces::IAnalysisResultsView* results)
-{
+    const truss::core::interfaces::IAnalysisResultsView* results) {
     m_resultsView = results;
     m_stiffnessPopulated = false;  // mark dirty so it re-populates on next activation
 
@@ -195,9 +179,9 @@ void ResultsDockPanel::setResultsView(
         populateStiffnessMatrix();  // already on the tab — populate immediately
 }
 
-void ResultsDockPanel::populateStiffnessMatrix()
-{
-    if (!m_resultsView || !m_stiffnessTableView) return;
+void ResultsDockPanel::populateStiffnessMatrix() {
+    if (!m_resultsView || !m_stiffnessTableView)
+        return;
 
     const auto& matrix = m_resultsView->getStiffnessMatrix();
     const int n = static_cast<int>(matrix.size());
@@ -211,10 +195,8 @@ void ResultsDockPanel::populateStiffnessMatrix()
 
     // Column / row headers: DOF index labels (u0, u1, …)
     for (int i = 0; i < n; ++i) {
-        model->setHorizontalHeaderItem(i, new QStandardItem(
-            QStringLiteral("u%1").arg(i)));
-        model->setVerticalHeaderItem(i, new QStandardItem(
-            QStringLiteral("u%1").arg(i)));
+        model->setHorizontalHeaderItem(i, new QStandardItem(QStringLiteral("u%1").arg(i)));
+        model->setVerticalHeaderItem(i, new QStandardItem(QStringLiteral("u%1").arg(i)));
     }
 
     // Populate cells.  Values are in N/m (Pa × m / m); display in kN/m for
@@ -223,8 +205,7 @@ void ResultsDockPanel::populateStiffnessMatrix()
         const auto& rowData = matrix[static_cast<size_t>(row)];
         for (int col = 0; col < n && col < static_cast<int>(rowData.size()); ++col) {
             const double val = rowData[static_cast<size_t>(col)] / 1.0e3;  // → kN/m
-            auto* item = new QStandardItem(
-                QString::number(val, 'g', 4));
+            auto* item = new QStandardItem(QString::number(val, 'g', 4));
             item->setTextAlignment(Qt::AlignRight | Qt::AlignVCenter);
             item->setFlags(Qt::ItemIsEnabled | Qt::ItemIsSelectable);  // read-only
             model->setItem(row, col, item);

@@ -50,12 +50,12 @@ private slots:
 private:
     void buildLayout();
 
-    QComboBox*      m_solverCombo{nullptr};
+    QComboBox* m_solverCombo{nullptr};
     QDoubleSpinBox* m_toleranceSpin{nullptr};
-    QSpinBox*       m_maxIterSpin{nullptr};
-    QCheckBox*      m_computeReactionsCheck{nullptr};
-    QCheckBox*      m_checkStabilityCheck{nullptr};
-    QCheckBox*      m_verboseCheck{nullptr};
+    QSpinBox* m_maxIterSpin{nullptr};
+    QCheckBox* m_computeReactionsCheck{nullptr};
+    QCheckBox* m_checkStabilityCheck{nullptr};
+    QCheckBox* m_verboseCheck{nullptr};
 };
 
 }  // namespace truss::gui

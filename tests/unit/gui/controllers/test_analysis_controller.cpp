@@ -17,11 +17,10 @@
  * @date 2026-03-04
  */
 
-#include "gui/controllers/analysis_controller.hpp"
-#include "mocks/mock_truss_analysis_facade.hpp"
-
 #include "core/analysis/analysis_orchestrator.hpp"
 #include "core/model/truss.hpp"
+#include "gui/controllers/analysis_controller.hpp"
+#include "mocks/mock_truss_analysis_facade.hpp"
 
 #include <QApplication>
 #include <QCoreApplication>
@@ -31,27 +30,27 @@
 #include <gtest/gtest.h>
 
 using namespace truss::gui::ctrl;
+using ::testing::_;
+using ::testing::NiceMock;
+using ::testing::Return;
+using ::testing::ReturnRef;
 using truss::application::Result;
 using truss::core::Truss;
 using truss::core::analysis::AnalysisOptions;
 using truss::test::MockTrussAnalysisFacade;
-using ::testing::NiceMock;
-using ::testing::Return;
-using ::testing::ReturnRef;
-using ::testing::_;
 
 // ============================================================
 // QApplication bootstrap
 // ============================================================
 
 namespace {
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
+            return e;
         return new QApplication(s_argc, s_argv);
     }();
     return *s_app;
@@ -64,8 +63,7 @@ QApplication& ensureQApp()
 
 class AnalysisControllerV2Test : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         ctrl = std::make_unique<AnalysisController>(facade);
         ctrl->onTrussHandleUpdated(kHandle);
@@ -74,8 +72,8 @@ protected:
 
     static constexpr std::size_t kHandle = 3;
 
-    NiceMock<MockTrussAnalysisFacade>   facade;
-    Truss                               localTruss{"TestTruss"};
+    NiceMock<MockTrussAnalysisFacade> facade;
+    Truss localTruss{"TestTruss"};
     std::unique_ptr<AnalysisController> ctrl;
 };
 
@@ -83,8 +81,7 @@ protected:
 // Tests
 // ============================================================
 
-TEST_F(AnalysisControllerV2Test, NoHandle_EmitsAnalysisFailedSynchronously)
-{
+TEST_F(AnalysisControllerV2Test, NoHandle_EmitsAnalysisFailedSynchronously) {
     ctrl->onTrussHandleUpdated(0);
 
     EXPECT_CALL(facade, getTrussMutable(_)).Times(0);
@@ -96,11 +93,9 @@ TEST_F(AnalysisControllerV2Test, NoHandle_EmitsAnalysisFailedSynchronously)
     EXPECT_FALSE(spy.first().first().toString().isEmpty());
 }
 
-TEST_F(AnalysisControllerV2Test, AnalyzeRequested_EmitsAnalysisStarted)
-{
+TEST_F(AnalysisControllerV2Test, AnalyzeRequested_EmitsAnalysisStarted) {
     EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
-    EXPECT_CALL(facade, analyze(_, _))
-        .WillOnce(Return(Result<std::size_t>::Success(42)));
+    EXPECT_CALL(facade, analyze(_, _)).WillOnce(Return(Result<std::size_t>::Success(42)));
 
     QSignalSpy spyStarted{ctrl.get(), &AnalysisController::analysisStarted};
     QSignalSpy spyDone{ctrl.get(), &AnalysisController::analysisCompleted};
@@ -115,11 +110,9 @@ TEST_F(AnalysisControllerV2Test, AnalyzeRequested_EmitsAnalysisStarted)
     EXPECT_EQ(spyDone.count(), 1);
 }
 
-TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnSuccess_EmitsAnalysisCompleted)
-{
+TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnSuccess_EmitsAnalysisCompleted) {
     EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
-    EXPECT_CALL(facade, analyze(_, _))
-        .WillOnce(Return(Result<std::size_t>::Success(77)));
+    EXPECT_CALL(facade, analyze(_, _)).WillOnce(Return(Result<std::size_t>::Success(77)));
 
     QSignalSpy spy{ctrl.get(), &AnalysisController::analysisCompleted};
     ctrl->onAnalyzeRequested(AnalysisOptions{});
@@ -129,8 +122,7 @@ TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnSuccess_EmitsAnalysisComplet
     EXPECT_EQ(spy.first().first().value<std::size_t>(), std::size_t{77});
 }
 
-TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnFailure_EmitsAnalysisFailed)
-{
+TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnFailure_EmitsAnalysisFailed) {
     EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
     EXPECT_CALL(facade, analyze(_, _))
         .WillOnce(Return(Result<std::size_t>::Failure("singular matrix")));
@@ -143,11 +135,9 @@ TEST_F(AnalysisControllerV2Test, AnalyzeRequested_OnFailure_EmitsAnalysisFailed)
     EXPECT_FALSE(spy.first().first().toString().isEmpty());
 }
 
-TEST_F(AnalysisControllerV2Test, CurrentResultsHandle_ReflectsLastSuccessfulResult)
-{
+TEST_F(AnalysisControllerV2Test, CurrentResultsHandle_ReflectsLastSuccessfulResult) {
     EXPECT_CALL(facade, getTrussMutable(kHandle)).WillOnce(ReturnRef(localTruss));
-    EXPECT_CALL(facade, analyze(_, _))
-        .WillOnce(Return(Result<std::size_t>::Success(55)));
+    EXPECT_CALL(facade, analyze(_, _)).WillOnce(Return(Result<std::size_t>::Success(55)));
 
     QSignalSpy spy{ctrl.get(), &AnalysisController::analysisCompleted};
     ctrl->onAnalyzeRequested(AnalysisOptions{});

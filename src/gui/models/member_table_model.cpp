@@ -27,14 +27,13 @@ namespace truss::gui::model {
 
 const QColor MemberTableModel::kColorGreen = QColor(0x34, 0xA8, 0x53);  // #34A853
 const QColor MemberTableModel::kColorAmber = QColor(0xFF, 0xC1, 0x07);  // #FFC107
-const QColor MemberTableModel::kColorRed   = QColor(0xEA, 0x43, 0x35);  // #EA4335
+const QColor MemberTableModel::kColorRed = QColor(0xEA, 0x43, 0x35);    // #EA4335
 
 // ---------------------------------------------------------------------------
 // Construction / destruction
 // ---------------------------------------------------------------------------
 
-MemberTableModel::MemberTableModel(QObject* parent)
-    : QAbstractTableModel(parent) {}
+MemberTableModel::MemberTableModel(QObject* parent) : QAbstractTableModel(parent) {}
 
 MemberTableModel::~MemberTableModel() = default;
 
@@ -42,24 +41,19 @@ MemberTableModel::~MemberTableModel() = default;
 // QAbstractTableModel overrides
 // ---------------------------------------------------------------------------
 
-int MemberTableModel::rowCount(const QModelIndex& parent) const
-{
+int MemberTableModel::rowCount(const QModelIndex& parent) const {
     if (parent.isValid())
         return 0;
     return static_cast<int>(m_rows.size());
 }
 
-int MemberTableModel::columnCount(const QModelIndex& parent) const
-{
+int MemberTableModel::columnCount(const QModelIndex& parent) const {
     if (parent.isValid())
         return 0;
     return kColumnCount;
 }
 
-QVariant MemberTableModel::headerData(int section,
-                                      Qt::Orientation orientation,
-                                      int role) const
-{
+QVariant MemberTableModel::headerData(int section, Qt::Orientation orientation, int role) const {
     if (role != Qt::DisplayRole)
         return {};
 
@@ -67,10 +61,18 @@ QVariant MemberTableModel::headerData(int section,
         return section + 1;
 
     static const char* kHeaders[kColumnCount] = {
-        "ID",         "Start",        "End",
-        "Material",   "E [GPa]",      "A [cm²]",
-        "Length [m]", "Angle [°]",    "Force [kN]",
-        "Stress [MPa]", "Util. Ratio", "State",
+        "ID",
+        "Start",
+        "End",
+        "Material",
+        "E [GPa]",
+        "A [cm²]",
+        "Length [m]",
+        "Angle [°]",
+        "Force [kN]",
+        "Stress [MPa]",
+        "Util. Ratio",
+        "State",
     };
 
     if (section < 0 || section >= kColumnCount)
@@ -78,8 +80,7 @@ QVariant MemberTableModel::headerData(int section,
     return kHeaders[section];
 }
 
-QVariant MemberTableModel::data(const QModelIndex& index, int role) const
-{
+QVariant MemberTableModel::data(const QModelIndex& index, int role) const {
     if (!index.isValid())
         return {};
 
@@ -109,14 +110,18 @@ QVariant MemberTableModel::data(const QModelIndex& index, int role) const
     // interpolation; force and stress columns use the state-based palette.
     // ------------------------------------------------------------------
     if (role == Qt::ForegroundRole) {
-        if (!m_hasResults) return {};
+        if (!m_hasResults)
+            return {};
         if (col == kColRatio)
             return ratioColor(m.utilizationRatio);
         // Force and stress: colour by mechanical state
         if (col == kColForce || col == kColStress) {
-            if (m.yielded)             return QColor(0xFF, 0x17, 0x44);  // red — yielded
-            if (m.inTension)           return QColor(0x4F, 0xC3, 0xF7);  // cyan — tension
-            if (m.axialForce < -1e-10) return QColor(0xFF, 0x70, 0x43);  // orange — compression
+            if (m.yielded)
+                return QColor(0xFF, 0x17, 0x44);  // red — yielded
+            if (m.inTension)
+                return QColor(0x4F, 0xC3, 0xF7);  // cyan — tension
+            if (m.axialForce < -1e-10)
+                return QColor(0xFF, 0x70, 0x43);  // orange — compression
         }
         return {};
     }
@@ -128,9 +133,12 @@ QVariant MemberTableModel::data(const QModelIndex& index, int role) const
     // ------------------------------------------------------------------
     if (role == Qt::BackgroundRole && m_hasResults) {
         if (col == kColState) {
-            if (m.yielded)             return QBrush(QColor(0xFF, 0x17, 0x44, 45));
-            if (m.inTension)           return QBrush(QColor(0x4F, 0xC3, 0xF7, 45));
-            if (m.axialForce < -1e-10) return QBrush(QColor(0xFF, 0x70, 0x43, 45));
+            if (m.yielded)
+                return QBrush(QColor(0xFF, 0x17, 0x44, 45));
+            if (m.inTension)
+                return QBrush(QColor(0x4F, 0xC3, 0xF7, 45));
+            if (m.axialForce < -1e-10)
+                return QBrush(QColor(0xFF, 0x70, 0x43, 45));
         }
         return {};
     }
@@ -211,15 +219,13 @@ QVariant MemberTableModel::data(const QModelIndex& index, int role) const
 // Public slots
 // ---------------------------------------------------------------------------
 
-void MemberTableModel::refresh(const ITrussView& view)
-{
+void MemberTableModel::refresh(const ITrussView& view) {
     beginResetModel();
     m_rows = view.getMemberViews();
     endResetModel();
 }
 
-void MemberTableModel::setHasResults(bool hasResults)
-{
+void MemberTableModel::setHasResults(bool hasResults) {
     if (m_hasResults == hasResults)
         return;
     beginResetModel();
@@ -237,8 +243,7 @@ void MemberTableModel::setHasResults(bool hasResults)
  * Segment 1: [0.0, 0.75]  — green → amber
  * Segment 2: [0.75, 1.0+] — amber → red  (clamped at 1.0)
  */
-QColor MemberTableModel::ratioColor(double ratio) const
-{
+QColor MemberTableModel::ratioColor(double ratio) const {
     ratio = std::clamp(ratio, 0.0, 1.0);
 
     auto lerp = [](int a, int b, double t) -> int {
@@ -251,22 +256,19 @@ QColor MemberTableModel::ratioColor(double ratio) const
     if (ratio <= 0.75) {
         c1 = kColorGreen;
         c2 = kColorAmber;
-        t  = ratio / 0.75;
+        t = ratio / 0.75;
     } else {
         c1 = kColorAmber;
         c2 = kColorRed;
-        t  = (ratio - 0.75) / 0.25;
+        t = (ratio - 0.75) / 0.25;
     }
 
-    return QColor(
-        lerp(c1.red(),   c2.red(),   t),
-        lerp(c1.green(), c2.green(), t),
-        lerp(c1.blue(),  c2.blue(),  t)
-    );
+    return QColor(lerp(c1.red(), c2.red(), t),
+                  lerp(c1.green(), c2.green(), t),
+                  lerp(c1.blue(), c2.blue(), t));
 }
 
-QString MemberTableModel::stateString(const MemberView& m) const
-{
+QString MemberTableModel::stateString(const MemberView& m) const {
     if (m.yielded)
         return QStringLiteral("Yielded");
     if (m.inTension)
@@ -274,4 +276,4 @@ QString MemberTableModel::stateString(const MemberView& m) const
     return QStringLiteral("Compression");
 }
 
-} // namespace truss::gui::model
+}  // namespace truss::gui::model

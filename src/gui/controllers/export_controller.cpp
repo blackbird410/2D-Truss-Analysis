@@ -13,18 +13,14 @@
 
 namespace truss::gui::ctrl {
 
-ExportController::ExportController(truss::interface::ITrussAnalysisFacade& facade,
-                                    QObject*                                 parent)
-    : QObject{parent}, m_facade{facade}
-{}
+ExportController::ExportController(truss::interface::ITrussAnalysisFacade& facade, QObject* parent)
+    : QObject{parent}, m_facade{facade} {}
 
-void ExportController::onResultsHandleUpdated(std::size_t resultsHandle)
-{
+void ExportController::onResultsHandleUpdated(std::size_t resultsHandle) {
     m_resultsHandle = resultsHandle;
 }
 
-void ExportController::onExportRequested(truss::ExportFormat format, const QString& filePath)
-{
+void ExportController::onExportRequested(truss::ExportFormat format, const QString& filePath) {
     if (m_resultsHandle == 0) {
         emit exportFailed(QStringLiteral("No analysis results available to export."));
         return;

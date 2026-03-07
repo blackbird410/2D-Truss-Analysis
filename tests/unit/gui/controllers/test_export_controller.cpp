@@ -14,42 +14,40 @@
  */
 
 #include "gui/controllers/export_controller.hpp"
-#include "mocks/mock_truss_analysis_facade.hpp"
-
 #include "infrastructure/export/export_types.hpp"
+#include "mocks/mock_truss_analysis_facade.hpp"
 #include "truss/export/export_format.hpp"
 
 #include <QApplication>
 #include <QCoreApplication>
 #include <QSignalSpy>
 
+#include <filesystem>
 #include <gmock/gmock.h>
 #include <gtest/gtest.h>
 
-#include <filesystem>
-
 using namespace truss::gui::ctrl;
-using truss::ExportFormat;
-using truss::application::ResultsHandle;
-using truss::infrastructure::export_::ExportOptions;
-using truss::test::MockTrussAnalysisFacade;
 using ::testing::_;
 using ::testing::An;
 using ::testing::NiceMock;
 using ::testing::Return;
+using truss::ExportFormat;
+using truss::application::ResultsHandle;
+using truss::infrastructure::export_::ExportOptions;
+using truss::test::MockTrussAnalysisFacade;
 
 // ============================================================
 // QApplication bootstrap
 // ============================================================
 
 namespace {
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
+            return e;
         return new QApplication(s_argc, s_argv);
     }();
     return *s_app;
@@ -62,8 +60,7 @@ QApplication& ensureQApp()
 
 class ExportControllerTest : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         ctrl = std::make_unique<ExportController>(facade);
         ctrl->onResultsHandleUpdated(kResultsHandle);
@@ -73,21 +70,21 @@ protected:
     static constexpr std::size_t kResultsHandle = 5;
 
     NiceMock<MockTrussAnalysisFacade> facade;
-    std::unique_ptr<ExportController>  ctrl;
+    std::unique_ptr<ExportController> ctrl;
 };
 
 // ============================================================
 // Tests
 // ============================================================
 
-TEST_F(ExportControllerTest, Export_Success_CallsFacadeAndEmitsCompleted)
-{
+TEST_F(ExportControllerTest, Export_Success_CallsFacadeAndEmitsCompleted) {
     // Disambiguate the 4-arg bool overload:
     // bool exportResults(handle, format, const path&, const ExportOptions&)
     EXPECT_CALL(facade,
-        exportResults(kResultsHandle, ExportFormat::CSV,
-                      An<const std::filesystem::path&>(),
-                      An<const ExportOptions&>()))
+                exportResults(kResultsHandle,
+                              ExportFormat::CSV,
+                              An<const std::filesystem::path&>(),
+                              An<const ExportOptions&>()))
         .WillOnce(Return(true));
 
     QSignalSpy spyOk{ctrl.get(), &ExportController::exportCompleted};
@@ -98,12 +95,11 @@ TEST_F(ExportControllerTest, Export_Success_CallsFacadeAndEmitsCompleted)
     EXPECT_EQ(spyFail.count(), 0);
 }
 
-TEST_F(ExportControllerTest, Export_FacadeReturnsFalse_EmitsExportFailed)
-{
-    EXPECT_CALL(facade,
-        exportResults(kResultsHandle, _,
-                      An<const std::filesystem::path&>(),
-                      An<const ExportOptions&>()))
+TEST_F(ExportControllerTest, Export_FacadeReturnsFalse_EmitsExportFailed) {
+    EXPECT_CALL(
+        facade,
+        exportResults(
+            kResultsHandle, _, An<const std::filesystem::path&>(), An<const ExportOptions&>()))
         .WillOnce(Return(false));
 
     QSignalSpy spy{ctrl.get(), &ExportController::exportFailed};
@@ -112,14 +108,12 @@ TEST_F(ExportControllerTest, Export_FacadeReturnsFalse_EmitsExportFailed)
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(ExportControllerTest, Export_NoResultsHandle_EmitsExportFailedWithoutCallingFacade)
-{
+TEST_F(ExportControllerTest, Export_NoResultsHandle_EmitsExportFailedWithoutCallingFacade) {
     ctrl->onResultsHandleUpdated(0);
 
     EXPECT_CALL(facade,
-        exportResults(_, _,
-                      An<const std::filesystem::path&>(),
-                      An<const ExportOptions&>())).Times(0);
+                exportResults(_, _, An<const std::filesystem::path&>(), An<const ExportOptions&>()))
+        .Times(0);
 
     QSignalSpy spy{ctrl.get(), &ExportController::exportFailed};
     ctrl->onExportRequested(ExportFormat::CSV, QStringLiteral("/tmp/output.csv"));
@@ -127,14 +121,14 @@ TEST_F(ExportControllerTest, Export_NoResultsHandle_EmitsExportFailedWithoutCall
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(ExportControllerTest, ResultsHandleUpdateChangesTarget)
-{
+TEST_F(ExportControllerTest, ResultsHandleUpdateChangesTarget) {
     ctrl->onResultsHandleUpdated(99);
 
     EXPECT_CALL(facade,
-        exportResults(std::size_t{99}, ExportFormat::JSON,
-                      An<const std::filesystem::path&>(),
-                      An<const ExportOptions&>()))
+                exportResults(std::size_t{99},
+                              ExportFormat::JSON,
+                              An<const std::filesystem::path&>(),
+                              An<const ExportOptions&>()))
         .WillOnce(Return(true));
 
     QSignalSpy spy{ctrl.get(), &ExportController::exportCompleted};

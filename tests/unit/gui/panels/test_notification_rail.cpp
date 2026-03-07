@@ -51,40 +51,32 @@ namespace {
 // If another test suite in the same binary already created a QApplication
 // (e.g. TrussEditControllerTest), that instance is reused.  This avoids
 // the Qt restriction that only one QApplication can exist per process.
-QApplication& ensureQApp()
-{
-    static int   argc    = 1;
-    static char  argv0[] = "unit_tests";
-    static char* argv[]  = {argv0, nullptr};
+QApplication& ensureQApp() {
+    static int argc = 1;
+    static char argv0[] = "unit_tests";
+    static char* argv[] = {argv0, nullptr};
     // Use a pointer so we can conditionally assign an existing instance.
     // NOLINTNEXTLINE(cppcoreguidelines-avoid-non-const-global-variables)
     static QApplication* s_app = []() -> QApplication* {
         if (auto* existing = qobject_cast<QApplication*>(QCoreApplication::instance())) {
-            return existing; // reuse — another suite created it first
+            return existing;  // reuse — another suite created it first
         }
-        return new QApplication(argc, argv); // created once, never deleted
+        return new QApplication(argc, argv);  // created once, never deleted
     }();
     return *s_app;
 }
-} // namespace
+}  // namespace
 
 class NotificationRailTest : public ::testing::Test {
 public:
-    static void SetUpTestSuite()
-    {
-        ensureQApp(); // idempotent — creates at most once per process
+    static void SetUpTestSuite() {
+        ensureQApp();  // idempotent — creates at most once per process
     }
 
 protected:
-    void SetUp() override
-    {
-        m_rail = std::make_unique<NotificationRail>(nullptr);
-    }
+    void SetUp() override { m_rail = std::make_unique<NotificationRail>(nullptr); }
 
-    void TearDown() override
-    {
-        m_rail.reset();
-    }
+    void TearDown() override { m_rail.reset(); }
 
     std::unique_ptr<NotificationRail> m_rail;
 };
@@ -93,14 +85,12 @@ protected:
 // Initial state
 // ---------------------------------------------------------------------------
 
-TEST_F(NotificationRailTest, InitialStateIsHiddenAndEmpty)
-{
+TEST_F(NotificationRailTest, InitialStateIsHiddenAndEmpty) {
     EXPECT_EQ(m_rail->activeCount(), 0);
     EXPECT_FALSE(m_rail->isVisible());
 }
 
-TEST_F(NotificationRailTest, ObjectNameIsSet)
-{
+TEST_F(NotificationRailTest, ObjectNameIsSet) {
     EXPECT_EQ(m_rail->objectName(), QStringLiteral("notificationRail"));
 }
 
@@ -108,39 +98,33 @@ TEST_F(NotificationRailTest, ObjectNameIsSet)
 // Adding notifications
 // ---------------------------------------------------------------------------
 
-TEST_F(NotificationRailTest, ShowInfoAddsOneItem)
-{
+TEST_F(NotificationRailTest, ShowInfoAddsOneItem) {
     m_rail->showInfo(QStringLiteral("Test info"));
     EXPECT_EQ(m_rail->activeCount(), 1);
 }
 
-TEST_F(NotificationRailTest, ShowSuccessAddsOneItem)
-{
+TEST_F(NotificationRailTest, ShowSuccessAddsOneItem) {
     m_rail->showSuccess(QStringLiteral("Test success"));
     EXPECT_EQ(m_rail->activeCount(), 1);
 }
 
-TEST_F(NotificationRailTest, ShowWarningAddsOneItem)
-{
+TEST_F(NotificationRailTest, ShowWarningAddsOneItem) {
     m_rail->showWarning(QStringLiteral("Test warning"));
     EXPECT_EQ(m_rail->activeCount(), 1);
 }
 
-TEST_F(NotificationRailTest, ShowErrorAddsOneItem)
-{
+TEST_F(NotificationRailTest, ShowErrorAddsOneItem) {
     m_rail->showError(QStringLiteral("Test error"));
     EXPECT_EQ(m_rail->activeCount(), 1);
 }
 
-TEST_F(NotificationRailTest, RailBecomesVisibleAfterFirstNotification)
-{
+TEST_F(NotificationRailTest, RailBecomesVisibleAfterFirstNotification) {
     ASSERT_FALSE(m_rail->isVisible());
     m_rail->showInfo(QStringLiteral("Hello"));
     EXPECT_TRUE(m_rail->isVisible());
 }
 
-TEST_F(NotificationRailTest, MultipleNotificationsAccumulate)
-{
+TEST_F(NotificationRailTest, MultipleNotificationsAccumulate) {
     m_rail->showInfo(QStringLiteral("One"));
     m_rail->showSuccess(QStringLiteral("Two"));
     m_rail->showWarning(QStringLiteral("Three"));
@@ -151,8 +135,7 @@ TEST_F(NotificationRailTest, MultipleNotificationsAccumulate)
 // Max-item eviction
 // ---------------------------------------------------------------------------
 
-TEST_F(NotificationRailTest, FourthNotificationEvictsOldest)
-{
+TEST_F(NotificationRailTest, FourthNotificationEvictsOldest) {
     m_rail->showInfo(QStringLiteral("First"));
     m_rail->showInfo(QStringLiteral("Second"));
     m_rail->showInfo(QStringLiteral("Third"));
@@ -163,8 +146,7 @@ TEST_F(NotificationRailTest, FourthNotificationEvictsOldest)
     EXPECT_EQ(m_rail->activeCount(), NotificationRail::kMaxItems);
 }
 
-TEST_F(NotificationRailTest, EvictionEmitsDismissSignal)
-{
+TEST_F(NotificationRailTest, EvictionEmitsDismissSignal) {
     QSignalSpy spy(m_rail.get(), &NotificationRail::notificationDismissed);
 
     m_rail->showInfo(QStringLiteral("A"));
@@ -181,8 +163,7 @@ TEST_F(NotificationRailTest, EvictionEmitsDismissSignal)
 // clearAll()
 // ---------------------------------------------------------------------------
 
-TEST_F(NotificationRailTest, ClearAllRemovesAllItems)
-{
+TEST_F(NotificationRailTest, ClearAllRemovesAllItems) {
     m_rail->showInfo(QStringLiteral("A"));
     m_rail->showSuccess(QStringLiteral("B"));
     m_rail->showWarning(QStringLiteral("C"));
@@ -192,8 +173,7 @@ TEST_F(NotificationRailTest, ClearAllRemovesAllItems)
     EXPECT_EQ(m_rail->activeCount(), 0);
 }
 
-TEST_F(NotificationRailTest, ClearAllHidesRail)
-{
+TEST_F(NotificationRailTest, ClearAllHidesRail) {
     m_rail->showInfo(QStringLiteral("Visible"));
     ASSERT_TRUE(m_rail->isVisible());
 
@@ -201,8 +181,7 @@ TEST_F(NotificationRailTest, ClearAllHidesRail)
     EXPECT_FALSE(m_rail->isVisible());
 }
 
-TEST_F(NotificationRailTest, ClearAllEmitsDismissSignalForEachItem)
-{
+TEST_F(NotificationRailTest, ClearAllEmitsDismissSignalForEachItem) {
     QSignalSpy spy(m_rail.get(), &NotificationRail::notificationDismissed);
 
     m_rail->showInfo(QStringLiteral("A"));
@@ -214,8 +193,7 @@ TEST_F(NotificationRailTest, ClearAllEmitsDismissSignalForEachItem)
     EXPECT_EQ(spy.count(), 3);
 }
 
-TEST_F(NotificationRailTest, ClearAllOnEmptyRailDoesNotCrash)
-{
+TEST_F(NotificationRailTest, ClearAllOnEmptyRailDoesNotCrash) {
     ASSERT_EQ(m_rail->activeCount(), 0);
     EXPECT_NO_THROW(m_rail->clearAll());
 }
@@ -224,8 +202,7 @@ TEST_F(NotificationRailTest, ClearAllOnEmptyRailDoesNotCrash)
 // Mixed severity
 // ---------------------------------------------------------------------------
 
-TEST_F(NotificationRailTest, MixedSeverityCountsCorrectly)
-{
+TEST_F(NotificationRailTest, MixedSeverityCountsCorrectly) {
     m_rail->showInfo(QStringLiteral("Info"));
     m_rail->showError(QStringLiteral("Error"));
 
@@ -244,8 +221,7 @@ TEST_F(NotificationRailTest, MixedSeverityCountsCorrectly)
 // ---------------------------------------------------------------------------
 #ifdef TRUSS_SLOW_TESTS
 
-TEST_F(NotificationRailTest, InfoAutoDismissesAfterTimeout)
-{
+TEST_F(NotificationRailTest, InfoAutoDismissesAfterTimeout) {
     QSignalSpy spy(m_rail.get(), &NotificationRail::notificationDismissed);
 
     m_rail->showInfo(QStringLiteral("I will vanish"));
@@ -259,8 +235,7 @@ TEST_F(NotificationRailTest, InfoAutoDismissesAfterTimeout)
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(NotificationRailTest, ErrorDoesNotAutoDismiss)
-{
+TEST_F(NotificationRailTest, ErrorDoesNotAutoDismiss) {
     m_rail->showError(QStringLiteral("This should stay"));
     ASSERT_EQ(m_rail->activeCount(), 1);
 
@@ -271,4 +246,4 @@ TEST_F(NotificationRailTest, ErrorDoesNotAutoDismiss)
     EXPECT_TRUE(m_rail->isVisible());
 }
 
-#endif // TRUSS_SLOW_TESTS
+#endif  // TRUSS_SLOW_TESTS

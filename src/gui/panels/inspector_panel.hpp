@@ -25,12 +25,12 @@ class QFormLayout;
 
 namespace truss::gui {
 
-using truss::core::interfaces::MemberView;
-using truss::core::interfaces::NodeView;
 using truss::core::Force2D;
 using truss::core::MemberId;
 using truss::core::NodeId;
 using truss::core::SupportType;
+using truss::core::interfaces::MemberView;
+using truss::core::interfaces::NodeView;
 
 /**
  * @brief Context-sensitive property editor panel (right side of main window).
@@ -47,8 +47,8 @@ class InspectorPanel : public QStackedWidget {
     Q_OBJECT
 
 public:
-    static constexpr int kPageNoSelection  = 0;
-    static constexpr int kPageNodeEditor   = 1;
+    static constexpr int kPageNoSelection = 0;
+    static constexpr int kPageNodeEditor = 1;
     static constexpr int kPageMemberEditor = 2;
 
     explicit InspectorPanel(QWidget* parent = nullptr);
@@ -73,13 +73,13 @@ private:
     void buildMemberEditorPage();
 
     // Node editor widgets
-    QLabel*         m_nodeIdLabel{nullptr};
-    QLabel*         m_nodeXLabel{nullptr};
-    QLabel*         m_nodeYLabel{nullptr};
-    QComboBox*      m_supportCombo{nullptr};
+    QLabel* m_nodeIdLabel{nullptr};
+    QLabel* m_nodeXLabel{nullptr};
+    QLabel* m_nodeYLabel{nullptr};
+    QComboBox* m_supportCombo{nullptr};
     QDoubleSpinBox* m_fxSpin{nullptr};
     QDoubleSpinBox* m_fySpin{nullptr};
-    QPushButton*    m_applyLoadBtn{nullptr};
+    QPushButton* m_applyLoadBtn{nullptr};
 
     // Member editor widgets
     QLabel* m_memberIdLabel{nullptr};
@@ -92,7 +92,7 @@ private:
     QLabel* m_memberRatioLabel{nullptr};
 
     // Retained state
-    NodeId   m_selectedNodeId{0};
+    NodeId m_selectedNodeId{0};
     MemberId m_selectedMemberId{0};
 };
 

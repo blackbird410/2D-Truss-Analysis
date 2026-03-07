@@ -2,9 +2,9 @@
  * @file iconfirmation_provider.hpp
  * @brief Interface for confirming destructive operations without modal dialogs in tests.
  *
- * Phase 5: IConfirmationProvider allows ProjectControllerV2 to ask for user
- * confirmation without coupling directly to QMessageBox, enabling headless
- * unit tests via AutoConfirmProvider.
+ * IConfirmationProvider allows ProjectController to request user confirmation
+ * without coupling directly to QMessageBox, enabling headless unit tests via
+ * AutoConfirmProvider.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -13,8 +13,8 @@
 
 #pragma once
 
-#include <QString>
 #include <QMessageBox>
+#include <QString>
 
 namespace truss::gui::interfaces {
 
@@ -48,10 +48,7 @@ class AutoConfirmProvider final : public IConfirmationProvider {
 public:
     explicit AutoConfirmProvider(bool result = true) noexcept : m_result{result} {}
 
-    bool confirm(const QString& /*title*/, const QString& /*message*/) override
-    {
-        return m_result;
-    }
+    bool confirm(const QString& /*title*/, const QString& /*message*/) override { return m_result; }
 
 private:
     bool m_result;
@@ -62,11 +59,9 @@ private:
  */
 class ModalConfirmProvider final : public IConfirmationProvider {
 public:
-    bool confirm(const QString& title, const QString& message) override
-    {
-        return QMessageBox::question(nullptr, title, message,
-                                     QMessageBox::Yes | QMessageBox::No)
-               == QMessageBox::Yes;
+    bool confirm(const QString& title, const QString& message) override {
+        return QMessageBox::question(nullptr, title, message, QMessageBox::Yes | QMessageBox::No) ==
+               QMessageBox::Yes;
     }
 };
 

@@ -2,8 +2,6 @@
  * @file theme_loader.hpp
  * @brief Utility for loading and applying QSS themes from Qt resources.
  *
- * Phase 2: Qt Infrastructure Setup
- *
  * Usage:
  * @code
  *   // Apply a named theme and persist the choice:
@@ -44,7 +42,7 @@ namespace truss::gui {
  */
 class ThemeLoader final {
 public:
-    ThemeLoader() = delete; ///< Static utility — not instantiable.
+    ThemeLoader() = delete;  ///< Static utility — not instantiable.
 
     /**
      * @brief Load a QSS file from a Qt resource path, apply it to @p app,
@@ -72,14 +70,14 @@ public:
     [[nodiscard]] static QString savedThemePath();
 
     /// Resource path of the built-in dark theme.
-    static constexpr const char* kDarkThemePath  = ":/themes/dark.qss";
+    static constexpr const char* kDarkThemePath = ":/themes/dark.qss";
     /// Resource path of the built-in light theme.
     static constexpr const char* kLightThemePath = ":/themes/light.qss";
 
 private:
-    static constexpr const char* kSettingsOrg  = "TrussAnalysis";
-    static constexpr const char* kSettingsApp  = "GUI";
-    static constexpr const char* kSettingsKey  = "theme/path";
+    static constexpr const char* kSettingsOrg = "TrussAnalysis";
+    static constexpr const char* kSettingsApp = "GUI";
+    static constexpr const char* kSettingsKey = "theme/path";
 };
 
-} // namespace truss::gui
+}  // namespace truss::gui
