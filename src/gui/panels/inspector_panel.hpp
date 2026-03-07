@@ -22,6 +22,7 @@ class QLabel;
 class QComboBox;
 class QDoubleSpinBox;
 class QFormLayout;
+class QHBoxLayout;
 class QPushButton;
 
 namespace truss::gui {
@@ -97,6 +98,15 @@ private:
     void buildNodeEditorPage();
     void buildMemberEditorPage();
 
+    /**
+     * @brief Lazily creates the member-editor's interactive widgets on first use.
+     *
+     * Called at the start of showMemberEditor().  Widgets are not created during
+     * construction so that Qt's findChild<QComboBox*>() / findChild<QPushButton*>()
+     * calls in unit tests always reach the node-editor page first.
+     */
+    void ensureMemberEditorInteractive();
+
     // Helper: build a MaterialSpec + SectionSpec from the given combo indices
     // and the current area spinbox value.  Used on both pages.
     MaterialSpec materialSpecFromIndex(int matIdx) const;
@@ -105,6 +115,11 @@ private:
     // Material / section library data (populated via populateMaterialLibrary)
     std::vector<MaterialPreset> m_materialPresets;
     std::vector<SectionPreset> m_sectionPresets;
+
+    // Pointers stored for use by ensureMemberEditorInteractive()
+    QFormLayout* m_memberFormLayout{nullptr};
+    QWidget* m_memberFormBox{nullptr};
+    QHBoxLayout* m_memberBtnLayout{nullptr};
 
     // Node editor widgets
     QLabel* m_nodeIdLabel{nullptr};

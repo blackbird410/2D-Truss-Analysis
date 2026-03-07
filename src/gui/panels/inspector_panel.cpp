@@ -12,6 +12,7 @@
 #include <QComboBox>
 #include <QDoubleSpinBox>
 #include <QFormLayout>
+#include <QHBoxLayout>
 #include <QLabel>
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -181,6 +182,67 @@ void InspectorPanel::buildMemberEditorPage() {
     vbox->addStretch();
 
     addWidget(page);  // index 2
+}
+
+void InspectorPanel::ensureMemberEditorInteractive() {
+    if (m_materialCombo != nullptr)
+        return;  // already initialised
+
+    // ---- Row 1: Material combo ----
+    m_materialCombo = new QComboBox{m_memberFormBox};
+    m_materialCombo->setObjectName(QStringLiteral("inspector_materialCombo"));
+    m_materialCombo->setToolTip(QStringLiteral("Select material from library"));
+    m_memberFormLayout->insertRow(1, QStringLiteral("Material:"), m_materialCombo);
+
+    // ---- Row 2: Young's modulus (auto-fill label) ----
+    m_memberE_Label = new QLabel{QStringLiteral("\u2014"), m_memberFormBox};
+    m_memberE_Label->setObjectName(QStringLiteral("inspector_memberE"));
+    m_memberFormLayout->insertRow(2, QStringLiteral("E [GPa]:"), m_memberE_Label);
+
+    // ---- Row 3: Cross-section area spin ----
+    m_memberA_Spin = new QDoubleSpinBox{m_memberFormBox};
+    m_memberA_Spin->setObjectName(QStringLiteral("inspector_memberASpin"));
+    m_memberA_Spin->setRange(0.001, 10000.0);
+    m_memberA_Spin->setSingleStep(1.0);
+    m_memberA_Spin->setDecimals(3);
+    m_memberA_Spin->setSuffix(QStringLiteral(" cm\u00b2"));
+    m_memberA_Spin->setToolTip(QStringLiteral("Cross-section area"));
+    m_memberFormLayout->insertRow(3, QStringLiteral("A [cm\u00b2]:"), m_memberA_Spin);
+
+    // ---- Apply button ----
+    m_applyMemberBtn = new QPushButton{QStringLiteral("Apply Changes"), m_memberFormBox->parentWidget()};
+    m_applyMemberBtn->setObjectName(QStringLiteral("inspector_applyMemberBtn"));
+    m_applyMemberBtn->setToolTip(
+        QStringLiteral("Update member with selected material and area.  "
+                       "The member will be re-created with the new properties; "
+                       "re-run analysis to see updated results."));
+    m_memberBtnLayout->addWidget(m_applyMemberBtn);
+
+    // ---- Tab order ----
+    QWidget::setTabOrder(m_materialCombo, m_memberA_Spin);
+    QWidget::setTabOrder(m_memberA_Spin, m_applyMemberBtn);
+
+    // ---- Connections ----
+    connect(m_materialCombo,
+            &QComboBox::currentIndexChanged,
+            this,
+            &InspectorPanel::onMaterialComboChanged);
+    connect(m_applyMemberBtn, &QPushButton::clicked, this, &InspectorPanel::onApplyMemberClicked);
+
+    // ---- Populate combo from stored presets ----
+    if (!m_materialPresets.empty()) {
+        QSignalBlocker bMat{m_materialCombo};
+        for (const auto& preset : m_materialPresets) {
+            const QString name = QString::fromStdString(preset.name);
+            const QString tip  = QStringLiteral("E = %1 GPa \u2014 %2")
+                                     .arg(preset.properties.youngModulus / 1e9, 0, 'f', 1)
+                                     .arg(QString::fromStdString(preset.description));
+            m_materialCombo->addItem(name);
+            m_materialCombo->setItemData(m_materialCombo->count() - 1, tip, Qt::ToolTipRole);
+        }
+        m_memberE_Label->setText(
+            QString::number(m_materialPresets[0].properties.youngModulus / 1e9, 'f', 1));
+    }
 }
 
 // ---------------------------------------------------------------------------
