@@ -432,3 +432,126 @@ TEST_F(TrussCanvasWidgetTest, BackspaceKeyPressWithCanvasFocusIsHandledWithoutCr
     widget->setFocus();
     ASSERT_NO_FATAL_FAILURE(QTest::keyClick(widget.get(), Qt::Key_Backspace));
 }
+
+// ============================================================
+// Tests — Phase 8: autoDispScale() — deformation scale clamping
+// ============================================================
+//
+// Engineering basis for expected values:
+//   Default m_worldBounds = QRectF(-1, -1, 7, 7)  → width=7, height=7 → span=7.0
+//   ideal = kDispVisualFraction * span / maxDisp
+//         = 0.10 × 7.0 / maxDisp = 0.7 / maxDisp
+//
+//   Clamp range [1.0, 500.0] mirrors ABAQUS/CAE auto-scale limits.
+//
+namespace {
+
+/// Minimal ITrussView stub with a single node carrying a known displacement.
+/// Members are empty — autoDispScale() only iterates getNodeViews().
+class DeformedNodeView final : public ITrussView {
+public:
+    explicit DeformedNodeView(double dx, double dy) {
+        NodeView n;
+        n.id = 1;
+        n.x = 2.0;
+        n.y = 1.5;
+        n.dx = dx;
+        n.dy = dy;
+        m_nodes.push_back(n);
+    }
+
+    const std::string&         getName()        const override { return m_name; }
+    std::vector<NodeView>      getNodeViews()   const override { return m_nodes; }
+    std::size_t                getNodeCount()   const override { return m_nodes.size(); }
+    std::vector<MemberView>    getMemberViews() const override { return {}; }
+    std::size_t                getMemberCount() const override { return 0; }
+    std::size_t                getTotalDofs()   const override { return 2; }
+    std::size_t                getFreeDofs()    const override { return 2; }
+    std::size_t                getConstrainedDofs() const override { return 0; }
+
+private:
+    std::string m_name{"DeformedNode"};
+    std::vector<NodeView> m_nodes;
+};
+
+}  // anonymous namespace
+
+TEST_F(TrussCanvasWidgetTest, AutoDispScale_NoView_ReturnsZero) {
+    // Without any view attached, autoDispScale() must return 0 (no-op).
+    EXPECT_DOUBLE_EQ(widget->autoDispScale(), 0.0)
+        << "Expected 0.0 when no view is attached";
+}
+
+TEST_F(TrussCanvasWidgetTest, AutoDispScale_ZeroDisplacements_ReturnsZero) {
+    // If all nodal displacements are zero (pre-analysis state),
+    // autoDispScale() must return 0.0 — nothing to amplify.
+    DeformedNodeView zeroView(0.0, 0.0);
+    widget->refresh(&zeroView);
+
+    EXPECT_DOUBLE_EQ(widget->autoDispScale(), 0.0)
+        << "Expected 0.0 for all-zero displacement field";
+}
+
+TEST_F(TrussCanvasWidgetTest, AutoDispScale_TinyDisplacements_CappedAtMaximum) {
+    // maxDisp = hypot(0, 1e-4) = 1e-4 m  (0.1 mm — very stiff structure)
+    // ideal  = 0.10 × 7.0 / 1e-4 = 7000
+    // clamped → 500 (kMaxDispScale)
+    // Without the cap this would render 0.1 mm sub-millimetre deflections
+    // as 0.7 m visual displacements — a 7000× misleading exaggeration.
+    DeformedNodeView tinyView(0.0, -1e-4);
+    widget->refresh(&tinyView);
+
+    EXPECT_DOUBLE_EQ(widget->autoDispScale(), 500.0)
+        << "Scale must be capped at 500 for sub-millimetre displacements on a 7 m model";
+}
+
+TEST_F(TrussCanvasWidgetTest, AutoDispScale_LargeDisplacements_FlooredAtMinimum) {
+    // maxDisp = hypot(0, 2.0) = 2.0 m  (extreme large displacement, δ/L ≈ 0.29)
+    // ideal  = 0.10 × 7.0 / 2.0 = 0.35
+    // clamped → 1.0 (kMinDispScale)
+    // Without the floor the drawn deformation would be *smaller* than reality
+    // — a physically incorrect and confusing visualisation.
+    DeformedNodeView largeView(0.0, -2.0);
+    widget->refresh(&largeView);
+
+    EXPECT_DOUBLE_EQ(widget->autoDispScale(), 1.0)
+        << "Scale must be floored at 1.0 when displacements exceed 10% of span";
+}
+
+TEST_F(TrussCanvasWidgetTest, AutoDispScale_EngineeringRange_ExactValue) {
+    // maxDisp = hypot(0, 0.035) = 0.035 m  (35 mm — typical steel truss result)
+    // ideal  = 0.10 × 7.0 / 0.035 = 20.0  (within [1, 500])
+    // This verifies the scale computation is correct in the normal operating regime.
+    DeformedNodeView normalView(0.0, -0.035);
+    widget->refresh(&normalView);
+
+    EXPECT_NEAR(widget->autoDispScale(), 20.0, 0.01)
+        << "Expected ~20 for a 35 mm displacement on a 7 m span model";
+}
+
+TEST_F(TrussCanvasWidgetTest, AutoDispScale_DiagonalDisplacement_UsesHypot) {
+    // Verify that displacement magnitude uses hypot(dx, dy), not just one component.
+    // maxDisp = hypot(0.02, 0.02) = 0.02√2 ≈ 0.02828 m
+    // ideal  = 0.7 / 0.02828 ≈ 24.75  (within [1, 500])
+    DeformedNodeView diagView(0.02, -0.02);
+    widget->refresh(&diagView);
+
+    const double expected = 0.7 / std::hypot(0.02, 0.02);
+    EXPECT_NEAR(widget->autoDispScale(), expected, 0.1)
+        << "autoDispScale must use the full vector magnitude via hypot(dx, dy)";
+}
+
+TEST_F(TrussCanvasWidgetTest, DeformedShapeWithClampedScale_DoesNotCrash) {
+    // Smoke test: render the truss in DeformedShape mode with displacements
+    // that trigger the upper cap.  The paint pipeline must survive without
+    // assertion failures.
+    DeformedNodeView tinyView(0.0, -1e-5);  // →  scale capped at 500
+    widget->refresh(&tinyView, TrussCanvasWidget::DisplayMode::DeformedShape);
+    widget->show();
+
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
