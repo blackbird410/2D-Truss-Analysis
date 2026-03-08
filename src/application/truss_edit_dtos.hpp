@@ -74,4 +74,28 @@ struct SectionSpec {
     }
 };
 
+/**
+ * @brief Node update specification for position changes
+ *
+ * Application-layer DTO carrying the new position for an existing node.
+ * The node's ID, support condition, and applied loads are NOT changed
+ * by an updateNode operation — use setNodeSupport / applyNodeLoad for those.
+ */
+struct NodeUpdateSpec {
+    double x{0.0};  ///< New X coordinate in metres
+    double y{0.0};  ///< New Y coordinate in metres
+};
+
+/**
+ * @brief Member update specification for material and section changes
+ *
+ * Application-layer DTO carrying new material and section properties for
+ * an existing member.  The member's ID and node connectivity are preserved;
+ * only material stiffness and cross-section area are replaced.
+ */
+struct MemberUpdateSpec {
+    MaterialSpec material;  ///< New material specification (E in Pa, name)
+    SectionSpec section;    ///< New section specification (area in m²)
+};
+
 }  // namespace truss::application
