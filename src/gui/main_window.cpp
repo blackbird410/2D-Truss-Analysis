@@ -482,7 +482,7 @@ void MainWindow::connectSignals() {
             m_inspectorPanel,
             &InspectorPanel::showNoSelection);
 
-    // InspectorPanel → InspectorController (property edits)
+    // InspectorPanel → InspectorController (property edits — all use in-place update ops)
     connect(m_inspectorPanel,
             &InspectorPanel::supportChangeRequested,
             inspectorCtrl,
@@ -491,6 +491,14 @@ void MainWindow::connectSignals() {
             &InspectorPanel::loadChangeRequested,
             inspectorCtrl,
             &ctrl::InspectorController::onLoadChangeRequested);
+    connect(m_inspectorPanel,
+            &InspectorPanel::nodePositionChangeRequested,
+            inspectorCtrl,
+            &ctrl::InspectorController::onNodePositionChangeRequested);
+    connect(m_inspectorPanel,
+            &InspectorPanel::memberPropertiesChangeRequested,
+            inspectorCtrl,
+            &ctrl::InspectorController::onMemberPropertiesChangeRequested);
 
     // ----------------------------------------------------------------
     // AnalysisControlBar → AnalysisController
@@ -607,12 +615,6 @@ void MainWindow::connectSignals() {
             &InspectorPanel::defaultMaterialChanged,
             canvasCtrl,
             &ctrl::CanvasController::onDefaultMaterialChanged);
-
-    // InspectorPanel member-property changes → InspectorController (remove+recreate)
-    connect(m_inspectorPanel,
-            &InspectorPanel::memberPropertiesChangeRequested,
-            inspectorCtrl,
-            &ctrl::InspectorController::onMemberPropertiesChangeRequested);
 }
 
 // ============================================================
