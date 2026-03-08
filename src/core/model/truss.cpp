@@ -394,7 +394,7 @@ Point2D Truss::getCentroid() const {
         sumY += node->getY();
     }
 
-    return Point2D(sumX / m_nodes.size(), sumY / m_nodes.size());
+    return {sumX / static_cast<Real>(m_nodes.size()), sumY / static_cast<Real>(m_nodes.size())};
 }
 
 Real Truss::getTotalWeight() const {
