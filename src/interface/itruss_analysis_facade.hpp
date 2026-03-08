@@ -71,6 +71,7 @@ struct AnalysisWorkflowResult {
  * Note: isValidTrussHandle and isValidResultsHandle are already inherited
  * from the respective base interfaces and do not need redeclaration.
  */
+// NOLINT(misc-multiple-inheritance) -- intentional: combines ITrussService + IAnalysisService interfaces
 class ITrussAnalysisFacade : public truss::application::ITrussService,
                              public truss::application::IAnalysisService {
 public:
