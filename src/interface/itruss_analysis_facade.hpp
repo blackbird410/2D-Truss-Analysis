@@ -75,7 +75,7 @@ struct AnalysisWorkflowResult {
 class ITrussAnalysisFacade : public truss::application::ITrussService,
                              public truss::application::IAnalysisService {
 public:
-    virtual ~ITrussAnalysisFacade() = default;
+    ~ITrussAnalysisFacade() override = default;
 
     // =========================================================
     // Ambiguity resolution
@@ -84,7 +84,7 @@ public:
     // Resolve clearAll() ambiguity from multiple inheritance.
     // Both ITrussService and IAnalysisService declare clearAll().
     // Implementations should clear both truss and analysis resources.
-    virtual void clearAll() = 0;
+    void clearAll() override = 0;
 
     // =========================================================
     // High-level workflow methods
