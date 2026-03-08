@@ -68,13 +68,13 @@ struct MemberDTO {
     MemberDTO(MemberId memberId,
               NodeId start,
               NodeId end,
-              const std::string& memberLabel = "",
+              std::string memberLabel = "",
               Real E = 210e9,
               Real fy = 250e6,
               Real rho = 7850.0,
               Real A = 0.01)
-        : id(memberId), startNodeId(start), endNodeId(end), label(memberLabel), youngModulus(E),
-          yieldStrength(fy), density(rho), area(A) {}
+        : id(memberId), startNodeId(start), endNodeId(end), label(std::move(memberLabel)),
+          youngModulus(E), yieldStrength(fy), density(rho), area(A) {}
 };
 
 /**
@@ -90,12 +90,12 @@ struct TrussDTO {
 
     TrussDTO() = default;
 
-    explicit TrussDTO(const std::string& trussName) : name(trussName) {}
+    explicit TrussDTO(std::string trussName) : name(std::move(trussName)) {}
 
-    TrussDTO(const std::string& trussName,
+    TrussDTO(std::string trussName,
              std::vector<NodeDTO> nodeList,
              std::vector<MemberDTO> memberList)
-        : name(trussName), nodes(std::move(nodeList)), members(std::move(memberList)) {}
+        : name(std::move(trussName)), nodes(std::move(nodeList)), members(std::move(memberList)) {}
 };
 
 }  // namespace truss::core::interfaces
