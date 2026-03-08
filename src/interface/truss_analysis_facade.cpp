@@ -18,8 +18,7 @@ namespace truss::interface {
 // Constructor
 // ============================================================
 
-TrussAnalysisFacade::TrussAnalysisFacade()
-    : m_trussService(), m_analysisService(), m_lastTrussHandle(0) {}
+TrussAnalysisFacade::TrussAnalysisFacade() = default;
 
 // ============================================================
 // ITrussService Operations (delegate to m_trussService)
