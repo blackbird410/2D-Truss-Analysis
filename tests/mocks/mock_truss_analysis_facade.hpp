@@ -112,6 +112,20 @@ public:
                 (application::TrussHandle handle, core::NodeId nodeId),
                 (override));
 
+    MOCK_METHOD(application::Result<bool>,
+                updateNode,
+                (application::TrussHandle handle,
+                 core::NodeId nodeId,
+                 const application::NodeUpdateSpec& update),
+                (override));
+
+    MOCK_METHOD(application::Result<bool>,
+                updateMember,
+                (application::TrussHandle handle,
+                 core::MemberId memberId,
+                 const application::MemberUpdateSpec& update),
+                (override));
+
     // ---- IAnalysisService operations ----
     MOCK_METHOD(application::Result<application::ResultsHandle>,
                 analyze,
