@@ -680,9 +680,8 @@ TEST_F(TrussCanvasWidgetTest, ReactionArrows_GeometryMode_NoGreenPixels) {
     ASSERT_FALSE(img.isNull());
 
     const int greenPixels = countGreenReactionPixels(img);
-    EXPECT_EQ(greenPixels, 0)
-        << "No reaction arrow should be drawn in Geometry mode; "
-           "found unexpected green pixels (#34A853).";
+    EXPECT_EQ(greenPixels, 0) << "No reaction arrow should be drawn in Geometry mode; "
+                                 "found unexpected green pixels (#34A853).";
 }
 
 /// Sign invariant: a negative vertical reaction (-ry, i.e. downward) must also
