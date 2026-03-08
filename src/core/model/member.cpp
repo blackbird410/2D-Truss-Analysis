@@ -140,7 +140,7 @@ bool Member::hasZeroLength(Real tolerance) const {
 
 Matrix2d Member::getTransformationMatrix() const {
     Vector2d unitVec = getUnitVector();
-    Matrix2d transformation;
+    Matrix2d transformation = Matrix2d::Zero();
     transformation << unitVec.x(), unitVec.y(), -unitVec.y(), unitVec.x();
     return transformation;
 }
