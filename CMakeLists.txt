@@ -41,7 +41,7 @@ find_package(nlohmann_json REQUIRED)
 
 # Qt6 is only required if building GUI
 if(BUILD_GUI)
-    find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test)
+    find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test Svg)
     message(STATUS "Building with GUI support (Qt6)")
 else()
     message(STATUS "Building CLI only (no Qt6)")
@@ -484,6 +484,7 @@ if(BUILD_TESTING)
         $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
         $<$<BOOL:${BUILD_GUI}>:Qt6::Widgets>
         $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
+        $<$<BOOL:${BUILD_GUI}>:Qt6::Svg>
     )
     
     target_include_directories(unit_tests PRIVATE
@@ -600,6 +601,7 @@ if(BUILD_GUI AND BUILD_TESTING)
         Qt6::Test
         Qt6::Widgets
         Qt6::Core
+        Qt6::Svg
     )
 
     target_include_directories(gui_integration_test PRIVATE
@@ -686,6 +688,7 @@ target_link_libraries(TrussAnalysisGUI PRIVATE
     TrussCore
     Qt6::Core
     Qt6::Widgets
+    Qt6::Svg
 )
 
 # Set target properties for GUI executable
