@@ -263,16 +263,15 @@ TrussAnalysisFacade::validateFromFile(const std::filesystem::path& filepath) {
 
     if (validationResult) {
         return validationResult.value;
-    } else {
-        core::validation::ValidationResult result;
-        core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
-                                                "Validation",
-                                                "Validation process failed: " +
-                                                    validationResult.errorMessage,
-                                                "Internal error during validation");
-        result.addIssue(issue);
-        return result;
     }
+    core::validation::ValidationResult result;
+    core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
+                                            "Validation",
+                                            "Validation process failed: " +
+                                                validationResult.errorMessage,
+                                            "Internal error during validation");
+    result.addIssue(issue);
+    return result;
 }
 
 core::validation::ValidationResult TrussAnalysisFacade::validateBuilder(TrussBuilder& builder) {
