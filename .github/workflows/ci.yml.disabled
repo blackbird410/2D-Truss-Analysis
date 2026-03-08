@@ -9,8 +9,8 @@
 # jobs:
 #   build-and-test:
 #     name: Build and Test
-#     runs-on: ubuntu-22.04
-#     
+#     runs-on: ubuntu-latest
+#
 #     strategy:
 #       matrix:
 #         build_type: [Debug, Release]

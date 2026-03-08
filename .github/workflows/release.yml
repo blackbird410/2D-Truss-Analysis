@@ -38,7 +38,7 @@ jobs:
 
   build-release:
     name: Build Release (${{ matrix.config.name }})
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:

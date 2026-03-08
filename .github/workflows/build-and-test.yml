@@ -54,7 +54,7 @@ jobs:
 
   build-and-test:
     name: Build & Test (${{ matrix.build_type }})
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     strategy:
       matrix:

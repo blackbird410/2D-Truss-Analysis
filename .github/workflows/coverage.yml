@@ -42,7 +42,7 @@ jobs:
 
   coverage:
     name: Generate Coverage Report
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     env:
       # Only build debug configuration for coverage (no need for release)
