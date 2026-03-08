@@ -263,9 +263,8 @@ Result<bool> TrussApplicationService::removeNode(TrussHandle handle, NodeId node
         if (removed) {
             markAsModified(handle);
             return Result<bool>::Success(true);
-        } else {
-            return Result<bool>::Failure("Node not found: " + std::to_string(nodeId));
         }
+        return Result<bool>::Failure("Node not found: " + std::to_string(nodeId));
 
     } catch (const std::exception& e) {
         return Result<bool>::Failure(std::string("Failed to remove node: ") + e.what());
@@ -284,9 +283,8 @@ Result<bool> TrussApplicationService::removeMember(TrussHandle handle, MemberId 
         if (removed) {
             markAsModified(handle);
             return Result<bool>::Success(true);
-        } else {
-            return Result<bool>::Failure("Member not found: " + std::to_string(memberId));
         }
+        return Result<bool>::Failure("Member not found: " + std::to_string(memberId));
 
     } catch (const std::exception& e) {
         return Result<bool>::Failure(std::string("Failed to remove member: ") + e.what());
