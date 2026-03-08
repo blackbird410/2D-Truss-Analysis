@@ -72,7 +72,7 @@ std::vector<Index> BoundaryConditionHandler::getConstrainedDofs(const Truss& tru
 MatrixXd BoundaryConditionHandler::applyToStiffness(const MatrixXd& K,
                                                     const std::vector<Index>& freeDofs) {
     size_t n = freeDofs.size();
-    MatrixXd Kff(n, n);
+    MatrixXd Kff = MatrixXd::Zero(n, n);
 
     for (size_t i = 0; i < n; ++i) {
         for (size_t j = 0; j < n; ++j) {
@@ -86,7 +86,7 @@ MatrixXd BoundaryConditionHandler::applyToStiffness(const MatrixXd& K,
 VectorXd BoundaryConditionHandler::applyToLoad(const VectorXd& F,
                                                const std::vector<Index>& freeDofs) {
     size_t n = freeDofs.size();
-    VectorXd Ff(n);
+    VectorXd Ff = VectorXd::Zero(n);
 
     for (size_t i = 0; i < n; ++i) {
         Ff(i) = F(freeDofs[i]);
