@@ -94,7 +94,8 @@ jobs:
           sudo apt-get install -y \
             libgtest-dev \
             libgmock-dev \
-            doxygen
+            doxygen \
+            graphviz
 
           # Note: libgtest-dev on Ubuntu provides only source files, not
           # compiled libraries or CMake imported targets.  Building and
