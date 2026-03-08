@@ -80,7 +80,8 @@ std::string ArgumentParser::extractOptionName(const std::string& arg) {
         size_t start = 2;
         size_t end = arg.find('=');
         return arg.substr(start, end == std::string::npos ? end : end - start);
-    } else if (isShortOption(arg)) {
+    }
+    if (isShortOption(arg)) {
         // Extract from -n or -n=value
         size_t start = 1;
         size_t end = arg.find('=');
