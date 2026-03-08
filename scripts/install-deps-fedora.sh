@@ -22,7 +22,8 @@ sudo dnf install -y \
     eigen3-devel \
     nlohmann-json-devel \
     tinyxml2-devel \
-    qt5-qtbase-devel
+    qt6-qtbase-devel \
+    qt6-qtsvg-devel
 
 # Install optional tools
 echo "Installing optional tools..."

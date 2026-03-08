@@ -25,9 +25,12 @@ sudo apt-get install -y \
     libeigen3-dev \
     nlohmann-json3-dev \
     libtinyxml2-dev \
-    qtbase5-dev \
-    libqt5core5a \
-    libqt5widgets5
+    qt6-base-dev \
+    libqt6core6 \
+    libqt6widgets6 \
+    qt6-svg-dev \
+    libqt6svg6 \
+    libqt6svgwidgets6
 
 # Install optional tools
 echo "Installing optional tools..."
