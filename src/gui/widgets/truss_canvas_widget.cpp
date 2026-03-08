@@ -481,9 +481,18 @@ void TrussCanvasWidget::drawReactions(QPainter& p) const {
     for (const auto& nv : m_view->getNodeViews()) {
         if (std::abs(nv.rx) < 1e-10 && std::abs(nv.ry) < 1e-10)
             continue;
-        // Reactions are drawn in the opposite direction (pointing away from node)
+        // Sign convention: nv.rx / nv.ry are the reaction force components in the
+        // global structural coordinate system (X+ right, Y+ up), exactly as the
+        // FEM solver produces them via R = K·u at constrained DOFs.
+        //
+        // drawForceArrow() draws the arrow WITH ITS HEAD AT the node position,
+        // pointing from the tail (external) toward the node — i.e. it visualises
+        // the force vector acting ON the node.  Since a positive vertical reaction
+        // (+ry) is an upward force on the structure, passing nv.rx / nv.ry without
+        // sign modification correctly renders an upward green arrow for an upward
+        // reaction.  No sign inversion is needed or correct here.
         drawForceArrow(
-            p, toScreen(nv.x, nv.y), -nv.rx, -nv.ry, QColor(kReactionR, kReactionG, kReactionB));
+            p, toScreen(nv.x, nv.y), nv.rx, nv.ry, QColor(kReactionR, kReactionG, kReactionB));
     }
 }
 
