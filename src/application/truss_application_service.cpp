@@ -350,6 +350,68 @@ Result<bool> TrussApplicationService::clearNodeLoad(TrussHandle handle, NodeId n
     }
 }
 
+Result<bool> TrussApplicationService::updateNode(TrussHandle handle,
+                                                 NodeId nodeId,
+                                                 const NodeUpdateSpec& update) {
+    try {
+        if (!isValidTrussHandle(handle)) {
+            return Result<bool>::Failure("Invalid truss handle");
+        }
+
+        auto& truss = *m_trusses[handle];
+        const bool updated = truss.updateNode(nodeId, Point2D{update.x, update.y});
+
+        if (!updated) {
+            return Result<bool>::Failure("Node not found: " + std::to_string(nodeId));
+        }
+
+        markAsModified(handle);
+        return Result<bool>::Success(true);
+
+    } catch (const std::exception& e) {
+        return Result<bool>::Failure(std::string("Failed to update node: ") + e.what());
+    }
+}
+
+Result<bool> TrussApplicationService::updateMember(TrussHandle handle,
+                                                   MemberId memberId,
+                                                   const MemberUpdateSpec& update) {
+    try {
+        if (!isValidTrussHandle(handle)) {
+            return Result<bool>::Failure("Invalid truss handle");
+        }
+
+        // Convert Application DTOs to Domain types (same mapping as addMember).
+        MaterialProperties material{
+            update.material.youngsModulusPa,
+            7850.0,                                           // density (steel default)
+            update.material.youngsModulusPa * 0.00125,        // yield strength estimate
+            update.material.youngsModulusPa * 0.002,          // ultimate strength estimate
+            update.material.name
+        };
+
+        SectionProperties section{
+            update.section.areaM2,
+            update.section.areaM2 * update.section.areaM2 / 12.0,  // Ix estimate
+            update.section.areaM2,
+            update.section.profile
+        };
+
+        auto& truss = *m_trusses[handle];
+        const bool updated = truss.updateMember(memberId, material, section);
+
+        if (!updated) {
+            return Result<bool>::Failure("Member not found: " + std::to_string(memberId));
+        }
+
+        markAsModified(handle);
+        return Result<bool>::Success(true);
+
+    } catch (const std::exception& e) {
+        return Result<bool>::Failure(std::string("Failed to update member: ") + e.what());
+    }
+}
+
 [[maybe_unused]] bool TrussApplicationService::hasUnsavedChanges(TrussHandle handle) const {
     if (!isValidTrussHandle(handle)) {
         return false;
