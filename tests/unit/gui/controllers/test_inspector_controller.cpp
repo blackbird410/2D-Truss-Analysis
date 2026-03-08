@@ -259,10 +259,9 @@ TEST_F(InspectorControllerTest, NodePositionChange_CallsUpdateNodeAndEmitsModifi
     using truss::application::NodeUpdateSpec;
     using truss::core::Point2D;
 
-    EXPECT_CALL(facade,
-                updateNode(kHandle,
-                           NodeId{2},
-                           testing::Field(&NodeUpdateSpec::x, testing::DoubleEq(5.0))))
+    EXPECT_CALL(
+        facade,
+        updateNode(kHandle, NodeId{2}, testing::Field(&NodeUpdateSpec::x, testing::DoubleEq(5.0))))
         .WillOnce(Return(Result<bool>::Success(true)));
 
     QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
@@ -305,14 +304,13 @@ TEST_F(InspectorControllerTest, NodePositionChange_NoHandle_EmitsOperationFailed
 // updateMember — property change (no remove + re-add)
 // ============================================================
 
-TEST_F(InspectorControllerTest,
-       MemberPropertiesChange_CallsUpdateMemberNotRemoveAdd) {
+TEST_F(InspectorControllerTest, MemberPropertiesChange_CallsUpdateMemberNotRemoveAdd) {
     using truss::application::MaterialSpec;
     using truss::application::MemberUpdateSpec;
     using truss::application::SectionSpec;
 
     const MaterialSpec mat{200e9, "Steel"};
-    const SectionSpec  sec{0.002, "Custom"};
+    const SectionSpec sec{0.002, "Custom"};
 
     // updateMember must be called exactly once; removeMember / addMember must NOT.
     EXPECT_CALL(facade, updateMember(kHandle, MemberId{1}, _))
@@ -326,8 +324,7 @@ TEST_F(InspectorControllerTest,
     EXPECT_EQ(spyMod.count(), 1);
 }
 
-TEST_F(InspectorControllerTest,
-       MemberPropertiesChange_PreservesMemberIdAfterUpdate) {
+TEST_F(InspectorControllerTest, MemberPropertiesChange_PreservesMemberIdAfterUpdate) {
     // After a successful updateMember the ID passed in must be unchanged.
     // This verifies the controller does NOT modify the member's ID.
     using truss::application::MaterialSpec;
@@ -342,14 +339,12 @@ TEST_F(InspectorControllerTest,
         .WillOnce(Return(Result<bool>::Success(true)));
 
     QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
-    ctrl->onMemberPropertiesChangeRequested(originalId,
-                                            MaterialSpec{69e9, "Aluminum"},
-                                            SectionSpec{0.001, "Circular"});
+    ctrl->onMemberPropertiesChangeRequested(
+        originalId, MaterialSpec{69e9, "Aluminum"}, SectionSpec{0.001, "Circular"});
     EXPECT_EQ(spyMod.count(), 1);
 }
 
-TEST_F(InspectorControllerTest,
-       MemberPropertiesChange_FacadeFailure_EmitsOperationFailed) {
+TEST_F(InspectorControllerTest, MemberPropertiesChange_FacadeFailure_EmitsOperationFailed) {
     using truss::application::MaterialSpec;
     using truss::application::SectionSpec;
 
@@ -359,15 +354,13 @@ TEST_F(InspectorControllerTest,
     QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
     QSignalSpy spyFail{ctrl.get(), &InspectorController::operationFailed};
 
-    ctrl->onMemberPropertiesChangeRequested(MemberId{1},
-                                            MaterialSpec{200e9, "Steel"},
-                                            SectionSpec{0.001, "Custom"});
+    ctrl->onMemberPropertiesChangeRequested(
+        MemberId{1}, MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "Custom"});
     EXPECT_EQ(spyMod.count(), 0);
     EXPECT_EQ(spyFail.count(), 1);
 }
 
-TEST_F(InspectorControllerTest,
-       MemberPropertiesChange_RepeatedEdits_KeepsSameMemberId) {
+TEST_F(InspectorControllerTest, MemberPropertiesChange_RepeatedEdits_KeepsSameMemberId) {
     // Simulate two consecutive "Apply Changes" clicks on the same member.
     // Both calls must target the same member ID (no ID drift).
     using truss::application::MaterialSpec;
@@ -381,11 +374,10 @@ TEST_F(InspectorControllerTest,
 
     QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
 
-    ctrl->onMemberPropertiesChangeRequested(targetId, MaterialSpec{200e9, "Steel"},
-                                            SectionSpec{0.001, "Custom"});
-    ctrl->onMemberPropertiesChangeRequested(targetId, MaterialSpec{69e9, "Aluminum"},
-                                            SectionSpec{0.002, "Custom"});
+    ctrl->onMemberPropertiesChangeRequested(
+        targetId, MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "Custom"});
+    ctrl->onMemberPropertiesChangeRequested(
+        targetId, MaterialSpec{69e9, "Aluminum"}, SectionSpec{0.002, "Custom"});
 
     EXPECT_EQ(spyMod.count(), 2);
 }
-

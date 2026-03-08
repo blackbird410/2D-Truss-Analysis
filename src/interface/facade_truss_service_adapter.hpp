@@ -82,15 +82,13 @@ public:
     application::Result<bool> clearNodeLoad(application::TrussHandle handle,
                                             core::NodeId nodeId) override;
 
-    application::Result<bool>
-    updateNode(application::TrussHandle handle,
-               core::NodeId nodeId,
-               const application::NodeUpdateSpec& update) override;
+    application::Result<bool> updateNode(application::TrussHandle handle,
+                                         core::NodeId nodeId,
+                                         const application::NodeUpdateSpec& update) override;
 
-    application::Result<bool>
-    updateMember(application::TrussHandle handle,
-                 core::MemberId memberId,
-                 const application::MemberUpdateSpec& update) override;
+    application::Result<bool> updateMember(application::TrussHandle handle,
+                                           core::MemberId memberId,
+                                           const application::MemberUpdateSpec& update) override;
 
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;

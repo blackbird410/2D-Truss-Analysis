@@ -68,7 +68,7 @@ protected:
 
         // Three members — all three sides of the triangle
         const MaterialSpec mat{200e9, "Steel"};
-        const SectionSpec  sec{0.001, "Circular"};
+        const SectionSpec sec{0.001, "Circular"};
 
         auto rm1 = service.addMember(handle, n1, n3, mat, sec);  // left leg
         ASSERT_TRUE(rm1.success);
@@ -88,8 +88,7 @@ protected:
 // updateNode — basic correctness
 // ============================================================================
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateNode_ValidHandle_ChangesCoordinatesSuccessfully) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateNode_ValidHandle_ChangesCoordinatesSuccessfully) {
     NodeUpdateSpec spec{10.0, 5.0};
     auto result = service.updateNode(handle, n1, spec);
 
@@ -97,8 +96,7 @@ TEST_F(TrussApplicationServiceUpdateTest,
     EXPECT_TRUE(result.value);
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateNode_ValidHandle_NewPositionReflectedInView) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateNode_ValidHandle_NewPositionReflectedInView) {
     NodeUpdateSpec spec{10.0, 5.0};
     ASSERT_TRUE(service.updateNode(handle, n1, spec).success);
 
@@ -115,8 +113,7 @@ TEST_F(TrussApplicationServiceUpdateTest,
     EXPECT_TRUE(found) << "Node not found in view after update";
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateNode_ValidHandle_PreservesNodeId) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateNode_ValidHandle_PreservesNodeId) {
     // The node ID must be identical before and after the update.
     const NodeId idBefore = n1;
     ASSERT_TRUE(service.updateNode(handle, n1, NodeUpdateSpec{7.0, 7.0}).success);
@@ -132,8 +129,7 @@ TEST_F(TrussApplicationServiceUpdateTest,
     EXPECT_TRUE(found) << "Node ID changed after updateNode — identity not preserved";
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateNode_ValidHandle_MemberLengthUpdatesAfterNodeMove) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateNode_ValidHandle_MemberLengthUpdatesAfterNodeMove) {
     // Move n3 from (2,3) straight above n1 at (0,6). m1 (n1→n3) new length = 6.0.
     ASSERT_TRUE(service.updateNode(handle, n3, NodeUpdateSpec{0.0, 6.0}).success);
 
@@ -147,8 +143,7 @@ TEST_F(TrussApplicationServiceUpdateTest,
     FAIL() << "Member m1 not found in view";
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateNode_MultipleConsecutiveUpdates_NodeIdUnchanged) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateNode_MultipleConsecutiveUpdates_NodeIdUnchanged) {
     const NodeId originalId = n2;
 
     ASSERT_TRUE(service.updateNode(handle, n2, NodeUpdateSpec{1.0, 0.0}).success);
@@ -159,7 +154,10 @@ TEST_F(TrussApplicationServiceUpdateTest,
     const auto& view = service.getTrussView(handle);
     bool found = false;
     for (const auto& nodeView : view.getNodeViews())
-        if (nodeView.id == originalId) { found = true; break; }
+        if (nodeView.id == originalId) {
+            found = true;
+            break;
+        }
     EXPECT_TRUE(found) << "Node ID drifted across consecutive updateNode calls";
 }
 
@@ -167,15 +165,13 @@ TEST_F(TrussApplicationServiceUpdateTest,
 // updateNode — failure paths
 // ============================================================================
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateNode_InvalidHandle_ReturnsFailure) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateNode_InvalidHandle_ReturnsFailure) {
     constexpr TrussHandle badHandle = 99999;
     auto result = service.updateNode(badHandle, n1, NodeUpdateSpec{1.0, 1.0});
     EXPECT_FALSE(result.success);
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateNode_NonExistentNodeId_ReturnsFailure) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateNode_NonExistentNodeId_ReturnsFailure) {
     const NodeId nonExistent{99999};
     auto result = service.updateNode(handle, nonExistent, NodeUpdateSpec{0.0, 0.0});
     EXPECT_FALSE(result.success);
@@ -185,8 +181,7 @@ TEST_F(TrussApplicationServiceUpdateTest,
 // updateMember — basic correctness
 // ============================================================================
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateMember_ValidHandle_ReturnsSuccess) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateMember_ValidHandle_ReturnsSuccess) {
     MemberUpdateSpec spec{MaterialSpec{69e9, "Aluminum"}, SectionSpec{0.005, "Box"}};
     auto result = service.updateMember(handle, m1, spec);
 
@@ -194,8 +189,7 @@ TEST_F(TrussApplicationServiceUpdateTest,
     EXPECT_TRUE(result.value);
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateMember_ValidHandle_NewMaterialReflectedInView) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateMember_ValidHandle_NewMaterialReflectedInView) {
     const double newE = 70e9;
     MemberUpdateSpec spec{MaterialSpec{newE, "Aluminum"}, SectionSpec{0.002, "Custom"}};
     ASSERT_TRUE(service.updateMember(handle, m1, spec).success);
@@ -210,21 +204,25 @@ TEST_F(TrussApplicationServiceUpdateTest,
     FAIL() << "Member m1 not found in view after updateMember";
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateMember_ValidHandle_PreservesMemberId) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateMember_ValidHandle_PreservesMemberId) {
     const MemberId idBefore = m1;
-    ASSERT_TRUE(service.updateMember(handle, m1,
-        MemberUpdateSpec{MaterialSpec{69e9, "Al"}, SectionSpec{0.003, "Rect"}}).success);
+    ASSERT_TRUE(
+        service
+            .updateMember(
+                handle, m1, MemberUpdateSpec{MaterialSpec{69e9, "Al"}, SectionSpec{0.003, "Rect"}})
+            .success);
 
     const auto& view = service.getTrussView(handle);
     bool found = false;
     for (const auto& mv : view.getMemberViews())
-        if (mv.id == idBefore) { found = true; break; }
+        if (mv.id == idBefore) {
+            found = true;
+            break;
+        }
     EXPECT_TRUE(found) << "Member ID changed after updateMember — identity not preserved";
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateMember_ValidHandle_PreservesNodeConnectivity) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateMember_ValidHandle_PreservesNodeConnectivity) {
     // After updating m1, its start and end node IDs must be unchanged.
     NodeId startBefore{0}, endBefore{0};
     {
@@ -232,42 +230,59 @@ TEST_F(TrussApplicationServiceUpdateTest,
         for (const auto& mv : view.getMemberViews()) {
             if (mv.id == m1) {
                 startBefore = mv.startNodeId;
-                endBefore   = mv.endNodeId;
+                endBefore = mv.endNodeId;
                 break;
             }
         }
     }
     ASSERT_NE(startBefore, NodeId{0});
 
-    ASSERT_TRUE(service.updateMember(handle, m1,
-        MemberUpdateSpec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.002, "Custom"}}).success);
+    ASSERT_TRUE(service
+                    .updateMember(handle,
+                                  m1,
+                                  MemberUpdateSpec{MaterialSpec{200e9, "Steel"},
+                                                   SectionSpec{0.002, "Custom"}})
+                    .success);
 
     const auto& view = service.getTrussView(handle);
     for (const auto& mv : view.getMemberViews()) {
         if (mv.id == m1) {
             EXPECT_EQ(mv.startNodeId, startBefore);
-            EXPECT_EQ(mv.endNodeId,   endBefore);
+            EXPECT_EQ(mv.endNodeId, endBefore);
             return;
         }
     }
     FAIL() << "Member m1 not found in view after update";
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateMember_MultipleUpdates_MemberIdNeverChanges) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateMember_MultipleUpdates_MemberIdNeverChanges) {
     const MemberId originalId = m2;
 
-    ASSERT_TRUE(service.updateMember(handle, m2,
-        MemberUpdateSpec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "A"}}).success);
-    ASSERT_TRUE(service.updateMember(handle, m2,
-        MemberUpdateSpec{MaterialSpec{69e9,  "Aluminum"}, SectionSpec{0.002, "B"}}).success);
-    ASSERT_TRUE(service.updateMember(handle, m2,
-        MemberUpdateSpec{MaterialSpec{110e9, "Titanium"}, SectionSpec{0.003, "C"}}).success);
+    ASSERT_TRUE(
+        service
+            .updateMember(
+                handle, m2, MemberUpdateSpec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "A"}})
+            .success);
+    ASSERT_TRUE(
+        service
+            .updateMember(handle,
+                          m2,
+                          MemberUpdateSpec{MaterialSpec{69e9, "Aluminum"}, SectionSpec{0.002, "B"}})
+            .success);
+    ASSERT_TRUE(service
+                    .updateMember(
+                        handle,
+                        m2,
+                        MemberUpdateSpec{MaterialSpec{110e9, "Titanium"}, SectionSpec{0.003, "C"}})
+                    .success);
 
     const auto& view = service.getTrussView(handle);
     bool found = false;
     for (const auto& mv : view.getMemberViews())
-        if (mv.id == originalId) { found = true; break; }
+        if (mv.id == originalId) {
+            found = true;
+            break;
+        }
     EXPECT_TRUE(found) << "Member ID drifted across consecutive updateMember calls";
 }
 
@@ -275,18 +290,18 @@ TEST_F(TrussApplicationServiceUpdateTest,
 // updateMember — failure paths
 // ============================================================================
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateMember_InvalidHandle_ReturnsFailure) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateMember_InvalidHandle_ReturnsFailure) {
     constexpr TrussHandle badHandle = 99999;
-    auto result = service.updateMember(badHandle, m1,
-        MemberUpdateSpec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "A"}});
+    auto result = service.updateMember(
+        badHandle, m1, MemberUpdateSpec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "A"}});
     EXPECT_FALSE(result.success);
 }
 
-TEST_F(TrussApplicationServiceUpdateTest,
-       UpdateMember_NonExistentMemberId_ReturnsFailure) {
+TEST_F(TrussApplicationServiceUpdateTest, UpdateMember_NonExistentMemberId_ReturnsFailure) {
     const MemberId nonExistent{99999};
-    auto result = service.updateMember(handle, nonExistent,
+    auto result = service.updateMember(
+        handle,
+        nonExistent,
         MemberUpdateSpec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "A"}});
     EXPECT_FALSE(result.success);
 }

@@ -90,8 +90,7 @@ void InspectorController::onLoadChangeRequested(NodeId nodeId, Force2D load) {
     }
 }
 
-void InspectorController::onNodePositionChangeRequested(NodeId nodeId,
-                                                        truss::core::Point2D pos) {
+void InspectorController::onNodePositionChangeRequested(NodeId nodeId, truss::core::Point2D pos) {
     if (m_trussHandle == 0) {
         emit operationFailed(QStringLiteral("No active truss."));
         return;

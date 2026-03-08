@@ -96,9 +96,8 @@ void InspectorPanel::buildNodeEditorPage() {
     // ---- Apply Position button ----
     m_applyPositionBtn = new QPushButton{QStringLiteral("Apply Position"), identityBox};
     m_applyPositionBtn->setObjectName(QStringLiteral("inspector_applyPositionBtn"));
-    m_applyPositionBtn->setToolTip(
-        QStringLiteral("Move node to the specified coordinates.\n"
-                       "Re-run analysis to obtain updated results."));
+    m_applyPositionBtn->setToolTip(QStringLiteral("Move node to the specified coordinates.\n"
+                                                  "Re-run analysis to obtain updated results."));
     identityLayout->addRow(QString{}, m_applyPositionBtn);
 
     vbox->addWidget(identityBox);
@@ -154,10 +153,8 @@ void InspectorPanel::buildNodeEditorPage() {
     QWidget::setTabOrder(m_fySpin, m_applyLoadBtn);
 
     // ---- Connections ----
-    connect(m_applyPositionBtn,
-            &QPushButton::clicked,
-            this,
-            &InspectorPanel::onApplyPositionClicked);
+    connect(
+        m_applyPositionBtn, &QPushButton::clicked, this, &InspectorPanel::onApplyPositionClicked);
     connect(m_supportCombo,
             &QComboBox::currentIndexChanged,
             this,
@@ -266,9 +263,8 @@ void InspectorPanel::ensureMemberEditorInteractive() {
     m_applyMemberBtn = new QPushButton{QStringLiteral("Apply Changes"),
                                        m_memberFormBox->parentWidget()};
     m_applyMemberBtn->setObjectName(QStringLiteral("inspector_applyMemberBtn"));
-    m_applyMemberBtn->setToolTip(
-        QStringLiteral("Update member material and cross-section area.\n"
-                       "Re-run analysis to see updated results."));
+    m_applyMemberBtn->setToolTip(QStringLiteral("Update member material and cross-section area.\n"
+                                                "Re-run analysis to see updated results."));
     m_memberBtnLayout->addWidget(m_applyMemberBtn);
 
     // ---- Tab order ----
@@ -416,8 +412,7 @@ void InspectorPanel::onStateChanged(const truss::gui::state::WorkspaceState& sta
 
 void InspectorPanel::onApplyPositionClicked() {
     emit nodePositionChangeRequested(
-        m_selectedNodeId,
-        truss::core::Point2D{m_nodeXSpin->value(), m_nodeYSpin->value()});
+        m_selectedNodeId, truss::core::Point2D{m_nodeXSpin->value(), m_nodeYSpin->value()});
 }
 
 void InspectorPanel::onApplyLoadClicked() {

@@ -152,8 +152,8 @@ private:
 
     // Node editor widgets
     QLabel* m_nodeIdLabel{nullptr};
-    QDoubleSpinBox* m_nodeXSpin{nullptr};   ///< X coordinate (editable)
-    QDoubleSpinBox* m_nodeYSpin{nullptr};   ///< Y coordinate (editable)
+    QDoubleSpinBox* m_nodeXSpin{nullptr};      ///< X coordinate (editable)
+    QDoubleSpinBox* m_nodeYSpin{nullptr};      ///< Y coordinate (editable)
     QPushButton* m_applyPositionBtn{nullptr};  ///< Commit coordinate changes
     QComboBox* m_supportCombo{nullptr};
     QDoubleSpinBox* m_fxSpin{nullptr};

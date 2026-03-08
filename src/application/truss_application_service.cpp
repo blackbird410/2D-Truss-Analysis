@@ -384,18 +384,16 @@ Result<bool> TrussApplicationService::updateMember(TrussHandle handle,
         // Convert Application DTOs to Domain types (same mapping as addMember).
         MaterialProperties material{
             update.material.youngsModulusPa,
-            7850.0,                                           // density (steel default)
-            update.material.youngsModulusPa * 0.00125,        // yield strength estimate
-            update.material.youngsModulusPa * 0.002,          // ultimate strength estimate
-            update.material.name
-        };
+            7850.0,                                     // density (steel default)
+            update.material.youngsModulusPa * 0.00125,  // yield strength estimate
+            update.material.youngsModulusPa * 0.002,    // ultimate strength estimate
+            update.material.name};
 
-        SectionProperties section{
-            update.section.areaM2,
-            update.section.areaM2 * update.section.areaM2 / 12.0,  // Ix estimate
-            update.section.areaM2,
-            update.section.profile
-        };
+        SectionProperties section{update.section.areaM2,
+                                  update.section.areaM2 * update.section.areaM2 /
+                                      12.0,  // Ix estimate
+                                  update.section.areaM2,
+                                  update.section.profile};
 
         auto& truss = *m_trusses[handle];
         const bool updated = truss.updateMember(memberId, material, section);
