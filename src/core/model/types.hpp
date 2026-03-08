@@ -103,9 +103,9 @@ struct MaterialProperties {
     std::string name{"Steel"};     ///< Material name
 
     MaterialProperties() = default;
-    MaterialProperties(Real E, Real rho, Real fy, Real fu, const std::string& materialName)
+    MaterialProperties(Real E, Real rho, Real fy, Real fu, std::string materialName)
         : youngModulus(E), density(rho), yieldStrength(fy), ultimateStrength(fu),
-          name(materialName) {}
+          name(std::move(materialName)) {}
 };
 
 /**
@@ -118,8 +118,8 @@ struct SectionProperties {
     std::string designation{"Default"};  ///< Section designation
 
     SectionProperties() = default;
-    SectionProperties(Real A, Real I, Real As, const std::string& desig)
-        : area(A), momentOfInertia(I), shearArea(As), designation(desig) {}
+    SectionProperties(Real A, Real I, Real As, std::string desig)
+        : area(A), momentOfInertia(I), shearArea(As), designation(std::move(desig)) {}
 };
 
 /**
