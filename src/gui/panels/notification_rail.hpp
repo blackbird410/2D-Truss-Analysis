@@ -23,10 +23,10 @@ namespace truss::gui {
  * @brief Severity level of a notification banner.
  */
 enum class NotificationSeverity : std::uint8_t {
-    Info    = 0, ///< Informational (blue accent)
-    Success = 1, ///< Operation succeeded (green)
-    Warning = 2, ///< Non-critical warning (amber)
-    Error   = 3, ///< Error — never auto-dismissed (red)
+    Info = 0,     ///< Informational (blue accent)
+    Success = 1,  ///< Operation succeeded (green)
+    Warning = 2,  ///< Non-critical warning (amber)
+    Error = 3,    ///< Error — never auto-dismissed (red)
 };
 
 /**
@@ -51,17 +51,17 @@ public:
     explicit NotificationRail(QWidget* parent = nullptr);
     ~NotificationRail() override;
 
-    NotificationRail(const NotificationRail&)            = delete;
+    NotificationRail(const NotificationRail&) = delete;
     NotificationRail& operator=(const NotificationRail&) = delete;
 
     /// Maximum number of banners displayed simultaneously.
-    static constexpr int kMaxItems       = 3;
+    static constexpr int kMaxItems = 3;
     /// Slide-in animation duration in milliseconds.
     static constexpr int kAnimDurationMs = 150;
     /// Auto-dismiss delay (ms) for Info / Success / Warning.
-    static constexpr int kAutoDismissMs  = 4000;
+    static constexpr int kAutoDismissMs = 4000;
     /// Fixed height of a single notification item in pixels.
-    static constexpr int kItemHeight     = 52;
+    static constexpr int kItemHeight = 52;
 
     /// Return the number of active notification items currently displayed.
     [[nodiscard]] int activeCount() const noexcept;
@@ -89,8 +89,8 @@ private:
     void addNotification(NotificationSeverity severity, const QString& message);
     void removeItem(QWidget* item);
 
-    QVBoxLayout*             m_layout{nullptr};
+    QVBoxLayout* m_layout{nullptr};
     QList<QPointer<QWidget>> m_items;
 };
 
-} // namespace truss::gui
+}  // namespace truss::gui

@@ -1,11 +1,11 @@
 /**
  * @file main_window.hpp
- * @brief New MainWindow with full Phase 6 signal/slot wiring.
+ * @brief MainWindow — top-level application window with full signal/slot wiring.
  *
- * Phase 4: QMainWindow skeleton — QSplitter (65/35), bottom QDockWidget,
- *          menu bar stubs, toolbar stubs, status bar, MainWindowController.
- * Phase 5: InspectorPanel / AnalysisControlBar / ResultsDockPanel replace placeholders.
- * Phase 6: Full signal/slot wiring; closeEvent dirty-state guard; toolbar wiring.
+ * QMainWindow with QSplitter (65/35), bottom QDockWidget, menu bar,
+ * toolbar, InspectorPanel, AnalysisControlBar, ResultsDockPanel, and
+ * NotificationRail.  All actions, keyboard shortcuts, and dirty-state
+ * guards are wired through MainWindowController.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -18,22 +18,26 @@
 #include "gui/state/workspace_state.hpp"
 #include "truss/export/export_format.hpp"
 
+#include <QAbstractSpinBox>
 #include <QAction>
 #include <QDockWidget>
 #include <QLabel>
+#include <QLineEdit>
 #include <QMainWindow>
 #include <QSplitter>
 #include <QToolBar>
 
 #include <memory>
 
-namespace truss::interface { class ITrussAnalysisFacade; }
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
 namespace truss::gui {
 class TrussCanvasWidget;
 class InspectorPanel;
 class AnalysisControlBar;
 class ResultsDockPanel;
-}
+}  // namespace truss::gui
 
 namespace truss::gui {
 
@@ -62,12 +66,57 @@ class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    explicit MainWindow(truss::interface::ITrussAnalysisFacade& facade,
-                          QWidget* parent = nullptr);
-    ~MainWindow() override = default;
+    explicit MainWindow(truss::interface::ITrussAnalysisFacade& facade, QWidget* parent = nullptr);
+
+    /**
+     * @brief Destructor removes the application-level event filter.
+     *
+     * The event filter installed on @c qApp in the constructor must be
+     * explicitly removed before the MainWindow is destroyed to prevent a
+     * dangling-pointer dereference if any key event arrives during teardown.
+     */
+    ~MainWindow() override;
 
 protected:
     void closeEvent(QCloseEvent* event) override;
+
+    /**
+     * @brief Application-level event filter for centralised shortcut dispatch.
+     *
+     * Intercepts @c QEvent::KeyPress events for all shortcuts that cannot be
+     * reliably handled via @c QAction::setShortcut() when a child widget
+     * (e.g. @c QTableView, @c QDoubleSpinBox) holds focus and Qt may mark
+     * the shortcut as "ambiguous" in its internal @c QShortcutMap.
+     *
+     * Shortcut table:
+     *
+     *  Key      | Modifier | Action
+     *  ---------|----------|---------------------------------
+     *  N        | —        | Activate Add Node mode
+     *  M        | —        | Activate Add Member mode
+     *  Esc      | —        | Activate Select mode
+     *  Z        | —        | Zoom canvas to fit all geometry
+     *  Delete   | —        | Delete currently selected entity
+     *  Ctrl+N   | Ctrl/⌘   | New Project
+     *  Ctrl+O   | Ctrl/⌘   | Open Project
+     *  Ctrl+S   | Ctrl/⌘   | Save Project
+     *
+     * Bare single-key shortcuts (N/M/Esc/Z/Delete) are suppressed when a
+     * text-editing widget (@c QLineEdit, @c QAbstractSpinBox, @c QTextEdit,
+     * @c QPlainTextEdit) holds focus so they do not interfere with property
+     * value editing in the Inspector Panel.
+     *
+     * Function-key shortcut F5 (Run Analysis) remains on @c QAction::setShortcut()
+     * exclusively; it is unambiguous and always reliable.
+     *
+     * Returning @c true consumes the event, preventing @c QShortcutMap from
+     * seeing it and avoiding double-firing even though @c m_actNew / @c m_actOpen
+     * / @c m_actSave still carry @c setShortcut() calls for menu-hint display.
+     *
+     * @return @c true if the event was consumed (shortcut fired),
+     *         @c false to let the event continue normal processing.
+     */
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private slots:
     /// React to workspace state transitions from the controller.
@@ -95,12 +144,12 @@ private:
     // -------------------------------------------------------------------
     // Owned widgets
     // -------------------------------------------------------------------
-    TrussCanvasWidget*   m_canvas{nullptr};
-    InspectorPanel*      m_inspectorPanel{nullptr};
-    AnalysisControlBar*  m_analysisBar{nullptr};
-    ResultsDockPanel*    m_resultsDockPanel{nullptr};
-    QDockWidget*         m_resultsDock{nullptr};
-    QSplitter*           m_centralSplitter{nullptr};
+    TrussCanvasWidget* m_canvas{nullptr};
+    InspectorPanel* m_inspectorPanel{nullptr};
+    AnalysisControlBar* m_analysisBar{nullptr};
+    ResultsDockPanel* m_resultsDockPanel{nullptr};
+    QDockWidget* m_resultsDock{nullptr};
+    QSplitter* m_centralSplitter{nullptr};
 
     // Status bar labels
     QLabel* m_phaseLabel{nullptr};
@@ -126,10 +175,26 @@ private:
     QAction* m_actRun{nullptr};
     QAction* m_actStop{nullptr};
 
+    // Canvas utility QActions
+    QAction* m_actZoomFit{nullptr};
+
     // Display mode toolbar QActions (exclusive checkable)
     QAction* m_actModeGeometry{nullptr};
     QAction* m_actModeStress{nullptr};
     QAction* m_actModeDeformed{nullptr};
+
+    // -------------------------------------------------------------------
+    // Keyboard routing helpers
+    // -------------------------------------------------------------------
+
+    /**
+     * @brief Return @c true when a text-editing widget currently holds focus.
+     *
+     * Used by @c eventFilter() to decide whether single-character shortcut
+     * keys (N, M, Z, Esc, Delete) should be suppressed so that the focused
+     * widget can use them for normal text editing.
+     */
+    [[nodiscard]] bool isTextInputFocused() const;
 
     // -------------------------------------------------------------------
     // Controller

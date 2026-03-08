@@ -27,16 +27,16 @@ namespace truss::core::interfaces {
  * the full Node class interface to Infrastructure.
  */
 struct NodeView {
-    NodeId id;
-    Real x;
-    Real y;
-    SupportType support;
-    Real fx{0.0};  ///< Applied force X-component
-    Real fy{0.0};  ///< Applied force Y-component
-    Real dx{0.0};  ///< Displacement X-component (from analysis results)
-    Real dy{0.0};  ///< Displacement Y-component (from analysis results)
-    Real rx{0.0};  ///< Reaction force X-component (from analysis results)
-    Real ry{0.0};  ///< Reaction force Y-component (from analysis results)
+    NodeId id;            ///< Unique node identifier
+    Real x;               ///< World-space X coordinate (metres, X+ rightward)
+    Real y;               ///< World-space Y coordinate (metres, Y+ upward)
+    SupportType support;  ///< Boundary-condition type (Free / Pinned / RollerX / RollerY)
+    Real fx{0.0};         ///< Applied force X-component (N)
+    Real fy{0.0};         ///< Applied force Y-component (N)
+    Real dx{0.0};         ///< Displacement X-component (metres, from analysis results)
+    Real dy{0.0};         ///< Displacement Y-component (metres, from analysis results)
+    Real rx{0.0};  ///< Reaction force X-component (N, from analysis results; positive = rightward)
+    Real ry{0.0};  ///< Reaction force Y-component (N, from analysis results; positive = upward)
 };
 
 /**
@@ -46,22 +46,22 @@ struct NodeView {
  * the full Member class interface to Infrastructure.
  */
 struct MemberView {
-    MemberId id;
-    NodeId startNodeId;
-    NodeId endNodeId;
-    std::string label;
+    MemberId id;         ///< Unique member identifier
+    NodeId startNodeId;  ///< ID of the member's start node
+    NodeId endNodeId;    ///< ID of the member's end node
+    std::string label;   ///< Optional display label
 
     // Material properties
-    Real youngModulus;
-    Real yieldStrength;
-    Real density;
+    Real youngModulus;   ///< Young's modulus E (Pa)
+    Real yieldStrength;  ///< Yield strength f_y (Pa)
+    Real density;        ///< Mass density ρ (kg/m³)
 
     // Section properties
-    Real area;
+    Real area;  ///< Cross-sectional area A (m²)
 
     // Geometric properties (computed)
-    Real length;
-    Real angle;  ///< Angle in radians
+    Real length;  ///< Member length L (metres)
+    Real angle;   ///< Angle with respect to global X-axis (radians)
 
     // Analysis results
     Real axialForce{0.0};
@@ -86,20 +86,68 @@ class ITrussView {
 public:
     virtual ~ITrussView() = default;
 
+    // ================================================================
     // Basic properties
+    // ================================================================
+
+    /**
+     * @brief Display name of the truss model.
+     * @return Reference to the truss name string (valid for the lifetime of the object).
+     */
     virtual const std::string& getName() const = 0;
 
+    // ================================================================
     // Node access
+    // ================================================================
+
+    /**
+     * @brief Snapshot of all node data for read-only consumption.
+     * @return Vector of NodeView structs, one per node, in insertion order.
+     */
     virtual std::vector<NodeView> getNodeViews() const = 0;
+
+    /**
+     * @brief Number of nodes currently in the truss.
+     * @return Node count.
+     */
     virtual size_t getNodeCount() const = 0;
 
+    // ================================================================
     // Member access
+    // ================================================================
+
+    /**
+     * @brief Snapshot of all member data for read-only consumption.
+     * @return Vector of MemberView structs, one per member, in insertion order.
+     */
     virtual std::vector<MemberView> getMemberViews() const = 0;
+
+    /**
+     * @brief Number of members currently in the truss.
+     * @return Member count.
+     */
     virtual size_t getMemberCount() const = 0;
 
-    // System properties
+    // ================================================================
+    // System DOF properties
+    // ================================================================
+
+    /**
+     * @brief Total number of degrees of freedom (2 per node).
+     * @return 2 × node count.
+     */
     virtual size_t getTotalDofs() const = 0;
+
+    /**
+     * @brief Number of unconstrained (free) degrees of freedom.
+     * @return Total DOFs minus constrained DOFs.
+     */
     virtual size_t getFreeDofs() const = 0;
+
+    /**
+     * @brief Number of constrained degrees of freedom (DOFs eliminated by supports).
+     * @return Count of constrained DOFs.
+     */
     virtual size_t getConstrainedDofs() const = 0;
 };
 

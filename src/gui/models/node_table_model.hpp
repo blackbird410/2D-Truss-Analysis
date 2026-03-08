@@ -53,24 +53,25 @@ public:
     // -----------------------------------------------------------------------
     [[nodiscard]] int rowCount(const QModelIndex& parent = {}) const override;
     [[nodiscard]] int columnCount(const QModelIndex& parent = {}) const override;
-    [[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-    [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
-                                      int role = Qt::DisplayRole) const override;
+    [[nodiscard]] QVariant data(const QModelIndex& index,
+                                int role = Qt::DisplayRole) const override;
+    [[nodiscard]] QVariant
+    headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     /// Total number of columns in this model.
     static constexpr int kColumnCount = 10;
 
     // Column index constants
-    static constexpr int kColId      = 0;
-    static constexpr int kColX       = 1;
-    static constexpr int kColY       = 2;
+    static constexpr int kColId = 0;
+    static constexpr int kColX = 1;
+    static constexpr int kColY = 2;
     static constexpr int kColSupport = 3;
-    static constexpr int kColFx      = 4;
-    static constexpr int kColFy      = 5;
-    static constexpr int kColDx      = 6;  ///< Results-only
-    static constexpr int kColDy      = 7;  ///< Results-only
-    static constexpr int kColRx      = 8;  ///< Results-only
-    static constexpr int kColRy      = 9;  ///< Results-only
+    static constexpr int kColFx = 4;
+    static constexpr int kColFy = 5;
+    static constexpr int kColDx = 6;  ///< Results-only
+    static constexpr int kColDy = 7;  ///< Results-only
+    static constexpr int kColRx = 8;  ///< Results-only
+    static constexpr int kColRy = 9;  ///< Results-only
 
 public Q_SLOTS:
     /**
@@ -87,13 +88,13 @@ public Q_SLOTS:
 
 private:
     [[nodiscard]] QString formatSupport(truss::core::SupportType s) const;
-    [[nodiscard]] bool    isLoaded(const NodeView& n) const;
+    [[nodiscard]] bool isLoaded(const NodeView& n) const;
 
     std::vector<NodeView> m_rows;
-    bool                  m_hasResults{false};
+    bool m_hasResults{false};
 
     // Colours
-    static const QColor kLoadedBg;   ///< Amber tint for loaded-node rows
+    static const QColor kLoadedBg;  ///< Amber tint for loaded-node rows
 };
 
-} // namespace truss::gui::model
+}  // namespace truss::gui::model

@@ -37,9 +37,9 @@ class ProjectController : public QObject {
     Q_OBJECT
 
 public:
-    explicit ProjectController(truss::interface::ITrussAnalysisFacade&         facade,
-                                truss::gui::interfaces::IConfirmationProvider&  confirmProvider,
-                                QObject*                                         parent = nullptr);
+    explicit ProjectController(truss::interface::ITrussAnalysisFacade& facade,
+                               truss::gui::interfaces::IConfirmationProvider& confirmProvider,
+                               QObject* parent = nullptr);
 
     /// @brief Update dirty state (true = model has unsaved changes).
     void setDirty(bool dirty) noexcept;
@@ -59,11 +59,11 @@ signals:
     void operationFailed(const QString& errorMessage);
 
 private:
-    truss::interface::ITrussAnalysisFacade&        m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;
     truss::gui::interfaces::IConfirmationProvider& m_confirm;
-    std::size_t                                     m_trussHandle{0};
-    QString                                         m_currentFilePath;
-    bool                                            m_isDirty{false};
+    std::size_t m_trussHandle{0};
+    QString m_currentFilePath;
+    bool m_isDirty{false};
 };
 
 }  // namespace truss::gui::ctrl

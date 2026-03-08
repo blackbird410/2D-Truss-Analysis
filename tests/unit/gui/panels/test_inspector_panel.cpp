@@ -15,10 +15,9 @@
  * @date 2026-03-04
  */
 
-#include "gui/panels/inspector_panel.hpp"
-
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
+#include "gui/panels/inspector_panel.hpp"
 #include "gui/state/workspace_state.hpp"
 
 #include <QApplication>
@@ -45,37 +44,46 @@ using truss::gui::state::WorkspaceState;
 // ============================================================
 
 namespace {
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
+            return e;
         return new QApplication(s_argc, s_argv);
     }();
     return *s_app;
 }
 
-NodeView makeNode(NodeId id = NodeId{1}, double x = 0.0, double y = 0.0,
-                  SupportType sup = SupportType::Free)
-{
+NodeView makeNode(NodeId id = NodeId{1},
+                  double x = 0.0,
+                  double y = 0.0,
+                  SupportType sup = SupportType::Free) {
     NodeView n;
-    n.id = id; n.x = x; n.y = y;
+    n.id = id;
+    n.x = x;
+    n.y = y;
     n.support = sup;
-    n.fx = 0.0; n.fy = 0.0;
+    n.fx = 0.0;
+    n.fy = 0.0;
     return n;
 }
 
-MemberView makeMember(int id = 1)
-{
+MemberView makeMember(int id = 1) {
     MemberView m;
-    m.id = id; m.startNodeId = 1; m.endNodeId = 2;
-    m.youngModulus = 200e9; m.area = 0.001;
-    m.length = 3.0; m.angle = 0.0;
-    m.axialForce = 1000.0; m.axialStress = 1e6;
+    m.id = id;
+    m.startNodeId = 1;
+    m.endNodeId = 2;
+    m.youngModulus = 200e9;
+    m.area = 0.001;
+    m.length = 3.0;
+    m.angle = 0.0;
+    m.axialForce = 1000.0;
+    m.axialStress = 1e6;
     m.utilizationRatio = 0.1;
-    m.inTension = true; m.yielded = false;
+    m.inTension = true;
+    m.yielded = false;
     return m;
 }
 }  // namespace
@@ -86,8 +94,7 @@ MemberView makeMember(int id = 1)
 
 class InspectorPanelTest : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         panel = std::make_unique<InspectorPanel>();
     }
@@ -100,25 +107,21 @@ protected:
 // Page switching
 // ============================================================
 
-TEST_F(InspectorPanelTest, DefaultPage_IsNoSelection)
-{
+TEST_F(InspectorPanelTest, DefaultPage_IsNoSelection) {
     EXPECT_EQ(panel->currentIndex(), InspectorPanel::kPageNoSelection);
 }
 
-TEST_F(InspectorPanelTest, ShowNodeEditor_SwitchesToPage1)
-{
+TEST_F(InspectorPanelTest, ShowNodeEditor_SwitchesToPage1) {
     panel->showNodeEditor(makeNode());
     EXPECT_EQ(panel->currentIndex(), InspectorPanel::kPageNodeEditor);
 }
 
-TEST_F(InspectorPanelTest, ShowMemberEditor_SwitchesToPage2)
-{
+TEST_F(InspectorPanelTest, ShowMemberEditor_SwitchesToPage2) {
     panel->showMemberEditor(makeMember());
     EXPECT_EQ(panel->currentIndex(), InspectorPanel::kPageMemberEditor);
 }
 
-TEST_F(InspectorPanelTest, ShowNoSelection_SwitchesBackToPage0)
-{
+TEST_F(InspectorPanelTest, ShowNoSelection_SwitchesBackToPage0) {
     panel->showNodeEditor(makeNode());
     panel->showNoSelection();
     EXPECT_EQ(panel->currentIndex(), InspectorPanel::kPageNoSelection);
@@ -128,8 +131,7 @@ TEST_F(InspectorPanelTest, ShowNoSelection_SwitchesBackToPage0)
 // Signal: supportChangeRequested
 // ============================================================
 
-TEST_F(InspectorPanelTest, SupportComboChange_EmitsSupportChangeRequested)
-{
+TEST_F(InspectorPanelTest, SupportComboChange_EmitsSupportChangeRequested) {
     // Populate node editor with a node and switch to that page.
     NodeView n = makeNode(NodeId{5}, 1.0, 2.0, SupportType::Free);
     panel->showNodeEditor(n);
@@ -153,8 +155,7 @@ TEST_F(InspectorPanelTest, SupportComboChange_EmitsSupportChangeRequested)
 // Signal: loadChangeRequested
 // ============================================================
 
-TEST_F(InspectorPanelTest, ApplyLoadButton_EmitsLoadChangeRequested)
-{
+TEST_F(InspectorPanelTest, ApplyLoadButton_EmitsLoadChangeRequested) {
     NodeView n = makeNode(NodeId{3}, 0.0, 0.0, SupportType::Free);
     panel->showNodeEditor(n);
 
@@ -165,8 +166,8 @@ TEST_F(InspectorPanelTest, ApplyLoadButton_EmitsLoadChangeRequested)
 
     QSignalSpy spy{panel.get(), &InspectorPanel::loadChangeRequested};
 
-    auto* btn = panel->findChild<QPushButton*>();
-    ASSERT_NE(btn, nullptr) << "Expected an Apply Load QPushButton on node editor page";
+    auto* btn = panel->findChild<QPushButton*>("inspector_applyLoadBtn");
+    ASSERT_NE(btn, nullptr) << "Expected inspector_applyLoadBtn QPushButton on node editor page";
     QTest::mouseClick(btn, Qt::LeftButton);
     QApplication::processEvents();
 

@@ -1,6 +1,6 @@
 /**
  * @file notification_rail.cpp
- * @brief Non-blocking inline notification widget — Phase 2 full implementation.
+ * @brief Non-blocking inline notification widget.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -29,10 +29,9 @@ class NotificationItem : public QWidget {
 
 public:
     explicit NotificationItem(NotificationSeverity severity,
-                              const QString&        message,
-                              QWidget*              parent = nullptr)
-        : QWidget(parent)
-    {
+                              const QString& message,
+                              QWidget* parent = nullptr)
+        : QWidget(parent) {
         setObjectName(objectNameForSeverity(severity));
         setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
         // Start collapsed; animation expands to kItemHeight.
@@ -66,18 +65,21 @@ Q_SIGNALS:
     void closeRequested();
 
 private:
-    static QString objectNameForSeverity(NotificationSeverity s) noexcept
-    {
+    static QString objectNameForSeverity(NotificationSeverity s) noexcept {
         switch (s) {
-            case NotificationSeverity::Info:    return QStringLiteral("notifItem_info");
-            case NotificationSeverity::Success: return QStringLiteral("notifItem_success");
-            case NotificationSeverity::Warning: return QStringLiteral("notifItem_warning");
-            case NotificationSeverity::Error:   return QStringLiteral("notifItem_error");
+            case NotificationSeverity::Info:
+                return QStringLiteral("notifItem_info");
+            case NotificationSeverity::Success:
+                return QStringLiteral("notifItem_success");
+            case NotificationSeverity::Warning:
+                return QStringLiteral("notifItem_warning");
+            case NotificationSeverity::Error:
+                return QStringLiteral("notifItem_error");
         }
         return QStringLiteral("notifItem_info");
     }
 
-    QLabel*      m_label{nullptr};
+    QLabel* m_label{nullptr};
     QPushButton* m_closeBtn{nullptr};
 };
 
@@ -85,12 +87,10 @@ private:
 // NotificationRail
 // =============================================================================
 
-NotificationRail::NotificationRail(QWidget* parent)
-    : QWidget(parent)
-{
+NotificationRail::NotificationRail(QWidget* parent) : QWidget(parent) {
     setObjectName(QStringLiteral("notificationRail"));
     setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Minimum);
-    setVisible(false); // Hidden when no notifications are active.
+    setVisible(false);  // Hidden when no notifications are active.
 
     m_layout = new QVBoxLayout(this);
     m_layout->setContentsMargins(0, 0, 0, 0);
@@ -103,8 +103,7 @@ NotificationRail::~NotificationRail() = default;
 // Public methods
 // ---------------------------------------------------------------------------
 
-int NotificationRail::activeCount() const noexcept
-{
+int NotificationRail::activeCount() const noexcept {
     int count = 0;
     for (const auto& ptr : m_items) {
         if (ptr) {
@@ -118,28 +117,23 @@ int NotificationRail::activeCount() const noexcept
 // Public slots
 // ---------------------------------------------------------------------------
 
-void NotificationRail::showInfo(const QString& message)
-{
+void NotificationRail::showInfo(const QString& message) {
     addNotification(NotificationSeverity::Info, message);
 }
 
-void NotificationRail::showSuccess(const QString& message)
-{
+void NotificationRail::showSuccess(const QString& message) {
     addNotification(NotificationSeverity::Success, message);
 }
 
-void NotificationRail::showWarning(const QString& message)
-{
+void NotificationRail::showWarning(const QString& message) {
     addNotification(NotificationSeverity::Warning, message);
 }
 
-void NotificationRail::showError(const QString& message)
-{
+void NotificationRail::showError(const QString& message) {
     addNotification(NotificationSeverity::Error, message);
 }
 
-void NotificationRail::clearAll()
-{
+void NotificationRail::clearAll() {
     // Collect raw pointers before modifying m_items.
     QList<QWidget*> toRemove;
     toRemove.reserve(m_items.size());
@@ -160,9 +154,7 @@ void NotificationRail::clearAll()
 // Private helpers
 // ---------------------------------------------------------------------------
 
-void NotificationRail::addNotification(NotificationSeverity severity,
-                                        const QString&        message)
-{
+void NotificationRail::addNotification(NotificationSeverity severity, const QString& message) {
     // Evict the oldest item if already at the limit.
     while (m_items.size() >= kMaxItems) {
         removeItem(m_items.first().data());
@@ -173,14 +165,11 @@ void NotificationRail::addNotification(NotificationSeverity severity,
     m_items.append(QPointer<QWidget>(item));
 
     // Close button → immediate removal.
-    connect(item, &NotificationItem::closeRequested,
-            this, [this, item]() { removeItem(item); });
+    connect(item, &NotificationItem::closeRequested, this, [this, item]() { removeItem(item); });
 
     // Auto-dismiss timer for non-Error severity.
     if (severity != NotificationSeverity::Error) {
-        QTimer::singleShot(kAutoDismissMs, this, [this, item]() {
-            removeItem(item);
-        });
+        QTimer::singleShot(kAutoDismissMs, this, [this, item]() { removeItem(item); });
     }
 
     // Slide-in animation: maximumHeight 0 → kItemHeight over kAnimDurationMs.
@@ -195,16 +184,13 @@ void NotificationRail::addNotification(NotificationSeverity severity,
     setVisible(true);
 }
 
-void NotificationRail::removeItem(QWidget* item)
-{
+void NotificationRail::removeItem(QWidget* item) {
     if (!item) {
         return;
     }
 
     // Remove from tracking list.
-    m_items.removeIf([item](const QPointer<QWidget>& p) {
-        return p.data() == item;
-    });
+    m_items.removeIf([item](const QPointer<QWidget>& p) { return p.data() == item; });
 
     item->deleteLater();
     Q_EMIT notificationDismissed();
@@ -215,7 +201,7 @@ void NotificationRail::removeItem(QWidget* item)
     }
 }
 
-} // namespace truss::gui
+}  // namespace truss::gui
 
 // Required for AUTOMOC to process NotificationItem defined in this .cpp file.
 #include "notification_rail.moc"

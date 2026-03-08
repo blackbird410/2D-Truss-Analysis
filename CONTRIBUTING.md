@@ -222,6 +222,48 @@ build: update CMake configuration for Qt6
    auto engine = std::make_unique<AnalysisEngine>();
    ```
 
+### GUI Architecture (`src/gui/`)
+
+The GUI layer uses a clean Qt MVC architecture. **No domain knowledge or concrete domain classes belong in `src/gui/`** — all interaction travels through `ITrussAnalysisFacade`.
+
+```
+src/gui/
+├── main.cpp                      ← Composition root; constructs facade + MainWindow
+├── main_window.hpp / .cpp        ← Top-level QMainWindow
+├── theme_loader.hpp / .cpp       ← QSettings-persisted QSS theme loader
+├── controllers/                  ← Business logic, all inherit QObject
+│   ├── main_window_controller    ← Owns all sub-controllers + models
+│   ├── canvas_controller         ← Node/member CRUD via facade
+│   ├── analysis_controller       ← Runs analysis, dispatches results
+│   ├── project_controller        ← New/open/save/export file operations
+│   ├── inspector_controller      ← Node/member property editing
+│   └── export_controller         ← CSV/JSON/XML results export
+├── interfaces/
+│   └── iconfirmation_provider.hpp ← Abstracts QMessageBox for unit tests
+├── models/                       ← Qt Item Models (QAbstractTableModel)
+│   ├── node_table_model          ← Backed by ITrussView
+│   ├── member_table_model        ← Backed by ITrussView
+│   ├── results_table_model       ← Backed by IAnalysisResultsView
+│   └── validation_list_model     ← Backed by IValidationView
+├── panels/                       ← Composite sub-widgets
+│   ├── inspector_panel           ← Node/member property form
+│   ├── analysis_control_bar      ← Run + progress bar
+│   ├── results_dock_panel        ← Tab: nodes | members | system summary
+│   ├── analysis_options_dialog   ← Solver tolerance / iteration dialog
+│   └── notification_rail         ← Auto-dismiss inline status messages
+├── state/
+│   └── workspace_state.hpp       ← Plain struct; mutation signals via controller
+└── widgets/
+    └── truss_canvas_widget       ← QPainter 7-step rendering pipeline
+```
+
+**Adding a new controller:**
+
+1. Inherit `QObject`; inject `ITrussAnalysisFacade&` via constructor
+2. Expose `signals:` for state updates; add `public slots:` for user actions
+3. Own it (via `std::unique_ptr`) in `MainWindowController`
+4. Add a corresponding GTest file in `tests/unit/gui/controllers/`
+
 ### CMake Guidelines
 
 1. **Modern CMake** (3.20+)

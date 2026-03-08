@@ -12,6 +12,7 @@
 
 #pragma once
 
+#include "application/truss_edit_dtos.hpp"
 #include "core/interfaces/itruss_view.hpp"
 #include "core/model/types.hpp"
 
@@ -26,12 +27,12 @@ class ITrussAnalysisFacade;
 
 namespace truss::gui::ctrl {
 
-using truss::core::interfaces::MemberView;
-using truss::core::interfaces::NodeView;
 using truss::core::Force2D;
 using truss::core::MemberId;
 using truss::core::NodeId;
 using truss::core::SupportType;
+using truss::core::interfaces::MemberView;
+using truss::core::interfaces::NodeView;
 
 /**
  * @brief Drives InspectorPanel content in response to canvas selection changes
@@ -49,7 +50,7 @@ class InspectorController : public QObject {
 
 public:
     explicit InspectorController(truss::interface::ITrussAnalysisFacade& facade,
-                                  QObject*                                 parent = nullptr);
+                                 QObject* parent = nullptr);
 
 public slots:
     void onNodeSelectionChanged(NodeId nodeId);
@@ -57,6 +58,32 @@ public slots:
     void onSelectionCleared();
     void onSupportChangeRequested(NodeId nodeId, SupportType type);
     void onLoadChangeRequested(NodeId nodeId, Force2D load);
+    /**
+     * @brief Move a node to new coordinates using facade.updateNode.
+     *
+     * Connected to InspectorPanel::nodePositionChangeRequested.  The node's
+     * ID, support condition, and applied loads are not affected; only its
+     * world-space position changes.
+     *
+     * @param nodeId   ID of the node to move.
+     * @param pos      New position provided by the inspector panel.
+     */
+    void onNodePositionChangeRequested(NodeId nodeId, truss::core::Point2D pos);
+    /**
+     * @brief Update member material / section via facade.updateMember.
+     *
+     * Connected to InspectorPanel::memberPropertiesChangeRequested.  The
+     * member's ID and node connectivity are preserved; only the material
+     * stiffness and cross-section area are replaced.  This replaces the
+     * previous remove + re-add workflow that discarded the member's ID.
+     *
+     * @param memberId  ID of the member to update.
+     * @param mat       New material specification (E in Pa, name).
+     * @param sec       New section specification (area in m²).
+     */
+    void onMemberPropertiesChangeRequested(MemberId memberId,
+                                           truss::application::MaterialSpec mat,
+                                           truss::application::SectionSpec sec);
     /// Update the active truss handle (called by MainWindowController).
     void onTrussHandleUpdated(std::size_t trussHandle);
 
@@ -69,7 +96,7 @@ signals:
 
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;
-    std::size_t                              m_trussHandle{0};
+    std::size_t m_trussHandle{0};
 };
 
 }  // namespace truss::gui::ctrl

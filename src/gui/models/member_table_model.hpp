@@ -56,26 +56,27 @@ public:
     // -----------------------------------------------------------------------
     [[nodiscard]] int rowCount(const QModelIndex& parent = {}) const override;
     [[nodiscard]] int columnCount(const QModelIndex& parent = {}) const override;
-    [[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-    [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
-                                      int role = Qt::DisplayRole) const override;
+    [[nodiscard]] QVariant data(const QModelIndex& index,
+                                int role = Qt::DisplayRole) const override;
+    [[nodiscard]] QVariant
+    headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     /// Total number of columns in this model.
     static constexpr int kColumnCount = 12;
 
     // Column index constants
-    static constexpr int kColId       = 0;
-    static constexpr int kColStart    = 1;
-    static constexpr int kColEnd      = 2;
+    static constexpr int kColId = 0;
+    static constexpr int kColStart = 1;
+    static constexpr int kColEnd = 2;
     static constexpr int kColMaterial = 3;
-    static constexpr int kColE        = 4;
-    static constexpr int kColA        = 5;
-    static constexpr int kColLength   = 6;
-    static constexpr int kColAngle    = 7;
-    static constexpr int kColForce    = 8;   ///< Results-only
-    static constexpr int kColStress   = 9;   ///< Results-only
-    static constexpr int kColRatio    = 10;  ///< Results-only
-    static constexpr int kColState    = 11;  ///< Results-only
+    static constexpr int kColE = 4;
+    static constexpr int kColA = 5;
+    static constexpr int kColLength = 6;
+    static constexpr int kColAngle = 7;
+    static constexpr int kColForce = 8;   ///< Results-only
+    static constexpr int kColStress = 9;  ///< Results-only
+    static constexpr int kColRatio = 10;  ///< Results-only
+    static constexpr int kColState = 11;  ///< Results-only
 
 public Q_SLOTS:
     /**
@@ -90,16 +91,16 @@ public Q_SLOTS:
     void setHasResults(bool hasResults);
 
 private:
-    [[nodiscard]] QColor  ratioColor(double ratio) const;
+    [[nodiscard]] QColor ratioColor(double ratio) const;
     [[nodiscard]] QString stateString(const MemberView& m) const;
 
     std::vector<MemberView> m_rows;
-    bool                    m_hasResults{false};
+    bool m_hasResults{false};
 
     // Colour anchors for ratio interpolation
-    static const QColor kColorGreen;   ///< #34A853 — safe    (ratio = 0.0)
-    static const QColor kColorAmber;   ///< #FFC107 — caution (ratio = 0.75)
-    static const QColor kColorRed;     ///< #EA4335 — overload (ratio >= 1.0)
+    static const QColor kColorGreen;  ///< #34A853 — safe    (ratio = 0.0)
+    static const QColor kColorAmber;  ///< #FFC107 — caution (ratio = 0.75)
+    static const QColor kColorRed;    ///< #EA4335 — overload (ratio >= 1.0)
 };
 
-} // namespace truss::gui::model
+}  // namespace truss::gui::model

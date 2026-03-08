@@ -5,7 +5,7 @@
 **Author:** Principal Software Architect / Senior Qt UI Engineer  
 **Date:** March 2, 2026  
 **Version Target:** 3.0.0  
-**Status:** Design Proposal
+**Status:** Implemented — v3.0.0 (March 2026)
 
 ---
 

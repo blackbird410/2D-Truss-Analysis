@@ -50,7 +50,8 @@ namespace truss::gui {
  * @par Tool modes (left-click behaviour)
  * - @c Select       — click to select a node or member; click empty space to deselect
  * - @c AddNode      — click on canvas to drop a new node at that world coordinate
- * - @c AddMember    — first click picks start node; second picks end node; emits memberDrawRequested
+ * - @c AddMember    — first click picks start node; second picks end node; emits
+ * memberDrawRequested
  * - @c Delete       — click on a node or member to delete it
  */
 class TrussCanvasWidget : public QWidget {
@@ -86,6 +87,27 @@ public:
      */
     [[nodiscard]] truss::core::Point2D screenToWorld(QPoint screenPos) const;
 
+    /**
+     * @brief Compute the displacement amplification factor for DeformedShape mode.
+     *
+     * Targets a visual displacement of 10 % of the visible world span
+     * (matching the default behaviour of SAP2000 / ABAQUS/CAE), then clamps
+     * the result to **[1.0, 500.0]**:
+     *
+     *  - **Floor 1.0** — when real displacements already exceed the visual target
+     *    the shape is shown at 1:1 rather than being artefactually shrunk.
+     *  - **Cap 500** — prevents sub-millimetre elastic deformations from being
+     *    rendered as multi-metre excursions (typical for very stiff structures
+     *    or early-stage pre-analysis checks).
+     *
+     * Returns 0.0 when no displacement data are present (pre-analysis or all
+     * nodal DOF values are zero).
+     *
+     * This is a public const query so that callers (tests, status bar, etc.)
+     * can inspect the current scale without triggering a repaint.
+     */
+    [[nodiscard]] double autoDispScale() const;
+
 public slots:
     /**
      * @brief Update the data source and trigger a repaint.
@@ -119,6 +141,17 @@ public slots:
      * @param mode  The new tool mode.
      */
     void setMode(ToolMode mode);
+
+    /**
+     * @brief Delete the currently selected node or member, if any.
+     *
+     * Emits @c nodeDeleteRequested or @c memberDeleteRequested and clears
+     * the internal selection state.  Safe to call when nothing is selected
+     * (does nothing).  This is a public slot so the application-level
+     * keyboard event filter in @c MainWindow can dispatch the Delete key
+     * without requiring the canvas to hold keyboard focus.
+     */
+    void triggerDeleteSelected();
 
     /**
      * @brief Compute the bounding box of all nodes and fit the viewport.
@@ -159,12 +192,10 @@ signals:
     // -----------------------------------------------------------------------
 
     /// @brief Emitted in AddNode mode when the user clicks on empty canvas space.
-    void nodeDropRequested(truss::core::Point2D worldPos,
-                           truss::core::SupportType defaultSupport);
+    void nodeDropRequested(truss::core::Point2D worldPos, truss::core::SupportType defaultSupport);
 
     /// @brief Emitted in AddMember mode when the user clicks on two distinct nodes.
-    void memberDrawRequested(truss::core::NodeId startId,
-                             truss::core::NodeId endId);
+    void memberDrawRequested(truss::core::NodeId startId, truss::core::NodeId endId);
 
     /// @brief Emitted in Delete mode when the user clicks on a node.
     void nodeDeleteRequested(truss::core::NodeId nodeId);
@@ -228,26 +259,12 @@ private:
     /// @brief Return the draw colour for a member given the current display mode.
     [[nodiscard]] QColor memberColour(const core::interfaces::MemberView& mv) const;
 
-    /**
-     * @brief Compute the displacement amplification factor for DeformedShape mode.
-     *
-     * Scales the largest nodal displacement to 10 % of the visible world span,
-     * giving an engineer-readable exaggeration regardless of truss size.
-     * Returns 0.0 when no displacements are present (pre-analysis or all-zero).
-     */
-    [[nodiscard]] double autoDispScale() const;
-
     /// @brief Draw a structural support symbol at a screen position.
-    void drawSupportSymbol(QPainter& p,
-                           const QPointF& screenPos,
-                           core::SupportType support) const;
+    void drawSupportSymbol(QPainter& p, const QPointF& screenPos, core::SupportType support) const;
 
     /// @brief Draw a force arrow with arrowhead.  headPos is the screen node position.
-    void drawForceArrow(QPainter& p,
-                        const QPointF& headPos,
-                        double fx,
-                        double fy,
-                        const QColor& colour) const;
+    void drawForceArrow(
+        QPainter& p, const QPointF& headPos, double fx, double fy, const QColor& colour) const;
 
     // -------------------------------------------------------------------
     // Interaction helpers
@@ -296,30 +313,30 @@ private:
     ToolMode m_toolMode{ToolMode::Select};
 
     /// True while the middle mouse button is held for panning.
-    bool   m_isPanning{false};
+    bool m_isPanning{false};
     QPoint m_lastPanPos;
 
     /// AddMember mode: set after the user clicks the first node.
     std::optional<core::NodeId> m_pendingMemberStart;
 
     /// Currently selected node (0 = none).
-    core::NodeId   m_selectedNodeId{0};
+    core::NodeId m_selectedNodeId{0};
     /// Currently selected member (0 = none).
     core::MemberId m_selectedMemberId{0};
 
     // -------------------------------------------------------------------
     // Visual constants
     // -------------------------------------------------------------------
-    static constexpr double kNodeRadius       = 6.0;   ///< Node circle radius (px)
-    static constexpr double kMemberWidth      = 2.0;   ///< Member stroke width (px)
-    static constexpr double kSupportSize      = 14.0;  ///< Support symbol half-size (px)
-    static constexpr double kArrowLength      = 40.0;  ///< Force arrow length (px)
-    static constexpr double kMarginFraction   = 0.12;  ///< Canvas margin (fraction of dimension)
-    static constexpr double kHitRadius        = 10.0;  ///< Node hit-test radius (px)
-    static constexpr double kMemberHitTol     = 6.0;   ///< Member hit-test tolerance (px)
-    static constexpr double kZoomStep         = 1.15;  ///< Zoom factor per scroll step
-    static constexpr double kMinWorldSpan     = 0.1;   ///< Minimum world-space span (m)
-    static constexpr double kMaxWorldSpan     = 1000.0;///< Maximum world-space span (m)
+    static constexpr double kNodeRadius = 6.0;       ///< Node circle radius (px)
+    static constexpr double kMemberWidth = 2.0;      ///< Member stroke width (px)
+    static constexpr double kSupportSize = 14.0;     ///< Support symbol half-size (px)
+    static constexpr double kArrowLength = 40.0;     ///< Force arrow length (px)
+    static constexpr double kMarginFraction = 0.12;  ///< Canvas margin (fraction of dimension)
+    static constexpr double kHitRadius = 10.0;       ///< Node hit-test radius (px)
+    static constexpr double kMemberHitTol = 6.0;     ///< Member hit-test tolerance (px)
+    static constexpr double kZoomStep = 1.15;        ///< Zoom factor per scroll step
+    static constexpr double kMinWorldSpan = 0.1;     ///< Minimum world-space span (m)
+    static constexpr double kMaxWorldSpan = 1000.0;  ///< Maximum world-space span (m)
 };
 
 }  // namespace truss::gui

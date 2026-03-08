@@ -31,15 +31,13 @@ class AnalysisWorker : public QObject {
     Q_OBJECT
 
 public:
-    AnalysisWorker(truss::core::Truss                         truss,
-                   truss::core::analysis::AnalysisOptions     opts,
-                   truss::application::IAnalysisService*      service)
-        : m_truss{std::move(truss)}, m_opts{opts}, m_service{service}
-    {}
+    AnalysisWorker(truss::core::Truss truss,
+                   truss::core::analysis::AnalysisOptions opts,
+                   truss::application::IAnalysisService* service)
+        : m_truss{std::move(truss)}, m_opts{opts}, m_service{service} {}
 
 public slots:
-    void execute()
-    {
+    void execute() {
         auto result = m_service->analyze(m_truss, m_opts);
         if (result) {
             emit finished(result.value);
@@ -53,9 +51,9 @@ signals:
     void failed(const QString& error);
 
 private:
-    truss::core::Truss                     m_truss;
+    truss::core::Truss m_truss;
     truss::core::analysis::AnalysisOptions m_opts;
-    truss::application::IAnalysisService*  m_service;
+    truss::application::IAnalysisService* m_service;
 };
 
 // ===========================================================================
@@ -63,27 +61,22 @@ private:
 // ===========================================================================
 
 AnalysisController::AnalysisController(truss::interface::ITrussAnalysisFacade& facade,
-                                        QObject*                                 parent)
-    : QObject{parent}, m_facade{facade}
-{}
+                                       QObject* parent)
+    : QObject{parent}, m_facade{facade} {}
 
-AnalysisController::~AnalysisController()
-{
+AnalysisController::~AnalysisController() {
     cleanupThread();
 }
 
-std::size_t AnalysisController::currentResultsHandle() const noexcept
-{
+std::size_t AnalysisController::currentResultsHandle() const noexcept {
     return m_resultsHandle;
 }
 
-void AnalysisController::onTrussHandleUpdated(std::size_t trussHandle)
-{
+void AnalysisController::onTrussHandleUpdated(std::size_t trussHandle) {
     m_trussHandle = trussHandle;
 }
 
-void AnalysisController::onAnalyzeRequested(const core::analysis::AnalysisOptions& opts)
-{
+void AnalysisController::onAnalyzeRequested(const core::analysis::AnalysisOptions& opts) {
     if (m_trussHandle == 0) {
         emit analysisFailed(QStringLiteral("No active truss to analyze."));
         return;
@@ -104,8 +97,7 @@ void AnalysisController::onAnalyzeRequested(const core::analysis::AnalysisOption
     m_thread = new QThread{this};
 
     // IAnalysisService is inherited by ITrussAnalysisFacade
-    auto* service =
-        static_cast<truss::application::IAnalysisService*>(&m_facade);
+    auto* service = static_cast<truss::application::IAnalysisService*>(&m_facade);
 
     auto* worker = new AnalysisWorker{std::move(trussCopy), opts, service};
     worker->moveToThread(m_thread);
@@ -114,11 +106,15 @@ void AnalysisController::onAnalyzeRequested(const core::analysis::AnalysisOption
     connect(m_thread, &QThread::finished, worker, &QObject::deleteLater);
 
     // Results routing (QueuedConnection — worker thread → main thread)
-    connect(worker, &AnalysisWorker::finished,
-            this,   &AnalysisController::onWorkerFinished,
+    connect(worker,
+            &AnalysisWorker::finished,
+            this,
+            &AnalysisController::onWorkerFinished,
             Qt::QueuedConnection);
-    connect(worker, &AnalysisWorker::failed,
-            this,   &AnalysisController::onWorkerFailed,
+    connect(worker,
+            &AnalysisWorker::failed,
+            this,
+            &AnalysisController::onWorkerFailed,
             Qt::QueuedConnection);
 
     // Start execution
@@ -126,8 +122,7 @@ void AnalysisController::onAnalyzeRequested(const core::analysis::AnalysisOption
     m_thread->start();
 }
 
-void AnalysisController::onStopRequested()
-{
+void AnalysisController::onStopRequested() {
     if (m_thread && m_thread->isRunning()) {
         m_thread->requestInterruption();
         m_thread->quit();
@@ -141,15 +136,13 @@ void AnalysisController::onStopRequested()
 // Private slots
 // ---------------------------------------------------------------------------
 
-void AnalysisController::onWorkerFinished(std::size_t resultsHandle)
-{
+void AnalysisController::onWorkerFinished(std::size_t resultsHandle) {
     m_resultsHandle = resultsHandle;
     cleanupThread();
     emit analysisCompleted(resultsHandle);
 }
 
-void AnalysisController::onWorkerFailed(const QString& error)
-{
+void AnalysisController::onWorkerFailed(const QString& error) {
     cleanupThread();
     emit analysisFailed(error);
 }
@@ -158,8 +151,7 @@ void AnalysisController::onWorkerFailed(const QString& error)
 // Helpers
 // ---------------------------------------------------------------------------
 
-void AnalysisController::cleanupThread()
-{
+void AnalysisController::cleanupThread() {
     if (m_thread) {
         if (m_thread->isRunning()) {
             m_thread->quit();

@@ -2,8 +2,8 @@
  * @file results_table_model.hpp
  * @brief Qt Item Model providing scalar analysis system summary data.
  *
- * Phase 3: Qt Item Models — Q_OBJECT skeleton.
- * Full row population deferred to Phase 6 (State Management & Interaction Logic).
+ * Two-column (Property / Value) table model backed by IAnalysisResultsView.
+ * Rows are populated via refresh(view) after a successful analysis.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
@@ -17,28 +17,27 @@
 #include <QAbstractTableModel>
 #include <QString>
 
-#include <vector>
 #include <utility>
+#include <vector>
 
 namespace truss::gui::model {
 
 using truss::core::interfaces::IAnalysisResultsView;
 
 /**
- * @brief Two-column (Key / Value) table model for the system summary tab.
+ * @brief Two-column (Property / Value) table model for the system summary tab.
  *
- * Phase 3 skeleton — columnCount is 2 and headerData is implemented.
- * rowCount returns 0 until refresh() is called (Phase 6).
- *
- * Planned rows (Phase 6):
+ * Rows populated by refresh():
  *  Converged        | Yes / No
  *  Iterations       | n
- *  Condition Number | formatted real
+ *  Residual Norm    | scientific
+ *  Condition Number | g-format
  *  Max Displacement | value [mm]
  *  Max Stress       | value [MPa]
+ *  Total Strain Energy | value [J]
+ *  Total DOFs       | n
  *  Free DOFs        | n
  *  Constrained DOFs | n
- *  Total Strain     | value [J]
  *
  * Thread safety: all methods must be called from the GUI thread.
  */
@@ -52,21 +51,24 @@ public:
     // -----------------------------------------------------------------------
     // QAbstractTableModel interface
     // -----------------------------------------------------------------------
-    [[nodiscard]] int     rowCount(const QModelIndex& parent = {}) const override;
-    [[nodiscard]] int     columnCount(const QModelIndex& parent = {}) const override;
-    [[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
-    [[nodiscard]] QVariant headerData(int section, Qt::Orientation orientation,
-                                      int role = Qt::DisplayRole) const override;
+    [[nodiscard]] int rowCount(const QModelIndex& parent = {}) const override;
+    [[nodiscard]] int columnCount(const QModelIndex& parent = {}) const override;
+    [[nodiscard]] QVariant data(const QModelIndex& index,
+                                int role = Qt::DisplayRole) const override;
+    [[nodiscard]] QVariant
+    headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const override;
 
     /// Fixed column count: Key | Value
     static constexpr int kColumnCount = 2;
-    static constexpr int kColKey      = 0;
-    static constexpr int kColValue    = 1;
+    static constexpr int kColKey = 0;
+    static constexpr int kColValue = 1;
 
 public Q_SLOTS:
     /**
-     * @brief Populate rows from @p view (Phase 6 full implementation).
-     * Phase 3: clears rows and resets model — body left as TODO for Phase 6.
+     * @brief Populate rows from @p view.
+     *
+     * Calls beginResetModel/endResetModel; connected QTableView updates
+     * automatically. Safe to call with the same view after re-analysis.
      */
     void refresh(const IAnalysisResultsView& view);
 
@@ -80,4 +82,4 @@ private:
     std::vector<std::pair<QString, QString>> m_rows;
 };
 
-} // namespace truss::gui::model
+}  // namespace truss::gui::model

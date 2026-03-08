@@ -395,6 +395,7 @@ if(BUILD_TESTING)
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
         tests/unit/application/test_truss_application_service_gui_methods.cpp
+        tests/unit/application/test_truss_application_service_update.cpp
         tests/unit/application/test_material_library_service.cpp
         tests/unit/application/test_analysis_application_service.cpp
         # Interface layer tests (Public API)

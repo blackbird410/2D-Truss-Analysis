@@ -26,6 +26,11 @@
         <file alias="mode_geometry.svg">icons/mode_geometry.svg</file>
         <file alias="mode_stress.svg">icons/mode_stress.svg</file>
         <file alias="mode_deformed.svg">icons/mode_deformed.svg</file>
+        <!-- Zoom control -->
+        <file alias="zoom_fit.svg">icons/zoom_fit.svg</file>
+        <!-- Analysis control bar -->
+        <file alias="validate.svg">icons/validate.svg</file>
+        <file alias="analysis_options.svg">icons/analysis_options.svg</file>
         <!-- Notification severity badges -->
         <file alias="notif_info.svg">icons/notif_info.svg</file>
         <file alias="notif_success.svg">icons/notif_success.svg</file>

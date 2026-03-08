@@ -98,4 +98,18 @@ application::Result<bool> FacadeTrussServiceAdapter::clearNodeLoad(application::
     return m_facade.clearNodeLoad(handle, nodeId);
 }
 
+application::Result<bool>
+FacadeTrussServiceAdapter::updateNode(application::TrussHandle handle,
+                                      core::NodeId nodeId,
+                                      const application::NodeUpdateSpec& update) {
+    return m_facade.updateNode(handle, nodeId, update);
+}
+
+application::Result<bool>
+FacadeTrussServiceAdapter::updateMember(application::TrussHandle handle,
+                                        core::MemberId memberId,
+                                        const application::MemberUpdateSpec& update) {
+    return m_facade.updateMember(handle, memberId, update);
+}
+
 }  // namespace truss::interface

@@ -27,23 +27,23 @@
 
 using namespace truss::gui::ctrl;
 using namespace truss::core;
-using truss::application::Result;
-using truss::test::MockTrussAnalysisFacade;
 using ::testing::_;
 using ::testing::Return;
+using truss::application::Result;
+using truss::test::MockTrussAnalysisFacade;
 
 // ============================================================
 // QApplication bootstrap
 // ============================================================
 
 namespace {
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
+            return e;
         return new QApplication(s_argc, s_argv);
     }();
     return *s_app;
@@ -56,8 +56,7 @@ QApplication& ensureQApp()
 
 class CanvasControllerTest : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         ctrl = std::make_unique<CanvasController>(facade);
         ctrl->onTrussHandleUpdated(kHandle);
@@ -68,15 +67,14 @@ protected:
     static constexpr std::size_t kHandle = 42;
 
     ::testing::NiceMock<MockTrussAnalysisFacade> facade;
-    std::unique_ptr<CanvasController>             ctrl;
+    std::unique_ptr<CanvasController> ctrl;
 };
 
 // ============================================================
 // Tests — Node operations
 // ============================================================
 
-TEST_F(CanvasControllerTest, NodeDrop_Success_CallsAddNodeAndEmitsModified)
-{
+TEST_F(CanvasControllerTest, NodeDrop_Success_CallsAddNodeAndEmitsModified) {
     EXPECT_CALL(facade, addNode(kHandle, _, _))
         .WillOnce(Return(Result<NodeId>::Success(NodeId{1})));
 
@@ -87,8 +85,7 @@ TEST_F(CanvasControllerTest, NodeDrop_Success_CallsAddNodeAndEmitsModified)
     EXPECT_EQ(spy.first().first().value<std::size_t>(), kHandle);
 }
 
-TEST_F(CanvasControllerTest, NodeDrop_Failure_EmitsOperationFailed)
-{
+TEST_F(CanvasControllerTest, NodeDrop_Failure_EmitsOperationFailed) {
     EXPECT_CALL(facade, addNode(kHandle, _, _))
         .WillOnce(Return(Result<NodeId>::Failure("duplicate position")));
 
@@ -101,8 +98,7 @@ TEST_F(CanvasControllerTest, NodeDrop_Failure_EmitsOperationFailed)
     EXPECT_FALSE(spyFail.first().first().toString().isEmpty());
 }
 
-TEST_F(CanvasControllerTest, NodeDrop_NoHandle_EmitsOperationFailedWithoutCallingFacade)
-{
+TEST_F(CanvasControllerTest, NodeDrop_NoHandle_EmitsOperationFailedWithoutCallingFacade) {
     ctrl->onTrussHandleUpdated(0);  // reset handle to 0
 
     EXPECT_CALL(facade, addNode(_, _, _)).Times(0);
@@ -117,8 +113,7 @@ TEST_F(CanvasControllerTest, NodeDrop_NoHandle_EmitsOperationFailedWithoutCallin
 // Tests — Member operations
 // ============================================================
 
-TEST_F(CanvasControllerTest, MemberDraw_Success_CallsAddMemberAndEmitsModified)
-{
+TEST_F(CanvasControllerTest, MemberDraw_Success_CallsAddMemberAndEmitsModified) {
     EXPECT_CALL(facade, addMember(kHandle, NodeId{1}, NodeId{2}, _, _))
         .WillOnce(Return(Result<MemberId>::Success(MemberId{1})));
 
@@ -128,8 +123,7 @@ TEST_F(CanvasControllerTest, MemberDraw_Success_CallsAddMemberAndEmitsModified)
     ASSERT_EQ(spy.count(), 1);
 }
 
-TEST_F(CanvasControllerTest, MemberDraw_Failure_EmitsOperationFailed)
-{
+TEST_F(CanvasControllerTest, MemberDraw_Failure_EmitsOperationFailed) {
     EXPECT_CALL(facade, addMember(_, _, _, _, _))
         .WillOnce(Return(Result<MemberId>::Failure("invalid nodes")));
 
@@ -143,8 +137,7 @@ TEST_F(CanvasControllerTest, MemberDraw_Failure_EmitsOperationFailed)
 // Tests — Delete operations
 // ============================================================
 
-TEST_F(CanvasControllerTest, NodeDelete_Success_CallsRemoveNodeAndEmitsModified)
-{
+TEST_F(CanvasControllerTest, NodeDelete_Success_CallsRemoveNodeAndEmitsModified) {
     EXPECT_CALL(facade, removeNode(kHandle, NodeId{1}))
         .WillOnce(Return(Result<bool>::Success(true)));
 
@@ -154,8 +147,7 @@ TEST_F(CanvasControllerTest, NodeDelete_Success_CallsRemoveNodeAndEmitsModified)
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(CanvasControllerTest, MemberDelete_Success_CallsRemoveMemberAndEmitsModified)
-{
+TEST_F(CanvasControllerTest, MemberDelete_Success_CallsRemoveMemberAndEmitsModified) {
     EXPECT_CALL(facade, removeMember(kHandle, MemberId{3}))
         .WillOnce(Return(Result<bool>::Success(true)));
 
@@ -169,12 +161,10 @@ TEST_F(CanvasControllerTest, MemberDelete_Success_CallsRemoveMemberAndEmitsModif
 // Tests — Handle update
 // ============================================================
 
-TEST_F(CanvasControllerTest, TrussHandleUpdated_ChangesActiveHandle)
-{
+TEST_F(CanvasControllerTest, TrussHandleUpdated_ChangesActiveHandle) {
     ctrl->onTrussHandleUpdated(99);
 
-    EXPECT_CALL(facade, addNode(99, _, _))
-        .WillOnce(Return(Result<NodeId>::Success(NodeId{5})));
+    EXPECT_CALL(facade, addNode(99, _, _)).WillOnce(Return(Result<NodeId>::Success(NodeId{5})));
 
     QSignalSpy spy{ctrl.get(), &CanvasController::trussModified};
     ctrl->onNodeDropRequested(Point2D{0, 0}, SupportType::Free);

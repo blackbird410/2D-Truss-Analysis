@@ -66,12 +66,12 @@ signals:
 private:
     void buildLayout();
 
-    QStackedWidget* m_actionStack{nullptr};   ///< Swaps run-panel <-> progress-panel
-    QPushButton*    m_runBtn{nullptr};
-    QPushButton*    m_stopBtn{nullptr};
-    QProgressBar*   m_progressBar{nullptr};
-    QPushButton*    m_validateBtn{nullptr};
-    QPushButton*    m_optionsBtn{nullptr};
+    QStackedWidget* m_actionStack{nullptr};  ///< Swaps run-panel <-> progress-panel
+    QPushButton* m_runBtn{nullptr};
+    QPushButton* m_stopBtn{nullptr};
+    QProgressBar* m_progressBar{nullptr};
+    QPushButton* m_validateBtn{nullptr};
+    QPushButton* m_optionsBtn{nullptr};
 
     core::analysis::AnalysisOptions m_opts{};  ///< Carried by analyzeRequested
 };

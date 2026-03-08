@@ -52,11 +52,12 @@ public:
     // -----------------------------------------------------------------------
     // QAbstractListModel interface
     // -----------------------------------------------------------------------
-    [[nodiscard]] int     rowCount(const QModelIndex& parent = {}) const override;
-    [[nodiscard]] QVariant data(const QModelIndex& index, int role = Qt::DisplayRole) const override;
+    [[nodiscard]] int rowCount(const QModelIndex& parent = {}) const override;
+    [[nodiscard]] QVariant data(const QModelIndex& index,
+                                int role = Qt::DisplayRole) const override;
 
     // Custom role constants
-    static constexpr int kNodeIdRole   = Qt::UserRole + 1;
+    static constexpr int kNodeIdRole = Qt::UserRole + 1;
     static constexpr int kMemberIdRole = Qt::UserRole + 2;
 
 public Q_SLOTS:
@@ -72,10 +73,10 @@ public Q_SLOTS:
     void clear();
 
 private:
-    [[nodiscard]] QColor   severityColor(ValidationSeverity severity) const;
-    [[nodiscard]] QPixmap  severityIcon(ValidationSeverity severity) const;
+    [[nodiscard]] QColor severityColor(ValidationSeverity severity) const;
+    [[nodiscard]] QPixmap severityIcon(ValidationSeverity severity) const;
 
     std::vector<ValidationIssue> m_issues;
 };
 
-} // namespace truss::gui::model
+}  // namespace truss::gui::model

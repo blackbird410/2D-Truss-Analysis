@@ -46,7 +46,7 @@ class AnalysisController : public QObject {
 
 public:
     explicit AnalysisController(truss::interface::ITrussAnalysisFacade& facade,
-                                 QObject*                                 parent = nullptr);
+                                QObject* parent = nullptr);
     ~AnalysisController() override;
 
     /// @brief Handle of the most recent successful analysis result (0 = none).
@@ -72,9 +72,9 @@ private:
     void cleanupThread();
 
     truss::interface::ITrussAnalysisFacade& m_facade;
-    std::size_t                              m_trussHandle{0};
-    std::size_t                              m_resultsHandle{0};
-    QThread*                                 m_thread{nullptr};
+    std::size_t m_trussHandle{0};
+    std::size_t m_resultsHandle{0};
+    QThread* m_thread{nullptr};
 };
 
 }  // namespace truss::gui::ctrl

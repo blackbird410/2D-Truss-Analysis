@@ -18,9 +18,8 @@
  * @date 2026-03-04
  */
 
-#include "gui/panels/analysis_control_bar.hpp"
-
 #include "core/analysis/analysis_orchestrator.hpp"
+#include "gui/panels/analysis_control_bar.hpp"
 #include "gui/state/workspace_state.hpp"
 
 #include <QApplication>
@@ -32,8 +31,8 @@
 
 #include <gtest/gtest.h>
 
-using truss::gui::AnalysisControlBar;
 using truss::core::analysis::AnalysisOptions;
+using truss::gui::AnalysisControlBar;
 using truss::gui::state::WorkspacePhase;
 using truss::gui::state::WorkspaceState;
 
@@ -42,20 +41,19 @@ using truss::gui::state::WorkspaceState;
 // ============================================================
 
 namespace {
-QApplication& ensureQApp()
-{
-    static int   s_argc    = 1;
-    static char  s_argv0[] = "unit_tests";
-    static char* s_argv[]  = {s_argv0, nullptr};
+QApplication& ensureQApp() {
+    static int s_argc = 1;
+    static char s_argv0[] = "unit_tests";
+    static char* s_argv[] = {s_argv0, nullptr};
     static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance())) return e;
+        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
+            return e;
         return new QApplication(s_argc, s_argv);
     }();
     return *s_app;
 }
 
-WorkspaceState makeState(WorkspacePhase phase, std::size_t handle = 0)
-{
+WorkspaceState makeState(WorkspacePhase phase, std::size_t handle = 0) {
     WorkspaceState s;
     s.phase = phase;
     s.trussHandle = handle;
@@ -69,8 +67,7 @@ WorkspaceState makeState(WorkspacePhase phase, std::size_t handle = 0)
 
 class AnalysisControlBarTest : public ::testing::Test {
 protected:
-    void SetUp() override
-    {
+    void SetUp() override {
         ensureQApp();
         bar = std::make_unique<AnalysisControlBar>();
     }
@@ -83,10 +80,11 @@ protected:
 // Construction / widget structure
 // ============================================================
 
-TEST_F(AnalysisControlBarTest, ConstructsWithoutCrash) { SUCCEED(); }
+TEST_F(AnalysisControlBarTest, ConstructsWithoutCrash) {
+    SUCCEED();
+}
 
-TEST_F(AnalysisControlBarTest, InitialState_ShowsRunPage)
-{
+TEST_F(AnalysisControlBarTest, InitialState_ShowsRunPage) {
     auto* stack = bar->findChild<QStackedWidget*>();
     ASSERT_NE(stack, nullptr) << "Expected a QStackedWidget inside AnalysisControlBar";
     EXPECT_EQ(stack->currentIndex(), 0) << "Run page (index 0) should be shown initially";
@@ -96,8 +94,7 @@ TEST_F(AnalysisControlBarTest, InitialState_ShowsRunPage)
 // State changes
 // ============================================================
 
-TEST_F(AnalysisControlBarTest, StateChanged_Analysing_ShowsProgressPage)
-{
+TEST_F(AnalysisControlBarTest, StateChanged_Analysing_ShowsProgressPage) {
     bar->onStateChanged(makeState(WorkspacePhase::Analysing, 1));
     QApplication::processEvents();
 
@@ -106,8 +103,7 @@ TEST_F(AnalysisControlBarTest, StateChanged_Analysing_ShowsProgressPage)
     EXPECT_EQ(stack->currentIndex(), 1) << "Progress page (index 1) expected during Analysing";
 }
 
-TEST_F(AnalysisControlBarTest, StateChanged_ModelBuilding_ShowsRunPageEnabled)
-{
+TEST_F(AnalysisControlBarTest, StateChanged_ModelBuilding_ShowsRunPageEnabled) {
     // First go to Analysing, then back to ModelBuilding.
     bar->onStateChanged(makeState(WorkspacePhase::Analysing, 2));
     bar->onStateChanged(makeState(WorkspacePhase::ModelBuilding, 2));
@@ -118,8 +114,7 @@ TEST_F(AnalysisControlBarTest, StateChanged_ModelBuilding_ShowsRunPageEnabled)
     EXPECT_EQ(stack->currentIndex(), 0) << "Run page (index 0) expected after ModelBuilding";
 }
 
-TEST_F(AnalysisControlBarTest, StateChanged_Empty_ShowsRunPageDisabled)
-{
+TEST_F(AnalysisControlBarTest, StateChanged_Empty_ShowsRunPageDisabled) {
     bar->onStateChanged(makeState(WorkspacePhase::Empty, 0));
     QApplication::processEvents();
 
@@ -130,9 +125,9 @@ TEST_F(AnalysisControlBarTest, StateChanged_Empty_ShowsRunPageDisabled)
     // Find the run button and verify it is disabled.
     auto btns = bar->findChildren<QPushButton*>();
     auto it = std::find_if(btns.begin(), btns.end(), [](QPushButton* b) {
-        return b->objectName().contains(QLatin1String("run"), Qt::CaseInsensitive)
-            || b->text().contains(QLatin1String("Run"), Qt::CaseInsensitive)
-            || b->text().contains(QLatin1String("Analyze"), Qt::CaseInsensitive);
+        return b->objectName().contains(QLatin1String("run"), Qt::CaseInsensitive) ||
+               b->text().contains(QLatin1String("Run"), Qt::CaseInsensitive) ||
+               b->text().contains(QLatin1String("Analyze"), Qt::CaseInsensitive);
     });
     if (it != btns.end()) {
         EXPECT_FALSE((*it)->isEnabled()) << "Run button should be disabled when workspace is Empty";
@@ -143,8 +138,7 @@ TEST_F(AnalysisControlBarTest, StateChanged_Empty_ShowsRunPageDisabled)
 // Signals
 // ============================================================
 
-TEST_F(AnalysisControlBarTest, RunButtonClick_EmitsAnalyzeRequested)
-{
+TEST_F(AnalysisControlBarTest, RunButtonClick_EmitsAnalyzeRequested) {
     // Enable state first.
     bar->onStateChanged(makeState(WorkspacePhase::ModelBuilding, 1));
     QApplication::processEvents();
@@ -154,10 +148,10 @@ TEST_F(AnalysisControlBarTest, RunButtonClick_EmitsAnalyzeRequested)
     // Find the run page button by objectName or text.
     auto btns = bar->findChildren<QPushButton*>();
     auto it = std::find_if(btns.begin(), btns.end(), [](QPushButton* b) {
-        return b->isEnabled() && (
-            b->objectName().contains(QLatin1String("run"), Qt::CaseInsensitive) ||
-            b->text().contains(QLatin1String("Run"), Qt::CaseInsensitive) ||
-            b->text().contains(QLatin1String("Analyze"), Qt::CaseInsensitive));
+        return b->isEnabled() &&
+               (b->objectName().contains(QLatin1String("run"), Qt::CaseInsensitive) ||
+                b->text().contains(QLatin1String("Run"), Qt::CaseInsensitive) ||
+                b->text().contains(QLatin1String("Analyze"), Qt::CaseInsensitive));
     });
     ASSERT_NE(it, btns.end()) << "No enabled run/analyze button found";
     QTest::mouseClick(*it, Qt::LeftButton);
@@ -166,8 +160,7 @@ TEST_F(AnalysisControlBarTest, RunButtonClick_EmitsAnalyzeRequested)
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(AnalysisControlBarTest, ValidateButton_EmitsValidateRequested)
-{
+TEST_F(AnalysisControlBarTest, ValidateButton_EmitsValidateRequested) {
     bar->onStateChanged(makeState(WorkspacePhase::ModelBuilding, 1));
     QApplication::processEvents();
 
@@ -184,14 +177,13 @@ TEST_F(AnalysisControlBarTest, ValidateButton_EmitsValidateRequested)
     EXPECT_EQ(spy.count(), 1);
 }
 
-TEST_F(AnalysisControlBarTest, OptionsButton_EmitsOptionsRequested)
-{
+TEST_F(AnalysisControlBarTest, OptionsButton_EmitsOptionsRequested) {
     QSignalSpy spy{bar.get(), &AnalysisControlBar::optionsRequested};
 
     auto btns = bar->findChildren<QPushButton*>();
     auto it = std::find_if(btns.begin(), btns.end(), [](QPushButton* b) {
-        return b->text().contains(QLatin1String("Option"), Qt::CaseInsensitive)
-            || b->objectName().contains(QLatin1String("options"), Qt::CaseInsensitive);
+        return b->text().contains(QLatin1String("Option"), Qt::CaseInsensitive) ||
+               b->objectName().contains(QLatin1String("options"), Qt::CaseInsensitive);
     });
     ASSERT_NE(it, btns.end()) << "No Options button found";
     QTest::mouseClick(*it, Qt::LeftButton);
@@ -204,21 +196,20 @@ TEST_F(AnalysisControlBarTest, OptionsButton_EmitsOptionsRequested)
 // Options round-trip
 // ============================================================
 
-TEST_F(AnalysisControlBarTest, SetOptions_RoundTripsCorrectly)
-{
+TEST_F(AnalysisControlBarTest, SetOptions_RoundTripsCorrectly) {
     AnalysisOptions opts;
-    opts.useDirectSolver       = false;
-    opts.convergenceTolerance   = 1e-12;
-    opts.maxIterations         = 500;
-    opts.computeReactions      = false;
-    opts.verbose               = true;
+    opts.useDirectSolver = false;
+    opts.convergenceTolerance = 1e-12;
+    opts.maxIterations = 500;
+    opts.computeReactions = false;
+    opts.verbose = true;
 
     bar->setOptions(opts);
 
     const auto& stored = bar->options();
-    EXPECT_EQ(stored.useDirectSolver,     false);
+    EXPECT_EQ(stored.useDirectSolver, false);
     EXPECT_DOUBLE_EQ(stored.convergenceTolerance, 1e-12);
-    EXPECT_EQ(stored.maxIterations,       500);
-    EXPECT_EQ(stored.computeReactions,    false);
-    EXPECT_EQ(stored.verbose,             true);
+    EXPECT_EQ(stored.maxIterations, 500);
+    EXPECT_EQ(stored.computeReactions, false);
+    EXPECT_EQ(stored.verbose, true);
 }

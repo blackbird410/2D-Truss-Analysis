@@ -2,13 +2,12 @@
  * @file main.cpp
  * @brief Main entry point for the 2D Truss Analysis GUI application.
  *
- * Phase 6 composition root.  Creates a single TrussAnalysisFacade and hands it
+ * Composition root.  Creates a single TrussAnalysisFacade and hands it
  * to MainWindow, which internally constructs all sub-controllers, models, and
  * panels.  No presenters, adapters, or legacy controllers are created here.
  *
- * Phase 7: ThemeLoader::restoreLastTheme() is called after QApplication
- * construction so the previously persisted theme is applied before the
- * window is shown.
+ * ThemeLoader::restoreLastTheme() is called after QApplication construction
+ * so the previously persisted theme is applied before the window is shown.
  */
 
 #include "gui/main_window.hpp"
@@ -23,18 +22,16 @@
 #include <filesystem>
 
 namespace {
-truss::infrastructure::logging::LoggerPtr createGuiLogger()
-{
+truss::infrastructure::logging::LoggerPtr createGuiLogger() {
     QString appDataPath = QStandardPaths::writableLocation(QStandardPaths::AppDataLocation);
     QDir().mkpath(appDataPath);
-    std::filesystem::path logPath =
-        std::filesystem::path(appDataPath.toStdString()) / "TrussAnalysis2D.log";
+    std::filesystem::path logPath = std::filesystem::path(appDataPath.toStdString()) /
+                                    "TrussAnalysis2D.log";
     return truss::infrastructure::logging::LoggerFactory::createDefaultLogger(logPath);
 }
 }  // namespace
 
-int main(int argc, char* argv[])
-{
+int main(int argc, char* argv[]) {
     // Note: High-DPI support is enabled by default in Qt6
 
     // Enable better font rendering on Linux

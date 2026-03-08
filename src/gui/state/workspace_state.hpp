@@ -86,9 +86,7 @@ struct WorkspaceState {
     [[nodiscard]] bool hasResults() const noexcept { return resultsHandle != 0; }
 
     /// @brief Returns true when analysis is currently running on a background thread.
-    [[nodiscard]] bool isAnalysing() const noexcept {
-        return phase == WorkspacePhase::Analysing;
-    }
+    [[nodiscard]] bool isAnalysing() const noexcept { return phase == WorkspacePhase::Analysing; }
 
     /// @brief Returns true when the phase is ResultsReady.
     [[nodiscard]] bool isResultsReady() const noexcept {

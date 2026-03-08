@@ -113,6 +113,20 @@ application::Result<bool> TrussAnalysisFacade::clearNodeLoad(application::TrussH
     return m_trussService.clearNodeLoad(handle, nodeId);
 }
 
+application::Result<bool>
+TrussAnalysisFacade::updateNode(application::TrussHandle handle,
+                                core::NodeId nodeId,
+                                const application::NodeUpdateSpec& update) {
+    return m_trussService.updateNode(handle, nodeId, update);
+}
+
+application::Result<bool>
+TrussAnalysisFacade::updateMember(application::TrussHandle handle,
+                                  core::MemberId memberId,
+                                  const application::MemberUpdateSpec& update) {
+    return m_trussService.updateMember(handle, memberId, update);
+}
+
 // ============================================================
 // IAnalysisService Operations (delegate to m_analysisService)
 // ============================================================
