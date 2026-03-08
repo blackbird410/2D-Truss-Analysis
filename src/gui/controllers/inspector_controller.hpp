@@ -59,13 +59,23 @@ public slots:
     void onSupportChangeRequested(NodeId nodeId, SupportType type);
     void onLoadChangeRequested(NodeId nodeId, Force2D load);
     /**
-     * @brief Update member material and cross-section via remove + re-add.
+     * @brief Move a node to new coordinates using facade.updateNode.
      *
-     * Connected to InspectorPanel::memberPropertiesChangeRequested.  Because
-     * the facade interface does not expose an updateMember operation, this slot
-     * implements the change by removing the existing member and re-adding it
-     * with the new specs.  The member receives a new ID; all listeners are
-     * notified via the trussModified signal.
+     * Connected to InspectorPanel::nodePositionChangeRequested.  The node's
+     * ID, support condition, and applied loads are not affected; only its
+     * world-space position changes.
+     *
+     * @param nodeId   ID of the node to move.
+     * @param pos      New position provided by the inspector panel.
+     */
+    void onNodePositionChangeRequested(NodeId nodeId, truss::core::Point2D pos);
+    /**
+     * @brief Update member material / section via facade.updateMember.
+     *
+     * Connected to InspectorPanel::memberPropertiesChangeRequested.  The
+     * member's ID and node connectivity are preserved; only the material
+     * stiffness and cross-section area are replaced.  This replaces the
+     * previous remove + re-add workflow that discarded the member's ID.
      *
      * @param memberId  ID of the member to update.
      * @param mat       New material specification (E in Pa, name).
@@ -87,11 +97,6 @@ signals:
 private:
     truss::interface::ITrussAnalysisFacade& m_facade;
     std::size_t m_trussHandle{0};
-
-    // Last member view retrieved during onMemberSelectionChanged.
-    // Needed by onMemberPropertiesChangeRequested to obtain startNodeId / endNodeId
-    // when re-creating the member with new properties.
-    MemberView m_currentMemberView{};
 };
 
 }  // namespace truss::gui::ctrl

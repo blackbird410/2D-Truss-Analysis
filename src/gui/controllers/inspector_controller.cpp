@@ -10,6 +10,7 @@
 #include "gui/controllers/inspector_controller.hpp"
 
 #include "application/truss_edit_dtos.hpp"
+#include "core/model/types.hpp"
 #include "interface/itruss_analysis_facade.hpp"
 
 #include <algorithm>
@@ -49,7 +50,6 @@ void InspectorController::onMemberSelectionChanged(MemberId memberId) {
         return mv.id == memberId;
     });
     if (it != members.end()) {
-        m_currentMemberView = *it;  // cache for onMemberPropertiesChangeRequested
         emit memberViewReady(*it);
     }
 }
@@ -90,6 +90,23 @@ void InspectorController::onLoadChangeRequested(NodeId nodeId, Force2D load) {
     }
 }
 
+void InspectorController::onNodePositionChangeRequested(NodeId nodeId,
+                                                        truss::core::Point2D pos) {
+    if (m_trussHandle == 0) {
+        emit operationFailed(QStringLiteral("No active truss."));
+        return;
+    }
+
+    const application::NodeUpdateSpec update{pos.x, pos.y};
+    auto result = m_facade.updateNode(m_trussHandle, nodeId, update);
+    if (result) {
+        emit trussModified(m_trussHandle);
+    } else {
+        emit operationFailed(
+            QString::fromStdString("Failed to update node position: " + result.errorMessage));
+    }
+}
+
 void InspectorController::onMemberPropertiesChangeRequested(MemberId memberId,
                                                             truss::application::MaterialSpec mat,
                                                             truss::application::SectionSpec sec) {
@@ -98,33 +115,14 @@ void InspectorController::onMemberPropertiesChangeRequested(MemberId memberId,
         return;
     }
 
-    // Remove existing member, then re-add with updated properties.
-    // The new member receives a fresh ID from the facade.
-    const NodeId startId = m_currentMemberView.startNodeId;
-    const NodeId endId = m_currentMemberView.endNodeId;
-
-    if (startId == 0 || endId == 0) {
-        emit operationFailed(QStringLiteral("Cannot update member: node IDs unavailable."));
-        return;
-    }
-
-    auto removeResult = m_facade.removeMember(m_trussHandle, memberId);
-    if (!removeResult) {
-        emit operationFailed(QString::fromStdString("Failed to remove member for update: " +
-                                                    removeResult.errorMessage));
-        return;
-    }
-
-    auto addResult = m_facade.addMember(m_trussHandle, startId, endId, mat, sec);
-    if (addResult) {
-        // Update cached view so subsequent apply-clicks use the new topology.
-        m_currentMemberView.id = addResult.value;
-        m_currentMemberView.startNodeId = startId;
-        m_currentMemberView.endNodeId = endId;
+    // Update in-place: member ID and connectivity are preserved.
+    const application::MemberUpdateSpec update{mat, sec};
+    auto result = m_facade.updateMember(m_trussHandle, memberId, update);
+    if (result) {
         emit trussModified(m_trussHandle);
     } else {
         emit operationFailed(
-            QString::fromStdString("Failed to re-add member: " + addResult.errorMessage));
+            QString::fromStdString("Failed to update member: " + result.errorMessage));
     }
 }
 
