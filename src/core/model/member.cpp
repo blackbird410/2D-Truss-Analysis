@@ -17,19 +17,13 @@ namespace truss::core {
 Member::Member(MemberId id,
                std::shared_ptr<Node> startNode,
                std::shared_ptr<Node> endNode,
-               const MaterialProperties& material,
-               const SectionProperties& section)
+               MaterialProperties material,
+               SectionProperties section)
     : m_id(id), m_startNode(std::move(startNode)), m_endNode(std::move(endNode)),
-      m_material(material), m_section(section) {
+      m_material(std::move(material)), m_section(std::move(section)), m_label("Member_" + std::to_string(id)) {
     validateNodes();
-    m_label = "Member_" + std::to_string(m_id);
     updateResults();
 }
-
-Member::Member(const Member& other)
-    : m_id(other.m_id), m_startNode(other.m_startNode), m_endNode(other.m_endNode),
-      m_material(other.m_material), m_section(other.m_section), m_label(other.m_label),
-      m_results(other.m_results) {}
 
 Member& Member::operator=(const Member& other) {
     if (this != &other) {
