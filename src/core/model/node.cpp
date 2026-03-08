@@ -12,19 +12,14 @@
 
 namespace truss::core {
 
-Node::Node() : m_id(0), m_position(0.0, 0.0), m_supportType(SupportType::Free) {
-    m_label = "Node_" + std::to_string(m_id);
-}
+Node::Node() : m_id(0), m_position(0.0, 0.0), m_label("Node_0") {}
 
 Node::Node(NodeId id, Real x, Real y)
-    : m_id(id), m_position(x, y), m_supportType(SupportType::Free) {
-    m_label = "Node_" + std::to_string(m_id);
-}
+    : m_id(id), m_position(x, y), m_label("Node_" + std::to_string(id)) {}
 
 Node::Node(NodeId id, const Point2D& position, SupportType support)
-    : m_id(id), m_position(position), m_supportType(support) {
-    m_label = "Node_" + std::to_string(m_id);
-}
+    : m_id(id), m_position(position), m_supportType(support),
+      m_label("Node_" + std::to_string(id)) {}
 
 bool Node::isConstrainedX() const noexcept {
     return m_supportType == SupportType::Pinned || m_supportType == SupportType::RollerY;

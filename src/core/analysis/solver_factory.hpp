@@ -71,6 +71,8 @@ enum class SolverType {
  */
 class SolverFactory {
 public:
+    SolverFactory() = delete;  // Non-instantiable utility class
+
     /**
      * @brief Create a linear solver of the specified type
      *
@@ -136,10 +138,6 @@ public:
      */
     [[maybe_unused]] static std::unique_ptr<ILinearSolver>
     createIterativeSolver(int maxIterations = 1000, double tolerance = 1e-9);
-
-private:
-    // Private constructor to prevent instantiation
-    SolverFactory() = delete;
 };
 
 }  // namespace truss::core::analysis

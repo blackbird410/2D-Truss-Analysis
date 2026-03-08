@@ -58,7 +58,7 @@ Result<TrussHandle> TrussApplicationService::loadTruss(const std::filesystem::pa
         auto truss = assembly::TrussAssembler::assembleTruss(dto);
 
         // Validate assembled truss
-        auto validationResult = m_validator.validate(*truss);
+        auto validationResult = validation::TrussValidator::validate(*truss);
         if (!validationResult.isValid()) {
             std::string errorMsg = "Truss loaded but failed validation: " +
                                    validationResult.getSummary();
@@ -117,7 +117,7 @@ Result<bool> TrussApplicationService::saveTruss(TrussHandle handle,
         auto truss = m_trusses[handle];
 
         // Validate truss before saving
-        auto validationResult = m_validator.validate(*truss);
+        auto validationResult = validation::TrussValidator::validate(*truss);
         if (!validationResult.isValid()) {
             return Result<bool>::Failure("Cannot save invalid truss: " +
                                          validationResult.getSummary());
@@ -153,7 +153,7 @@ Result<validation::ValidationResult> TrussApplicationService::validateTruss(Trus
         }
 
         auto truss = m_trusses[handle];
-        auto result = m_validator.validate(*truss);
+        auto result = validation::TrussValidator::validate(*truss);
         return Result<validation::ValidationResult>::Success(std::move(result));
 
     } catch (const std::exception& e) {
@@ -188,7 +188,7 @@ void TrussApplicationService::clearAll() {
 }
 
 bool TrussApplicationService::isValidTrussHandle(TrussHandle handle) const {
-    return m_trusses.find(handle) != m_trusses.end();
+    return m_trusses.contains(handle);
 }
 
 // ============================================================
@@ -263,9 +263,8 @@ Result<bool> TrussApplicationService::removeNode(TrussHandle handle, NodeId node
         if (removed) {
             markAsModified(handle);
             return Result<bool>::Success(true);
-        } else {
-            return Result<bool>::Failure("Node not found: " + std::to_string(nodeId));
         }
+        return Result<bool>::Failure("Node not found: " + std::to_string(nodeId));
 
     } catch (const std::exception& e) {
         return Result<bool>::Failure(std::string("Failed to remove node: ") + e.what());
@@ -284,9 +283,8 @@ Result<bool> TrussApplicationService::removeMember(TrussHandle handle, MemberId 
         if (removed) {
             markAsModified(handle);
             return Result<bool>::Success(true);
-        } else {
-            return Result<bool>::Failure("Member not found: " + std::to_string(memberId));
         }
+        return Result<bool>::Failure("Member not found: " + std::to_string(memberId));
 
     } catch (const std::exception& e) {
         return Result<bool>::Failure(std::string("Failed to remove member: ") + e.what());

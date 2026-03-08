@@ -83,8 +83,6 @@ inline std::string getFileExtension(FileFormat format) {
             return ".json";
         case FileFormat::XML:
             return ".xml";
-        case FileFormat::Auto:
-            return "";
         default:
             return "";
     }

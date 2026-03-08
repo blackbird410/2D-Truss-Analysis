@@ -36,8 +36,8 @@ using TrussHandle = size_t;
  */
 template <typename T>
 struct Result {
-    bool success;
-    T value;
+    bool success{false};
+    T value{};
     std::string errorMessage;
 
     /**

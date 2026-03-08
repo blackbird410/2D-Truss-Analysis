@@ -21,8 +21,7 @@ AnalysisApplicationService::analyze(const core::Truss& truss,
                                     const core::analysis::AnalysisOptions& options) {
     try {
         // Phase 1: Validate truss structure
-        core::validation::TrussValidator tempValidator;
-        auto validationResult = tempValidator.validate(truss);
+        auto validationResult = core::validation::TrussValidator::validate(truss);
         if (!validationResult.isValid()) {
             std::string errorMsg = "Truss validation failed:\n";
             for (const auto& message : validationResult.getErrorMessages()) {
@@ -140,7 +139,7 @@ void AnalysisApplicationService::clearAll() {
 }
 
 bool AnalysisApplicationService::isValidResultsHandle(ResultsHandle handle) const {
-    return m_results.find(handle) != m_results.end();
+    return m_results.contains(handle);
 }
 
 }  // namespace truss::application

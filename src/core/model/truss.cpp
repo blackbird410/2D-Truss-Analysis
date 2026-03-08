@@ -355,7 +355,7 @@ std::vector<std::string> Truss::getValidationErrors() const {
 
 Point2D Truss::getBoundingBoxMin() const {
     if (m_nodes.empty())
-        return Point2D(0, 0);
+        return {0.0, 0.0};
 
     Real minX = m_nodes[0]->getX();
     Real minY = m_nodes[0]->getY();
@@ -365,12 +365,12 @@ Point2D Truss::getBoundingBoxMin() const {
         minY = std::min(minY, node->getY());
     }
 
-    return Point2D(minX, minY);
+    return {minX, minY};
 }
 
 Point2D Truss::getBoundingBoxMax() const {
     if (m_nodes.empty())
-        return Point2D(0, 0);
+        return {0.0, 0.0};
 
     Real maxX = m_nodes[0]->getX();
     Real maxY = m_nodes[0]->getY();
@@ -380,20 +380,21 @@ Point2D Truss::getBoundingBoxMax() const {
         maxY = std::max(maxY, node->getY());
     }
 
-    return Point2D(maxX, maxY);
+    return {maxX, maxY};
 }
 
 Point2D Truss::getCentroid() const {
     if (m_nodes.empty())
         return Point2D(0, 0);
 
-    Real sumX = 0, sumY = 0;
+    Real sumX{0.0};
+    Real sumY{0.0};
     for (const auto& node : m_nodes) {
         sumX += node->getX();
         sumY += node->getY();
     }
 
-    return Point2D(sumX / m_nodes.size(), sumY / m_nodes.size());
+    return {sumX / static_cast<Real>(m_nodes.size()), sumY / static_cast<Real>(m_nodes.size())};
 }
 
 Real Truss::getTotalWeight() const {

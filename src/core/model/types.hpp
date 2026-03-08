@@ -42,19 +42,19 @@ struct Point2D {
     Point2D() = default;
     Point2D(Real x_val, Real y_val) : x(x_val), y(y_val) {}
 
-    Point2D operator+(const Point2D& other) const { return Point2D(x + other.x, y + other.y); }
+    Point2D operator+(const Point2D& other) const { return {x + other.x, y + other.y}; }
 
-    Point2D operator-(const Point2D& other) const { return Point2D(x - other.x, y - other.y); }
+    Point2D operator-(const Point2D& other) const { return {x - other.x, y - other.y}; }
 
-    Point2D operator*(Real scalar) const { return Point2D(x * scalar, y * scalar); }
+    Point2D operator*(Real scalar) const { return {x * scalar, y * scalar}; }
 
     Real distance(const Point2D& other) const {
         Real dx = x - other.x;
         Real dy = y - other.y;
-        return std::sqrt(dx * dx + dy * dy);
+        return std::sqrt((dx * dx) + (dy * dy));
     }
 
-    Vector2d toEigen() const { return Vector2d(x, y); }
+    Vector2d toEigen() const { return {x, y}; }
 };
 
 /**
@@ -67,15 +67,15 @@ struct Force2D {
     Force2D() = default;
     Force2D(Real fx_val, Real fy_val) : fx(fx_val), fy(fy_val) {}
 
-    Force2D operator+(const Force2D& other) const { return Force2D(fx + other.fx, fy + other.fy); }
+    Force2D operator+(const Force2D& other) const { return {fx + other.fx, fy + other.fy}; }
 
-    Force2D operator-(const Force2D& other) const { return Force2D(fx - other.fx, fy - other.fy); }
+    Force2D operator-(const Force2D& other) const { return {fx - other.fx, fy - other.fy}; }
 
-    Force2D operator*(Real scalar) const { return Force2D(fx * scalar, fy * scalar); }
+    Force2D operator*(Real scalar) const { return {fx * scalar, fy * scalar}; }
 
-    Real magnitude() const { return std::sqrt(fx * fx + fy * fy); }
+    Real magnitude() const { return std::sqrt((fx * fx) + (fy * fy)); }
 
-    Vector2d toEigen() const { return Vector2d(fx, fy); }
+    Vector2d toEigen() const { return {fx, fy}; }
 };
 
 /**
@@ -103,9 +103,9 @@ struct MaterialProperties {
     std::string name{"Steel"};     ///< Material name
 
     MaterialProperties() = default;
-    MaterialProperties(Real E, Real rho, Real fy, Real fu, const std::string& materialName)
+    MaterialProperties(Real E, Real rho, Real fy, Real fu, std::string materialName)
         : youngModulus(E), density(rho), yieldStrength(fy), ultimateStrength(fu),
-          name(materialName) {}
+          name(std::move(materialName)) {}
 };
 
 /**
@@ -118,8 +118,8 @@ struct SectionProperties {
     std::string designation{"Default"};  ///< Section designation
 
     SectionProperties() = default;
-    SectionProperties(Real A, Real I, Real As, const std::string& desig)
-        : area(A), momentOfInertia(I), shearArea(As), designation(desig) {}
+    SectionProperties(Real A, Real I, Real As, std::string desig)
+        : area(A), momentOfInertia(I), shearArea(As), designation(std::move(desig)) {}
 };
 
 /**

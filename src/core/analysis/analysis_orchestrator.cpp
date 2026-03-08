@@ -175,7 +175,7 @@ VectorXd AnalysisOrchestrator::computeReactions(const Truss& truss,
 
     // Extract reaction forces at constrained DOFs
     std::vector<Index> constrainedDofs = m_bcHandler->getConstrainedDofs(truss);
-    VectorXd reactions(constrainedDofs.size());
+    VectorXd reactions = VectorXd::Zero(constrainedDofs.size());
 
     for (size_t i = 0; i < constrainedDofs.size(); ++i) {
         reactions(i) = allForces(constrainedDofs[i]);

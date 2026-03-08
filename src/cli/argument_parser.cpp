@@ -12,7 +12,10 @@
 
 namespace truss::cli {
 
-ParsedArgs ArgumentParser::parse(int argc, const char* const argv[]) {
+ParsedArgs ArgumentParser::parse(
+    int argc,
+    const char* const
+        argv[]) {  // NOLINT(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
     ParsedArgs result;
 
     // Skip program name (argv[0])
@@ -67,11 +70,13 @@ bool ArgumentParser::isOption(const std::string& arg) {
 }
 
 bool ArgumentParser::isShortOption(const std::string& arg) {
-    return arg.size() >= 2 && arg[0] == '-' && arg[1] != '-';
+    return arg.size() >= 2 && arg[0] == '-' &&
+           arg[1] != '-';  // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 bool ArgumentParser::isLongOption(const std::string& arg) {
-    return arg.size() >= 3 && arg[0] == '-' && arg[1] == '-';
+    return arg.size() >= 3 && arg[0] == '-' &&
+           arg[1] == '-';  // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 std::string ArgumentParser::extractOptionName(const std::string& arg) {
@@ -80,7 +85,8 @@ std::string ArgumentParser::extractOptionName(const std::string& arg) {
         size_t start = 2;
         size_t end = arg.find('=');
         return arg.substr(start, end == std::string::npos ? end : end - start);
-    } else if (isShortOption(arg)) {
+    }
+    if (isShortOption(arg)) {
         // Extract from -n or -n=value
         size_t start = 1;
         size_t end = arg.find('=');

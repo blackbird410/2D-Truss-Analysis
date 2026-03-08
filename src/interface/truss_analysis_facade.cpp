@@ -18,8 +18,7 @@ namespace truss::interface {
 // Constructor
 // ============================================================
 
-TrussAnalysisFacade::TrussAnalysisFacade()
-    : m_trussService(), m_analysisService(), m_lastTrussHandle(0) {}
+TrussAnalysisFacade::TrussAnalysisFacade() = default;
 
 // ============================================================
 // ITrussService Operations (delegate to m_trussService)
@@ -264,16 +263,15 @@ TrussAnalysisFacade::validateFromFile(const std::filesystem::path& filepath) {
 
     if (validationResult) {
         return validationResult.value;
-    } else {
-        core::validation::ValidationResult result;
-        core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
-                                                "Validation",
-                                                "Validation process failed: " +
-                                                    validationResult.errorMessage,
-                                                "Internal error during validation");
-        result.addIssue(issue);
-        return result;
     }
+    core::validation::ValidationResult result;
+    core::validation::ValidationIssue issue(core::validation::ValidationSeverity::Fatal,
+                                            "Validation",
+                                            "Validation process failed: " +
+                                                validationResult.errorMessage,
+                                            "Internal error during validation");
+    result.addIssue(issue);
+    return result;
 }
 
 core::validation::ValidationResult TrussAnalysisFacade::validateBuilder(TrussBuilder& builder) {
@@ -289,8 +287,7 @@ core::validation::ValidationResult TrussAnalysisFacade::validateBuilder(TrussBui
         result.addIssue(issue);
         return result;
     }
-    core::validation::TrussValidator validator;
-    return validator.validate(*trussPtr);
+    return core::validation::TrussValidator::validate(*trussPtr);
 }
 
 // ============================================================
@@ -409,8 +406,8 @@ std::string TrussAnalysisFacade::formatValidationErrors(
     auto warnings = result.getWarningMessages();
     if (!warnings.empty() && warnings.size() <= 5) {
         oss << "\nWarnings:\n";
-        for (size_t i = 0; i < std::min(warnings.size(), size_t(5)); ++i) {
-            oss << "  • " << warnings[i] << "\n";
+        for (size_t i = 0; i < std::min(warnings.size(), static_cast<size_t>(5)); ++i) {
+            oss << "  • " << warnings.at(i) << "\n";
         }
         if (warnings.size() > 5) {
             oss << "  ... and " << (warnings.size() - 5) << " more warnings\n";

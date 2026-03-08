@@ -61,14 +61,14 @@ std::optional<SectionProperties> MaterialLibraryService::getSection(const std::s
 void MaterialLibraryService::addCustomMaterial(const std::string& name,
                                                const std::string& description,
                                                const MaterialProperties& properties) {
-    MaterialPreset preset{name, description, properties};
+    MaterialPreset preset{.name = name, .description = description, .properties = properties};
     m_materials[name] = preset;
 }
 
 void MaterialLibraryService::addCustomSection(const std::string& name,
                                               const std::string& description,
                                               const SectionProperties& properties) {
-    SectionPreset preset{name, description, properties};
+    SectionPreset preset{.name = name, .description = description, .properties = properties};
     m_sections[name] = preset;
 }
 
@@ -81,11 +81,11 @@ void MaterialLibraryService::addCustomSection(const std::string& name,
 }
 
 [[maybe_unused]] bool MaterialLibraryService::hasMaterial(const std::string& name) const {
-    return m_materials.find(name) != m_materials.end();
+    return m_materials.contains(name);
 }
 
 [[maybe_unused]] bool MaterialLibraryService::hasSection(const std::string& name) const {
-    return m_sections.find(name) != m_sections.end();
+    return m_sections.contains(name);
 }
 
 void MaterialLibraryService::initializeDefaultMaterials() {
@@ -208,13 +208,15 @@ void MaterialLibraryService::initializeDefaultSections() {
 void MaterialLibraryService::addMaterialInternal(const std::string& name,
                                                  const std::string& description,
                                                  const MaterialProperties& properties) {
-    m_materials[name] = MaterialPreset{name, description, properties};
+    m_materials[name] = MaterialPreset{
+        .name = name, .description = description, .properties = properties};
 }
 
 void MaterialLibraryService::addSectionInternal(const std::string& name,
                                                 const std::string& description,
                                                 const SectionProperties& properties) {
-    m_sections[name] = SectionPreset{name, description, properties};
+    m_sections[name] = SectionPreset{
+        .name = name, .description = description, .properties = properties};
 }
 
 }  // namespace truss::application

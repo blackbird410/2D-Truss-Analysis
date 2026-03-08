@@ -39,6 +39,8 @@ namespace truss::core::assembly {
  */
 class TrussAssembler {
 public:
+    TrussAssembler() = delete;  // Non-instantiable utility class
+
     /**
      * @brief Assemble a Truss Domain object from TrussDTO
      *
@@ -62,9 +64,6 @@ public:
      * @return TrussDTO containing all truss data
      */
     static interfaces::TrussDTO createDTO(const interfaces::ITrussView& truss);
-
-private:
-    TrussAssembler() = delete;  // Static utility class
 };
 
 }  // namespace truss::core::assembly

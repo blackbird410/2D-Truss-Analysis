@@ -17,19 +17,14 @@ namespace truss::core {
 Member::Member(MemberId id,
                std::shared_ptr<Node> startNode,
                std::shared_ptr<Node> endNode,
-               const MaterialProperties& material,
-               const SectionProperties& section)
+               MaterialProperties material,
+               SectionProperties section)
     : m_id(id), m_startNode(std::move(startNode)), m_endNode(std::move(endNode)),
-      m_material(material), m_section(section) {
+      m_material(std::move(material)), m_section(std::move(section)),
+      m_label("Member_" + std::to_string(id)) {
     validateNodes();
-    m_label = "Member_" + std::to_string(m_id);
     updateResults();
 }
-
-Member::Member(const Member& other)
-    : m_id(other.m_id), m_startNode(other.m_startNode), m_endNode(other.m_endNode),
-      m_material(other.m_material), m_section(other.m_section), m_label(other.m_label),
-      m_results(other.m_results) {}
 
 Member& Member::operator=(const Member& other) {
     if (this != &other) {
@@ -128,7 +123,7 @@ bool Member::isParallelTo(const Member& other, Real tolerance) const {
     // For 2D vectors, cross product is the z-component of 3D cross product
     Vector2d dir1 = getDirection();
     Vector2d dir2 = other.getDirection();
-    Real crossProduct = dir1.x() * dir2.y() - dir1.y() * dir2.x();
+    Real crossProduct = (dir1.x() * dir2.y()) - (dir1.y() * dir2.x());
     return truss::utils::math::isZero(crossProduct, tolerance);
 }
 
@@ -137,7 +132,7 @@ bool Member::isPerpendicularTo(const Member& other, Real tolerance) const {
 }
 
 bool Member::isValid() const {
-    return !(hasZeroLength() || !m_startNode || !m_endNode);
+    return !hasZeroLength() && m_startNode && m_endNode;
 }
 
 bool Member::hasZeroLength(Real tolerance) const {
@@ -146,7 +141,7 @@ bool Member::hasZeroLength(Real tolerance) const {
 
 Matrix2d Member::getTransformationMatrix() const {
     Vector2d unitVec = getUnitVector();
-    Matrix2d transformation;
+    Matrix2d transformation = Matrix2d::Zero();
     transformation << unitVec.x(), unitVec.y(), -unitVec.y(), unitVec.x();
     return transformation;
 }
@@ -157,8 +152,8 @@ std::vector<Index> Member::getGlobalDofIndices() const {
 }
 
 Point2D Member::getMidpoint() const {
-    return Point2D((m_startNode->getX() + m_endNode->getX()) / 2.0,
-                   (m_startNode->getY() + m_endNode->getY()) / 2.0);
+    return {(m_startNode->getX() + m_endNode->getX()) / 2.0,
+            (m_startNode->getY() + m_endNode->getY()) / 2.0};
 }
 
 Real Member::getSlope() const {
@@ -178,7 +173,7 @@ bool Member::intersectsWith(const Member& other, Real tolerance) const {
     // Check if lines are collinear or parallel
     Vector2d dir1 = getDirection();
     Vector2d dir2 = other.getDirection();
-    Real crossProduct = dir1.x() * dir2.y() - dir1.y() * dir2.x();
+    Real crossProduct = (dir1.x() * dir2.y()) - (dir1.y() * dir2.x());
 
     if (truss::utils::math::isZero(crossProduct, tolerance)) {
         // Lines are parallel or collinear
@@ -193,13 +188,13 @@ bool Member::intersectsWith(const Member& other, Real tolerance) const {
     Real dx12 = p1.x - p2.x;
     Real dy12 = p1.y - p2.y;
 
-    Real denom = dx1 * dy2 - dy1 * dx2;
+    Real denom = (dx1 * dy2) - (dy1 * dx2);
     if (truss::utils::math::isZero(denom, tolerance)) {
         return false;
     }
 
-    Real t1 = (dx2 * dy12 - dy2 * dx12) / denom;
-    Real t2 = (dx1 * dy12 - dy1 * dx12) / denom;
+    Real t1 = ((dx2 * dy12) - (dy2 * dx12)) / denom;
+    Real t2 = ((dx1 * dy12) - (dy1 * dx12)) / denom;
 
     // Check if intersection point lies within both line segments
     return (t1 >= -tolerance && t1 <= 1.0 + tolerance && t2 >= -tolerance && t2 <= 1.0 + tolerance);
@@ -220,19 +215,19 @@ Point2D Member::getIntersectionPoint(const Member& other) const {
     Real dx12 = p1.x - p2.x;
     Real dy12 = p1.y - p2.y;
 
-    Real denom = dx1 * dy2 - dy1 * dx2;
+    Real denom = (dx1 * dy2) - (dy1 * dx2);
     if (truss::utils::math::isZero(denom)) {
         // Lines are parallel or collinear - no unique intersection
         throw std::runtime_error(
             "Cannot calculate intersection point: lines are parallel or collinear");
     }
 
-    Real t1 = (dx2 * dy12 - dy2 * dx12) / denom;
+    Real t1 = ((dx2 * dy12) - (dy2 * dx12)) / denom;
 
     // Calculate intersection point using parameter t1
     Point2D intersection;
-    intersection.x = p1.x + t1 * dx1;
-    intersection.y = p1.y + t1 * dy1;
+    intersection.x = p1.x + (t1 * dx1);
+    intersection.y = p1.y + (t1 * dy1);
 
     return intersection;
 }

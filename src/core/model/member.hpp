@@ -35,11 +35,11 @@ public:
     Member(MemberId id,
            std::shared_ptr<Node> startNode,
            std::shared_ptr<Node> endNode,
-           const MaterialProperties& material = MaterialProperties{},
-           const SectionProperties& section = SectionProperties{});
+           MaterialProperties material = MaterialProperties{},
+           SectionProperties section = SectionProperties{});
 
     // Copy constructor (deep copy of properties, shared nodes)
-    Member(const Member& other);
+    Member(const Member& other) = default;
 
     // Move constructor
     Member(Member&& other) noexcept = default;

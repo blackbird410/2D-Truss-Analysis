@@ -183,19 +183,20 @@ public:
 
 private:
     struct NodeData {
-        double x, y;
-        core::SupportType support;
+        double x{0.0};
+        double y{0.0};
+        core::SupportType support{core::SupportType::Free};
     };
 
     struct MemberData {
-        core::NodeId startNodeId;
-        core::NodeId endNodeId;
-        application::MaterialSpec material;
-        application::SectionSpec section;
+        core::NodeId startNodeId{0};
+        core::NodeId endNodeId{0};
+        application::MaterialSpec material{};
+        application::SectionSpec section{};
     };
 
     struct ForceData {
-        core::NodeId nodeId;
+        core::NodeId nodeId{0};
         core::Force2D force;
     };
 

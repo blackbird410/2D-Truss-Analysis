@@ -282,7 +282,6 @@ public:
 private:
     std::unordered_map<TrussHandle, std::shared_ptr<core::Truss>> m_trusses;
     std::unordered_map<TrussHandle, bool> m_modifiedFlags;  // Track unsaved changes
-    core::validation::TrussValidator m_validator;
     TrussHandle m_nextHandle{1};
 
     TrussHandle generateHandle() { return m_nextHandle++; }

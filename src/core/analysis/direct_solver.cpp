@@ -42,20 +42,19 @@ VectorXd DirectSolver::solve(const MatrixXd& A, const VectorXd& b) const {
         // Solve the system
         VectorXd x = ldlt.solve(b);
         return x;
-    } else {
-        // Use FullPivLU for general non-symmetric matrices
-        // This is more robust for ill-conditioned and rank-deficient matrices
-        Eigen::FullPivLU<MatrixXd> lu(A);
-
-        // Check if matrix is singular
-        if (!lu.isInvertible()) {
-            throw std::runtime_error("DirectSolver: Matrix is singular or rank-deficient");
-        }
-
-        // Solve the system
-        VectorXd x = lu.solve(b);
-        return x;
     }
+    // Use FullPivLU for general non-symmetric matrices
+    // This is more robust for ill-conditioned and rank-deficient matrices
+    Eigen::FullPivLU<MatrixXd> lu(A);
+
+    // Check if matrix is singular
+    if (!lu.isInvertible()) {
+        throw std::runtime_error("DirectSolver: Matrix is singular or rank-deficient");
+    }
+
+    // Solve the system
+    VectorXd x = lu.solve(b);
+    return x;
 }
 
 }  // namespace truss::core::analysis
