@@ -26,8 +26,8 @@ namespace truss::application {
  * without exposing Domain implementation details.
  */
 struct MaterialSpec {
-    double youngsModulusPa;  ///< Young's modulus in Pascals
-    std::string name;        ///< Material name (e.g., "Steel", "Aluminum")
+    double youngsModulusPa{0.0};  ///< Young's modulus in Pascals
+    std::string name;             ///< Material name (e.g., "Steel", "Aluminum")
 
     /**
      * @brief Predefined steel material (E = 200 GPa)
@@ -52,8 +52,8 @@ struct MaterialSpec {
  * without exposing Domain implementation details.
  */
 struct SectionSpec {
-    double areaM2;        ///< Cross-sectional area in square meters
-    std::string profile;  ///< Section profile description (e.g., "Square", "Circular")
+    double areaM2{0.0};       ///< Cross-sectional area in square meters
+    std::string profile;      ///< Section profile description (e.g., "Square", "Circular")
 
     /**
      * @brief Create circular section from diameter

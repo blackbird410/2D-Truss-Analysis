@@ -27,10 +27,10 @@ namespace truss::core::interfaces {
  * the full Node class interface to Infrastructure.
  */
 struct NodeView {
-    NodeId id;            ///< Unique node identifier
-    Real x;               ///< World-space X coordinate (metres, X+ rightward)
-    Real y;               ///< World-space Y coordinate (metres, Y+ upward)
-    SupportType support;  ///< Boundary-condition type (Free / Pinned / RollerX / RollerY)
+    NodeId id{0};                   ///< Unique node identifier
+    Real x{0.0};                    ///< World-space X coordinate (metres, X+ rightward)
+    Real y{0.0};                    ///< World-space Y coordinate (metres, Y+ upward)
+    SupportType support{SupportType::Free};  ///< Boundary-condition type (Free / Pinned / RollerX / RollerY)
     Real fx{0.0};         ///< Applied force X-component (N)
     Real fy{0.0};         ///< Applied force Y-component (N)
     Real dx{0.0};         ///< Displacement X-component (metres, from analysis results)
@@ -46,22 +46,22 @@ struct NodeView {
  * the full Member class interface to Infrastructure.
  */
 struct MemberView {
-    MemberId id;         ///< Unique member identifier
-    NodeId startNodeId;  ///< ID of the member's start node
-    NodeId endNodeId;    ///< ID of the member's end node
-    std::string label;   ///< Optional display label
+    MemberId id{0};         ///< Unique member identifier
+    NodeId startNodeId{0};  ///< ID of the member's start node
+    NodeId endNodeId{0};    ///< ID of the member's end node
+    std::string label;     ///< Optional display label
 
     // Material properties
-    Real youngModulus;   ///< Young's modulus E (Pa)
-    Real yieldStrength;  ///< Yield strength f_y (Pa)
-    Real density;        ///< Mass density ρ (kg/m³)
+    Real youngModulus{0.0};   ///< Young's modulus E (Pa)
+    Real yieldStrength{0.0};  ///< Yield strength f_y (Pa)
+    Real density{0.0};        ///< Mass density ρ (kg/m³)
 
     // Section properties
-    Real area;  ///< Cross-sectional area A (m²)
+    Real area{0.0};  ///< Cross-sectional area A (m²)
 
     // Geometric properties (computed)
-    Real length;  ///< Member length L (metres)
-    Real angle;   ///< Angle with respect to global X-axis (radians)
+    Real length{0.0};  ///< Member length L (metres)
+    Real angle{0.0};   ///< Angle with respect to global X-axis (radians)
 
     // Analysis results
     Real axialForce{0.0};

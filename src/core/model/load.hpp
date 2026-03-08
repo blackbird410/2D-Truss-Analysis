@@ -88,11 +88,11 @@ public:
     bool operator!=(const Load& other) const;
 
 private:
-    LoadId m_id;          ///< Unique identifier
-    NodeId m_nodeId;      ///< Node where load is applied
-    LoadType m_type;      ///< Type of load
-    Force2D m_force;      ///< Force vector
-    std::string m_label;  ///< Descriptive label
+    LoadId m_id{0};                        ///< Unique identifier
+    NodeId m_nodeId{0};                    ///< Node where load is applied
+    LoadType m_type{LoadType::NodalForce}; ///< Type of load
+    Force2D m_force;                      ///< Force vector
+    std::string m_label;                   ///< Descriptive label
 };
 
 // Type alias for load pointer
