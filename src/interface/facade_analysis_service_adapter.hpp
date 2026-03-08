@@ -48,7 +48,7 @@ public:
     bool isValidResultsHandle(application::ResultsHandle handle) const override;
 
 private:
-    truss::interface::ITrussAnalysisFacade& m_facade;
+    truss::interface::ITrussAnalysisFacade& m_facade;  // NOLINT(cppcoreguidelines-avoid-const-or-ref-data-members)
 };
 
 }  // namespace truss::interface
