@@ -149,7 +149,15 @@ public:
     application::Result<bool> clearNodeLoad(application::TrussHandle handle,
                                             core::NodeId nodeId) override;
 
-    // IAnalysisService operations
+    application::Result<bool>
+    updateNode(application::TrussHandle handle,
+               core::NodeId nodeId,
+               const application::NodeUpdateSpec& update) override;
+
+    application::Result<bool>
+    updateMember(application::TrussHandle handle,
+                 core::MemberId memberId,
+                 const application::MemberUpdateSpec& update) override;
     application::Result<application::ResultsHandle>
     analyze(const core::Truss& truss, const core::analysis::AnalysisOptions& options = {}) override;
 
