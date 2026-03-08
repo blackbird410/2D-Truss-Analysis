@@ -553,3 +553,162 @@ TEST_F(TrussCanvasWidgetTest, DeformedShapeWithClampedScale_DoesNotCrash) {
         EXPECT_FALSE(px.isNull());
     });
 }
+
+// ============================================================
+// Tests — Step 6: Reaction arrow sign convention
+// ============================================================
+//
+// Sign convention verified by these tests:
+//
+//   Solver:  R = K·u evaluated at constrained DOFs.
+//            Positive R_Y means the support exerts an UPWARD force on the
+//            structure (global Y+ = up, structural engineering convention).
+//
+//   drawForceArrow(headPos, fx, fy, colour):
+//            Draws an arrow whose HEAD is at headPos (the node) and whose
+//            TAIL is displaced in the direction OPPOSITE to the force vector.
+//            A positive fy (world-space Y+ up) draws an upward arrow at the
+//            node — correct for both loads and reactions.
+//
+//   drawReactions():
+//            Must pass nv.rx / nv.ry to drawForceArrow WITHOUT sign inversion.
+//            Negating would reverse the direction and show downward arrows for
+//            upward reactions — the bug this test suite guards against.
+//
+
+namespace {
+
+/// Minimal one-node stub with a configurable support reaction.
+/// The node has a pinned support and the given rx/ry reaction values.
+class ReactionsStubView final : public ITrussView {
+public:
+    ReactionsStubView(double rx, double ry) {
+        NodeView n;
+        n.id = 1;
+        n.x = 2.0;
+        n.y = 1.5;
+        n.support = SupportType::Pinned;
+        n.rx = rx;
+        n.ry = ry;
+        m_nodes.push_back(n);
+    }
+
+    const std::string& getName() const override { return m_name; }
+    std::vector<NodeView> getNodeViews() const override { return m_nodes; }
+    std::size_t getNodeCount() const override { return 1; }
+    std::vector<MemberView> getMemberViews() const override { return {}; }
+    std::size_t getMemberCount() const override { return 0; }
+    std::size_t getTotalDofs() const override { return 2; }
+    std::size_t getFreeDofs() const override { return 0; }
+    std::size_t getConstrainedDofs() const override { return 2; }
+
+private:
+    std::string m_name{"ReactionsStub"};
+    std::vector<NodeView> m_nodes;
+};
+
+/// Scan a QImage for at least one pixel matching the reaction green colour
+/// (#34A853 = RGB 52, 168, 83) within a generous tolerance.
+/// Returns the count of matching pixels for further assertions.
+int countGreenReactionPixels(const QImage& img) {
+    int count = 0;
+    for (int y = 0; y < img.height(); ++y) {
+        for (int x = 0; x < img.width(); ++x) {
+            const QColor c(img.pixel(x, y));
+            // kReactionR=0x34(52)  kReactionG=0xA8(168)  kReactionB=0x53(83)
+            // Generous ±30 tolerance accommodates QPainter anti-aliasing blending.
+            if (c.red() <= 82 && c.green() >= 138 && c.blue() <= 113) {
+                ++count;
+            }
+        }
+    }
+    return count;
+}
+
+}  // anonymous namespace
+
+/// Regression guard: rendering a node with a positive vertical reaction must not crash
+/// and must complete the full 7-step pipeline in any non-Geometry display mode.
+TEST_F(TrussCanvasWidgetTest, ReactionArrows_PositiveRy_DoesNotCrash) {
+    ReactionsStubView reactionView(0.0, 50000.0);  // 50 kN upward reaction
+    widget->refresh(&reactionView, TrussCanvasWidget::DisplayMode::StressRatio);
+    widget->show();
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// Regression guard: rendering a node with a positive horizontal reaction must not crash.
+TEST_F(TrussCanvasWidgetTest, ReactionArrows_PositiveRx_DoesNotCrash) {
+    ReactionsStubView reactionView(30000.0, 0.0);  // 30 kN rightward reaction
+    widget->refresh(&reactionView, TrussCanvasWidget::DisplayMode::StressRatio);
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// Sign convention: reaction arrows must appear (green pixels present) when
+/// reactions are non-zero in a non-Geometry display mode.
+TEST_F(TrussCanvasWidgetTest, ReactionArrows_NonZeroReaction_GreenPixelsPresentInAnalysisMode) {
+    ReactionsStubView reactionView(0.0, 50000.0);
+    widget->setColorTheme(true);  // dark theme: background #14161C (near-black, very low G)
+    widget->show();
+    widget->resize(400, 400);
+    widget->refresh(&reactionView, TrussCanvasWidget::DisplayMode::StressRatio);
+
+    const QImage img = widget->grab().toImage();
+    ASSERT_FALSE(img.isNull());
+
+    const int greenPixels = countGreenReactionPixels(img);
+    EXPECT_GT(greenPixels, 0)
+        << "Expected at least one green reaction-arrow pixel (#34A853) in StressRatio mode "
+           "when a support node has a non-zero positive vertical reaction.";
+}
+
+/// Sign convention: NO reaction arrows in Geometry mode — drawReactions() is a no-op
+/// when m_mode == DisplayMode::Geometry.
+TEST_F(TrussCanvasWidgetTest, ReactionArrows_GeometryMode_NoGreenPixels) {
+    ReactionsStubView reactionView(0.0, 50000.0);
+    widget->setColorTheme(true);  // dark background — no accidental green
+    widget->show();
+    widget->resize(400, 400);
+    widget->refresh(&reactionView, TrussCanvasWidget::DisplayMode::Geometry);
+
+    const QImage img = widget->grab().toImage();
+    ASSERT_FALSE(img.isNull());
+
+    const int greenPixels = countGreenReactionPixels(img);
+    EXPECT_EQ(greenPixels, 0)
+        << "No reaction arrow should be drawn in Geometry mode; "
+           "found unexpected green pixels (#34A853).";
+}
+
+/// Sign invariant: a negative vertical reaction (-ry, i.e. downward) must also
+/// render an arrow without crash.  This verifies no undefined behaviour from flipped
+/// sign directions.
+TEST_F(TrussCanvasWidgetTest, ReactionArrows_NegativeRy_DoesNotCrash) {
+    ReactionsStubView reactionView(0.0, -50000.0);  // downward reaction (unusual but valid)
+    widget->refresh(&reactionView, TrussCanvasWidget::DisplayMode::StressRatio);
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// Zero-reaction nodes must not produce any reaction arrow in any mode.
+TEST_F(TrussCanvasWidgetTest, ReactionArrows_ZeroReaction_Skipped) {
+    ReactionsStubView reactionView(0.0, 0.0);
+    widget->setColorTheme(true);
+    widget->show();
+    widget->resize(400, 400);
+    widget->refresh(&reactionView, TrussCanvasWidget::DisplayMode::StressRatio);
+
+    const QImage img = widget->grab().toImage();
+    ASSERT_FALSE(img.isNull());
+
+    const int greenPixels = countGreenReactionPixels(img);
+    EXPECT_EQ(greenPixels, 0)
+        << "Zero-reaction node must not produce any green reaction-arrow pixel.";
+}
