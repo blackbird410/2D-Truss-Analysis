@@ -97,7 +97,7 @@ public:
     TrussAnalysisFacade(TrussAnalysisFacade&&) noexcept = default;
     TrussAnalysisFacade& operator=(TrussAnalysisFacade&&) noexcept = default;
 
-    ~TrussAnalysisFacade() = default;
+    ~TrussAnalysisFacade() override = default;
 
     // ============================================================
     // Public Service Operations (for adapter delegation)
