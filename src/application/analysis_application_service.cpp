@@ -139,7 +139,7 @@ void AnalysisApplicationService::clearAll() {
 }
 
 bool AnalysisApplicationService::isValidResultsHandle(ResultsHandle handle) const {
-    return m_results.find(handle) != m_results.end();
+    return m_results.contains(handle);
 }
 
 }  // namespace truss::application

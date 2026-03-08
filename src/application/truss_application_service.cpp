@@ -188,7 +188,7 @@ void TrussApplicationService::clearAll() {
 }
 
 bool TrussApplicationService::isValidTrussHandle(TrussHandle handle) const {
-    return m_trusses.find(handle) != m_trusses.end();
+    return m_trusses.contains(handle);
 }
 
 // ============================================================

@@ -81,11 +81,11 @@ void MaterialLibraryService::addCustomSection(const std::string& name,
 }
 
 [[maybe_unused]] bool MaterialLibraryService::hasMaterial(const std::string& name) const {
-    return m_materials.find(name) != m_materials.end();
+    return m_materials.contains(name);
 }
 
 [[maybe_unused]] bool MaterialLibraryService::hasSection(const std::string& name) const {
-    return m_sections.find(name) != m_sections.end();
+    return m_sections.contains(name);
 }
 
 void MaterialLibraryService::initializeDefaultMaterials() {
