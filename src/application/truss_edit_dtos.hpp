@@ -32,17 +32,17 @@ struct MaterialSpec {
     /**
      * @brief Predefined steel material (E = 200 GPa)
      */
-    [[maybe_unused]] static MaterialSpec Steel() { return {200e9, "Steel"}; }
+    [[maybe_unused]] static MaterialSpec Steel() { return {.youngsModulusPa = 200e9, .name = "Steel"}; }
 
     /**
      * @brief Predefined aluminum material (E = 69 GPa)
      */
-    [[maybe_unused]] static MaterialSpec Aluminum() { return {69e9, "Aluminum"}; }
+    [[maybe_unused]] static MaterialSpec Aluminum() { return {.youngsModulusPa = 69e9, .name = "Aluminum"}; }
 
     /**
      * @brief Predefined concrete material (E = 30 GPa)
      */
-    [[maybe_unused]] static MaterialSpec Concrete() { return {30e9, "Concrete"}; }
+    [[maybe_unused]] static MaterialSpec Concrete() { return {.youngsModulusPa = 30e9, .name = "Concrete"}; }
 };
 
 /**
