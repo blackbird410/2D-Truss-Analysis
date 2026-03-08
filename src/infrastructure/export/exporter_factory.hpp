@@ -34,6 +34,8 @@ namespace truss::infrastructure::export_ {
  */
 class ExporterFactory {
 public:
+    ExporterFactory() = delete;  // Non-instantiable utility class
+
     /**
      * @brief Create an exporter for the specified format
      *
@@ -76,9 +78,6 @@ public:
      */
     static std::string getFormatName(ExportFormat format);
 
-private:
-    // Factory is a utility class, no instantiation
-    ExporterFactory() = delete;
 };
 
 }  // namespace truss::infrastructure::export_
