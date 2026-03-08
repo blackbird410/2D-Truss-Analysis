@@ -151,8 +151,8 @@ std::vector<Index> Member::getGlobalDofIndices() const {
 }
 
 Point2D Member::getMidpoint() const {
-    return Point2D((m_startNode->getX() + m_endNode->getX()) / 2.0,
-                   (m_startNode->getY() + m_endNode->getY()) / 2.0);
+    return {(m_startNode->getX() + m_endNode->getX()) / 2.0,
+            (m_startNode->getY() + m_endNode->getY()) / 2.0};
 }
 
 Real Member::getSlope() const {

@@ -355,7 +355,7 @@ std::vector<std::string> Truss::getValidationErrors() const {
 
 Point2D Truss::getBoundingBoxMin() const {
     if (m_nodes.empty())
-        return Point2D(0, 0);
+        return {0.0, 0.0};
 
     Real minX = m_nodes[0]->getX();
     Real minY = m_nodes[0]->getY();
@@ -365,12 +365,12 @@ Point2D Truss::getBoundingBoxMin() const {
         minY = std::min(minY, node->getY());
     }
 
-    return Point2D(minX, minY);
+    return {minX, minY};
 }
 
 Point2D Truss::getBoundingBoxMax() const {
     if (m_nodes.empty())
-        return Point2D(0, 0);
+        return {0.0, 0.0};
 
     Real maxX = m_nodes[0]->getX();
     Real maxY = m_nodes[0]->getY();
@@ -380,7 +380,7 @@ Point2D Truss::getBoundingBoxMax() const {
         maxY = std::max(maxY, node->getY());
     }
 
-    return Point2D(maxX, maxY);
+    return {maxX, maxY};
 }
 
 Point2D Truss::getCentroid() const {
