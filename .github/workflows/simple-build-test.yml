@@ -85,17 +85,18 @@ jobs:
             libatspi2.0-dev \
             xvfb
 
-          # Testing tools
+          # Testing tools (downloaded but NOT built/installed — tests are
+          # disabled via BUILD_TESTING=OFF so GTest targets are never needed
+          # during CMake configuration)
           sudo apt-get install -y \
             libgtest-dev \
             libgmock-dev
 
-          # Build and install gtest/gmock (Ubuntu packages only provide sources)
-          echo "Building and installing Google Test..."
-          cd /usr/src/googletest
-          sudo cmake .
-          sudo cmake --build . --target install
-          cd -
+          # Note: libgtest-dev on Ubuntu provides only source files, not
+          # compiled libraries or CMake imported targets.  Building and
+          # installing them here would be wasted work because this workflow
+          # passes -DBUILD_TESTING=OFF.  The dedicated build-and-test.yml
+          # workflow handles GTest compilation for full test runs.
 
       - name: Verify dependencies
         run: |
