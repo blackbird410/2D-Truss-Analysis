@@ -81,6 +81,40 @@ public:
     applyNodeLoad(TrussHandle handle, core::NodeId nodeId, const core::Force2D& force) = 0;
 
     virtual Result<bool> clearNodeLoad(TrussHandle handle, core::NodeId nodeId) = 0;
+
+    // ================================================================
+    // Update operations  (preserve ID and structural identity)
+    // ================================================================
+
+    /**
+     * @brief Update an existing node's position in-place.
+     *
+     * The node's ID, support condition, and applied loads are NOT affected.
+     * Connected members retain their connectivity; their lengths and angles
+     * are recomputed from the updated node coordinates on demand.
+     *
+     * @param handle  Truss handle.
+     * @param nodeId  ID of the node to update.
+     * @param update  New position (x, y in metres).
+     * @return        Result<bool> — true on success, failure with message otherwise.
+     */
+    virtual Result<bool>
+    updateNode(TrussHandle handle, core::NodeId nodeId, const NodeUpdateSpec& update) = 0;
+
+    /**
+     * @brief Update an existing member's material and section properties in-place.
+     *
+     * The member's ID and node connectivity are preserved.  Only the
+     * material stiffness and cross-section area are replaced.  The caller
+     * must re-run analysis to obtain updated results.
+     *
+     * @param handle    Truss handle.
+     * @param memberId  ID of the member to update.
+     * @param update    New material and section specifications.
+     * @return          Result<bool> — true on success, failure with message otherwise.
+     */
+    virtual Result<bool>
+    updateMember(TrussHandle handle, core::MemberId memberId, const MemberUpdateSpec& update) = 0;
 };
 
 }  // namespace truss::application
