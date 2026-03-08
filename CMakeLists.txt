@@ -65,9 +65,14 @@ if(NOT tinyxml2_FOUND)
     endif()
 endif()
 
-# Enable testing
+# Enable testing (only when tests are requested)
+# include(CTest) must come before the BUILD_TESTING guard because it is the
+# module that defines the BUILD_TESTING cache variable with its default value
+# of ON.  Any -DBUILD_TESTING=OFF passed on the command line takes precedence.
 include(CTest)
-enable_testing()
+if(BUILD_TESTING)
+    enable_testing()
+endif()
 
 # Find Google Test (for unit testing)
 if(BUILD_TESTING)
@@ -556,8 +561,12 @@ if(BUILD_TESTING)
 
 endif()
 
-# GUI Integration Tests (GTest framework) - only if Qt is available
-if(BUILD_GUI)
+# GUI Integration Tests (GTest framework) - only if Qt and testing are both enabled.
+# This block MUST be guarded by BUILD_TESTING because it links against GTest
+# targets (GTest::gtest, GTest::gmock) that are only discovered when
+# BUILD_TESTING is ON.  Without this guard, configuring with
+# -DBUILD_TESTING=OFF would fail with "target not found" errors.
+if(BUILD_GUI AND BUILD_TESTING)
     message(STATUS "Building GUI integration tests (GTest)")
 
     # GUI Integration Tests (GTest + new architecture signal/slot wiring)
