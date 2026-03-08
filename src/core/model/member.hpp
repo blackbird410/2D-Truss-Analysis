@@ -148,11 +148,11 @@ public:
 
 private:
     MemberId m_id{0};                   ///< Unique member identifier
-    std::shared_ptr<Node> m_startNode;   ///< Start node
-    std::shared_ptr<Node> m_endNode;     ///< End node
+    std::shared_ptr<Node> m_startNode;  ///< Start node
+    std::shared_ptr<Node> m_endNode;    ///< End node
     MaterialProperties m_material;      ///< Material properties
     SectionProperties m_section;        ///< Section properties
-    std::string m_label;                 ///< Member label
+    std::string m_label;                ///< Member label
 
     // Analysis results
     MemberResults m_results;  ///< Member analysis results

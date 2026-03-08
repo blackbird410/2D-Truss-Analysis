@@ -41,8 +41,8 @@ struct ValidationIssue {
     std::string category;                   ///< e.g., "Geometry", "Boundary", "Material"
     std::string message;                    ///< Human-readable description
     std::string technicalDetail;            ///< Technical explanation for engineers
-    std::vector<NodeId> affectedNodes;       ///< Nodes involved in the issue
-    std::vector<MemberId> affectedMembers;   ///< Members involved in the issue
+    std::vector<NodeId> affectedNodes;      ///< Nodes involved in the issue
+    std::vector<MemberId> affectedMembers;  ///< Members involved in the issue
 
     ValidationIssue(ValidationSeverity sev,
                     std::string cat,

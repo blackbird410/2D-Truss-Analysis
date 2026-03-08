@@ -138,7 +138,6 @@ public:
      */
     [[maybe_unused]] static std::unique_ptr<ILinearSolver>
     createIterativeSolver(int maxIterations = 1000, double tolerance = 1e-9);
-
 };
 
 }  // namespace truss::core::analysis

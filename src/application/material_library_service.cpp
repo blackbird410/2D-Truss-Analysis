@@ -208,13 +208,15 @@ void MaterialLibraryService::initializeDefaultSections() {
 void MaterialLibraryService::addMaterialInternal(const std::string& name,
                                                  const std::string& description,
                                                  const MaterialProperties& properties) {
-    m_materials[name] = MaterialPreset{.name = name, .description = description, .properties = properties};
+    m_materials[name] = MaterialPreset{
+        .name = name, .description = description, .properties = properties};
 }
 
 void MaterialLibraryService::addSectionInternal(const std::string& name,
                                                 const std::string& description,
                                                 const SectionProperties& properties) {
-    m_sections[name] = SectionPreset{.name = name, .description = description, .properties = properties};
+    m_sections[name] = SectionPreset{
+        .name = name, .description = description, .properties = properties};
 }
 
 }  // namespace truss::application

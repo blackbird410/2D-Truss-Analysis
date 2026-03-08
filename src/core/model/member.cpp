@@ -20,7 +20,8 @@ Member::Member(MemberId id,
                MaterialProperties material,
                SectionProperties section)
     : m_id(id), m_startNode(std::move(startNode)), m_endNode(std::move(endNode)),
-      m_material(std::move(material)), m_section(std::move(section)), m_label("Member_" + std::to_string(id)) {
+      m_material(std::move(material)), m_section(std::move(section)),
+      m_label("Member_" + std::to_string(id)) {
     validateNodes();
     updateResults();
 }

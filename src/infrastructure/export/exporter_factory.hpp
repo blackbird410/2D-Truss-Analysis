@@ -77,7 +77,6 @@ public:
      * @return Format name (e.g., "Comma-Separated Values", "JSON")
      */
     static std::string getFormatName(ExportFormat format);
-
 };
 
 }  // namespace truss::infrastructure::export_

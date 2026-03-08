@@ -27,14 +27,15 @@ namespace truss::core::interfaces {
  * the full Node class interface to Infrastructure.
  */
 struct NodeView {
-    NodeId id{0};                   ///< Unique node identifier
-    Real x{0.0};                    ///< World-space X coordinate (metres, X+ rightward)
-    Real y{0.0};                    ///< World-space Y coordinate (metres, Y+ upward)
-    SupportType support{SupportType::Free};  ///< Boundary-condition type (Free / Pinned / RollerX / RollerY)
-    Real fx{0.0};         ///< Applied force X-component (N)
-    Real fy{0.0};         ///< Applied force Y-component (N)
-    Real dx{0.0};         ///< Displacement X-component (metres, from analysis results)
-    Real dy{0.0};         ///< Displacement Y-component (metres, from analysis results)
+    NodeId id{0};  ///< Unique node identifier
+    Real x{0.0};   ///< World-space X coordinate (metres, X+ rightward)
+    Real y{0.0};   ///< World-space Y coordinate (metres, Y+ upward)
+    SupportType support{
+        SupportType::Free};  ///< Boundary-condition type (Free / Pinned / RollerX / RollerY)
+    Real fx{0.0};            ///< Applied force X-component (N)
+    Real fy{0.0};            ///< Applied force Y-component (N)
+    Real dx{0.0};            ///< Displacement X-component (metres, from analysis results)
+    Real dy{0.0};            ///< Displacement Y-component (metres, from analysis results)
     Real rx{0.0};  ///< Reaction force X-component (N, from analysis results; positive = rightward)
     Real ry{0.0};  ///< Reaction force Y-component (N, from analysis results; positive = upward)
 };
@@ -49,7 +50,7 @@ struct MemberView {
     MemberId id{0};         ///< Unique member identifier
     NodeId startNodeId{0};  ///< ID of the member's start node
     NodeId endNodeId{0};    ///< ID of the member's end node
-    std::string label;     ///< Optional display label
+    std::string label;      ///< Optional display label
 
     // Material properties
     Real youngModulus{0.0};   ///< Young's modulus E (Pa)
