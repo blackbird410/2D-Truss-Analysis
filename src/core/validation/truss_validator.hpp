@@ -41,14 +41,15 @@ struct ValidationIssue {
     std::string category;                   ///< e.g., "Geometry", "Boundary", "Material"
     std::string message;                    ///< Human-readable description
     std::string technicalDetail;            ///< Technical explanation for engineers
-    std::vector<NodeId> affectedNodes;      ///< Nodes involved in the issue
-    std::vector<MemberId> affectedMembers;  ///< Members involved in the issue
+    std::vector<NodeId> affectedNodes;       ///< Nodes involved in the issue
+    std::vector<MemberId> affectedMembers;   ///< Members involved in the issue
 
     ValidationIssue(ValidationSeverity sev,
-                    const std::string& cat,
-                    const std::string& msg,
-                    const std::string& detail = "")
-        : severity(sev), category(cat), message(msg), technicalDetail(detail) {}
+                    std::string cat,
+                    std::string msg,
+                    std::string detail = "")
+        : severity(sev), category(std::move(cat)), message(std::move(msg)),
+          technicalDetail(std::move(detail)) {}
 };
 
 /**
