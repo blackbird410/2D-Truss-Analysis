@@ -166,8 +166,8 @@ TEST_F(InspectorPanelTest, ApplyLoadButton_EmitsLoadChangeRequested) {
 
     QSignalSpy spy{panel.get(), &InspectorPanel::loadChangeRequested};
 
-    auto* btn = panel->findChild<QPushButton*>();
-    ASSERT_NE(btn, nullptr) << "Expected an Apply Load QPushButton on node editor page";
+    auto* btn = panel->findChild<QPushButton*>("inspector_applyLoadBtn");
+    ASSERT_NE(btn, nullptr) << "Expected inspector_applyLoadBtn QPushButton on node editor page";
     QTest::mouseClick(btn, Qt::LeftButton);
     QApplication::processEvents();
 
