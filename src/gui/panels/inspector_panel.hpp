@@ -37,6 +37,7 @@ using truss::application::SectionSpec;
 using truss::core::Force2D;
 using truss::core::MemberId;
 using truss::core::NodeId;
+using truss::core::Point2D;
 using truss::core::SupportType;
 using truss::core::interfaces::MemberView;
 using truss::core::interfaces::NodeView;
@@ -91,6 +92,14 @@ signals:
     void loadChangeRequested(NodeId nodeId, Force2D load);
 
     /**
+     * @brief Emitted when the user edits the node coordinates and clicks
+     *        "Apply Position".
+     *
+     * Connect to InspectorController::onNodePositionChangeRequested.
+     */
+    void nodePositionChangeRequested(NodeId nodeId, truss::core::Point2D newPosition);
+
+    /**
      * @brief Emitted when the user clicks "Apply Changes" on the member editor.
      *
      * Carries the selected member ID plus the new material and section specs.
@@ -108,6 +117,7 @@ signals:
 
 private slots:
     void onApplyLoadClicked();
+    void onApplyPositionClicked();
     void onSupportComboChanged(int index);
     void onApplyMemberClicked();
     void onMaterialComboChanged(int index);
@@ -142,8 +152,9 @@ private:
 
     // Node editor widgets
     QLabel* m_nodeIdLabel{nullptr};
-    QLabel* m_nodeXLabel{nullptr};
-    QLabel* m_nodeYLabel{nullptr};
+    QDoubleSpinBox* m_nodeXSpin{nullptr};      ///< X coordinate (editable)
+    QDoubleSpinBox* m_nodeYSpin{nullptr};      ///< Y coordinate (editable)
+    QPushButton* m_applyPositionBtn{nullptr};  ///< Commit coordinate changes
     QComboBox* m_supportCombo{nullptr};
     QDoubleSpinBox* m_fxSpin{nullptr};
     QDoubleSpinBox* m_fySpin{nullptr};

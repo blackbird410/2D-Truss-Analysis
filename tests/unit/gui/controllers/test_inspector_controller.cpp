@@ -251,3 +251,133 @@ TEST_F(InspectorControllerTest, SelectionWithNoHandle_IgnoresSilently) {
     EXPECT_EQ(spyReady.count(), 0);
     EXPECT_EQ(spyFail.count(), 0);
 }
+// ============================================================
+// updateNode — node position change
+// ============================================================
+
+TEST_F(InspectorControllerTest, NodePositionChange_CallsUpdateNodeAndEmitsModified) {
+    using truss::application::NodeUpdateSpec;
+    using truss::core::Point2D;
+
+    EXPECT_CALL(
+        facade,
+        updateNode(kHandle, NodeId{2}, testing::Field(&NodeUpdateSpec::x, testing::DoubleEq(5.0))))
+        .WillOnce(Return(Result<bool>::Success(true)));
+
+    QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
+    QSignalSpy spyFail{ctrl.get(), &InspectorController::operationFailed};
+
+    ctrl->onNodePositionChangeRequested(NodeId{2}, Point2D{5.0, 3.0});
+
+    EXPECT_EQ(spyMod.count(), 1);
+    EXPECT_EQ(spyFail.count(), 0);
+}
+
+TEST_F(InspectorControllerTest, NodePositionChange_FacadeFailure_EmitsOperationFailed) {
+    using truss::core::Point2D;
+
+    EXPECT_CALL(facade, updateNode(kHandle, NodeId{1}, _))
+        .WillOnce(Return(Result<bool>::Failure("node not found")));
+
+    QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
+    QSignalSpy spyFail{ctrl.get(), &InspectorController::operationFailed};
+
+    ctrl->onNodePositionChangeRequested(NodeId{1}, Point2D{99.0, 99.0});
+
+    EXPECT_EQ(spyMod.count(), 0);
+    EXPECT_EQ(spyFail.count(), 1);
+}
+
+TEST_F(InspectorControllerTest, NodePositionChange_NoHandle_EmitsOperationFailed) {
+    using truss::core::Point2D;
+
+    ctrl->onTrussHandleUpdated(0);
+    EXPECT_CALL(facade, updateNode(_, _, _)).Times(0);
+
+    QSignalSpy spyFail{ctrl.get(), &InspectorController::operationFailed};
+    ctrl->onNodePositionChangeRequested(NodeId{1}, Point2D{1.0, 2.0});
+
+    EXPECT_EQ(spyFail.count(), 1);
+}
+
+// ============================================================
+// updateMember — property change (no remove + re-add)
+// ============================================================
+
+TEST_F(InspectorControllerTest, MemberPropertiesChange_CallsUpdateMemberNotRemoveAdd) {
+    using truss::application::MaterialSpec;
+    using truss::application::MemberUpdateSpec;
+    using truss::application::SectionSpec;
+
+    const MaterialSpec mat{200e9, "Steel"};
+    const SectionSpec sec{0.002, "Custom"};
+
+    // updateMember must be called exactly once; removeMember / addMember must NOT.
+    EXPECT_CALL(facade, updateMember(kHandle, MemberId{1}, _))
+        .WillOnce(Return(Result<bool>::Success(true)));
+    EXPECT_CALL(facade, removeMember(_, _)).Times(0);
+    EXPECT_CALL(facade, addMember(_, _, _, _, _)).Times(0);
+
+    QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
+    ctrl->onMemberPropertiesChangeRequested(MemberId{1}, mat, sec);
+
+    EXPECT_EQ(spyMod.count(), 1);
+}
+
+TEST_F(InspectorControllerTest, MemberPropertiesChange_PreservesMemberIdAfterUpdate) {
+    // After a successful updateMember the ID passed in must be unchanged.
+    // This verifies the controller does NOT modify the member's ID.
+    using truss::application::MaterialSpec;
+    using truss::application::MemberUpdateSpec;
+    using truss::application::SectionSpec;
+
+    const MemberId originalId{2};
+    EXPECT_CALL(facade,
+                updateMember(kHandle,
+                             originalId,  // same ID must be forwarded
+                             _))
+        .WillOnce(Return(Result<bool>::Success(true)));
+
+    QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
+    ctrl->onMemberPropertiesChangeRequested(
+        originalId, MaterialSpec{69e9, "Aluminum"}, SectionSpec{0.001, "Circular"});
+    EXPECT_EQ(spyMod.count(), 1);
+}
+
+TEST_F(InspectorControllerTest, MemberPropertiesChange_FacadeFailure_EmitsOperationFailed) {
+    using truss::application::MaterialSpec;
+    using truss::application::SectionSpec;
+
+    EXPECT_CALL(facade, updateMember(kHandle, MemberId{1}, _))
+        .WillOnce(Return(Result<bool>::Failure("member not found")));
+
+    QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
+    QSignalSpy spyFail{ctrl.get(), &InspectorController::operationFailed};
+
+    ctrl->onMemberPropertiesChangeRequested(
+        MemberId{1}, MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "Custom"});
+    EXPECT_EQ(spyMod.count(), 0);
+    EXPECT_EQ(spyFail.count(), 1);
+}
+
+TEST_F(InspectorControllerTest, MemberPropertiesChange_RepeatedEdits_KeepsSameMemberId) {
+    // Simulate two consecutive "Apply Changes" clicks on the same member.
+    // Both calls must target the same member ID (no ID drift).
+    using truss::application::MaterialSpec;
+    using truss::application::SectionSpec;
+
+    const MemberId targetId{1};
+
+    EXPECT_CALL(facade, updateMember(kHandle, targetId, _))
+        .Times(2)
+        .WillRepeatedly(Return(Result<bool>::Success(true)));
+
+    QSignalSpy spyMod{ctrl.get(), &InspectorController::trussModified};
+
+    ctrl->onMemberPropertiesChangeRequested(
+        targetId, MaterialSpec{200e9, "Steel"}, SectionSpec{0.001, "Custom"});
+    ctrl->onMemberPropertiesChangeRequested(
+        targetId, MaterialSpec{69e9, "Aluminum"}, SectionSpec{0.002, "Custom"});
+
+    EXPECT_EQ(spyMod.count(), 2);
+}

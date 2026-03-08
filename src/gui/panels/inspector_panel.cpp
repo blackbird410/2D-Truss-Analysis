@@ -64,23 +64,41 @@ void InspectorPanel::buildNodeEditorPage() {
     title->setObjectName(QStringLiteral("inspector_sectionTitle"));
     vbox->addWidget(title);
 
-    // ---- Read-only identity fields ----
+    // ---- Read-only identity ----
     auto* identityBox = new QWidget{page};
     auto* identityLayout = new QFormLayout{identityBox};
     identityLayout->setContentsMargins(0, 0, 0, 0);
     identityLayout->setSpacing(4);
 
-    m_nodeIdLabel = new QLabel{QStringLiteral("—"), identityBox};
+    m_nodeIdLabel = new QLabel{QStringLiteral("\u2014"), identityBox};
     m_nodeIdLabel->setObjectName(QStringLiteral("inspector_nodeId"));
     identityLayout->addRow(QStringLiteral("ID:"), m_nodeIdLabel);
 
-    m_nodeXLabel = new QLabel{QStringLiteral("—"), identityBox};
-    m_nodeXLabel->setObjectName(QStringLiteral("inspector_nodeX"));
-    identityLayout->addRow(QStringLiteral("X [m]:"), m_nodeXLabel);
+    // ---- Editable position spinboxes ----
+    m_nodeXSpin = new QDoubleSpinBox{identityBox};
+    m_nodeXSpin->setObjectName(QStringLiteral("inspector_nodeX"));
+    m_nodeXSpin->setRange(-1e6, 1e6);
+    m_nodeXSpin->setSingleStep(0.1);
+    m_nodeXSpin->setDecimals(4);
+    m_nodeXSpin->setSuffix(QStringLiteral(" m"));
+    m_nodeXSpin->setToolTip(QStringLiteral("Node X coordinate in metres"));
+    identityLayout->addRow(QStringLiteral("X [m]:"), m_nodeXSpin);
 
-    m_nodeYLabel = new QLabel{QStringLiteral("—"), identityBox};
-    m_nodeYLabel->setObjectName(QStringLiteral("inspector_nodeY"));
-    identityLayout->addRow(QStringLiteral("Y [m]:"), m_nodeYLabel);
+    m_nodeYSpin = new QDoubleSpinBox{identityBox};
+    m_nodeYSpin->setObjectName(QStringLiteral("inspector_nodeY"));
+    m_nodeYSpin->setRange(-1e6, 1e6);
+    m_nodeYSpin->setSingleStep(0.1);
+    m_nodeYSpin->setDecimals(4);
+    m_nodeYSpin->setSuffix(QStringLiteral(" m"));
+    m_nodeYSpin->setToolTip(QStringLiteral("Node Y coordinate in metres"));
+    identityLayout->addRow(QStringLiteral("Y [m]:"), m_nodeYSpin);
+
+    // ---- Apply Position button ----
+    m_applyPositionBtn = new QPushButton{QStringLiteral("Apply Position"), identityBox};
+    m_applyPositionBtn->setObjectName(QStringLiteral("inspector_applyPositionBtn"));
+    m_applyPositionBtn->setToolTip(QStringLiteral("Move node to the specified coordinates.\n"
+                                                  "Re-run analysis to obtain updated results."));
+    identityLayout->addRow(QString{}, m_applyPositionBtn);
 
     vbox->addWidget(identityBox);
 
@@ -127,11 +145,16 @@ void InspectorPanel::buildNodeEditorPage() {
     vbox->addStretch();
 
     // ---- Tab order ----
+    QWidget::setTabOrder(m_nodeXSpin, m_nodeYSpin);
+    QWidget::setTabOrder(m_nodeYSpin, m_applyPositionBtn);
+    QWidget::setTabOrder(m_applyPositionBtn, m_supportCombo);
     QWidget::setTabOrder(m_supportCombo, m_fxSpin);
     QWidget::setTabOrder(m_fxSpin, m_fySpin);
     QWidget::setTabOrder(m_fySpin, m_applyLoadBtn);
 
     // ---- Connections ----
+    connect(
+        m_applyPositionBtn, &QPushButton::clicked, this, &InspectorPanel::onApplyPositionClicked);
     connect(m_supportCombo,
             &QComboBox::currentIndexChanged,
             this,
@@ -240,10 +263,8 @@ void InspectorPanel::ensureMemberEditorInteractive() {
     m_applyMemberBtn = new QPushButton{QStringLiteral("Apply Changes"),
                                        m_memberFormBox->parentWidget()};
     m_applyMemberBtn->setObjectName(QStringLiteral("inspector_applyMemberBtn"));
-    m_applyMemberBtn->setToolTip(
-        QStringLiteral("Update member with selected material and area.  "
-                       "The member will be re-created with the new properties; "
-                       "re-run analysis to see updated results."));
+    m_applyMemberBtn->setToolTip(QStringLiteral("Update member material and cross-section area.\n"
+                                                "Re-run analysis to see updated results."));
     m_memberBtnLayout->addWidget(m_applyMemberBtn);
 
     // ---- Tab order ----
@@ -285,8 +306,15 @@ void InspectorPanel::showNodeEditor(const NodeView& node) {
     m_selectedNodeId = node.id;
 
     m_nodeIdLabel->setText(QString::number(node.id));
-    m_nodeXLabel->setText(QString::number(node.x, 'f', 4));
-    m_nodeYLabel->setText(QString::number(node.y, 'f', 4));
+
+    // Populate editable position spinboxes (block signals to avoid triggering
+    // nodePositionChangeRequested before the user explicitly clicks Apply).
+    {
+        QSignalBlocker bx{m_nodeXSpin};
+        QSignalBlocker by{m_nodeYSpin};
+        m_nodeXSpin->setValue(node.x);
+        m_nodeYSpin->setValue(node.y);
+    }
 
     // Block signals while populating to avoid re-emitting supportChangeRequested
     QSignalBlocker blockCombo{m_supportCombo};
@@ -361,6 +389,9 @@ void InspectorPanel::onStateChanged(const truss::gui::state::WorkspaceState& sta
                            state.phase == WorkspacePhase::ResultsReady);
 
     // Node editor
+    m_nodeXSpin->setEnabled(editable);
+    m_nodeYSpin->setEnabled(editable);
+    m_applyPositionBtn->setEnabled(editable);
     m_supportCombo->setEnabled(editable);
     m_fxSpin->setEnabled(editable);
     m_fySpin->setEnabled(editable);
@@ -378,6 +409,11 @@ void InspectorPanel::onStateChanged(const truss::gui::state::WorkspaceState& sta
 // ---------------------------------------------------------------------------
 // Private slots
 // ---------------------------------------------------------------------------
+
+void InspectorPanel::onApplyPositionClicked() {
+    emit nodePositionChangeRequested(
+        m_selectedNodeId, truss::core::Point2D{m_nodeXSpin->value(), m_nodeYSpin->value()});
+}
 
 void InspectorPanel::onApplyLoadClicked() {
     // Convert kN back to N for the facade (which uses SI units)
