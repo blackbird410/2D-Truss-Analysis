@@ -406,8 +406,8 @@ std::string TrussAnalysisFacade::formatValidationErrors(
     auto warnings = result.getWarningMessages();
     if (!warnings.empty() && warnings.size() <= 5) {
         oss << "\nWarnings:\n";
-        for (size_t i = 0; i < std::min(warnings.size(), size_t(5)); ++i) {
-            oss << "  • " << warnings[i] << "\n";
+        for (size_t i = 0; i < std::min(warnings.size(), static_cast<size_t>(5)); ++i) {
+            oss << "  • " << warnings.at(i) << "\n";
         }
         if (warnings.size() > 5) {
             oss << "  ... and " << (warnings.size() - 5) << " more warnings\n";
