@@ -287,8 +287,7 @@ core::validation::ValidationResult TrussAnalysisFacade::validateBuilder(TrussBui
         result.addIssue(issue);
         return result;
     }
-    core::validation::TrussValidator validator;
-    return validator.validate(*trussPtr);
+    return core::validation::TrussValidator::validate(*trussPtr);
 }
 
 // ============================================================
