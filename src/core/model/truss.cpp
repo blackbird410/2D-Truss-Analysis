@@ -387,7 +387,8 @@ Point2D Truss::getCentroid() const {
     if (m_nodes.empty())
         return Point2D(0, 0);
 
-    Real sumX = 0, sumY = 0;
+    Real sumX{0.0};
+    Real sumY{0.0};
     for (const auto& node : m_nodes) {
         sumX += node->getX();
         sumY += node->getY();
