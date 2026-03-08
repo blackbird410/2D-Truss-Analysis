@@ -49,10 +49,12 @@ struct AnalysisWorkflowResult {
 
     static AnalysisWorkflowResult Success(application::TrussHandle th,
                                           application::ResultsHandle rh) {
-        return {true, "", th, rh};
+        return {.success = true, .errorMessage = "", .trussHandle = th, .resultsHandle = rh};
     }
 
-    static AnalysisWorkflowResult Failure(const std::string& error) { return {false, error, 0, 0}; }
+    static AnalysisWorkflowResult Failure(std::string error) {
+        return {.success = false, .errorMessage = std::move(error), .trussHandle = 0, .resultsHandle = 0};
+    }
 };
 
 /**
