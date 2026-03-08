@@ -51,7 +51,7 @@ struct Point2D {
     Real distance(const Point2D& other) const {
         Real dx = x - other.x;
         Real dy = y - other.y;
-        return std::sqrt(dx * dx + dy * dy);
+        return std::sqrt((dx * dx) + (dy * dy));
     }
 
     Vector2d toEigen() const { return Vector2d(x, y); }
@@ -73,7 +73,7 @@ struct Force2D {
 
     Force2D operator*(Real scalar) const { return Force2D(fx * scalar, fy * scalar); }
 
-    Real magnitude() const { return std::sqrt(fx * fx + fy * fy); }
+    Real magnitude() const { return std::sqrt((fx * fx) + (fy * fy)); }
 
     Vector2d toEigen() const { return Vector2d(fx, fy); }
 };
