@@ -12,7 +12,7 @@
 
 namespace truss::cli {
 
-ParsedArgs ArgumentParser::parse(int argc, const char* const argv[]) {
+ParsedArgs ArgumentParser::parse(int argc, const char* const argv[]) { // NOLINT(cppcoreguidelines-avoid-c-arrays,modernize-avoid-c-arrays)
     ParsedArgs result;
 
     // Skip program name (argv[0])
@@ -67,11 +67,11 @@ bool ArgumentParser::isOption(const std::string& arg) {
 }
 
 bool ArgumentParser::isShortOption(const std::string& arg) {
-    return arg.size() >= 2 && arg[0] == '-' && arg[1] != '-';
+    return arg.size() >= 2 && arg[0] == '-' && arg[1] != '-'; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 bool ArgumentParser::isLongOption(const std::string& arg) {
-    return arg.size() >= 3 && arg[0] == '-' && arg[1] == '-';
+    return arg.size() >= 3 && arg[0] == '-' && arg[1] == '-'; // NOLINT(cppcoreguidelines-pro-bounds-avoid-unchecked-container-access)
 }
 
 std::string ArgumentParser::extractOptionName(const std::string& arg) {
