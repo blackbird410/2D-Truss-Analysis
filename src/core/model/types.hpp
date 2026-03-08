@@ -19,25 +19,25 @@
 namespace truss::core {
 
 // Type aliases for better readability
-using Real = double;
-using Index = std::size_t;
-using NodeId = std::uint32_t;
-using MemberId = std::uint32_t;
-using LoadId = std::uint32_t;
+using Real = double;             ///< Floating-point scalar type used throughout the analysis
+using Index = std::size_t;       ///< Index type for DOF and container offsets
+using NodeId = std::uint32_t;    ///< Unique identifier for truss nodes
+using MemberId = std::uint32_t;  ///< Unique identifier for truss members
+using LoadId = std::uint32_t;    ///< Unique identifier for load cases
 
 // Eigen type aliases
-using Vector2d = Eigen::Vector2d;
-using Vector3d = Eigen::Vector3d;
-using Matrix2d = Eigen::Matrix2d;
-using MatrixXd = Eigen::MatrixXd;
-using VectorXd = Eigen::VectorXd;
+using Vector2d = Eigen::Vector2d;  ///< 2-element column vector (double)
+using Vector3d = Eigen::Vector3d;  ///< 3-element column vector (double)
+using Matrix2d = Eigen::Matrix2d;  ///< 2×2 dense matrix (double)
+using MatrixXd = Eigen::MatrixXd;  ///< Dynamic-size dense matrix (double)
+using VectorXd = Eigen::VectorXd;  ///< Dynamic-size column vector (double)
 
 /**
  * @brief 2D Point structure
  */
 struct Point2D {
-    Real x{0.0};
-    Real y{0.0};
+    Real x{0.0};  ///< X coordinate (metres, X+ rightward)
+    Real y{0.0};  ///< Y coordinate (metres, Y+ upward)
 
     Point2D() = default;
     Point2D(Real x_val, Real y_val) : x(x_val), y(y_val) {}
@@ -149,12 +149,12 @@ struct NodeResults {
  * @brief Constants and tolerances for numerical analysis
  */
 namespace Constants {
-constexpr Real ZERO_TOLERANCE = 1e-12;
-constexpr Real GEOMETRY_TOLERANCE = 1e-9;
-constexpr Real FORCE_TOLERANCE = 1e-6;
-constexpr Real DISPLACEMENT_TOLERANCE = 1e-9;
-constexpr Real DEFAULT_YOUNG_MODULUS = 200e9;  // Steel (Pa)
-constexpr Real DEFAULT_AREA = 1e-4;            // 1 cm² (m²)
+constexpr Real ZERO_TOLERANCE = 1e-12;         ///< Tolerance for zero comparisons (dimensionless)
+constexpr Real GEOMETRY_TOLERANCE = 1e-9;      ///< Tolerance for geometric coincidence checks (m)
+constexpr Real FORCE_TOLERANCE = 1e-6;         ///< Tolerance for force magnitude checks (N)
+constexpr Real DISPLACEMENT_TOLERANCE = 1e-9;  ///< Tolerance for displacement checks (m)
+constexpr Real DEFAULT_YOUNG_MODULUS = 200e9;  ///< Default Young's modulus — structural steel (Pa)
+constexpr Real DEFAULT_AREA = 1e-4;            ///< Default cross-sectional area — 1 cm² (m²)
 }  // namespace Constants
 
 }  // namespace truss::core
