@@ -68,6 +68,20 @@ public:
     bool removeNode(NodeId nodeId);
     bool removeNode(const NodePtr& node);
 
+    /**
+     * @brief Update a node's position without changing its ID or connectivity.
+     *
+     * The node is located by @p nodeId. Only its coordinates are updated;
+     * support type, applied load, and ID are untouched.  Members that
+     * reference this node automatically reflect the new geometry because
+     * they hold a shared_ptr to the same Node object.
+     *
+     * @param nodeId       ID of the node to update.
+     * @param newPosition  New world-space position in metres.
+     * @return             true if the node was found and updated, false otherwise.
+     */
+    bool updateNode(NodeId nodeId, const Point2D& newPosition);
+
     // Member management
     MemberPtr addMember(NodeId startNodeId,
                         NodeId endNodeId,
@@ -80,6 +94,22 @@ public:
     MemberPtr addMember(MemberPtr member);
     bool removeMember(MemberId memberId);
     bool removeMember(const MemberPtr& member);
+
+    /**
+     * @brief Update a member's material and section properties without changing its ID.
+     *
+     * The member is located by @p memberId.  Only material stiffness and
+     * cross-section area are replaced; the member's ID and node connectivity
+     * are preserved.  The caller must re-run analysis to obtain updated results.
+     *
+     * @param memberId  ID of the member to update.
+     * @param material  New material properties.
+     * @param section   New section properties.
+     * @return          true if the member was found and updated, false otherwise.
+     */
+    bool updateMember(MemberId memberId,
+                      const MaterialProperties& material,
+                      const SectionProperties& section);
 
     // Access methods
     NodePtr getNode(NodeId nodeId) const;

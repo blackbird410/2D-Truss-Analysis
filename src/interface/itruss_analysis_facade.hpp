@@ -160,7 +160,8 @@ public:
     // - ITrussService: createTruss, loadTruss, saveTruss, clearTruss,
     //                  isValidTrussHandle, getTrussView, getTrussMutable,
     //                  validateTruss, addNode, addMember, removeNode,
-    //                  removeMember, setNodeSupport, applyNodeLoad, clearNodeLoad
+    //                  removeMember, setNodeSupport, applyNodeLoad, clearNodeLoad,
+    //                  updateNode, updateMember
     // - IAnalysisService: analyze, getResultsView,
     //                     exportResults(handle, format, filepath, truss, opts),
     //                     exportResults(handle, filepath, truss, opts),

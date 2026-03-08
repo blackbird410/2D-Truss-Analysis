@@ -245,6 +245,28 @@ public:
     Result<bool> clearNodeLoad(TrussHandle handle, core::NodeId nodeId) override;
 
     /**
+     * @brief Update a node's position without changing its ID or index.
+     * @param handle  Truss handle.
+     * @param nodeId  ID of the node to move.
+     * @param update  New position specification (x, y in metres).
+     * @return Result indicating success/failure.
+     */
+    Result<bool>
+    updateNode(TrussHandle handle, core::NodeId nodeId, const NodeUpdateSpec& update) override;
+
+    /**
+     * @brief Update a member's material and section properties without
+     *        changing its ID or node connectivity.
+     * @param handle    Truss handle.
+     * @param memberId  ID of the member to update.
+     * @param update    New material and section specification.
+     * @return Result indicating success/failure.
+     */
+    Result<bool> updateMember(TrussHandle handle,
+                              core::MemberId memberId,
+                              const MemberUpdateSpec& update) override;
+
+    /**
      * @brief Check if truss has unsaved changes
      * @param handle Truss handle
      * @return true if modified since last save

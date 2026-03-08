@@ -1,0 +1,28 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24">
+  <!--
+      zoom_fit.svg — Zoom to Fit icon
+      Four L-shaped corner brackets indicate "expand to fill available space"
+      (standard CAD / vector-editor zoom-fit idiom).
+      A small inner rectangle suggests the content being fitted.
+      Uses stroke="currentColor" so it respects the active dark/light theme.
+  -->
+  <!-- Top-left bracket -->
+  <polyline points="3,8 3,3 8,3"
+            fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Top-right bracket -->
+  <polyline points="16,3 21,3 21,8"
+            fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bottom-left bracket -->
+  <polyline points="3,16 3,21 8,21"
+            fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Bottom-right bracket -->
+  <polyline points="16,21 21,21 21,16"
+            fill="none" stroke="currentColor" stroke-width="1.5"
+            stroke-linecap="round" stroke-linejoin="round"/>
+  <!-- Inner content rectangle (the geometry being fitted) -->
+  <rect x="8" y="8" width="8" height="8" rx="1"
+        fill="none" stroke="currentColor" stroke-width="1.2"/>
+</svg>

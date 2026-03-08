@@ -1,112 +1,169 @@
 /**
  * @file analysis_controller.cpp
- * @brief GUI controller coordinating truss validation, analysis execution, and result export.
+ * @brief AnalysisController implementation — QThread background worker (Phase 5).
  *
- * @version 3.0.0
- * @date 2026-02-24
+ * Thread-safety pattern:
+ *   1. Main thread copies the Truss by value from the facade.
+ *   2. Copy is moved into AnalysisWorker before the thread starts.
+ *   3. Worker calls IAnalysisService::analyze(trussCopy, opts) on the worker thread.
+ *   4. Results are posted back to the main thread via Qt::QueuedConnection.
+ *
  * @author Neil Taison Rigaud
+ * @version 3.0.0
+ * @date 2026-03-04
  */
 
-#include "analysis_controller.hpp"
+#include "gui/controllers/analysis_controller.hpp"
 
-#include <stdexcept>
+#include "application/interfaces/ianalysis_service.hpp"
+#include "core/model/truss.hpp"
+#include "interface/itruss_analysis_facade.hpp"
 
-namespace truss_controllers {
+#include <QThread>
 
-AnalysisController::AnalysisController(
-    truss::application::ITrussService* trussService,
-    truss::application::IAnalysisService* analysisService,
-    truss_presenters::AnalysisResultsPresenter& analysisPresenter,
-    truss_presenters::ValidationPresenter& validationPresenter,
-    QObject* parent)
-    : QObject(parent), m_trussService(trussService), m_analysisService(analysisService),
-      m_analysisPresenter(analysisPresenter), m_validationPresenter(validationPresenter),
-      m_currentResultsHandle(0), m_currentTrussHandle(0) {
-    if (!m_trussService) {
-        throw std::invalid_argument("AnalysisController: null truss service pointer");
+namespace truss::gui::ctrl {
+
+// ===========================================================================
+// AnalysisWorker — internal helper moved to a background QThread
+// ===========================================================================
+
+class AnalysisWorker : public QObject {
+    Q_OBJECT
+
+public:
+    AnalysisWorker(truss::core::Truss truss,
+                   truss::core::analysis::AnalysisOptions opts,
+                   truss::application::IAnalysisService* service)
+        : m_truss{std::move(truss)}, m_opts{opts}, m_service{service} {}
+
+public slots:
+    void execute() {
+        auto result = m_service->analyze(m_truss, m_opts);
+        if (result) {
+            emit finished(result.value);
+        } else {
+            emit failed(QString::fromStdString(result.errorMessage));
+        }
     }
-    if (!m_analysisService) {
-        throw std::invalid_argument("AnalysisController: null analysis service pointer");
-    }
+
+signals:
+    void finished(std::size_t resultsHandle);
+    void failed(const QString& error);
+
+private:
+    truss::core::Truss m_truss;
+    truss::core::analysis::AnalysisOptions m_opts;
+    truss::application::IAnalysisService* m_service;
+};
+
+// ===========================================================================
+// AnalysisController
+// ===========================================================================
+
+AnalysisController::AnalysisController(truss::interface::ITrussAnalysisFacade& facade,
+                                       QObject* parent)
+    : QObject{parent}, m_facade{facade} {}
+
+AnalysisController::~AnalysisController() {
+    cleanupThread();
 }
 
-void AnalysisController::onAnalyzeRequested(truss::application::TrussHandle trussHandle) {
-    if (trussHandle == 0) {
-        emit analysisFailed("Invalid truss handle");
+std::size_t AnalysisController::currentResultsHandle() const noexcept {
+    return m_resultsHandle;
+}
+
+void AnalysisController::onTrussHandleUpdated(std::size_t trussHandle) {
+    m_trussHandle = trussHandle;
+}
+
+void AnalysisController::onAnalyzeRequested(const core::analysis::AnalysisOptions& opts) {
+    if (m_trussHandle == 0) {
+        emit analysisFailed(QStringLiteral("No active truss to analyze."));
         return;
     }
 
-    // Store current truss handle for export
-    m_currentTrussHandle = trussHandle;
+    if (m_thread && m_thread->isRunning()) {
+        // Analysis already in progress — ignore duplicate request.
+        return;
+    }
 
+    // ---- Step 1: copy the Truss on the main thread ----
+    truss::core::Truss trussCopy = m_facade.getTrussMutable(m_trussHandle);
+
+    // ---- Step 2: announce start ----
     emit analysisStarted();
-    emit statusMessageChanged("Validating structure...");
 
-    // Step 1: Validate truss
-    auto validationResult = m_trussService->validateTruss(trussHandle);
+    // ---- Step 3: set up worker + thread ----
+    m_thread = new QThread{this};
 
-    if (!validationResult.success) {
-        emit analysisFailed(QString::fromStdString(validationResult.errorMessage));
-        return;
-    }
+    // IAnalysisService is inherited by ITrussAnalysisFacade
+    auto* service = static_cast<truss::application::IAnalysisService*>(&m_facade);
 
-    // Check if validation passed
-    if (!validationResult.value.isValid()) {
-        auto display = m_validationPresenter.formatValidation(validationResult.value);
-        emit validationFailed(display);
-        emit statusMessageChanged("Validation failed");
-        return;
-    }
+    auto* worker = new AnalysisWorker{std::move(trussCopy), opts, service};
+    worker->moveToThread(m_thread);
 
-    emit statusMessageChanged("Running analysis...");
+    // Worker lifetime: deleted when thread finishes
+    connect(m_thread, &QThread::finished, worker, &QObject::deleteLater);
 
-    // Step 2: Execute analysis
-    const auto& truss = m_trussService->getTrussMutable(trussHandle);
-    auto analysisResult = m_analysisService->analyze(truss);
+    // Results routing (QueuedConnection — worker thread → main thread)
+    connect(worker,
+            &AnalysisWorker::finished,
+            this,
+            &AnalysisController::onWorkerFinished,
+            Qt::QueuedConnection);
+    connect(worker,
+            &AnalysisWorker::failed,
+            this,
+            &AnalysisController::onWorkerFailed,
+            Qt::QueuedConnection);
 
-    if (!analysisResult.success) {
-        emit analysisFailed(QString::fromStdString(analysisResult.errorMessage));
-        emit statusMessageChanged("Analysis failed");
-        return;
-    }
-
-    // Step 3: Store results and emit success
-    m_currentResultsHandle = analysisResult.value;
-    emit analysisCompleted(m_currentResultsHandle);
-    emit statusMessageChanged("Analysis completed successfully");
+    // Start execution
+    connect(m_thread, &QThread::started, worker, &AnalysisWorker::execute);
+    m_thread->start();
 }
 
-void AnalysisController::onExportRequested(size_t resultsHandle, const QString& filepath) {
-    if (resultsHandle == 0) {
-        emit exportFailed("No analysis results available");
-        return;
-    }
-
-    if (m_currentTrussHandle == 0) {
-        emit exportFailed("No truss model available");
-        return;
-    }
-
-    emit statusMessageChanged("Exporting results...");
-
-    const auto& truss = m_trussService->getTrussMutable(m_currentTrussHandle);
-    auto result = m_analysisService->exportResults(resultsHandle, filepath.toStdString(), truss);
-
-    if (result.success) {
-        emit exportCompleted(filepath);
-        emit statusMessageChanged(QString("Results exported to %1").arg(filepath));
-    } else {
-        emit exportFailed(QString::fromStdString(result.errorMessage));
-        emit statusMessageChanged("Export failed");
+void AnalysisController::onStopRequested() {
+    if (m_thread && m_thread->isRunning()) {
+        m_thread->requestInterruption();
+        m_thread->quit();
+        m_thread->wait(3000);
+        emit analysisFailed(QStringLiteral("Analysis stopped by user."));
+        cleanupThread();
     }
 }
 
-void AnalysisController::onClearResults() {
-    if (m_currentResultsHandle != 0) {
-        // Clear results via service if needed
-        m_currentResultsHandle = 0;
-        emit statusMessageChanged("Results cleared");
+// ---------------------------------------------------------------------------
+// Private slots
+// ---------------------------------------------------------------------------
+
+void AnalysisController::onWorkerFinished(std::size_t resultsHandle) {
+    m_resultsHandle = resultsHandle;
+    cleanupThread();
+    emit analysisCompleted(resultsHandle);
+}
+
+void AnalysisController::onWorkerFailed(const QString& error) {
+    cleanupThread();
+    emit analysisFailed(error);
+}
+
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+void AnalysisController::cleanupThread() {
+    if (m_thread) {
+        if (m_thread->isRunning()) {
+            m_thread->quit();
+            m_thread->wait();
+        }
+        m_thread->deleteLater();
+        m_thread = nullptr;
     }
 }
 
-}  // namespace truss_controllers
+}  // namespace truss::gui::ctrl
+
+// AUTOMOC cannot find Q_OBJECT classes defined in .cpp files unless the .moc
+// is explicitly included at the bottom.
+#include "analysis_controller.moc"

@@ -1,187 +1,205 @@
 /**
- * @file MainWindow.hpp
- * @brief Main window for the 2D Truss Analysis GUI
- * @author Civil Engineering Software Solutions
+ * @file main_window.hpp
+ * @brief MainWindow — top-level application window with full signal/slot wiring.
+ *
+ * QMainWindow with QSplitter (65/35), bottom QDockWidget, menu bar,
+ * toolbar, InspectorPanel, AnalysisControlBar, ResultsDockPanel, and
+ * NotificationRail.  All actions, keyboard shortcuts, and dirty-state
+ * guards are wired through MainWindowController.
+ *
+ * @author Neil Taison Rigaud
  * @version 3.0.0
+ * @date 2026-03-02
  */
 
 #pragma once
 
-#include "application/interfaces/ianalysis_service.hpp"
-#include "application/interfaces/itruss_service.hpp"
-#include "gui/controllers/analysis_controller.hpp"
-#include "gui/controllers/project_controller.hpp"
-#include "gui/controllers/truss_edit_controller.hpp"
-#include "gui/presenters/analysis_results_presenter.hpp"
-#include "gui/presenters/truss_data_presenter.hpp"
-#include "gui/presenters/validation_presenter.hpp"
-#include "widgets/data_table_widget.hpp"
-#include "widgets/deformed_truss_widget.hpp"
-#include "widgets/interactive_drawing_widget.hpp"
-#include "widgets/load_input_widget.hpp"
-#include "widgets/member_input_widget.hpp"
-#include "widgets/node_input_widget.hpp"
-#include "widgets/plot_widget.hpp"
-#include "widgets/results_widget.hpp"
+#include "gui/controllers/main_window_controller.hpp"
+#include "gui/state/workspace_state.hpp"
+#include "truss/export/export_format.hpp"
 
-#include <QtCore/QTimer>
-#include <QtGui/QAction>
-#include <QtWidgets/QApplication>
-#include <QtWidgets/QComboBox>
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QGroupBox>
-#include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QLineEdit>
-#include <QtWidgets/QMainWindow>
-#include <QtWidgets/QMenu>
-#include <QtWidgets/QMenuBar>
-#include <QtWidgets/QMessageBox>
-#include <QtWidgets/QPushButton>
-#include <QtWidgets/QScrollArea>
-#include <QtWidgets/QSplitter>
-#include <QtWidgets/QStatusBar>
-#include <QtWidgets/QTabWidget>
-#include <QtWidgets/QTableWidget>
-#include <QtWidgets/QTextEdit>
-#include <QtWidgets/QToolBar>
-#include <QtWidgets/QVBoxLayout>
-#include <QtWidgets/QWidget>
+#include <QAbstractSpinBox>
+#include <QAction>
+#include <QDockWidget>
+#include <QLabel>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QSplitter>
+#include <QToolBar>
 
 #include <memory>
+
+namespace truss::interface {
+class ITrussAnalysisFacade;
+}
+namespace truss::gui {
+class TrussCanvasWidget;
+class InspectorPanel;
+class AnalysisControlBar;
+class ResultsDockPanel;
+}  // namespace truss::gui
 
 namespace truss::gui {
 
 /**
- * @brief Main application window with interactive drawing interface
+ * @brief New-architecture main window for the 2D Truss Analysis application.
+ *
+ * Layout (Phase 6):
+ * @code
+ * ┌────────────────────────────────────────────────────┐
+ * │ MenuBar                                            │
+ * ├────────────────────────────────────────────────────┤
+ * │ ToolBar                                            │
+ * ├────────────────────────────┬───────────────────────┤
+ * │                            │  AnalysisControlBar   │
+ * │   TrussCanvasWidget        │  ──────────────────── │
+ * │   (65 % of splitter)       │  InspectorPanel       │
+ * │                            │  (35 %)               │
+ * ├────────────────────────────┴───────────────────────┤
+ * │ ResultsDockPanel (QDockWidget, bottom)              │
+ * ├────────────────────────────────────────────────────┤
+ * │ StatusBar  [Phase badge]  [Nodes: N  Members: M]   │
+ * └────────────────────────────────────────────────────┘
+ * @endcode
  */
 class MainWindow : public QMainWindow {
     Q_OBJECT
 
 public:
-    /**
-     * @brief Construct MainWindow with dependency injection
-     *
-     * @param trussService Application service for truss operations
-     * @param analysisService Application service for analysis
-     * @param analysisController Controller for analysis workflow
-     * @param projectController Controller for project lifecycle
-     * @param trussEditController Controller for truss editing (optional)
-     * @param analysisPresenter Presenter for analysis results formatting
-     * @param trussDataPresenter Presenter for truss data formatting
-     * @param validationPresenter Presenter for validation messages
-     * @param parent Qt parent widget
-     */
-    explicit MainWindow(application::ITrussService& trussService,
-                        application::IAnalysisService& analysisService,
-                        truss_controllers::AnalysisController& analysisController,
-                        truss_controllers::ProjectController& projectController,
-                        truss_controllers::TrussEditController& trussEditController,
-                        truss_presenters::AnalysisResultsPresenter& analysisPresenter,
-                        truss_presenters::TrussDataPresenter& trussDataPresenter,
-                        truss_presenters::ValidationPresenter& validationPresenter,
-                        QWidget* parent = nullptr);
+    explicit MainWindow(truss::interface::ITrussAnalysisFacade& facade, QWidget* parent = nullptr);
 
+    /**
+     * @brief Destructor removes the application-level event filter.
+     *
+     * The event filter installed on @c qApp in the constructor must be
+     * explicitly removed before the MainWindow is destroyed to prevent a
+     * dangling-pointer dereference if any key event arrives during teardown.
+     */
     ~MainWindow() override;
 
 protected:
     void closeEvent(QCloseEvent* event) override;
 
-public:
     /**
-     * @brief Get current truss handle
+     * @brief Application-level event filter for centralised shortcut dispatch.
      *
-     * @return TrussHandle Handle to current truss
-     */
-    application::TrussHandle getCurrentTrussHandle() const;
-
-    /**
-     * @brief Check if analysis results are available
+     * Intercepts @c QEvent::KeyPress events for all shortcuts that cannot be
+     * reliably handled via @c QAction::setShortcut() when a child widget
+     * (e.g. @c QTableView, @c QDoubleSpinBox) holds focus and Qt may mark
+     * the shortcut as "ambiguous" in its internal @c QShortcutMap.
      *
-     * @return true if results exist
-     */
-    [[maybe_unused]] bool hasResults() const { return m_hasResults; }
-
-    /**
-     * @brief Get last results handle
+     * Shortcut table:
      *
-     * @return ResultsHandle Handle to last analysis results
+     *  Key      | Modifier | Action
+     *  ---------|----------|---------------------------------
+     *  N        | —        | Activate Add Node mode
+     *  M        | —        | Activate Add Member mode
+     *  Esc      | —        | Activate Select mode
+     *  Z        | —        | Zoom canvas to fit all geometry
+     *  Delete   | —        | Delete currently selected entity
+     *  Ctrl+N   | Ctrl/⌘   | New Project
+     *  Ctrl+O   | Ctrl/⌘   | Open Project
+     *  Ctrl+S   | Ctrl/⌘   | Save Project
+     *
+     * Bare single-key shortcuts (N/M/Esc/Z/Delete) are suppressed when a
+     * text-editing widget (@c QLineEdit, @c QAbstractSpinBox, @c QTextEdit,
+     * @c QPlainTextEdit) holds focus so they do not interfere with property
+     * value editing in the Inspector Panel.
+     *
+     * Function-key shortcut F5 (Run Analysis) remains on @c QAction::setShortcut()
+     * exclusively; it is unambiguous and always reliable.
+     *
+     * Returning @c true consumes the event, preventing @c QShortcutMap from
+     * seeing it and avoiding double-firing even though @c m_actNew / @c m_actOpen
+     * / @c m_actSave still carry @c setShortcut() calls for menu-hint display.
+     *
+     * @return @c true if the event was consumed (shortcut fired),
+     *         @c false to let the event continue normal processing.
      */
-    [[maybe_unused]] application::ResultsHandle getLastResultsHandle() const {
-        return m_lastResultsHandle;
-    }
+    bool eventFilter(QObject* watched, QEvent* event) override;
 
 private slots:
-    void onAnalysisCompleted(size_t resultsHandle);
-    void onAnalysisFailed(const QString& errorMessage);
-    void
-    onValidationFailed(const truss_presenters::ValidationPresenter::ValidationDisplay& display);
-    void onProjectOpened(application::TrussHandle handle, const QString& filepath);
-    void onProjectSaved(const QString& filepath);
-    void onProjectClosed();
-    void onOperationFailed(const QString& errorMessage);
-    void onTrussModified();
-    void updateStatusMessage(const QString& message);
-    void exitApplication();
-    void showAbout();
+    /// React to workspace state transitions from the controller.
+    void onStateChanged(const truss::gui::state::WorkspaceState& newState);
+
+    /// Show QFileDialog then hand path to ExportController.
+    void onExportRequested(truss::ExportFormat format, const QString& suggestedFilename);
+
+    /// Show AnalysisOptionsDialog and push result back to AnalysisControlBar.
+    void onOptionsRequested();
+
+    /// Trigger facade validation and show result in status bar.
+    void onValidateRequested();
+
+    /// Handle toolbar tool-mode actions.
+    void onToolActionTriggered();
 
 private:
-    void setupUI();
+    void setupCentralWidget();
     void setupMenuBar();
-    static void setupToolBar();
+    void setupToolBar();
     void setupStatusBar();
-    void setupWindowProperties();
-    void initializeEmptyProject();  // Initialize application with empty project
     void connectSignals();
 
-    void updateResultsDisplay();
-    void showErrorMessage(const QString& message);
-    void showInfoMessage(const QString& message);
-    void enableAnalysis(bool enable);
+    // -------------------------------------------------------------------
+    // Owned widgets
+    // -------------------------------------------------------------------
+    TrussCanvasWidget* m_canvas{nullptr};
+    InspectorPanel* m_inspectorPanel{nullptr};
+    AnalysisControlBar* m_analysisBar{nullptr};
+    ResultsDockPanel* m_resultsDockPanel{nullptr};
+    QDockWidget* m_resultsDock{nullptr};
+    QSplitter* m_centralSplitter{nullptr};
 
-    // Menu action handlers (delegate to controllers)
-    void requestAnalyze();
-    void requestClearAll();
-    void requestNewProject();
-    void requestOpenProject();
-    void requestSaveProject();
-    void requestSaveProjectAs();
-    void requestExportResults();
+    // Status bar labels
+    QLabel* m_phaseLabel{nullptr};
+    QLabel* m_statsLabel{nullptr};
+    QLabel* m_cursorLabel{nullptr};
 
-    // UI Components
-    QWidget* m_centralWidget;
-    QSplitter* m_mainSplitter;
+    // Menu QActions stored for later connection in connectSignals()
+    QAction* m_actNew{nullptr};
+    QAction* m_actOpen{nullptr};
+    QAction* m_actSave{nullptr};
+    QAction* m_actSaveAs{nullptr};
+    QAction* m_actQuit{nullptr};
+    QAction* m_actThemeDark{nullptr};
+    QAction* m_actThemeLight{nullptr};
 
-    // Interactive drawing widget
-    InteractiveDrawingWidget* m_drawingWidget;
+    // Tool-mode QActions (exclusive)
+    QAction* m_actToolSelect{nullptr};
+    QAction* m_actToolNode{nullptr};
+    QAction* m_actToolMember{nullptr};
+    QAction* m_actToolDelete{nullptr};
 
-    // Results display
-    QTabWidget* m_resultsTabWidget;
-    ResultsWidget* m_resultsWidget;
-    DeformedTrussWidget* m_deformedTrussWidget;
-    QTextEdit* m_logTextEdit;
+    // Analysis toolbar QActions (stored so connectSignals() can wire them)
+    QAction* m_actRun{nullptr};
+    QAction* m_actStop{nullptr};
 
-    // Control buttons
-    QPushButton* m_analyzeButton;
-    QPushButton* m_clearButton;
+    // Canvas utility QActions
+    QAction* m_actZoomFit{nullptr};
 
-    // Status display
-    QLabel* m_statusLabel;
-    QLabel* m_coordinateLabel;
+    // Display mode toolbar QActions (exclusive checkable)
+    QAction* m_actModeGeometry{nullptr};
+    QAction* m_actModeStress{nullptr};
+    QAction* m_actModeDeformed{nullptr};
 
-    // Injected dependencies (references, not owned)
-    application::ITrussService& m_trussService;
-    application::IAnalysisService& m_analysisService;
-    truss_controllers::AnalysisController& m_analysisController;
-    truss_controllers::ProjectController& m_projectController;
-    truss_controllers::TrussEditController& m_trussEditController;
-    truss_presenters::AnalysisResultsPresenter& m_analysisPresenter;
-    truss_presenters::TrussDataPresenter& m_trussDataPresenter;
-    truss_presenters::ValidationPresenter& m_validationPresenter;
+    // -------------------------------------------------------------------
+    // Keyboard routing helpers
+    // -------------------------------------------------------------------
 
-    // State
-    application::ResultsHandle m_lastResultsHandle;
-    bool m_hasResults;
+    /**
+     * @brief Return @c true when a text-editing widget currently holds focus.
+     *
+     * Used by @c eventFilter() to decide whether single-character shortcut
+     * keys (N, M, Z, Esc, Delete) should be suppressed so that the focused
+     * widget can use them for normal text editing.
+     */
+    [[nodiscard]] bool isTextInputFocused() const;
+
+    // -------------------------------------------------------------------
+    // Controller
+    // -------------------------------------------------------------------
+    std::unique_ptr<ctrl::MainWindowController> m_controller;
 };
 
 }  // namespace truss::gui

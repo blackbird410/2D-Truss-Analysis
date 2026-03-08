@@ -7,7 +7,7 @@
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
 [![Tests](https://img.shields.io/badge/tests-765%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Phase 9 (Containerization) complete! Production-ready v3.0.0 with Docker infrastructure (125MB production image, 1.94GB dev image), 766 comprehensive tests achieving 72%+ coverage, clean layered architecture following SOLID principles, MVP pattern in GUI, and complete dependency injection. Test pass rate: 99.87%. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details.
+> **✅ REFACTORING STATUS**: Phase 9 (Final Integration & Hardening) complete! Production-ready v3.0.0 with Docker infrastructure (125MB production image, 1.94GB dev image), comprehensive tests achieving 72%+ coverage, clean layered architecture following SOLID principles, Qt6 MVC architecture in GUI (zero legacy presenters), and complete dependency injection. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details.
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface, robust computational engine, and clean layered architecture following SOLID principles and industry best practices.
 
@@ -91,7 +91,7 @@ The application follows **Clean Architecture** principles with strict layer sepa
 ```
 ┌─────────────────────────────────────────────────────────┐
 │                    Presentation Layer                   │
-│  (GUI: Qt6 Widgets, Controllers, Presenters, Views)     │
+│  (GUI: Qt6 Widgets, MVC Controllers, Qt Item Models)    │
 └────────────────────┬────────────────────────────────────┘
                      │ DTOs, Interfaces
 ┌────────────────────▼────────────────────────────────────┐
@@ -110,22 +110,21 @@ The application follows **Clean Architecture** principles with strict layer sepa
 └─────────────────────────────────────────────────────────┘
 ```
 
-**MVP Pattern in GUI Layer:**
+**MVC Architecture in GUI Layer:**
 
-- **Model**: Domain entities accessed via Application Services
-- **View**: Qt6 widgets displaying data (MainWindow, NodeInputWidget, etc.)
-- **Presenter**: Formats domain data for display (TrussDataPresenter, AnalysisResultsPresenter)
-- **Controller**: Coordinates user actions (TrussEditController, AnalysisController, ProjectController)
+- **Model**: Qt Item Models (`NodeTableModel`, `MemberTableModel`, `ResultsTableModel`, `ValidationListModel`) backed by `ITrussView` / `IAnalysisResultsView` read interfaces
+- **View**: Qt6 widgets displaying data (`MainWindow`, `TrussCanvasWidget`, `InspectorPanel`, `ResultsDockPanel`, etc.)
+- **Controller**: `MainWindowController` owns six sub-controllers (`CanvasController`, `InspectorController`, `AnalysisController`, `ProjectController`, `ExportController`, `CanvasController`) and all models; coordinates all user actions through `ITrussAnalysisFacade`
 
 **Dependency Injection:**
 
-- Controllers depend on service interfaces (`ITrussService`, `IAnalysisService`)
-- Enables unit testing with mock services
-- Production code uses concrete implementations
+- Controllers depend on `ITrussAnalysisFacade` — a single stable facade interface
+- Enables unit testing with `MockTrussAnalysisFacade`
+- Production code uses `TrussAnalysisFacade` concrete implementation
 
 **Data Transfer Objects (DTOs):**
 
-- GUI receives `NodeView`, `MemberView` DTOs, not domain entities
+- GUI receives `NodeView`, `MemberView` DTOs via read interfaces, not domain entities
 - Complete decoupling between GUI and domain layers
 - Stable API contract independent of domain model changes
 
@@ -133,21 +132,36 @@ The application follows **Clean Architecture** principles with strict layer sepa
 
 **Interactive Drawing Canvas**
 
-- Mouse-based node and member placement
-- Real-time visual feedback during design
-- Snap-to-grid functionality for precision
-- Zoom and pan capabilities
+- Mouse-based node and member placement with grid snapping (0.25 m)
+- Real-time visual feedback: tension (blue), compression (orange), yield (red)
+- Select, move, and delete nodes/members via click or `Delete` key
+- Zoom with mouse wheel; pan by holding `Space` + drag
 - Auto-zoom viewport to fit geometry on file load
+- Display modes: Geometry, Stress Ratio (colour-mapped), Deformed Shape (auto-scaled)
+
+**Keyboard Shortcuts**
+
+| Key      | Action                      |
+| -------- | --------------------------- |
+| `N`      | Add Node mode               |
+| `M`      | Add Member mode             |
+| `Esc`    | Select mode                 |
+| `Delete` | Delete selected node/member |
+| `Ctrl+S` | Save project                |
+| `Ctrl+O` | Open project                |
+| `Ctrl+N` | New project                 |
+| `F5`     | Run analysis                |
+| `Z`      | Zoom to fit                 |
 
 **Advanced Analysis Engine**
 
-- Clean Architecture with MVP pattern and dependency injection
-- Testable controllers via interface-based dependencies
-- Application facades for simplified API (TrussApplicationService, AnalysisApplicationService)
+- Clean Architecture with Qt MVC pattern and interface-based dependency injection
+- Testable controllers via `ITrussAnalysisFacade` mock
+- Application facade for simplified API (`TrussAnalysisFacade`)
 - Direct stiffness method implementation
-- Support for various load types and boundary conditions
+- Support for pinned, roller-X, and roller-Y boundary conditions
 - Automated calculation of displacements, forces, and reactions
-- Material and section property management
+- Material and section property management via `InspectorPanel`
 - Structural stability validation (static determinacy checks)
 
 **Professional Results Display**
@@ -160,7 +174,7 @@ The application follows **Clean Architecture** principles with strict layer sepa
 **Modern Technology Stack**
 
 - **Language**: C++20 with modern standards
-- **GUI Framework**: Qt6 (Core, Widgets, GUI) with MVP pattern
+  - **GUI Framework**: Qt6 (Core, Widgets, GUI) with MVC pattern
 - **Linear Algebra**: Eigen3 library
 - **Testing**: Google Test (GTest) + GoogleMock for unit/integration tests
 - **Build System**: CMake 3.20+ with production Makefile wrapper
@@ -334,29 +348,22 @@ The CLI version supports comprehensive structural analysis workflows with multip
 
 **Extending the GUI:**
 
-The GUI layer follows MVP pattern with dependency injection. To add new features:
+The GUI layer follows Qt MVC pattern with `ITrussAnalysisFacade` dependency injection. To add new features:
 
-1. **Create a Controller** (handles user actions):
+1. **Create a Controller** (handles user actions, composes inside `MainWindowController`):
 
    ```cpp
    class NewFeatureController : public QObject {
-       ITrussService* m_service;
+       truss::interface::ITrussAnalysisFacade& m_facade;
    public:
-       NewFeatureController(ITrussService* service, QObject* parent);
+       NewFeatureController(truss::interface::ITrussAnalysisFacade& facade, QObject* parent);
        void handleUserAction();
+   signals:
+       void somethingChanged();
    };
    ```
 
-2. **Create a Presenter** (formats data for display):
-
-   ```cpp
-   class NewFeaturePresenter {
-   public:
-       QString formatData(const DomainData& data);
-   };
-   ```
-
-3. **Create or Update Widget** (displays UI):
+2. **Create or Update Widget** (displays UI, connects to controller signals):
 
    ```cpp
    class NewWidget : public QWidget {
@@ -367,7 +374,7 @@ The GUI layer follows MVP pattern with dependency injection. To add new features
    };
    ```
 
-4. **Write Unit Tests** using mock services:
+3. **Write Unit Tests** using mock services:
    ```cpp
    TEST(NewFeatureControllerTest, HandlesAction) {
        MockTrussApplicationService mockService;

@@ -90,6 +90,35 @@ MemberPtr Truss::addMember(MemberPtr member) {
     return member;
 }
 
+bool Truss::updateNode(NodeId nodeId, const Point2D& newPosition) {
+    auto node = getNode(nodeId);
+    if (!node) {
+        return false;
+    }
+    // Update position in-place. The node's ID, support type, and applied load
+    // are untouched. Members holding a shared_ptr to this Node see the new
+    // coordinates immediately (length/angle are computed on demand from the
+    // node positions), so no member-level bookkeeping is needed.
+    node->setPosition(newPosition);
+    return true;
+}
+
+bool Truss::updateMember(MemberId memberId,
+                         const MaterialProperties& material,
+                         const SectionProperties& section) {
+    auto member = getMember(memberId);
+    if (!member) {
+        return false;
+    }
+    // Replace material and section in-place. The member's ID and node
+    // connectivity (shared_ptr<Node> startNode / endNode) are preserved;
+    // only the structural properties that feed into the stiffness matrix
+    // are changed. The caller must re-run analysis to obtain updated results.
+    member->setMaterial(material);
+    member->setSection(section);
+    return true;
+}
+
 NodePtr Truss::getNode(NodeId nodeId) const {
     auto it = std::find_if(m_nodes.begin(), m_nodes.end(), [nodeId](const auto& node) {
         return node->getId() == nodeId;
