@@ -15,6 +15,7 @@
 
 #pragma once
 
+#include <numbers>
 #include <string>
 
 namespace truss::application {
@@ -60,8 +61,8 @@ struct SectionSpec {
      * @param diameterM Diameter in meters
      */
     [[maybe_unused]] static SectionSpec Circular(double diameterM) {
-        double area = 3.14159265359 * diameterM * diameterM / 4.0;
-        return {area, "Circular"};
+        double area = std::numbers::pi * diameterM * diameterM / 4.0;
+        return {.areaM2 = area, .profile = "Circular"};
     }
 
     /**
@@ -70,7 +71,7 @@ struct SectionSpec {
      */
     [[maybe_unused]] static SectionSpec Square(double sideM) {
         double area = sideM * sideM;
-        return {area, "Square"};
+        return {.areaM2 = area, .profile = "Square"};
     }
 };
 
