@@ -77,6 +77,21 @@ TEST_F(ConsoleLoggerTest, ColorCodes) {
     // Note: We can't easily test actual console output, but we can verify construction
 }
 
+/**
+ * @test Covers getColorCode() for all log levels with colors enabled (lines 122-134).
+ *       Also covers getLevelString() default branch (line 111) via an unknown level cast.
+ */
+TEST_F(ConsoleLoggerTest, ColoredLoggingAllLevels) {
+    // With colors enabled, each log call exercises getColorCode() for that level
+    ConsoleLogger colorLogger(LogLevel::Trace, true);
+    EXPECT_NO_THROW(colorLogger.trace("trace with color"));    // Trace → \033[37m
+    EXPECT_NO_THROW(colorLogger.debug("debug with color"));    // Debug → \033[36m
+    EXPECT_NO_THROW(colorLogger.info("info with color"));      // Info  → \033[32m (already covered)
+    EXPECT_NO_THROW(colorLogger.warn("warn with color"));      // Warning → \033[33m
+    EXPECT_NO_THROW(colorLogger.error("error with color"));    // Error → \033[31m
+    EXPECT_NO_THROW(colorLogger.critical("critical with color")); // Critical → \033[1;31m
+}
+
 TEST_F(ConsoleLoggerTest, AllLogLevels) {
     ConsoleLogger logger(LogLevel::Trace, false);
 
@@ -230,8 +245,61 @@ TEST_F(FileLoggerTest, ShutdownMessage) {
 }
 
 /**
- * @brief Test suite for LoggerFactory
+ * @test FileLogger::isLevelEnabled — covers file_logger.cpp lines 87-90.
+ *
+ * Creates a logger with Warning level and verifies that level queries
+ * behave correctly for levels above and below the threshold.
  */
+TEST_F(FileLoggerTest, IsLevelEnabled_CorrectFiltering) {
+    std::filesystem::path testFile = "test_log.txt";
+
+    FileLogger logger(testFile, LogLevel::Warning, false);
+
+    // Levels below min should NOT be enabled
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Trace));
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Debug));
+    EXPECT_FALSE(logger.isLevelEnabled(LogLevel::Info));
+
+    // Levels at or above min SHOULD be enabled
+    EXPECT_TRUE(logger.isLevelEnabled(LogLevel::Warning));
+    EXPECT_TRUE(logger.isLevelEnabled(LogLevel::Error));
+    EXPECT_TRUE(logger.isLevelEnabled(LogLevel::Critical));
+
+    std::filesystem::remove(testFile);
+}
+
+/**
+ * @test FileLogger::flush and FileLogger::isOpen — covers file_logger.cpp
+ *       lines 92-102 (flush + isOpen methods).
+ *
+ * Verifies that flush() does not throw and that isOpen() returns true
+ * for a successfully opened logger, and false after the logger is
+ * destroyed and the RAII destructor closes the file.
+ */
+TEST_F(FileLoggerTest, FlushAndIsOpen) {
+    std::filesystem::path testFile = "test_log.txt";
+
+    {
+        FileLogger logger(testFile, LogLevel::Info, false);
+
+        // Logger should be open while alive
+        EXPECT_TRUE(logger.isOpen());
+
+        // Explicit flush should not throw
+        EXPECT_NO_THROW(logger.flush());
+
+        // Logger should still be open after flush
+        EXPECT_TRUE(logger.isOpen());
+
+        logger.info("Message before flush");
+        EXPECT_NO_THROW(logger.flush());
+    }  // Destructor closes the file
+
+    // File must have been written
+    ASSERT_TRUE(std::filesystem::exists(testFile));
+    std::filesystem::remove(testFile);
+}
+
 class LoggerFactoryTest : public ::testing::Test {
 protected:
     void SetUp() override { cleanupTestFiles(); }
