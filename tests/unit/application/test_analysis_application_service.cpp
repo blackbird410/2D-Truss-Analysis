@@ -696,3 +696,23 @@ TEST_F(AnalysisApplicationServiceTest, NumericalEquivalence_SimpleTruss) {
 
     EXPECT_NEAR(view.getMaxDisplacement(), directResults.maxDisplacement, 1e-6);
 }
+
+/**
+ * @test Analyze with iterative solver (useDirectSolver=false) succeeds
+ *
+ * Covers the else-branch of the solver-selection if statement in
+ * AnalysisApplicationService::analyze().
+ */
+TEST_F(AnalysisApplicationServiceTest, Analyze_WithIterativeSolver_Succeeds) {
+    Truss truss = createValidTriangularTruss();
+
+    AnalysisOptions options;
+    options.useDirectSolver = false;  // → IterativeSolver branch
+    options.maxIterations = 5000;
+    options.convergenceTolerance = 1e-8;
+
+    auto result = analysisService.analyze(truss, options);
+
+    EXPECT_TRUE(result.success) << result.errorMessage;
+    EXPECT_GT(result.value, 0);
+}
