@@ -129,6 +129,16 @@ jobs:
           cd build
           ctest --output-on-failure \
                 --tests-regex "unit_tests" \
+      # unit_tests_gui_widgets initialises QApplication; offscreen satisfies
+      # the platform plugin requirement without a physical display or X11.
+      # QT_QPA_PLATFORM is also encoded in the CTest ENVIRONMENT property.
+      - name: Run GUI widget unit tests (headless)
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          cd build
+          ctest --output-on-failure \
+                --tests-regex "^unit_tests_gui_widgets$" \
                 --timeout 60 \
                 --parallel $(nproc)
 
