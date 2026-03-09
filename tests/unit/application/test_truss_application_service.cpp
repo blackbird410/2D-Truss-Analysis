@@ -15,6 +15,7 @@
  */
 
 #include "../../../src/application/truss_application_service.hpp"
+#include "../../../src/application/truss_edit_dtos.hpp"
 #include "../../../src/core/model/truss.hpp"
 #include "../../../src/infrastructure/io/fileio_factory.hpp"
 
@@ -626,4 +627,322 @@ TEST_F(TrussApplicationServiceTest, MoveAssignment_TransfersOwnership) {
 
     // Moved-to service should have the truss
     EXPECT_NO_THROW(otherService.getTrussView(handle));
+}
+
+// ============================================================================
+// GUI-FACING METHODS — addNode
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, AddNode_InvalidHandle_ReturnsFailure) {
+    auto result = service.addNode(9999, Point2D{0.0, 0.0}, SupportType::Free);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, AddNode_ValidHandle_ReturnsNodeId) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto result = service.addNode(cr.value, Point2D{1.0, 0.0}, SupportType::Pinned);
+    EXPECT_TRUE(result.success);
+    EXPECT_GT(result.value, 0u);
+}
+
+TEST_F(TrussApplicationServiceTest, AddNode_MarksModified) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    EXPECT_FALSE(service.hasUnsavedChanges(cr.value));
+    auto result = service.addNode(cr.value, Point2D{2.0, 3.0}, SupportType::Free);
+    ASSERT_TRUE(result.success);
+    EXPECT_TRUE(service.hasUnsavedChanges(cr.value));
+}
+
+// ============================================================================
+// GUI-FACING METHODS — addMember
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, AddMember_InvalidHandle_ReturnsFailure) {
+    MaterialSpec mat{200e9, "Steel"};
+    SectionSpec  sec{0.01,  "Square"};
+    auto result = service.addMember(9999, 1, 2, mat, sec);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, AddMember_ValidNodes_ReturnsMemberId) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto n1 = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Pinned);
+    auto n2 = service.addNode(cr.value, Point2D{1.0, 0.0}, SupportType::RollerY);
+    ASSERT_TRUE(n1.success);
+    ASSERT_TRUE(n2.success);
+
+    MaterialSpec mat{200e9, "Steel"};
+    SectionSpec  sec{0.01,  "Circular"};
+    auto result = service.addMember(cr.value, n1.value, n2.value, mat, sec);
+    EXPECT_TRUE(result.success);
+    EXPECT_GT(result.value, 0u);
+}
+
+/**
+ * @test AddMember with non-existent node IDs causes Truss::addMember to throw
+ *       std::invalid_argument, which is caught and returned as a Failure.
+ *
+ * Covers the catch block (line 250) in TrussApplicationService::addMember.
+ * Truss::addMember throws when either nodeId is not found in the truss.
+ */
+TEST_F(TrussApplicationServiceTest, AddMember_InvalidNodeIds_ReturnsFailure) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    // Add one node but use non-existent nodeIds (9998, 9999) for the member —
+    // Truss::addMember will throw std::invalid_argument, caught by the service.
+    MaterialSpec mat{200e9, "Steel"};
+    SectionSpec  sec{0.01,  "Square"};
+    auto result = service.addMember(cr.value, NodeId{9998}, NodeId{9999}, mat, sec);
+    EXPECT_FALSE(result.success);
+    EXPECT_NE(result.errorMessage.find("Failed to add member"), std::string::npos);
+}
+
+// ============================================================================
+// GUI-FACING METHODS — removeNode
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, RemoveNode_InvalidHandle_ReturnsFailure) {
+    auto result = service.removeNode(9999, 1);
+    EXPECT_FALSE(result.success);
+}
+
+TEST_F(TrussApplicationServiceTest, RemoveNode_NotFound_ReturnsFailure) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto result = service.removeNode(cr.value, 9999);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, RemoveNode_ValidNode_Succeeds) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto nr = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Free);
+    ASSERT_TRUE(nr.success);
+    auto result = service.removeNode(cr.value, nr.value);
+    EXPECT_TRUE(result.success);
+}
+
+// ============================================================================
+// GUI-FACING METHODS — removeMember
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, RemoveMember_InvalidHandle_ReturnsFailure) {
+    auto result = service.removeMember(9999, 1);
+    EXPECT_FALSE(result.success);
+}
+
+TEST_F(TrussApplicationServiceTest, RemoveMember_NotFound_ReturnsFailure) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto result = service.removeMember(cr.value, 9999);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, RemoveMember_ValidMember_Succeeds) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto n1 = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Pinned);
+    auto n2 = service.addNode(cr.value, Point2D{1.0, 0.0}, SupportType::RollerY);
+    ASSERT_TRUE(n1.success); ASSERT_TRUE(n2.success);
+    MaterialSpec mat{200e9, "Steel"};
+    SectionSpec  sec{0.01,  "Square"};
+    auto mr = service.addMember(cr.value, n1.value, n2.value, mat, sec);
+    ASSERT_TRUE(mr.success);
+    auto result = service.removeMember(cr.value, mr.value);
+    EXPECT_TRUE(result.success);
+}
+
+// ============================================================================
+// GUI-FACING METHODS — setNodeSupport
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, SetNodeSupport_InvalidHandle_ReturnsFailure) {
+    auto result = service.setNodeSupport(9999, 1, SupportType::Pinned);
+    EXPECT_FALSE(result.success);
+}
+
+TEST_F(TrussApplicationServiceTest, SetNodeSupport_ValidNode_Succeeds) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto nr = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Free);
+    ASSERT_TRUE(nr.success);
+    auto result = service.setNodeSupport(cr.value, nr.value, SupportType::Pinned);
+    EXPECT_TRUE(result.success);
+}
+
+// ============================================================================
+// GUI-FACING METHODS — applyNodeLoad
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, ApplyNodeLoad_InvalidHandle_ReturnsFailure) {
+    auto result = service.applyNodeLoad(9999, 1, Force2D{0.0, -1000.0});
+    EXPECT_FALSE(result.success);
+}
+
+TEST_F(TrussApplicationServiceTest, ApplyNodeLoad_ValidNode_Succeeds) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto nr = service.addNode(cr.value, Point2D{1.0, 1.0}, SupportType::Free);
+    ASSERT_TRUE(nr.success);
+    auto result = service.applyNodeLoad(cr.value, nr.value, Force2D{0.0, -5000.0});
+    EXPECT_TRUE(result.success);
+    EXPECT_TRUE(service.hasUnsavedChanges(cr.value));
+}
+
+// ============================================================================
+// GUI-FACING METHODS — clearNodeLoad
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, ClearNodeLoad_InvalidHandle_ReturnsFailure) {
+    auto result = service.clearNodeLoad(9999, 1);
+    EXPECT_FALSE(result.success);
+}
+
+TEST_F(TrussApplicationServiceTest, ClearNodeLoad_NodeNotFound_ReturnsFailure) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto result = service.clearNodeLoad(cr.value, 9999);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, ClearNodeLoad_ValidNode_Succeeds) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto nr = service.addNode(cr.value, Point2D{1.0, 0.0}, SupportType::Free);
+    ASSERT_TRUE(nr.success);
+    service.applyNodeLoad(cr.value, nr.value, Force2D{100.0, -200.0});
+    auto result = service.clearNodeLoad(cr.value, nr.value);
+    EXPECT_TRUE(result.success);
+}
+
+// ============================================================================
+// GUI-FACING METHODS — updateNode
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, UpdateNode_InvalidHandle_ReturnsFailure) {
+    NodeUpdateSpec spec{1.5, 2.5};
+    auto result = service.updateNode(9999, 1, spec);
+    EXPECT_FALSE(result.success);
+}
+
+TEST_F(TrussApplicationServiceTest, UpdateNode_NodeNotFound_ReturnsFailure) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    NodeUpdateSpec spec{1.5, 2.5};
+    auto result = service.updateNode(cr.value, 9999, spec);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, UpdateNode_ValidNode_Succeeds) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto nr = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Free);
+    ASSERT_TRUE(nr.success);
+    NodeUpdateSpec spec{3.0, 4.0};
+    auto result = service.updateNode(cr.value, nr.value, spec);
+    EXPECT_TRUE(result.success);
+    EXPECT_TRUE(service.hasUnsavedChanges(cr.value));
+}
+
+// ============================================================================
+// GUI-FACING METHODS — updateMember
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, UpdateMember_InvalidHandle_ReturnsFailure) {
+    MemberUpdateSpec spec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.01, "Square"}};
+    auto result = service.updateMember(9999, 1, spec);
+    EXPECT_FALSE(result.success);
+}
+
+TEST_F(TrussApplicationServiceTest, UpdateMember_MemberNotFound_ReturnsFailure) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    MemberUpdateSpec spec{MaterialSpec{200e9, "Steel"}, SectionSpec{0.01, "Square"}};
+    auto result = service.updateMember(cr.value, 9999, spec);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, UpdateMember_ValidMember_Succeeds) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto n1 = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Pinned);
+    auto n2 = service.addNode(cr.value, Point2D{1.0, 0.0}, SupportType::RollerY);
+    ASSERT_TRUE(n1.success); ASSERT_TRUE(n2.success);
+    auto mr = service.addMember(cr.value, n1.value, n2.value,
+                                MaterialSpec{200e9, "Steel"}, SectionSpec{0.01, "Square"});
+    ASSERT_TRUE(mr.success);
+    MemberUpdateSpec spec{MaterialSpec{70e9, "Aluminum"}, SectionSpec{0.005, "Circular"}};
+    auto result = service.updateMember(cr.value, mr.value, spec);
+    EXPECT_TRUE(result.success);
+    EXPECT_TRUE(service.hasUnsavedChanges(cr.value));
+}
+
+// ============================================================================
+// GUI-FACING METHODS — hasUnsavedChanges
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, HasUnsavedChanges_InvalidHandle_ReturnsFalse) {
+    EXPECT_FALSE(service.hasUnsavedChanges(9999));
+}
+
+TEST_F(TrussApplicationServiceTest, HasUnsavedChanges_NewTruss_ReturnsFalse) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    EXPECT_FALSE(service.hasUnsavedChanges(cr.value));
+}
+
+TEST_F(TrussApplicationServiceTest, HasUnsavedChanges_AfterModification_ReturnsTrue) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Free);
+    EXPECT_TRUE(service.hasUnsavedChanges(cr.value));
+}
+
+// ============================================================================
+// FILE I/O — unknown extension branches
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, LoadTruss_UnknownExtension_ReturnsFailure) {
+    auto path = tempDir / "data.csv";
+    { std::ofstream f(path); f << "dummy"; }
+    auto result = service.loadTruss(path);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+TEST_F(TrussApplicationServiceTest, SaveTruss_UnknownExtension_ReturnsFailure) {
+    auto cr = service.createTruss("T");
+    ASSERT_TRUE(cr.success);
+    auto path = tempDir / "output.csv";
+    auto result = service.saveTruss(cr.value, path, true);
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
+}
+
+// ============================================================================
+// saveTruss — invalid truss (empty) branch
+// Exercises if (!validationResult.isValid()) inside saveTruss
+// ============================================================================
+
+TEST_F(TrussApplicationServiceTest, SaveTruss_EmptyTruss_ReturnsFailure) {
+    // Create an empty (invalid) truss — no nodes, no members, no supports
+    auto cr = service.createTruss("Empty");
+    ASSERT_TRUE(cr.success);
+
+    auto path = tempDir / "empty_bad.json";
+    auto result = service.saveTruss(cr.value, path, /*overwrite=*/true);
+
+    // Empty truss fails validation → saveTruss returns failure
+    EXPECT_FALSE(result.success);
+    EXPECT_FALSE(result.errorMessage.empty());
 }
