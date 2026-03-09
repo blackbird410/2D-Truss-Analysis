@@ -11,7 +11,6 @@
 
 #include "gui/models/node_table_model.hpp"
 
-#include <QApplication>
 #include <QColor>
 #include <QCoreApplication>
 #include <QSignalSpy>
@@ -22,18 +21,21 @@
 #include <vector>
 
 // ---------------------------------------------------------------------------
-// QApplication bootstrap (shared static pattern)
+// QCoreApplication bootstrap
+// QAbstractItemModel lives in QtCore and does not interact with the display
+// system. QCoreApplication is sufficient; no platform plugin is loaded, so
+// this binary runs without a display server in CI.
 // ---------------------------------------------------------------------------
 namespace {
 
-QApplication& ensureQApp() {
+QCoreApplication& ensureQApp() {
     static int s_argc = 1;
     static char s_argv0[] = "unit_tests";
     static char* s_argv[] = {s_argv0, nullptr};
-    static QApplication* s_app = []() -> QApplication* {
-        if (auto* existing = qobject_cast<QApplication*>(QCoreApplication::instance()))
-            return existing;
-        return new QApplication(s_argc, s_argv);
+    static QCoreApplication* s_app = []() -> QCoreApplication* {
+        if (QCoreApplication::instance())
+            return QCoreApplication::instance();
+        return new QCoreApplication(s_argc, s_argv);
     }();
     return *s_app;
 }
