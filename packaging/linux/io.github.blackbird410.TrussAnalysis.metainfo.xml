@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component type="desktop-application">
+  <id>io.github.blackbird410.TrussAnalysis</id>
+  <metadata_license>MIT</metadata_license>
+  <project_license>MIT</project_license>
+  <name>2D Truss Analysis</name>
+  <summary>Professional 2D truss structural analysis software</summary>
+
+  <description>
+    <p>
+      2D Truss Analysis is a professional-grade structural analysis application built with
+      modern C++20 and Qt6, featuring an interactive drawing canvas and a robust
+      computational engine for analysing 2D truss structures.
+    </p>
+    <p>Key features:</p>
+    <ul>
+      <li>Interactive drawing canvas with mouse-based node and member placement</li>
+      <li>Direct stiffness method (displacement method) implementation</li>
+      <li>Support for various load types and boundary conditions</li>
+      <li>Comprehensive results tables: reactions, displacements, member forces</li>
+      <li>Visual deformation plots and axial force diagrams</li>
+      <li>Material and cross-section property management</li>
+      <li>Export to CSV, JSON, XML, HTML, LaTeX, and plain text</li>
+      <li>Dark and light themes</li>
+    </ul>
+    <p>
+      This tool is invaluable for Civil Engineering students and professionals,
+      helping validate manual calculations and providing insight into structural behaviour.
+    </p>
+  </description>
+
+  <launchable type="desktop-id">truss-analysis.desktop</launchable>
+
+  <screenshots>
+    <screenshot type="default">
+      <caption>Main application interface with interactive drawing canvas</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis-cpp/main/images/screenshot-main.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Results display with comprehensive analysis tables</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis-cpp/main/images/screenshot-results.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Deformed structure visualisation</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis-cpp/main/images/screenshot-deformed.png</image>
+    </screenshot>
+  </screenshots>
+
+  <url type="homepage">https://github.com/blackbird410/2D-Truss-Analysis-cpp</url>
+  <url type="bugtracker">https://github.com/blackbird410/2D-Truss-Analysis-cpp/issues</url>
+  <url type="vcs-browser">https://github.com/blackbird410/2D-Truss-Analysis-cpp</url>
+
+  <developer_name>Neil Taison Rigaud (blackbird410)</developer_name>
+
+  <categories>
+    <category>Engineering</category>
+    <category>Education</category>
+    <category>Science</category>
+  </categories>
+
+  <keywords>
+    <keyword>truss</keyword>
+    <keyword>structural</keyword>
+    <keyword>analysis</keyword>
+    <keyword>engineering</keyword>
+    <keyword>civil</keyword>
+    <keyword>mechanics</keyword>
+    <keyword>finite element</keyword>
+    <keyword>stiffness method</keyword>
+  </keywords>
+
+  <releases>
+    <release version="3.0.0" date="2026-03-08">
+      <description>
+        <p>Production Release v3.0.0</p>
+        <ul>
+          <li>Complete Phase 9 refactoring — clean layered C++20 architecture</li>
+          <li>Qt6 MVC GUI with zero legacy presenters</li>
+          <li>765 passing tests, 72%+ code coverage</li>
+          <li>FHS-compliant Linux packaging with CPack DEB</li>
+          <li>AppStream metainfo for software centre discovery</li>
+          <li>Dark and light QSS themes</li>
+          <li>Multi-format export: CSV, JSON, XML, HTML, LaTeX, plain text</li>
+        </ul>
+      </description>
+    </release>
+    <release version="2.2.0" date="2025-06-30">
+      <description>
+        <p>Cross-Platform Linux Support Release</p>
+        <ul>
+          <li>Complete Linux support with automated build system</li>
+          <li>Professional desktop integration for Linux environments</li>
+          <li>CI/CD pipeline with GitHub Actions</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
+
+  <provides>
+    <binary>truss-analysis</binary>
+    <binary>truss-analysis-cli</binary>
+  </provides>
+
+  <content_rating type="oars-1.1"/>
+
+  <supports>
+    <control>pointing</control>
+    <control>keyboard</control>
+  </supports>
+
+  <requires>
+    <display_length compare="ge">800</display_length>
+  </requires>
+
+  <recommends>
+    <display_length compare="ge">1200</display_length>
+    <memory compare="ge">512</memory>
+  </recommends>
+</component>

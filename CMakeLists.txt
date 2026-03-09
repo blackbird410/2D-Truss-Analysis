@@ -15,10 +15,15 @@ if(NOT CMAKE_BUILD_TYPE)
 endif()
 
 # Compiler-specific options
+# Note: -march=native is intentionally absent — it produces non-portable binaries that
+# cannot be distributed as packages (SIGILL on CPUs older than the build machine).
+# Use -O2 for Release (standard Debian/Ubuntu packaging level) and -O0 -g for Debug.
 if(MSVC)
     add_compile_options(/W4 /O2)
 else()
-    add_compile_options(-Wall -Wextra -Wpedantic -O3 -march=native)
+    add_compile_options(-Wall -Wextra -Wpedantic)
+    add_compile_options("$<$<CONFIG:Release>:-O2>")
+    add_compile_options("$<$<CONFIG:Debug>:-O0;-g>")
 endif()
 
 # Build options
@@ -333,7 +338,8 @@ target_link_libraries(TrussAnalysisCLI PRIVATE
 set_target_properties(TrussAnalysisCLI PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
-    OUTPUT_NAME "TrussAnalysisCLI"
+    # Lowercase name follows Debian Policy §10.1 and standard Unix conventions.
+    OUTPUT_NAME "truss-analysis-cli"
 )
 
 # Utility: Generate corrected golden masters (optional - only if file exists)
@@ -695,55 +701,22 @@ target_link_libraries(TrussAnalysisGUI PRIVATE
 set_target_properties(TrussAnalysisGUI PROPERTIES
     CXX_STANDARD 20
     CXX_STANDARD_REQUIRED ON
-    OUTPUT_NAME "TrussAnalysisGUI"
+    # Lowercase name follows Debian Policy §10.1 and standard Unix conventions.
+    OUTPUT_NAME "truss-analysis"
 )
 endif()  # BUILD_GUI
 
-# Install rules for packaging
-if(BUILD_GUI)
-    install(TARGETS TrussAnalysisCLI TrussAnalysisGUI
-        RUNTIME DESTINATION bin
-    )
-else()
-    install(TARGETS TrussAnalysisCLI
-        RUNTIME DESTINATION bin
-    )
-endif()
+# ============================================================================
+# INSTALL RULES
+# Uses GNUInstallDirs for FHS-compliant paths. Installs binaries, desktop
+# entry, icon, AppStream metainfo, config templates, docs and examples.
+# The include() activates all install() calls in InstallRules.cmake.
+# ============================================================================
+include(GNUInstallDirs)
+include(cmake/InstallRules.cmake)
 
-# Linux-specific settings
 message(STATUS "Configuring for Linux build")
-
-if(BUILD_GUI)
-    # Set RPATH for better library linking
-    set_target_properties(TrussAnalysisGUI PROPERTIES
-        INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
-        BUILD_WITH_INSTALL_RPATH OFF
-        INSTALL_RPATH_USE_LINK_PATH ON
-    )
-endif()
-
-set_target_properties(TrussAnalysisCLI PROPERTIES
-    INSTALL_RPATH "\$ORIGIN/../lib;\$ORIGIN/lib"
-    BUILD_WITH_INSTALL_RPATH OFF
-    INSTALL_RPATH_USE_LINK_PATH ON
-)
-
-# Strip debug symbols in release builds for smaller binaries
-if(CMAKE_BUILD_TYPE STREQUAL "Release")
-    if(BUILD_GUI)
-        add_custom_command(TARGET TrussAnalysisGUI POST_BUILD
-            COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisGUI>"
-            COMMENT "Stripping debug symbols from TrussAnalysisGUI"
-        )
-    endif()
-    
-    add_custom_command(TARGET TrussAnalysisCLI POST_BUILD
-        COMMAND ${CMAKE_STRIP} "$<TARGET_FILE:TrussAnalysisCLI>"
-        COMMENT "Stripping debug symbols from TrussAnalysisCLI"
-    )
-endif()
-
-message(STATUS "Linux optimizations enabled")
+message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
 
 # Coverage reporting targets
 if(ENABLE_COVERAGE)
