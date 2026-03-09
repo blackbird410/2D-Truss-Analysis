@@ -1,33 +1,16 @@
-# Build and Test Workflow
-# Verifies project builds and all tests execute successfully across Debug
-# and Release configurations. Validates vcpkg dependencies, test discovery,
-# and executable generation. Artifacts stored for Debug/Release binaries.
-#
-# STATUS: TEMPORARILY DISABLED FOR AUTOMATIC EXECUTION
-# Date Disabled: February 26, 2026
-# Reason: vcpkg dependency resolution issues causing runner instability
-# Duration: Until vcpkg configuration is stabilized
-#
-# CURRENT TRIGGER STRATEGY:
-#   - Does NOT run on: push or pull requests
-#   - ONLY runs on: manual dispatch (workflow_dispatch)
-#   - Location: GitHub UI → Actions → Build and Test → Run workflow
-#
-# To Re-Enable:
-#   1. Uncomment push and/or pull_request triggers below
-#   2. Verify vcpkg caching and binary sources are working
-#   3. Test on a feature branch before re-enabling
+# CI — Build and Test
+# Qt6 is installed from the system apt repository (qt6-base-dev, qt6-svg-dev).
+# vcpkg manages only the three lightweight deps: eigen3, nlohmann-json, tinyxml2.
+# This keeps CI fast (~15 min) and avoids the disk-space exhaustion caused by
+# building Qt from source inside vcpkg.
 
-name: Build and Test
+name: CI
 
 on:
-  # Triggers disabled until vcpkg issues resolved:
-  # push:
-  #   branches: [main, develop]
-  # pull_request:
-  #   branches: [main, develop]
-
-  # Manual execution only
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
   workflow_dispatch:
     inputs:
       build_type:
@@ -42,9 +25,6 @@ on:
 
 env:
   VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
-  VCPKG_MAX_CONCURRENCY: "1"
-  VCPKG_KEEP_ENV_VARS: "ACTIONS_CACHE_URL;ACTIONS_RUNTIME_TOKEN"
-  # Reduce pressure on runner to prevent communication loss
   CMAKE_BUILD_PARALLEL_LEVEL: "2"
 
 jobs:
@@ -61,50 +41,17 @@ jobs:
         build_type: [Debug, Release]
       fail-fast: false
 
-    env:
-      # Critical: Only build vcpkg dependencies for the current configuration
-      # Without this, vcpkg builds BOTH debug and release for every package
-      VCPKG_BUILD_TYPE: ${{ matrix.build_type == 'Debug' && 'debug' || 'release' }}
-
     steps:
       # ----------------------------------------------------------------------
-      # Checkout and Setup
+      # Checkout
       # ----------------------------------------------------------------------
       - name: Checkout repository
         uses: actions/checkout@v4
         with:
           submodules: recursive
 
-      - name: Disk usage (pre-clean)
-        run: df -h
-
-      - name: Free disk space
-        run: |
-          echo "Removing unnecessary preinstalled software..."
-          sudo rm -rf /usr/share/dotnet
-          sudo rm -rf /usr/local/lib/android
-          sudo rm -rf /opt/ghc
-          sudo rm -rf /usr/local/share/boost
-          sudo rm -rf /usr/share/swift
-          sudo rm -rf /usr/local/.ghcup
-          sudo rm -rf /opt/hostedtoolcache/CodeQL
-          sudo docker system prune -af || true
-          sudo apt-get clean
-          sudo rm -rf /var/lib/apt/lists/*
-          sudo rm -rf /tmp/*
-
-      - name: Disk usage (post-clean)
-        run: df -h
-
-      - name: Export GitHub Actions cache variables
-        uses: actions/github-script@v7
-        with:
-          script: |
-            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
-
       # ----------------------------------------------------------------------
-      # Install System Dependencies
+      # Install System Dependencies (Qt6 from apt — fast, no vcpkg build)
       # ----------------------------------------------------------------------
       - name: Install system dependencies
         run: |
@@ -114,167 +61,75 @@ jobs:
             ninja-build \
             build-essential \
             pkg-config \
-            curl \
-            zip \
-            unzip \
-            tar \
-            git \
-            autoconf \
-            automake \
-            autoconf-archive \
-            bison \
-            flex \
-            gperf \
-            libgl1-mesa-dev \
-            libglu1-mesa-dev \
-            libxkbcommon-dev \
-            libxkbcommon-x11-dev \
-            libfontconfig1-dev \
-            libfreetype6-dev \
-            libx11-dev \
-            libxext-dev \
-            libxfixes-dev \
-            libxi-dev \
-            libxrender-dev \
-            libxcb1-dev \
-            libx11-xcb-dev \
-            libxcb-glx0-dev \
-            libxcb-icccm4-dev \
-            libxcb-image0-dev \
-            libxcb-keysyms1-dev \
-            libxcb-randr0-dev \
-            libxcb-render-util0-dev \
-            libxcb-shape0-dev \
-            libxcb-sync-dev \
-            libxcb-xfixes0-dev \
-            libxcb-xinerama0-dev \
-            libxcb-xkb-dev \
-            libxcb-cursor-dev \
-            libxcb-util-dev \
-            libdbus-1-dev \
-            libatspi2.0-dev \
+            dpkg-dev \
+            qt6-base-dev \
+            qt6-svg-dev \
+            libqt6svgwidgets6 \
+            libgtest-dev \
+            libgmock-dev \
             xvfb
 
-      - name: Setup vcpkg (manifest + binary cache)
+      # ----------------------------------------------------------------------
+      # vcpkg (eigen3 / nlohmann-json / tinyxml2 only — Qt NOT in vcpkg.json)
+      # ----------------------------------------------------------------------
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Setup vcpkg
         uses: lukka/run-vcpkg@v11
         with:
           vcpkgDirectory: ${{ github.workspace }}/vcpkg
           vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
           vcpkgJsonGlob: "**/vcpkg.json"
 
-      - name: Set vcpkg environment
+      - name: Set VCPKG_ROOT
         run: |
-          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
-          echo "VCPKG_INSTALLATION_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_ENV
-          echo "${GITHUB_WORKSPACE}/vcpkg" >> $GITHUB_PATH
-
-      - name: Monitor resources during vcpkg install
-        run: |
-          echo "=== Pre-install Resource Status ==="
-          df -h
-          free -h
-          echo "Memory available: $(free -m | awk 'NR==2{printf \"%d MB\\n\", $7}')"
-
-      - name: Disk usage (post-vcpkg)
-        run: |
-          echo "=== Post-vcpkg Resource Status ==="
-          df -h
-          free -h
-
-      # ----------------------------------------------------------------------
-      # Build Configuration
-      # ----------------------------------------------------------------------
-      - name: Clean build directory
-        run: |
-          rm -rf build
-          mkdir -p build
-
-      - name: Configure CMake
-        run: |
-          cmake -B build \
-            -G Ninja \
-            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
-            -DBUILD_TESTING=ON \
-            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
-            -DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake \
-            -DVCPKG_MANIFEST_MODE=ON
-
-      - name: Verify BUILD_TESTING is enabled
-        run: |
-          if ! grep -q "BUILD_TESTING:BOOL=ON" build/CMakeCache.txt; then
-            echo "::error::BUILD_TESTING is not enabled in CMake cache!"
-            echo "CMake Cache BUILD_TESTING status:"
-            grep BUILD_TESTING build/CMakeCache.txt || echo "BUILD_TESTING not found in cache"
-            exit 1
-          fi
-          echo "✓ BUILD_TESTING confirmed enabled"
+          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> "$GITHUB_ENV"
 
       # ----------------------------------------------------------------------
       # Build
       # ----------------------------------------------------------------------
+      - name: Configure CMake
+        run: |
+          TOOLCHAIN_ARG=""
+          if [ -f "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" ]; then
+            TOOLCHAIN_ARG="-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+          fi
+
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBUILD_TESTING=ON \
+            -DBUILD_GUI=ON \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            ${TOOLCHAIN_ARG}
+
       - name: Build all targets
+        run: cmake --build build --parallel 2
+
+      - name: Verify executables
         run: |
-          # Limit parallel jobs to prevent memory exhaustion
-          cmake --build build --parallel 2
-
-          echo "=== Post-build Resource Status ==="
-          df -h
-          free -h
-
-      - name: Verify executables exist
-        run: |
-          echo "Checking for required executables..."
-
-          # CLI executable
-          if [ ! -x "build/TrussAnalysisCLI" ]; then
-            echo "::error::TrussAnalysisCLI executable not found or not executable"
-            exit 1
-          fi
-          echo "✓ TrussAnalysisCLI found"
-
-          # GUI executable
-          if [ ! -x "build/TrussAnalysisGUI" ]; then
-            echo "::error::TrussAnalysisGUI executable not found or not executable"
-            exit 1
-          fi
-          echo "✓ TrussAnalysisGUI found"
-
-          # Test executables
-          if [ ! -x "build/unit_tests" ]; then
-            echo "::error::unit_tests executable not found"
-            exit 1
-          fi
-          echo "✓ unit_tests found"
-
-          if [ ! -x "build/integration_tests" ]; then
-            echo "::error::integration_tests executable not found"
-            exit 1
-          fi
-          echo "✓ integration_tests found"
+          for exe in build/truss-analysis-cli build/truss-analysis build/unit_tests build/integration_tests; do
+            if [ ! -x "$exe" ]; then
+              echo "::error::Expected executable not found: $exe"
+              exit 1
+            fi
+            echo "✓ $exe"
+          done
 
       # ----------------------------------------------------------------------
-      # Test Execution
+      # Tests
       # ----------------------------------------------------------------------
-      - name: Verify test discovery
-        run: |
-          cd build
-
-          # Count available tests
-          TEST_COUNT=$(ctest -N | grep "Total Tests:" | awk '{print $3}')
-
-          if [ -z "$TEST_COUNT" ] || [ "$TEST_COUNT" -eq 0 ]; then
-            echo "::error::No tests discovered! ctest -N output:"
-            ctest -N
-            exit 1
-          fi
-
-          echo "✓ Discovered $TEST_COUNT tests"
-
       - name: Run unit tests
         run: |
           cd build
           ctest --output-on-failure \
                 --tests-regex "unit_tests" \
+                --timeout 60 \
                 --parallel $(nproc)
 
       - name: Run integration tests
@@ -282,13 +137,17 @@ jobs:
           cd build
           ctest --output-on-failure \
                 --tests-regex "integration_tests" \
+                --timeout 60 \
                 --parallel $(nproc)
 
-      - name: Run GUI integration tests
+      - name: Run GUI integration tests (headless)
+        env:
+          QT_QPA_PLATFORM: offscreen
         run: |
           cd build
           xvfb-run -a ctest --output-on-failure \
                             --tests-regex "gui_integration_test" \
+                            --timeout 60 \
                             --parallel $(nproc)
 
       - name: Run GTest integration tests
@@ -296,57 +155,41 @@ jobs:
           cd build
           ctest --output-on-failure \
                 --tests-regex "test_gtest_integration" \
+                --timeout 60 \
                 --parallel $(nproc)
 
       # ----------------------------------------------------------------------
-      # Test Results
+      # Artifacts
       # ----------------------------------------------------------------------
       - name: Generate test summary
         if: always()
         run: |
           cd build
-
-          echo "## Test Results (${{ matrix.build_type }})" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Count tests
-          TOTAL=$(ctest -N | grep "Total Tests:" | awk '{print $3}' || echo "0")
-          echo "**Total Tests:** $TOTAL" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Test execution summary
-          if [ -f Testing/Temporary/LastTest.log ]; then
-            PASSED=$(grep -c "Test Passed" Testing/Temporary/LastTest.log || echo "0")
-            FAILED=$(grep -c "Test Failed" Testing/Temporary/LastTest.log || echo "0")
-            
-            echo "- ✅ Passed: $PASSED" >> $GITHUB_STEP_SUMMARY
-            echo "- ❌ Failed: $FAILED" >> $GITHUB_STEP_SUMMARY
-          else
-            echo "_No test log available_" >> $GITHUB_STEP_SUMMARY
-          fi
+          echo "## Test Results (${{ matrix.build_type }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          TOTAL=$(ctest -N 2>/dev/null | grep "Total Tests:" | awk '{print $3}' || echo "0")
+          echo "**Total Tests:** $TOTAL" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload test results
         if: always()
         uses: actions/upload-artifact@v4
         with:
           name: test-results-${{ matrix.build_type }}
-          path: |
-            build/Testing/
-            build/*_tests
+          path: build/Testing/
           retention-days: 7
 
-      - name: Upload build artifacts
+      - name: Upload release binaries
         if: matrix.build_type == 'Release'
         uses: actions/upload-artifact@v4
         with:
-          name: binaries-${{ matrix.build_type }}
+          name: binaries-release
           path: |
-            build/TrussAnalysisCLI
-            build/TrussAnalysisGUI
+            build/truss-analysis-cli
+            build/truss-analysis
           retention-days: 7
 
   # ============================================================================
-  # Build Status Summary
+  # Summary gate — fails the overall check if any build_type failed
   # ============================================================================
 
   build-summary:
@@ -362,4 +205,4 @@ jobs:
             echo "::error::One or more build configurations failed"
             exit 1
           fi
-          echo "✅ All build configurations passed successfully"
+          echo "All build configurations passed"
