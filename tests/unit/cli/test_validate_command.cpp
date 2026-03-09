@@ -306,3 +306,142 @@ TEST_F(ValidateCommandTest, Execute_WithEmptyPath_ReturnsError) {
 
     EXPECT_EQ(exitCode, 1);
 }
+/**
+ * @test Covers verbose success path: verbose=true on a valid, loadable truss.
+ * Exercises the `if (m_verbose)` block at the end of execute() that prints
+ * the validation category checklist.
+ */
+TEST_F(ValidateCommandTest, Execute_ValidTruss_VerboseSuccess_PrintsCategories) {
+    const std::string fname = "test_validate_proper_valid.json";
+    {
+        std::ofstream f(fname);
+        f << R"({
+            "nodes": [
+                {"id": 1, "x": 0.0, "y": 0.0},
+                {"id": 2, "x": 4.0, "y": 0.0},
+                {"id": 3, "x": 2.0, "y": 2.0}
+            ],
+            "members": [
+                {"id": 1, "startNode": 1, "endNode": 2},
+                {"id": 2, "startNode": 1, "endNode": 3},
+                {"id": 3, "startNode": 2, "endNode": 3}
+            ],
+            "supports": [
+                {"nodeId": 1, "restrained": ["x", "y"]},
+                {"nodeId": 2, "restrained": ["y"]}
+            ],
+            "loads": [
+                {"nodeId": 3, "fy": -10000.0}
+            ]
+        })";
+    }
+
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    ValidateCommand cmd(facade, presenter, fname, /*verbose=*/true);
+    int exitCode = cmd.execute();
+
+    std::filesystem::remove(fname);
+    EXPECT_EQ(exitCode, 0);  // Valid truss should pass validation
+}
+
+/**
+ * @test Covers Error, Warning, and Info severity cases in the display switch.
+ *
+ * Uses a JSON truss that loads correctly but fails validation with:
+ * - Error: zero-length member (nodes 1 and 3 at same position)
+ * - Warning: load applied to fully pinned node 1
+ * - Info: support configuration and static determinacy (always added)
+ *
+ * This covers the three remaining cases in the switch(issue.severity) block
+ * inside ValidateCommand::execute().
+ */
+TEST_F(ValidateCommandTest, Execute_ZeroLengthAndPinnedLoad_CoversErrorWarnInfoSeverities) {
+    const std::string fname = "test_validate_error_warn_info.json";
+    {
+        std::ofstream f(fname);
+        f << R"({
+            "nodes": [
+                {"id": 1, "x": 0.0, "y": 0.0},
+                {"id": 2, "x": 4.0, "y": 0.0},
+                {"id": 3, "x": 0.0, "y": 0.0}
+            ],
+            "members": [
+                {"id": 1, "startNode": 1, "endNode": 2},
+                {"id": 2, "startNode": 1, "endNode": 3}
+            ],
+            "supports": [
+                {"nodeId": 1, "restrained": ["x", "y"]},
+                {"nodeId": 2, "restrained": ["y"]}
+            ],
+            "loads": [
+                {"nodeId": 1, "fx": 1000.0, "fy": 0.0},
+                {"nodeId": 2, "fy": -10000.0}
+            ]
+        })";
+    }
+
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    ValidateCommand cmd(facade, presenter, fname);
+    int exitCode = cmd.execute();
+
+    std::filesystem::remove(fname);
+    EXPECT_EQ(exitCode, 1);  // Must fail: zero-length member is an Error
+}
+
+// =============================================================================
+// Filesystem error catch branch — validateInputFile() throws filesystem_error
+// when path length exceeds the OS limit (PATH_MAX ~1024 on macOS/Linux).
+// =============================================================================
+
+/**
+ * @test ValidateCommand::validateInputFile() — filesystem_error catch branch.
+ *
+ * Passes a path that is 2000 characters long.  On POSIX systems
+ * std::filesystem::exists() throws filesystem_error ("filename too long"),
+ * which is caught inside validateInputFile() and causes it to return false.
+ * execute() then prints an error and returns 1.
+ *
+ * Covers: `catch (const std::filesystem::filesystem_error&) { return false; }`
+ *         at the end of validateInputFile() in validate_command.cpp.
+ */
+TEST_F(ValidateCommandTest, Execute_VeryLongPath_FilesystemErrorCaught) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    // Build a path longer than PATH_MAX so that std::filesystem::exists()
+    // throws std::filesystem::filesystem_error inside validateInputFile().
+    std::string longPath(2000, 'a');
+    longPath += ".json";
+
+    ValidateCommand cmd(facade, presenter, longPath, /*verbose=*/false);
+    int exitCode = cmd.execute();
+    EXPECT_EQ(exitCode, 1);
+}

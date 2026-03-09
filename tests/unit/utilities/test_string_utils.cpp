@@ -184,3 +184,39 @@ TEST(StringUtilsTest, EscapeLatex_Underscore) {
 TEST(StringUtilsTest, EscapeLatex_Caret) {
     EXPECT_EQ(escapeLatex("x^2"), "x\\textasciicircum{}2");
 }
+// ─── Additional escapeJson branches ──────────────────────────────────────────
+
+TEST(StringUtilsTest, EscapeJson_Backspace) {
+    EXPECT_EQ(escapeJson(std::string(1, '\b')), "\\b");
+}
+
+TEST(StringUtilsTest, EscapeJson_FormFeed) {
+    EXPECT_EQ(escapeJson(std::string(1, '\f')), "\\f");
+}
+
+TEST(StringUtilsTest, EscapeJson_CarriageReturn) {
+    EXPECT_EQ(escapeJson(std::string(1, '\r')), "\\r");
+}
+
+// ─── Additional escapeXml branch ─────────────────────────────────────────────
+
+TEST(StringUtilsTest, EscapeXml_ControlChar) {
+    // U+0001 should become &#1;
+    EXPECT_EQ(escapeXml(std::string(1, '\x01')), "&#1;");
+}
+
+// ─── Additional escapeHtml branch ────────────────────────────────────────────
+
+TEST(StringUtilsTest, EscapeHtml_GreaterThan) {
+    EXPECT_EQ(escapeHtml("2 > 1"), "2 &gt; 1");
+}
+
+// ─── Additional escapeLatex branches ─────────────────────────────────────────
+
+TEST(StringUtilsTest, EscapeLatex_CurlyBraces) {
+    EXPECT_EQ(escapeLatex("{x}"), "\\{x\\}");
+}
+
+TEST(StringUtilsTest, EscapeLatex_Hash) {
+    EXPECT_EQ(escapeLatex("#1"), "\\#1");
+}

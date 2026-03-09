@@ -359,3 +359,55 @@ TEST_F(CSVExporterTest, MetadataSection) {
     EXPECT_TRUE(fileContains(outputPath, "Converged,"));
     EXPECT_TRUE(fileContains(outputPath, "Total DOFs,"));
 }
+
+// ---------------------------------------------------------------------------
+// Disabled-section branch coverage (individual flags)
+// ---------------------------------------------------------------------------
+
+TEST_F(CSVExporterTest, PropertiesDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_props.csv";
+    ExportOptions opts;
+    opts.includeProperties = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "# MATERIAL AND SECTION PROPERTIES"));
+}
+
+TEST_F(CSVExporterTest, LoadsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_loads.csv";
+    ExportOptions opts;
+    opts.includeLoads = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "# APPLIED LOADS"));
+}
+
+TEST_F(CSVExporterTest, ReactionsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_reactions.csv";
+    ExportOptions opts;
+    opts.includeReactions = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "# SUPPORT REACTIONS"));
+}
+
+TEST_F(CSVExporterTest, NoLoadsOnNodes_LoadsRowsEmpty) {
+    // Zero-force nodes → the 'if (node.fx != 0.0 || node.fy != 0.0)' false branch
+    auto truss = std::make_unique<Truss>("No Load Truss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    auto n3 = truss->addNode(0.5, 0.5, SupportType::Free);
+    truss->addMember(n1, n2);
+    truss->addMember(n1, n3);
+    truss->addMember(n2, n3);
+    AnalysisResults results;
+    std::string outputPath = testOutputDir + "/no_load_nodes.csv";
+    ExportOptions opts;
+    opts.includeLoads = true;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    // Section header present but no data rows
+    EXPECT_TRUE(fileContains(outputPath, "# APPLIED LOADS"));
+}

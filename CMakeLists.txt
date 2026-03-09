@@ -375,11 +375,16 @@ if(BUILD_TESTING)
         # Domain layer tests - MODEL
         tests/unit/core/model/test_node.cpp
         tests/unit/core/model/test_member.cpp
+        tests/unit/core/model/test_member_branches.cpp
         tests/unit/core/model/test_truss.cpp
+        tests/unit/core/model/test_truss_branches.cpp
         tests/unit/core/model/test_load.cpp
         tests/unit/core/model/test_stiffness_matrix_bug.cpp
+        # Domain layer tests - ASSEMBLY
+        tests/unit/core/assembly/test_truss_assembler.cpp
         # Domain layer tests - VALIDATION
         tests/unit/core/validation/test_truss_validator.cpp
+        tests/unit/core/validation/test_truss_validator_branches.cpp
         tests/unit/core/validation/test_validation_advanced.cpp
         # Domain layer tests - ANALYSIS
         tests/unit/core/analysis/test_stiffness_assembler.cpp
@@ -402,6 +407,8 @@ if(BUILD_TESTING)
         tests/unit/infrastructure/io/test_fileio.cpp
         tests/unit/infrastructure/io/test_fileio_advanced.cpp
         tests/unit/infrastructure/io/test_support_type_serializer.cpp
+        tests/unit/infrastructure/io/test_json_reader_branches.cpp
+        tests/unit/infrastructure/io/test_xml_reader_branches.cpp
         tests/unit/infrastructure/adapters/test_console_output_adapter.cpp
         # Application layer tests (Phase 4)
         tests/unit/application/test_truss_application_service.cpp
@@ -419,11 +426,15 @@ if(BUILD_TESTING)
         tests/unit/cli/test_help_command.cpp
         tests/unit/cli/test_argument_parser.cpp
         tests/unit/cli/test_analyze_command.cpp
+        tests/unit/cli/test_example_command.cpp
         tests/unit/cli/test_validate_command.cpp
+        tests/unit/cli/test_validate_command_mock.cpp
         tests/unit/cli/test_export_command.cpp
+        tests/unit/cli/test_export_command_mock.cpp
         # Utility layer tests
         tests/unit/utilities/test_math_utils.cpp
         tests/unit/utilities/test_string_utils.cpp
+        tests/unit/utilities/test_string_utils_branches.cpp
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )

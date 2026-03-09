@@ -720,3 +720,41 @@ TEST_F(AnalysisOrchestratorTest, SolverFailureGracefully) {
     // Should fail gracefully with meaningful error
     EXPECT_THROW(orchestrator.analyze(truss), std::runtime_error);
 }
+// ============================================================
+// computeReactions FALSE branch
+// When computeReactions=false the function returns zero reactions early
+// ============================================================
+
+TEST_F(AnalysisOrchestratorTest, ComputeReactionsFalse_ReturnsZeroReactions) {
+    Truss truss = createSimpleTruss();
+
+    analysis::AnalysisOptions options;
+    options.computeReactions = false;  // ← triggers the early-return zero branch
+    options.checkStability = false;
+
+    auto solver = SolverFactory::createDirectSolver();
+    AnalysisOrchestrator orchestrator(
+        std::move(solver), std::make_unique<validation::TrussValidator>(), options);
+
+    auto results = orchestrator.analyze(truss);
+
+    EXPECT_TRUE(results.converged);
+    // With computeReactions=false every reaction is 0
+    for (const auto& r : results.reactions) {
+        EXPECT_DOUBLE_EQ(r, 0.0);
+    }
+}
+
+// ============================================================
+// Constructor: null solver / null validator throws
+// ============================================================
+
+TEST_F(AnalysisOrchestratorTest, Constructor_NullSolver_Throws) {
+    EXPECT_THROW(AnalysisOrchestrator(nullptr, std::make_unique<validation::TrussValidator>()),
+                 std::invalid_argument);
+}
+
+TEST_F(AnalysisOrchestratorTest, Constructor_NullValidator_Throws) {
+    auto solver = SolverFactory::createDirectSolver();
+    EXPECT_THROW(AnalysisOrchestrator(std::move(solver), nullptr), std::invalid_argument);
+}

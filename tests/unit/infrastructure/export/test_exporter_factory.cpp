@@ -458,3 +458,32 @@ TEST_F(ExporterFactoryTest, NoSideEffectsFromRepeatedCalls) {
         EXPECT_EQ(name, "JavaScript Object Notation");
     }
 }
+
+// ─── Invalid / unknown ExportFormat enum value ─────────────────────────────
+
+/**
+ * @brief ExporterFactory::create() throws std::invalid_argument for an
+ *        unrecognised ExportFormat enum value (default: branch, line 45).
+ */
+TEST_F(ExporterFactoryTest, Create_InvalidFormat_Throws) {
+    auto invalid = static_cast<truss::ExportFormat>(999);
+    EXPECT_THROW(ExporterFactory::create(invalid), std::invalid_argument);
+}
+
+/**
+ * @brief ExporterFactory::getExtension() falls back to ".csv" for an unknown
+ *        ExportFormat enum value (default: branch, line 92).
+ */
+TEST_F(ExporterFactoryTest, GetExtension_InvalidFormat_ReturnsCsvFallback) {
+    auto invalid = static_cast<truss::ExportFormat>(999);
+    EXPECT_EQ(ExporterFactory::getExtension(invalid), ".csv");
+}
+
+/**
+ * @brief ExporterFactory::getFormatName() returns "Unknown Format" for an
+ *        unrecognised ExportFormat enum value (default: branch, line 113).
+ */
+TEST_F(ExporterFactoryTest, GetFormatName_InvalidFormat_ReturnsUnknownFormat) {
+    auto invalid = static_cast<truss::ExportFormat>(999);
+    EXPECT_EQ(ExporterFactory::getFormatName(invalid), "Unknown Format");
+}

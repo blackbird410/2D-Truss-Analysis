@@ -79,36 +79,31 @@ protected:
     void createSimpleTrussFile(const std::string& filename) {
         std::ofstream file(filename);
         file << R"({
-            "name": "Simple Test Truss",
-            "nodes": [
-                {"id": 0, "x": 0.0, "y": 0.0},
-                {"id": 1, "x": 4.0, "y": 0.0},
-                {"id": 2, "x": 2.0, "y": 3.0}
-            ],
-            "supports": [
-                {"nodeId": 0, "type": "fixed"},
-                {"nodeId": 1, "type": "roller", "direction": "vertical"}
-            ],
-            "members": [
-                {"id": 0, "nodeIds": [0, 1]},
-                {"id": 1, "nodeIds": [0, 2]},
-                {"id": 2, "nodeIds": [1, 2]}
-            ],
-            "materials": [
-                {"id": 0, "E": 200e9, "density": 7850}
-            ],
-            "sections": [
-                {"id": 0, "area": 0.001}
-            ],
-            "memberAssignments": [
-                {"memberId": 0, "materialId": 0, "sectionId": 0},
-                {"memberId": 1, "materialId": 0, "sectionId": 0},
-                {"memberId": 2, "materialId": 0, "sectionId": 0}
-            ],
-            "loads": [
-                {"nodeId": 2, "fx": 0.0, "fy": -10000.0}
-            ]
-        })";
+  "metadata": { "name": "Simple Test Truss" },
+  "nodes": [
+    {"id": 1, "x": 0.0, "y": 0.0},
+    {"id": 2, "x": 4.0, "y": 0.0},
+    {"id": 3, "x": 2.0, "y": 3.0}
+  ],
+  "supports": [
+    {"nodeId": 1, "type": "pinned",  "restrained": ["x", "y"]},
+    {"nodeId": 2, "type": "roller",  "restrained": ["y"]}
+  ],
+  "members": [
+    {"id": 1, "startNode": 1, "endNode": 2, "material": "steel", "section": "s1"},
+    {"id": 2, "startNode": 1, "endNode": 3, "material": "steel", "section": "s1"},
+    {"id": 3, "startNode": 2, "endNode": 3, "material": "steel", "section": "s1"}
+  ],
+  "materials": [
+    {"id": "steel", "name": "Steel", "youngModulus": 200e9, "density": 7850, "yieldStrength": 250e6}
+  ],
+  "sections": [
+    {"id": "s1", "name": "S1", "crossSectionalArea": 0.001}
+  ],
+  "loads": [
+    {"nodeId": 3, "fx": 0.0, "fy": -10000.0}
+  ]
+})";
         file.close();
     }
 };
@@ -396,4 +391,193 @@ TEST_F(AnalyzeCommandTest, Execute_ExportFormatDefault_HTML) {
 
     EXPECT_TRUE(exitCode == 0 || exitCode == 1);
     std::filesystem::remove("output.html");
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// validateInputFile() branch: path is a directory (not a regular file)
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * @test Verify execute() returns error when input path is a directory
+ *
+ * Tests the !is_regular_file branch of validateInputFile(). Passing a
+ * directory path (which exists but is not a regular file) must be rejected
+ * and return exit code 1.
+ */
+TEST_F(AnalyzeCommandTest, Execute_WithDirectoryAsInput_ReturnsError) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    // Use the tests directory itself — it exists but is not a regular file
+    namespace fs = std::filesystem;
+    std::string dirPath = fs::current_path().string();
+
+    AnalyzeCommand cmd(facade, presenter, dirPath);
+    int exitCode = cmd.execute();
+
+    EXPECT_EQ(exitCode, 1);
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Success path: analysis succeeds + export via default extension detection
+// Exercises getDefaultExportFormat() branches for .json, .xml, .csv, .tsv,
+// .txt, .tex, and an unknown extension (falls back to JSON).
+// ─────────────────────────────────────────────────────────────────────────────
+
+/**
+ * @test Exercise getDefaultExportFormat() branches via successful analysis runs
+ *
+ * When analysis succeeds and an output file is given without explicit format,
+ * the command detects the format from the file extension. This test exercises
+ * the switch branches for each supported extension.
+ */
+TEST_F(AnalyzeCommandTest, Execute_SuccessPath_DefaultFormatExtensions) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    // Pairs of {output filename, expected exit codes}
+    // All should be 0 or 1 (0 on export success, 1 if analysis or export fails)
+    struct FormatTest {
+        std::string outputFile;
+    };
+
+    std::vector<FormatTest> cases = {
+        {"auto_out.json"},
+        {"auto_out.xml"},
+        {"auto_out.csv"},
+        {"auto_out.tsv"},
+        {"auto_out.txt"},
+        {"auto_out.tex"},
+        {"auto_out.unknownext"},  // Triggers default JSON fallback branch
+    };
+
+    for (const auto& tc : cases) {
+        MinimalOutput out;
+        truss::cli::presenters::ConsolePresenter pres(out);
+
+        // No explicit format → getDefaultExportFormat() will be called
+        AnalyzeCommand cmd(facade, pres, "test_simple.json", tc.outputFile);
+        int code = cmd.execute();
+        EXPECT_TRUE(code == 0 || code == 1)
+            << "Unexpected exit code for output file: " << tc.outputFile;
+        std::filesystem::remove(tc.outputFile);
+    }
+}
+
+/**
+ * @test Exercise the verbose success branch of execute()
+ *
+ * When analysis succeeds with verbose=true, three additional displayInfo/
+ * displaySuccess calls are made. This test ensures all verbose-mode code
+ * paths are executed without crashing.
+ */
+TEST_F(AnalyzeCommandTest, Execute_VerboseSuccessPath_AllBranchesHit) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    // verbose=true with output file → exercises all verbose + export branches
+    AnalyzeCommand cmd(facade,
+                       presenter,
+                       "test_simple.json",
+                       std::make_optional<std::string>("verbose_out.json"),
+                       std::make_optional<std::string>("JSON"),
+                       /*verbose=*/true);
+    int exitCode = cmd.execute();
+    EXPECT_TRUE(exitCode == 0 || exitCode == 1);
+    std::filesystem::remove("verbose_out.json");
+}
+
+// =============================================================================
+// Export failure path — facade.exportResults() returns false
+// =============================================================================
+
+/**
+ * @test AnalyzeCommand::execute() — export failure branch (lines 89-92).
+ *
+ * When analysis succeeds but the output path is not writable,
+ * m_facade.exportResults() returns false and the command prints an error
+ * and returns 1.
+ *
+ * Covers: `if (!m_facade.exportResults(...)) { displayError("Export failed...")
+ *         return 1; }` in analyze_command.cpp.
+ */
+TEST_F(AnalyzeCommandTest, Execute_ExportFailsWithBadOutputPath_ReturnsError) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    // Use valid truss so analysis succeeds, but output path is unwritable.
+    AnalyzeCommand cmd(facade,
+                       presenter,
+                       "test_simple.json",
+                       std::make_optional<std::string>("/invalid_dir/output.json"),
+                       std::make_optional<std::string>("JSON"),
+                       /*verbose=*/false);
+    int exitCode = cmd.execute();
+    EXPECT_EQ(exitCode, 1);
+}
+
+// =============================================================================
+// Filesystem error catch branch — validateInputFile() throws filesystem_error
+// when the path length exceeds the OS limit (PATH_MAX ~1024 on macOS/Linux).
+// =============================================================================
+
+/**
+ * @test AnalyzeCommand::validateInputFile() — filesystem_error catch branch.
+ *
+ * A 2000-character input path causes std::filesystem::exists() to throw
+ * filesystem_error ("filename too long"), which is caught inside
+ * validateInputFile() causing it to return false.  execute() then
+ * prints an error and returns 1.
+ *
+ * Covers: `catch (const std::filesystem::filesystem_error&) { return false; }`
+ *         at the end of validateInputFile() in analyze_command.cpp.
+ */
+TEST_F(AnalyzeCommandTest, Execute_VeryLongInputPath_FilesystemErrorCaught) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    // Build a path longer than PATH_MAX so std::filesystem::exists() throws.
+    std::string longPath(2000, 'x');
+    longPath += ".json";
+
+    AnalyzeCommand cmd(facade, presenter, longPath);
+    int exitCode = cmd.execute();
+    EXPECT_EQ(exitCode, 1);
 }

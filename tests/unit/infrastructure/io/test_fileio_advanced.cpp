@@ -167,3 +167,181 @@ TEST_F(FileIOAdvancedTest, FormatDetection) {
         ASSERT_NE(reader, nullptr);
     }
 }
+
+#include "infrastructure/io/xml_truss_writer.hpp"
+
+// ============================================================================
+// Branch coverage tests for JSON/XML writer options paths
+// ============================================================================
+
+/**
+ * @test JSON writer with prettyPrint=false produces compact (non-indented) output
+ */
+TEST_F(FileIOAdvancedTest, JsonWriter_CompactOutput_NoPrettyPrint) {
+    auto truss = createSimpleTruss();
+    auto filepath = testDir / "compact.json";
+
+    auto writer = std::make_unique<JsonTrussWriter>();
+    FileIOOptions opts;
+    opts.prettyPrint = false;
+    opts.overwriteExisting = true;
+    opts.validateOnWrite = false;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_TRUE(writer->write(dto, filepath, opts));
+
+    // Compact output should NOT contain newlines
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    EXPECT_TRUE(content.find('\n') == std::string::npos);
+}
+
+/**
+ * @test JSON writer with includeMetadata=false produces no metadata section
+ */
+TEST_F(FileIOAdvancedTest, JsonWriter_NoMetadata_SkipsMetadataSection) {
+    auto truss = createSimpleTruss();
+    auto filepath = testDir / "no_meta.json";
+
+    auto writer = std::make_unique<JsonTrussWriter>();
+    FileIOOptions opts;
+    opts.includeMetadata = false;
+    opts.overwriteExisting = true;
+    opts.validateOnWrite = false;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_TRUE(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    // Without metadata flag, "metadata" key should not appear
+    EXPECT_TRUE(content.find("\"metadata\"") == std::string::npos);
+}
+
+/**
+ * @test XML writer with includeMetadata=false produces no metadata element
+ */
+TEST_F(FileIOAdvancedTest, XmlWriter_NoMetadata_SkipsMetadataElement) {
+    auto truss = createSimpleTruss();
+    auto filepath = testDir / "no_meta.xml";
+
+    auto writer = std::make_unique<XmlTrussWriter>();
+    FileIOOptions opts;
+    opts.includeMetadata = false;
+    opts.overwriteExisting = true;
+    opts.validateOnWrite = false;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_TRUE(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
+    // Without metadata flag, <metadata ...> should not appear
+    EXPECT_TRUE(content.find("<metadata") == std::string::npos);
+}
+
+/**
+ * @test XML writer throws when file exists and overwrite is disallowed
+ */
+TEST_F(FileIOAdvancedTest, XmlWriter_ExistingFile_ThrowsWithoutOverwrite) {
+    auto truss = createSimpleTruss();
+    auto filepath = testDir / "exists.xml";
+
+    // Create file first
+    auto writer = std::make_unique<XmlTrussWriter>();
+    FileIOOptions opts;
+    opts.overwriteExisting = true;
+    opts.validateOnWrite = false;
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    writer->write(dto, filepath, opts);
+
+    // Second write without overwrite should throw
+    FileIOOptions opts2;
+    opts2.overwriteExisting = false;
+    EXPECT_THROW(writer->write(dto, filepath, opts2), FileWriteException);
+}
+/**
+ * @test JSON writer throws FileWriteException when target directory does not exist.
+ * Covers the `if (!file.is_open())` branch in json_truss_writer.cpp.
+ */
+TEST_F(FileIOAdvancedTest, JsonWriter_BadDirectory_ThrowsFileWriteException) {
+    auto truss = createSimpleTruss();
+    auto writer = std::make_unique<JsonTrussWriter>();
+    fs::path badPath = "/nonexistent_dir_xyz_never_created_rnd/output.json";
+    FileIOOptions opts;
+    opts.validateOnWrite = false;
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_THROW(writer->write(dto, badPath, opts), FileWriteException);
+}
+
+/**
+ * @test XML writer throws FileWriteException when target directory does not exist.
+ * Covers the `if (result != XML_SUCCESS)` branch in xml_truss_writer.cpp.
+ */
+TEST_F(FileIOAdvancedTest, XmlWriter_BadDirectory_ThrowsFileWriteException) {
+    auto truss = createSimpleTruss();
+    auto writer = std::make_unique<XmlTrussWriter>();
+    fs::path badPath = "/nonexistent_dir_xyz_never_created_rnd/output.xml";
+    FileIOOptions opts;
+    opts.validateOnWrite = false;
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    EXPECT_THROW(writer->write(dto, badPath, opts), FileWriteException);
+}
+
+// ============================================================================
+// Tests for io_types.hpp inline utility functions
+// ============================================================================
+
+TEST(IoTypesTest, GetFileExtension_Auto_ReturnsEmpty) {
+    // FileFormat::Auto has no explicit case → default branch returns ""
+    EXPECT_EQ(getFileExtension(FileFormat::Auto), "");
+}
+
+TEST(IoTypesTest, DetectFileFormat_UnknownExtension_ReturnsAuto) {
+    // Neither .json nor .xml → returns Auto
+    EXPECT_EQ(detectFileFormat("file.csv"), FileFormat::Auto);
+    EXPECT_EQ(detectFileFormat("file.txt"), FileFormat::Auto);
+    EXPECT_EQ(detectFileFormat("noext"), FileFormat::Auto);
+}
+
+TEST(IoTypesTest, GetFormatName_Auto_ReturnsAuto) {
+    EXPECT_EQ(getFormatName(FileFormat::Auto), "Auto");
+}
+
+TEST(IoTypesTest, GetFormatName_InvalidValue_ReturnsUnknown) {
+    auto invalid = static_cast<FileFormat>(99);
+    EXPECT_EQ(getFormatName(invalid), "Unknown");
+}
+
+// ---------------------------------------------------------------------------
+// FileIOFactory utility method branch coverage
+// ---------------------------------------------------------------------------
+
+TEST(FileIOFactoryUtilTest, IsFormatSupported_JSONAndXML_ReturnsTrue) {
+    EXPECT_TRUE(FileIOFactory::isFormatSupported(FileFormat::JSON));
+    EXPECT_TRUE(FileIOFactory::isFormatSupported(FileFormat::XML));
+}
+
+TEST(FileIOFactoryUtilTest, IsFormatSupported_Auto_ReturnsFalse) {
+    EXPECT_FALSE(FileIOFactory::isFormatSupported(FileFormat::Auto));
+}
+
+TEST(FileIOFactoryUtilTest, GetExtension_JSONandXML) {
+    EXPECT_EQ(FileIOFactory::getExtension(FileFormat::JSON), ".json");
+    EXPECT_EQ(FileIOFactory::getExtension(FileFormat::XML), ".xml");
+}
+
+TEST(FileIOFactoryUtilTest, GetFormatName_JSONandXML) {
+    EXPECT_EQ(FileIOFactory::getFormatName(FileFormat::JSON), "JSON");
+    EXPECT_EQ(FileIOFactory::getFormatName(FileFormat::XML), "XML");
+}
+
+TEST(FileIOFactoryUtilTest, CreateWriter_UnknownFormat_Throws) {
+    auto unknown = static_cast<FileFormat>(99);
+    EXPECT_THROW(FileIOFactory::createWriter(unknown), std::invalid_argument);
+}
+
+TEST(FileIOFactoryUtilTest, CreateReader_UnknownFormat_Throws) {
+    auto unknown = static_cast<FileFormat>(99);
+    EXPECT_THROW(FileIOFactory::createReader(unknown), std::invalid_argument);
+}

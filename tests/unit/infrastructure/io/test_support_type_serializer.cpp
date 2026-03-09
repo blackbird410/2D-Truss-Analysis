@@ -100,3 +100,16 @@ TEST(SupportTypeSerializerTest, RoundTrip_RollerX) {
 TEST(SupportTypeSerializerTest, RoundTrip_RollerY) {
     EXPECT_EQ(parseSupportType(supportTypeToString(SupportType::RollerY)), SupportType::RollerY);
 }
+
+// ─── Default / invalid enum value ────────────────────────────────────────────
+
+/**
+ * @brief An invalid SupportType enum value falls back to "free" (default branch).
+ *
+ * Casting an out-of-range integer to SupportType reaches the default: case
+ * in supportTypeToString(), exercising the defensive fall-back.
+ */
+TEST(SupportTypeSerializerTest, ToString_InvalidEnumValue_ReturnsFree) {
+    auto invalid = static_cast<SupportType>(999);
+    EXPECT_EQ(supportTypeToString(invalid), "free");
+}

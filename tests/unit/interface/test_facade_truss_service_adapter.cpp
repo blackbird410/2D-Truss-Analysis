@@ -440,4 +440,43 @@ TEST_F(FacadeTrussServiceAdapterTest, ClearTrussReturnsFalseForUnknownHandle) {
     EXPECT_FALSE(adapter->clearTruss(unknownHandle));
 }
 
+// ============================================================
+// Node / Member Update Delegation Tests
+// ============================================================
+
+TEST_F(FacadeTrussServiceAdapterTest, UpdateNodeDelegatesToFacade) {
+    // Arrange
+    const application::TrussHandle handle = 1;
+    const core::NodeId nodeId = 10;
+    const application::NodeUpdateSpec spec{3.0, 4.0};
+
+    EXPECT_CALL(mockFacade, updateNode(handle, nodeId, _))
+        .WillOnce(Return(application::Result<bool>::Success(true)));
+
+    // Act
+    auto result = adapter->updateNode(handle, nodeId, spec);
+
+    // Assert
+    ASSERT_TRUE(result.success);
+    EXPECT_TRUE(result.value);
+}
+
+TEST_F(FacadeTrussServiceAdapterTest, UpdateMemberDelegatesToFacade) {
+    // Arrange
+    const application::TrussHandle handle = 1;
+    const core::MemberId memberId = 5;
+    const application::MemberUpdateSpec spec{application::MaterialSpec{200e9, "Steel"},
+                                             application::SectionSpec{0.01, "Square"}};
+
+    EXPECT_CALL(mockFacade, updateMember(handle, memberId, _))
+        .WillOnce(Return(application::Result<bool>::Success(true)));
+
+    // Act
+    auto result = adapter->updateMember(handle, memberId, spec);
+
+    // Assert
+    ASSERT_TRUE(result.success);
+    EXPECT_TRUE(result.value);
+}
+
 }  // namespace

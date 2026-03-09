@@ -79,7 +79,8 @@ bool LaTeXExporter::exportResults(const ITrussView& truss,
             writeMetadataSection(file, results, options);
         }
 
-        file << "\n\\end{document}\n";
+        file << "\n";
+        writeClosing(file);
 
         file.close();
         return true;
@@ -104,7 +105,7 @@ void LaTeXExporter::writePreamble(std::ostream& os, const ITrussView& truss) {
     os << "\\date{" << truss::utils::string::formatTimestamp() << "}\n";
 }
 
-[[maybe_unused]] void LaTeXExporter::writeClosing(std::ostream& os) {
+void LaTeXExporter::writeClosing(std::ostream& os) {
     os << "\\end{document}\n";
 }
 

@@ -478,3 +478,94 @@ TEST_F(LaTeXExporterTest, EmptyTruss) {
     EXPECT_TRUE(success);
     EXPECT_TRUE(fs::exists(outputPath));
 }
+
+// ---------------------------------------------------------------------------
+// Disabled-section branch coverage
+// ---------------------------------------------------------------------------
+
+TEST_F(LaTeXExporterTest, GeometryDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_geom.tex";
+    ExportOptions opts;
+    opts.includeGeometry = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\\section{Geometry}"));
+}
+
+TEST_F(LaTeXExporterTest, PropertiesDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_props.tex";
+    ExportOptions opts;
+    opts.includeProperties = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\\section{Material and Section Properties}"));
+}
+
+TEST_F(LaTeXExporterTest, LoadsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_loads.tex";
+    ExportOptions opts;
+    opts.includeLoads = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\\section{Applied Loads}"));
+}
+
+TEST_F(LaTeXExporterTest, DisplacementsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_disp.tex";
+    ExportOptions opts;
+    opts.includeDisplacements = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\\section{Nodal Displacements}"));
+}
+
+TEST_F(LaTeXExporterTest, MemberForcesDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_forces.tex";
+    ExportOptions opts;
+    opts.includeMemberForces = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\\section{Member Forces}"));
+}
+
+TEST_F(LaTeXExporterTest, ReactionsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_react.tex";
+    ExportOptions opts;
+    opts.includeReactions = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\\section{Support Reactions}"));
+}
+
+TEST_F(LaTeXExporterTest, MetadataDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_meta.tex";
+    ExportOptions opts;
+    opts.includeMetadata = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\\section{Analysis Metadata}"));
+}
+
+TEST_F(LaTeXExporterTest, NoLoadsOnNodes_LoadsSectionStillPresent) {
+    auto truss = std::make_unique<Truss>("No Load Truss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    auto n3 = truss->addNode(0.5, 0.5, SupportType::Free);
+    truss->addMember(n1, n2);
+    truss->addMember(n1, n3);
+    truss->addMember(n2, n3);
+    AnalysisResults results;
+    std::string outputPath = testOutputDir + "/no_load_nodes.tex";
+    ExportOptions opts;
+    opts.includeLoads = true;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    // Applied loads section header should appear even with no loads
+    EXPECT_TRUE(fileContains(outputPath, "\\section{Applied Loads}"));
+}

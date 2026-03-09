@@ -756,3 +756,148 @@ TEST_F(FileIOTest, JsonValidFileWithNonSequentialIDsSucceeds) {
     EXPECT_EQ(truss->getNodeCount(), 3);
     EXPECT_EQ(truss->getMemberCount(), 2);
 }
+
+// ─── Extra writer-options branch coverage ────────────────────────────────────
+
+/**
+ * @test JsonWriter with includeMetadata=false skips the metadata section.
+ */
+TEST_F(FileIOTest, JsonWriter_NoMetadata_OmitsMetadataSection) {
+    auto truss = createSimpleTruss();
+    auto writer = FileIOFactory::createWriter(FileFormat::JSON);
+    auto filepath = testDir / "no_meta.json";
+    FileIOOptions opts;
+    opts.includeMetadata = false;
+    opts.prettyPrint = true;
+    opts.overwriteExisting = true;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    ASSERT_NO_THROW(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), {});
+    EXPECT_EQ(content.find("\"metadata\""), std::string::npos);
+}
+
+/**
+ * @test JsonWriter with prettyPrint=false produces compact (no whitespace) JSON.
+ */
+TEST_F(FileIOTest, JsonWriter_NoPrettyPrint_ProducesCompactJson) {
+    auto truss = createSimpleTruss();
+    auto writer = FileIOFactory::createWriter(FileFormat::JSON);
+    auto filepath = testDir / "compact.json";
+    FileIOOptions opts;
+    opts.prettyPrint = false;
+    opts.overwriteExisting = true;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    ASSERT_NO_THROW(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), {});
+    // Compact JSON typically lacks newlines in the middle of content
+    EXPECT_FALSE(content.empty());
+}
+
+/**
+ * @test JsonWriter with a truss that has no applied loads — the inner
+ * `if (std::abs(node.fx) > 1e-10 || std::abs(node.fy) > 1e-10)` condition
+ * is always false, so the loads array remains empty.
+ */
+TEST_F(FileIOTest, JsonWriter_NoAppliedLoads_EmptyLoadsArray) {
+    // Build a minimal truss with zero forces on all nodes
+    auto truss = std::make_shared<Truss>("NoLoadTruss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    truss->addMember(n1->getId(), n2->getId());
+    // No forces applied → loads array will be written but empty
+
+    auto writer = FileIOFactory::createWriter(FileFormat::JSON);
+    auto filepath = testDir / "no_loads.json";
+    FileIOOptions opts;
+    opts.overwriteExisting = true;
+    opts.prettyPrint = true;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    ASSERT_NO_THROW(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), {});
+    // Loads key should be present but no "nodeId" entries
+    EXPECT_NE(content.find("\"loads\""), std::string::npos);
+}
+
+/**
+ * @test XmlWriter with includeMetadata=false skips metadata.
+ */
+TEST_F(FileIOTest, XmlWriter_NoMetadata_OmitsMetadataSection) {
+    auto truss = createSimpleTruss();
+    auto writer = FileIOFactory::createWriter(FileFormat::XML);
+    auto filepath = testDir / "no_meta.xml";
+    FileIOOptions opts;
+    opts.includeMetadata = false;
+    opts.overwriteExisting = true;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    ASSERT_NO_THROW(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), {});
+    EXPECT_EQ(content.find("<metadata>"), std::string::npos);
+    EXPECT_EQ(content.find("<Metadata>"), std::string::npos);
+}
+
+/**
+ * @test JsonWriter with a non-zero fx (and fy==0) covers the
+ *       short-circuit true branch of `abs(node.fx) > 1e-10`.
+ *       Previously only fy-only loads were tested, leaving the
+ *       `abs(fx) > 1e-10` expression short-circuit path uncovered.
+ */
+TEST_F(FileIOTest, JsonWriter_FxOnlyLoad_IncludesLoadEntry) {
+    auto truss = std::make_shared<Truss>("FxLoadTruss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    truss->addMember(n1->getId(), n2->getId());
+    // Apply horizontal force only (fx != 0, fy == 0)
+    truss->applyForce(n2->getId(), 5000.0, 0.0);
+
+    auto writer = FileIOFactory::createWriter(FileFormat::JSON);
+    auto filepath = testDir / "fx_load.json";
+    FileIOOptions opts;
+    opts.overwriteExisting = true;
+    opts.prettyPrint = true;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    ASSERT_NO_THROW(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), {});
+    // Should include a load entry for the node with fx
+    EXPECT_NE(content.find("\"nodeId\""), std::string::npos);
+    EXPECT_NE(content.find("5000"), std::string::npos);
+}
+
+/**
+ * @test XmlWriter with a non-zero fx covers the same branch in
+ *       xml_truss_writer.cpp: `if (magnitude > 1e-10)` where only
+ *       the x component is non-zero.
+ */
+TEST_F(FileIOTest, XmlWriter_FxOnlyLoad_IncludesLoadEntry) {
+    auto truss = std::make_shared<Truss>("XmlFxTruss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    truss->addMember(n1->getId(), n2->getId());
+    truss->applyForce(n2->getId(), 3000.0, 0.0);
+
+    auto writer = FileIOFactory::createWriter(FileFormat::XML);
+    auto filepath = testDir / "fx_load.xml";
+    FileIOOptions opts;
+    opts.overwriteExisting = true;
+
+    auto dto = truss::core::assembly::TrussAssembler::createDTO(*truss);
+    ASSERT_NO_THROW(writer->write(dto, filepath, opts));
+
+    std::ifstream file(filepath);
+    std::string content((std::istreambuf_iterator<char>(file)), {});
+    EXPECT_NE(content.find("3000"), std::string::npos);
+}

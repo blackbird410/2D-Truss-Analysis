@@ -594,3 +594,24 @@ TEST_F(LinearSolverTest, BackwardStabilityVerification) {
     // Just verify computation completes - residual may be elevated due to ill-conditioning
     EXPECT_EQ(residual.size(), 3);
 }
+TEST_F(LinearSolverTest, SolverFactory_InvalidType_Throws) {
+    // Hit the default branch in SolverFactory::createSolver()
+    auto invalidType = static_cast<SolverType>(999);
+    EXPECT_THROW(SolverFactory::createSolver(invalidType), std::invalid_argument);
+}
+TEST_F(LinearSolverTest, IterativeSolver_NonSquareMatrix_Throws) {
+    MatrixXd A(3, 5);
+    A = MatrixXd::Random(3, 5);
+    VectorXd b(3);
+    b = VectorXd::Ones(3);
+    IterativeSolver solver;
+    EXPECT_THROW(solver.solve(A, b), std::runtime_error);
+}
+
+TEST_F(LinearSolverTest, IterativeSolver_DimensionMismatch_Throws) {
+    MatrixXd A = MatrixXd::Identity(3, 3);
+    VectorXd b(5);
+    b = VectorXd::Ones(5);
+    IterativeSolver solver;
+    EXPECT_THROW(solver.solve(A, b), std::runtime_error);
+}
