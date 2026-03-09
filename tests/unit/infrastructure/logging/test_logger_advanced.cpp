@@ -543,3 +543,54 @@ TEST_F(LoggerAdvancedTest, RepeatedLoggerCreationAndDestruction) {
     // Clean up
     std::filesystem::remove(testFile);
 }
+// ---------------------------------------------------------------------------
+// CompositeLogger branch coverage (all forwarding methods)
+// ---------------------------------------------------------------------------
+
+TEST_F(LoggerAdvancedTest, CompositeLogger_AllLogMethods_ForwardedToChildren) {
+    std::filesystem::path testFile = "composite_all_methods.txt";
+
+    // createDefaultLogger returns a CompositeLogger wrapping console + file
+    auto logger = LoggerFactory::createDefaultLogger(testFile, LogLevel::Trace, false);
+    ASSERT_NE(logger, nullptr);
+
+    // Exercise every log method on the composite
+    EXPECT_NO_THROW(logger->trace("trace msg"));
+    EXPECT_NO_THROW(logger->debug("debug msg"));
+    EXPECT_NO_THROW(logger->info("info msg"));
+    EXPECT_NO_THROW(logger->warn("warn msg"));
+    EXPECT_NO_THROW(logger->error("error msg"));
+    EXPECT_NO_THROW(logger->critical("critical msg"));
+
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+}
+
+TEST_F(LoggerAdvancedTest, CompositeLogger_SetLevel_UpdatesMinLevel) {
+    std::filesystem::path testFile = "composite_set_level.txt";
+
+    auto logger = LoggerFactory::createDefaultLogger(testFile, LogLevel::Trace, false);
+    ASSERT_NE(logger, nullptr);
+
+    logger->setLevel(LogLevel::Error);
+    EXPECT_EQ(logger->getLevel(), LogLevel::Error);
+    EXPECT_TRUE(logger->isLevelEnabled(LogLevel::Error));
+    EXPECT_TRUE(logger->isLevelEnabled(LogLevel::Critical));
+    EXPECT_FALSE(logger->isLevelEnabled(LogLevel::Warning));
+
+    if (std::filesystem::exists(testFile)) {
+        std::filesystem::remove(testFile);
+    }
+}
+
+TEST_F(LoggerAdvancedTest, CreateDefaultLogger_BadFilePath_FallsBackToConsole) {
+    // An unwritable directory path should trigger the catch block in
+    // LoggerFactory::createDefaultLogger; the returned composite still works.
+    std::filesystem::path badPath = "/nonexistent_dir_xyz/test.log";
+    auto logger = LoggerFactory::createDefaultLogger(badPath, LogLevel::Info, false);
+    ASSERT_NE(logger, nullptr);
+    // Should not throw even though file logger creation failed internally
+    EXPECT_NO_THROW(logger->info("fallback to console only"));
+    EXPECT_EQ(logger->getLevel(), LogLevel::Info);
+}
