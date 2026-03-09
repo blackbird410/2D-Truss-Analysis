@@ -36,19 +36,19 @@ using namespace truss::core;
 // Helpers
 // ─────────────────────────────────────────────────────────────────────────────
 
-static MaterialProperties makeMaterial(double E = 200e9, double density = 7850.0,
-                                       double yield = 250e6) {
+static MaterialProperties
+makeMaterial(double E = 200e9, double density = 7850.0, double yield = 250e6) {
     MaterialProperties m;
-    m.youngModulus  = E;
-    m.density       = density;
+    m.youngModulus = E;
+    m.density = density;
     m.yieldStrength = yield;
-    m.name          = "TestSteel";
+    m.name = "TestSteel";
     return m;
 }
 
 static SectionProperties makeSection(double area = 1e-3) {
     SectionProperties s;
-    s.area        = area;
+    s.area = area;
     s.designation = "TestSection";
     return s;
 }
@@ -94,8 +94,7 @@ TEST(TrussBranchesTest, AddMemberByNodeIdThrowsOnInvalidStartId) {
     truss.addNode(0.0, 0.0);  // id=1
     truss.addNode(1.0, 0.0);  // id=2
 
-    EXPECT_THROW(truss.addMember(999, 2, makeMaterial(), makeSection()),
-                 std::invalid_argument);
+    EXPECT_THROW(truss.addMember(999, 2, makeMaterial(), makeSection()), std::invalid_argument);
 }
 
 TEST(TrussBranchesTest, AddMemberByNodeIdThrowsOnInvalidEndId) {
@@ -103,8 +102,7 @@ TEST(TrussBranchesTest, AddMemberByNodeIdThrowsOnInvalidEndId) {
     truss.addNode(0.0, 0.0);  // id=1
     truss.addNode(1.0, 0.0);  // id=2
 
-    EXPECT_THROW(truss.addMember(1, 999, makeMaterial(), makeSection()),
-                 std::invalid_argument);
+    EXPECT_THROW(truss.addMember(1, 999, makeMaterial(), makeSection()), std::invalid_argument);
 }
 
 TEST(TrussBranchesTest, AddMemberByNodePtrThrowsOnNullStart) {
@@ -161,8 +159,8 @@ TEST(TrussBranchesTest, RemoveNodeByPtrSucceeds) {
 
 TEST(TrussBranchesTest, RemoveMemberByPtrSucceeds) {
     Truss truss;
-    auto n1     = truss.addNode(0.0, 0.0);
-    auto n2     = truss.addNode(1.0, 0.0);
+    auto n1 = truss.addNode(0.0, 0.0);
+    auto n2 = truss.addNode(1.0, 0.0);
     auto member = truss.addMember(n1, n2, makeMaterial(), makeSection());
     EXPECT_EQ(truss.getMemberCount(), 1);
     EXPECT_TRUE(truss.removeMember(member));
@@ -184,10 +182,10 @@ TEST(TrussBranchesTest, FreeDofsRollerXContributesOneFreeDof) {
 
 TEST(TrussBranchesTest, FreeDofsAllSupportTypesCombined) {
     Truss truss;
-    truss.addNode(0.0, 0.0, SupportType::Free);    // +2
-    truss.addNode(1.0, 0.0, SupportType::Pinned);  // +0
-    truss.addNode(2.0, 0.0, SupportType::RollerX); // +1 (X free)
-    truss.addNode(3.0, 0.0, SupportType::RollerY); // +1 (Y free)
+    truss.addNode(0.0, 0.0, SupportType::Free);     // +2
+    truss.addNode(1.0, 0.0, SupportType::Pinned);   // +0
+    truss.addNode(2.0, 0.0, SupportType::RollerX);  // +1 (X free)
+    truss.addNode(3.0, 0.0, SupportType::RollerY);  // +1 (Y free)
 
     // total DOFs = 8, free = 4
     EXPECT_EQ(truss.getTotalDofs(), 8);
@@ -259,7 +257,7 @@ TEST(TrussBranchesTest, ValidationErrorsStaticallyIndeterminate) {
     truss.addMember(n1, n2, makeMaterial(), makeSection());
     truss.addMember(n1, n3, makeMaterial(), makeSection());
     truss.addMember(n2, n3, makeMaterial(), makeSection());
-    truss.addMember(n1, n2, makeMaterial(), makeSection()); // duplicate → 4 members
+    truss.addMember(n1, n2, makeMaterial(), makeSection());  // duplicate → 4 members
 
     auto errors = truss.getValidationErrors();
     bool hasIndeterminateError = false;
@@ -384,12 +382,12 @@ TEST(TrussBranchesTest, UpdateNodeNotFoundReturnsFalse) {
 
 TEST(TrussBranchesTest, UpdateMemberFoundReturnsTrue) {
     Truss truss;
-    auto n1     = truss.addNode(0.0, 0.0);
-    auto n2     = truss.addNode(3.0, 4.0);
+    auto n1 = truss.addNode(0.0, 0.0);
+    auto n2 = truss.addNode(3.0, 4.0);
     auto member = truss.addMember(n1, n2, makeMaterial(200e9), makeSection(1e-3));
 
     MaterialProperties newMat = makeMaterial(100e9);
-    SectionProperties  newSec = makeSection(2e-3);
+    SectionProperties newSec = makeSection(2e-3);
     bool ok = truss.updateMember(member->getId(), newMat, newSec);
     EXPECT_TRUE(ok);
     EXPECT_NEAR(member->getMaterial().youngModulus, 100e9, 1.0);
@@ -567,8 +565,8 @@ TEST(TrussBranchesTest, GetNodeViewsPopulatesAllFields) {
 
 TEST(TrussBranchesTest, GetMemberViewsPopulatesAllFields) {
     Truss truss;
-    auto n1  = truss.addNode(0.0, 0.0);
-    auto n2  = truss.addNode(3.0, 4.0);  // length=5.0
+    auto n1 = truss.addNode(0.0, 0.0);
+    auto n2 = truss.addNode(3.0, 4.0);  // length=5.0
     auto mat = makeMaterial(200e9, 7850.0, 250e6);
     auto sec = makeSection(1e-3);
     truss.addMember(n1, n2, mat, sec);

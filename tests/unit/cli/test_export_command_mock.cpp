@@ -71,8 +71,7 @@ protected:
             .WillByDefault(Return(AnalysisWorkflowResult::Success(0, 0)));
         // Disambiguate the 4-arg exportResults(handle, ExportFormat, path, options)
         // overload from the 3-arg overload by typing the second argument.
-        ON_CALL(mockFacade,
-                exportResults(_, An<truss::ExportFormat>(), _, _))
+        ON_CALL(mockFacade, exportResults(_, An<truss::ExportFormat>(), _, _))
             .WillByDefault(Return(true));
     }
 
@@ -106,7 +105,11 @@ TEST_F(ExportCommandMockTest, Execute_ExportResultsFailure_ReturnsOne) {
     ON_CALL(mockFacade, exportResults(_, An<truss::ExportFormat>(), _, _))
         .WillByDefault(Return(false));
 
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile, outputFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
+                      outputFile,
                       std::optional<std::string>{"JSON"});
     EXPECT_EQ(cmd.execute(), 1);
 }
@@ -133,51 +136,79 @@ TEST_F(ExportCommandMockTest, Execute_DirectoryAsInput_ReturnsOne) {
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_JsonFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.json",
-                      std::optional<std::string>{"JSON"}, /*verbose=*/true);
+                      std::optional<std::string>{"JSON"},
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_XmlFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.xml",
-                      std::optional<std::string>{"XML"}, /*verbose=*/true);
+                      std::optional<std::string>{"XML"},
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_CsvFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.csv",
-                      std::optional<std::string>{"CSV"}, /*verbose=*/true);
+                      std::optional<std::string>{"CSV"},
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_TsvFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.tsv",
-                      std::optional<std::string>{"TSV"}, /*verbose=*/true);
+                      std::optional<std::string>{"TSV"},
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_TxtFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.txt",
-                      std::optional<std::string>{"TXT"}, /*verbose=*/true);
+                      std::optional<std::string>{"TXT"},
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_LatexFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.tex",
-                      std::optional<std::string>{"LATEX"}, /*verbose=*/true);
+                      std::optional<std::string>{"LATEX"},
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_HtmlFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.html",
-                      std::optional<std::string>{"HTML"}, /*verbose=*/true);
+                      std::optional<std::string>{"HTML"},
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
@@ -186,8 +217,7 @@ TEST_F(ExportCommandMockTest, Execute_VerboseMode_HtmlFormat_ReturnsZero) {
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_NonVerboseAutoFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
-                      "ec_mock_output.xml");
+    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile, "ec_mock_output.xml");
     EXPECT_EQ(cmd.execute(), 0);
 }
 
@@ -196,33 +226,27 @@ TEST_F(ExportCommandMockTest, Execute_NonVerboseAutoFormat_ReturnsZero) {
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_DefaultFormat_TsvExtension_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
-                      "ec_mock_output.tsv");
+    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile, "ec_mock_output.tsv");
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_DefaultFormat_TxtExtension_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
-                      "ec_mock_output.txt");
+    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile, "ec_mock_output.txt");
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_DefaultFormat_TexExtension_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
-                      "ec_mock_output.tex");
+    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile, "ec_mock_output.tex");
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_DefaultFormat_HtmlExtension_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
-                      "ec_mock_output.html");
+    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile, "ec_mock_output.html");
     EXPECT_EQ(cmd.execute(), 0);
 }
 
-TEST_F(ExportCommandMockTest,
-       Execute_DefaultFormat_UnknownExtension_FallsBackToJson) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
-                      "ec_mock_output.xyz");
+TEST_F(ExportCommandMockTest, Execute_DefaultFormat_UnknownExtension_FallsBackToJson) {
+    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile, "ec_mock_output.xyz");
     EXPECT_EQ(cmd.execute(), 0);
 }
 
@@ -231,8 +255,13 @@ TEST_F(ExportCommandMockTest,
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_VerboseMode_AutoFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
-                      "ec_mock_output.csv", std::nullopt, /*verbose=*/true);
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
+                      "ec_mock_output.csv",
+                      std::nullopt,
+                      /*verbose=*/true);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
@@ -241,9 +270,13 @@ TEST_F(ExportCommandMockTest, Execute_VerboseMode_AutoFormat_ReturnsZero) {
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_TexAliasFormat_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.tex",
-                      std::optional<std::string>{"TEX"}, /*verbose=*/false);
+                      std::optional<std::string>{"TEX"},
+                      /*verbose=*/false);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
@@ -252,9 +285,13 @@ TEST_F(ExportCommandMockTest, Execute_TexAliasFormat_ReturnsZero) {
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_InvalidFormatString_ReturnsOne) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.dat",
-                      std::optional<std::string>{"UNKNOWN_FMT"}, /*verbose=*/false);
+                      std::optional<std::string>{"UNKNOWN_FMT"},
+                      /*verbose=*/false);
     EXPECT_EQ(cmd.execute(), 1);
 }
 
@@ -263,8 +300,8 @@ TEST_F(ExportCommandMockTest, Execute_InvalidFormatString_ReturnsOne) {
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_NonExistentTrussFile_ReturnsOne) {
-    ExportCommand cmd(mockFacade, presenter, "/nonexistent/path/truss.json",
-                      resultsFile, "ec_mock_output.csv");
+    ExportCommand cmd(
+        mockFacade, presenter, "/nonexistent/path/truss.json", resultsFile, "ec_mock_output.csv");
     EXPECT_EQ(cmd.execute(), 1);
 }
 
@@ -273,16 +310,24 @@ TEST_F(ExportCommandMockTest, Execute_NonExistentTrussFile_ReturnsOne) {
 // ---------------------------------------------------------------------------
 
 TEST_F(ExportCommandMockTest, Execute_TsvFormatString_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.tsv",
-                      std::optional<std::string>{"TSV"}, /*verbose=*/false);
+                      std::optional<std::string>{"TSV"},
+                      /*verbose=*/false);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
 TEST_F(ExportCommandMockTest, Execute_TxtFormatString_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.txt",
-                      std::optional<std::string>{"TXT"}, /*verbose=*/false);
+                      std::optional<std::string>{"TXT"},
+                      /*verbose=*/false);
     EXPECT_EQ(cmd.execute(), 0);
 }
 
@@ -294,9 +339,11 @@ TEST_F(ExportCommandMockTest, Execute_TxtFormatString_ReturnsZero) {
  * @test Covers export_command.cpp line 193: getDefaultExportFormat returns
  *       ExportFormat::JSON when the output filepath has a .json extension.
  */
-TEST_F(ExportCommandMockTest,
-       Execute_DefaultFormat_JsonExtension_ReturnsZero) {
-    ExportCommand cmd(mockFacade, presenter, trussFile, resultsFile,
+TEST_F(ExportCommandMockTest, Execute_DefaultFormat_JsonExtension_ReturnsZero) {
+    ExportCommand cmd(mockFacade,
+                      presenter,
+                      trussFile,
+                      resultsFile,
                       "ec_mock_output.json");  // .json extension, no format
     EXPECT_EQ(cmd.execute(), 0);
 }

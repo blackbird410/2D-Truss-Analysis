@@ -32,9 +32,7 @@ static std::shared_ptr<Node> makeNode(NodeId id, double x, double y) {
     return std::make_shared<Node>(id, Point2D(x, y));
 }
 
-static Member makeMember(MemberId id,
-                          std::shared_ptr<Node> n1,
-                          std::shared_ptr<Node> n2) {
+static Member makeMember(MemberId id, std::shared_ptr<Node> n1, std::shared_ptr<Node> n2) {
     return Member(id, n1, n2);
 }
 

@@ -662,7 +662,7 @@ TEST_F(TrussApplicationServiceTest, AddNode_MarksModified) {
 
 TEST_F(TrussApplicationServiceTest, AddMember_InvalidHandle_ReturnsFailure) {
     MaterialSpec mat{200e9, "Steel"};
-    SectionSpec  sec{0.01,  "Square"};
+    SectionSpec sec{0.01, "Square"};
     auto result = service.addMember(9999, 1, 2, mat, sec);
     EXPECT_FALSE(result.success);
     EXPECT_FALSE(result.errorMessage.empty());
@@ -677,7 +677,7 @@ TEST_F(TrussApplicationServiceTest, AddMember_ValidNodes_ReturnsMemberId) {
     ASSERT_TRUE(n2.success);
 
     MaterialSpec mat{200e9, "Steel"};
-    SectionSpec  sec{0.01,  "Circular"};
+    SectionSpec sec{0.01, "Circular"};
     auto result = service.addMember(cr.value, n1.value, n2.value, mat, sec);
     EXPECT_TRUE(result.success);
     EXPECT_GT(result.value, 0u);
@@ -696,7 +696,7 @@ TEST_F(TrussApplicationServiceTest, AddMember_InvalidNodeIds_ReturnsFailure) {
     // Add one node but use non-existent nodeIds (9998, 9999) for the member —
     // Truss::addMember will throw std::invalid_argument, caught by the service.
     MaterialSpec mat{200e9, "Steel"};
-    SectionSpec  sec{0.01,  "Square"};
+    SectionSpec sec{0.01, "Square"};
     auto result = service.addMember(cr.value, NodeId{9998}, NodeId{9999}, mat, sec);
     EXPECT_FALSE(result.success);
     EXPECT_NE(result.errorMessage.find("Failed to add member"), std::string::npos);
@@ -750,9 +750,10 @@ TEST_F(TrussApplicationServiceTest, RemoveMember_ValidMember_Succeeds) {
     ASSERT_TRUE(cr.success);
     auto n1 = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Pinned);
     auto n2 = service.addNode(cr.value, Point2D{1.0, 0.0}, SupportType::RollerY);
-    ASSERT_TRUE(n1.success); ASSERT_TRUE(n2.success);
+    ASSERT_TRUE(n1.success);
+    ASSERT_TRUE(n2.success);
     MaterialSpec mat{200e9, "Steel"};
-    SectionSpec  sec{0.01,  "Square"};
+    SectionSpec sec{0.01, "Square"};
     auto mr = service.addMember(cr.value, n1.value, n2.value, mat, sec);
     ASSERT_TRUE(mr.success);
     auto result = service.removeMember(cr.value, mr.value);
@@ -877,9 +878,10 @@ TEST_F(TrussApplicationServiceTest, UpdateMember_ValidMember_Succeeds) {
     ASSERT_TRUE(cr.success);
     auto n1 = service.addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Pinned);
     auto n2 = service.addNode(cr.value, Point2D{1.0, 0.0}, SupportType::RollerY);
-    ASSERT_TRUE(n1.success); ASSERT_TRUE(n2.success);
-    auto mr = service.addMember(cr.value, n1.value, n2.value,
-                                MaterialSpec{200e9, "Steel"}, SectionSpec{0.01, "Square"});
+    ASSERT_TRUE(n1.success);
+    ASSERT_TRUE(n2.success);
+    auto mr = service.addMember(
+        cr.value, n1.value, n2.value, MaterialSpec{200e9, "Steel"}, SectionSpec{0.01, "Square"});
     ASSERT_TRUE(mr.success);
     MemberUpdateSpec spec{MaterialSpec{70e9, "Aluminum"}, SectionSpec{0.005, "Circular"}};
     auto result = service.updateMember(cr.value, mr.value, spec);
@@ -914,7 +916,10 @@ TEST_F(TrussApplicationServiceTest, HasUnsavedChanges_AfterModification_ReturnsT
 
 TEST_F(TrussApplicationServiceTest, LoadTruss_UnknownExtension_ReturnsFailure) {
     auto path = tempDir / "data.csv";
-    { std::ofstream f(path); f << "dummy"; }
+    {
+        std::ofstream f(path);
+        f << "dummy";
+    }
     auto result = service.loadTruss(path);
     EXPECT_FALSE(result.success);
     EXPECT_FALSE(result.errorMessage.empty());

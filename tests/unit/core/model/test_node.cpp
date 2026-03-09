@@ -287,7 +287,7 @@ TEST(NodeTest, IsCoincidentWith_DetectsSamePosition) {
  */
 TEST(NodeTest, InequalityOperator_ReturnsTrueForDifferentNodes) {
     Node nodeA(1, Point2D(0.0, 0.0), SupportType::Free);
-    Node nodeB(2, Point2D(0.0, 0.0), SupportType::Free);  // same position, different ID
+    Node nodeB(2, Point2D(0.0, 0.0), SupportType::Free);    // same position, different ID
     Node nodeC(1, Point2D(5.0, 5.0), SupportType::Pinned);  // same ID, different pos
 
     EXPECT_TRUE(nodeA != nodeB);   // different IDs → not equal

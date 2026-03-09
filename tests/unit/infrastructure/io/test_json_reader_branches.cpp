@@ -7,8 +7,8 @@
  */
 
 #include "infrastructure/io/fileio_factory.hpp"
-#include "infrastructure/io/json_truss_reader.hpp"
 #include "infrastructure/io/io_types.hpp"
+#include "infrastructure/io/json_truss_reader.hpp"
 
 #include <chrono>
 #include <filesystem>
@@ -28,13 +28,15 @@ protected:
     fs::path testDir;
 
     void SetUp() override {
-        testDir = fs::temp_directory_path() / ("json_branch_test_" +
-                  std::to_string(std::chrono::system_clock::now().time_since_epoch().count()));
+        testDir = fs::temp_directory_path() /
+                  ("json_branch_test_" +
+                   std::to_string(std::chrono::system_clock::now().time_since_epoch().count()));
         fs::create_directories(testDir);
     }
 
     void TearDown() override {
-        if (fs::exists(testDir)) fs::remove_all(testDir);
+        if (fs::exists(testDir))
+            fs::remove_all(testDir);
     }
 
     fs::path writeJson(const std::string& filename, const std::string& content) {
@@ -571,7 +573,8 @@ TEST_F(JsonReaderBranchTest, FactoryCreateWriterFromXmlPath_ReturnsWriter) {
 
 TEST_F(JsonReaderBranchTest, FactoryCreateWriterFromUnknownExtension_Throws) {
     auto path = testDir / "output.xyz";
-    EXPECT_THROW(truss::infrastructure::io::FileIOFactory::createWriter(path), std::invalid_argument);
+    EXPECT_THROW(truss::infrastructure::io::FileIOFactory::createWriter(path),
+                 std::invalid_argument);
 }
 
 // ============================================================

@@ -102,8 +102,7 @@ TEST(StringUtilsBranchTest, EscapeLatex_Hash_IsEscaped) {
 TEST(StringUtilsBranchTest, EscapeLatex_AllSpecial_Roundtrip) {
     // Covers all 10 switch cases: \, {, }, $, &, %, #, _, ~, ^
     std::string input = "\\{}$&%#_~^";
-    std::string expected =
-        "\\textbackslash{}\\{\\}\\$\\&\\%\\#\\_"
-        "\\textasciitilde{}\\textasciicircum{}";
+    std::string expected = "\\textbackslash{}\\{\\}\\$\\&\\%\\#\\_"
+                           "\\textasciitilde{}\\textasciicircum{}";
     EXPECT_EQ(escapeLatex(input), expected);
 }

@@ -483,17 +483,21 @@ TEST_F(ExportCommandTest, Execute_VerboseAllFormats_CoversAllSwitchCases) {
     const std::string trussFile = "export_verbose_truss.json";
     writeValidTrussJson(trussFile);
 
-    const std::vector<std::string> formats    = {"JSON", "XML", "CSV", "TSV", "TXT", "LATEX", "HTML"};
-    const std::vector<std::string> extensions = {"json", "xml", "csv", "tsv", "txt", "tex",  "html"};
+    const std::vector<std::string> formats = {"JSON", "XML", "CSV", "TSV", "TXT", "LATEX", "HTML"};
+    const std::vector<std::string> extensions = {"json", "xml", "csv", "tsv", "txt", "tex", "html"};
 
     for (size_t i = 0; i < formats.size(); ++i) {
         std::string outFile = "export_verbose_out." + extensions[i];
         // verbose = true  ← this forces the switch(format) code path
-        ExportCommand cmd(facade, presenter, trussFile, "", outFile,
-                          std::optional<std::string>{formats[i]}, /*verbose=*/true);
+        ExportCommand cmd(facade,
+                          presenter,
+                          trussFile,
+                          "",
+                          outFile,
+                          std::optional<std::string>{formats[i]},
+                          /*verbose=*/true);
         int code = cmd.execute();
-        EXPECT_TRUE(code == 0 || code == 1)
-            << "Verbose export failed for format " << formats[i];
+        EXPECT_TRUE(code == 0 || code == 1) << "Verbose export failed for format " << formats[i];
         std::filesystem::remove(outFile);
     }
 
@@ -533,8 +537,13 @@ TEST_F(ExportCommandTest, Execute_VeryLongTrussPath_FilesystemErrorCaught) {
     std::string longPath(2000, 'a');
     longPath += ".json";
 
-    ExportCommand cmd(facade, presenter, longPath, "", "output.json",
-                      std::optional<std::string>{"JSON"}, /*verbose=*/false);
+    ExportCommand cmd(facade,
+                      presenter,
+                      longPath,
+                      "",
+                      "output.json",
+                      std::optional<std::string>{"JSON"},
+                      /*verbose=*/false);
     int exitCode = cmd.execute();
     EXPECT_EQ(exitCode, 1);
 }
@@ -578,8 +587,7 @@ TEST_F(ExportCommandTest, Execute_UnknownExtension_DefaultsToJson) {
     const std::string outFile = "output_default.xyz";
 
     // No explicit format (std::nullopt) → auto-detect via extension.
-    ExportCommand cmd(facade, presenter, trussFile, "", outFile,
-                      std::nullopt, /*verbose=*/false);
+    ExportCommand cmd(facade, presenter, trussFile, "", outFile, std::nullopt, /*verbose=*/false);
     int exitCode = cmd.execute();
 
     // The command should succeed (exit 0) because:

@@ -118,8 +118,8 @@ TEST_F(ValidatorBranchTest, NonPositiveDensityGeneratesWarning) {
     auto n2 = t.addNode(4.0, 0.0, SupportType::RollerX);
 
     MaterialProperties mat;
-    mat.youngModulus  = 200e9;
-    mat.density       = 0.0;   // ← triggers density warning
+    mat.youngModulus = 200e9;
+    mat.density = 0.0;  // ← triggers density warning
     mat.yieldStrength = 250e6;
 
     SectionProperties sec;
@@ -148,8 +148,8 @@ TEST_F(ValidatorBranchTest, NegativeDensityGeneratesWarning) {
     auto n2 = t.addNode(4.0, 0.0, SupportType::RollerX);
 
     MaterialProperties mat;
-    mat.youngModulus  = 200e9;
-    mat.density       = -7800.0;  // Negative
+    mat.youngModulus = 200e9;
+    mat.density = -7800.0;  // Negative
     mat.yieldStrength = 250e6;
 
     SectionProperties sec;
@@ -182,8 +182,8 @@ TEST_F(ValidatorBranchTest, NonPositiveYieldStrengthGeneratesWarning) {
     auto n2 = t.addNode(4.0, 0.0, SupportType::RollerX);
 
     MaterialProperties mat;
-    mat.youngModulus  = 200e9;
-    mat.density       = 7800.0;
+    mat.youngModulus = 200e9;
+    mat.density = 7800.0;
     mat.yieldStrength = 0.0;  // ← triggers yield strength warning
 
     SectionProperties sec;
@@ -374,10 +374,10 @@ TEST_F(ValidatorBranchTest, CountBySeverity_AccuratelyCountsEachLevel) {
     Truss empty;
     auto result = validator.validate(empty);
 
-    size_t fatals   = result.countBySeverity(ValidationSeverity::Fatal);
-    size_t errors   = result.countBySeverity(ValidationSeverity::Error);
+    size_t fatals = result.countBySeverity(ValidationSeverity::Fatal);
+    size_t errors = result.countBySeverity(ValidationSeverity::Error);
     size_t warnings = result.countBySeverity(ValidationSeverity::Warning);
-    size_t infos    = result.countBySeverity(ValidationSeverity::Info);
+    size_t infos = result.countBySeverity(ValidationSeverity::Info);
 
     EXPECT_GT(fatals, 0u) << "Empty truss should produce Fatal issues";
     // Total must equal total issue count

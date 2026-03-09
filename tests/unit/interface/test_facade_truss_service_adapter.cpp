@@ -465,9 +465,8 @@ TEST_F(FacadeTrussServiceAdapterTest, UpdateMemberDelegatesToFacade) {
     // Arrange
     const application::TrussHandle handle = 1;
     const core::MemberId memberId = 5;
-    const application::MemberUpdateSpec spec{
-        application::MaterialSpec{200e9, "Steel"},
-        application::SectionSpec{0.01, "Square"}};
+    const application::MemberUpdateSpec spec{application::MaterialSpec{200e9, "Steel"},
+                                             application::SectionSpec{0.01, "Square"}};
 
     EXPECT_CALL(mockFacade, updateMember(handle, memberId, _))
         .WillOnce(Return(application::Result<bool>::Success(true)));

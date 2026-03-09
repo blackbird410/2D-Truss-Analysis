@@ -31,15 +31,22 @@ using namespace truss::core::interfaces;
 // Helper: construct a minimal valid TrussDTO
 // ─────────────────────────────────────────────────────────────────────────────
 
-static NodeDTO makeNodeDTO(NodeId id, double x, double y,
+static NodeDTO makeNodeDTO(NodeId id,
+                           double x,
+                           double y,
                            SupportType support = SupportType::Free,
-                           double fx = 0.0, double fy = 0.0) {
+                           double fx = 0.0,
+                           double fy = 0.0) {
     return NodeDTO(id, x, y, support, fx, fy);
 }
 
-static MemberDTO makeMemberDTO(MemberId id, NodeId start, NodeId end,
-                                double E = 200e9, double yield = 250e6,
-                                double density = 7850.0, double area = 1e-3) {
+static MemberDTO makeMemberDTO(MemberId id,
+                               NodeId start,
+                               NodeId end,
+                               double E = 200e9,
+                               double yield = 250e6,
+                               double density = 7850.0,
+                               double area = 1e-3) {
     return MemberDTO(id, start, end, "M" + std::to_string(id), E, yield, density, area);
 }
 
@@ -154,8 +161,7 @@ TEST(TrussAssemblerTest, AssemblyThrowsErrorMessageMentionsMemberId) {
         FAIL() << "Expected std::invalid_argument";
     } catch (const std::invalid_argument& e) {
         std::string msg(e.what());
-        EXPECT_TRUE(msg.find("42") != std::string::npos ||
-                    msg.find("999") != std::string::npos)
+        EXPECT_TRUE(msg.find("42") != std::string::npos || msg.find("999") != std::string::npos)
             << "Error message: " << msg;
     }
 }
@@ -186,13 +192,13 @@ TEST(TrussAssemblerTest, CreateDTORoundTripsNodeData) {
     truss.applyForce(3, Force2D(0.0, -1000.0));
 
     MaterialProperties mat;
-    mat.youngModulus  = 200e9;
+    mat.youngModulus = 200e9;
     mat.yieldStrength = 250e6;
-    mat.density       = 7850.0;
-    mat.name          = "Steel";
+    mat.density = 7850.0;
+    mat.name = "Steel";
 
     SectionProperties sec;
-    sec.area        = 1e-3;
+    sec.area = 1e-3;
     sec.designation = "S1";
 
     truss.addMember(n1, n2, mat, sec);
@@ -215,13 +221,13 @@ TEST(TrussAssemblerTest, CreateDTORoundTripsMemberData) {
     auto n2 = truss.addNode(3.0, 4.0);  // length=5
 
     MaterialProperties mat;
-    mat.youngModulus  = 70e9;
+    mat.youngModulus = 70e9;
     mat.yieldStrength = 110e6;
-    mat.density       = 2700.0;
-    mat.name          = "Aluminium";
+    mat.density = 2700.0;
+    mat.name = "Aluminium";
 
     SectionProperties sec;
-    sec.area        = 2e-3;
+    sec.area = 2e-3;
     sec.designation = "A2";
 
     truss.addMember(n1, n2, mat, sec);

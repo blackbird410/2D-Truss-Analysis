@@ -750,9 +750,8 @@ TEST_F(AnalysisOrchestratorTest, ComputeReactionsFalse_ReturnsZeroReactions) {
 // ============================================================
 
 TEST_F(AnalysisOrchestratorTest, Constructor_NullSolver_Throws) {
-    EXPECT_THROW(
-        AnalysisOrchestrator(nullptr, std::make_unique<validation::TrussValidator>()),
-        std::invalid_argument);
+    EXPECT_THROW(AnalysisOrchestrator(nullptr, std::make_unique<validation::TrussValidator>()),
+                 std::invalid_argument);
 }
 
 TEST_F(AnalysisOrchestratorTest, Constructor_NullValidator_Throws) {

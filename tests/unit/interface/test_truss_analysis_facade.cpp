@@ -705,7 +705,7 @@ TEST_F(TrussAnalysisFacadeTest, AddNode_ValidHandle_Succeeds) {
 
 TEST_F(TrussAnalysisFacadeTest, AddMember_InvalidHandle_ReturnsFailure) {
     MaterialSpec mat{200e9, "Steel"};
-    SectionSpec  sec{0.01,  "Square"};
+    SectionSpec sec{0.01, "Square"};
     auto result = facade->addMember(9999, 1, 2, mat, sec);
     EXPECT_FALSE(result.success);
 }
@@ -715,9 +715,10 @@ TEST_F(TrussAnalysisFacadeTest, AddMember_ValidNodes_Succeeds) {
     ASSERT_TRUE(cr.success);
     auto n1 = facade->addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Pinned);
     auto n2 = facade->addNode(cr.value, Point2D{1.0, 0.0}, SupportType::RollerY);
-    ASSERT_TRUE(n1.success); ASSERT_TRUE(n2.success);
+    ASSERT_TRUE(n1.success);
+    ASSERT_TRUE(n2.success);
     MaterialSpec mat{200e9, "Steel"};
-    SectionSpec  sec{0.01,  "Circular"};
+    SectionSpec sec{0.01, "Circular"};
     auto r = facade->addMember(cr.value, n1.value, n2.value, mat, sec);
     EXPECT_TRUE(r.success);
 }
@@ -775,13 +776,13 @@ TEST_F(TrussAnalysisFacadeTest, UpdateMember_ValidMember_Succeeds) {
     ASSERT_TRUE(cr.success);
     auto n1 = facade->addNode(cr.value, Point2D{0.0, 0.0}, SupportType::Pinned);
     auto n2 = facade->addNode(cr.value, Point2D{1.0, 0.0}, SupportType::RollerY);
-    ASSERT_TRUE(n1.success); ASSERT_TRUE(n2.success);
+    ASSERT_TRUE(n1.success);
+    ASSERT_TRUE(n2.success);
     MaterialSpec mat{200e9, "Steel"};
-    SectionSpec  sec{0.01,  "Square"};
+    SectionSpec sec{0.01, "Square"};
     auto mr = facade->addMember(cr.value, n1.value, n2.value, mat, sec);
     ASSERT_TRUE(mr.success);
-    MemberUpdateSpec spec{MaterialSpec{70e9, "Aluminum"},
-                                       SectionSpec{0.005, "Circular"}};
+    MemberUpdateSpec spec{MaterialSpec{70e9, "Aluminum"}, SectionSpec{0.005, "Circular"}};
     auto r = facade->updateMember(cr.value, mr.value, spec);
     EXPECT_TRUE(r.success);
 }
@@ -893,10 +894,11 @@ static TrussBuilder createCollinearBuilder() {
     builder.addNode(0.0, 0.0, SupportType::Pinned);   // id 1
     builder.addNode(2.0, 0.0, SupportType::RollerX);  // id 2
     builder.addNode(1.0, 0.0, SupportType::Free);     // id 3
-    builder.addMember(NodeId(1), NodeId(3))            // left span
-        .addMember(NodeId(3), NodeId(2))               // right span
-        .addMember(NodeId(1), NodeId(2))               // full span
-        .applyForce(NodeId(3), 0.0, -10000.0);         // vertical load → null-space direction
+    builder
+        .addMember(NodeId(1), NodeId(3))        // left span
+        .addMember(NodeId(3), NodeId(2))        // right span
+        .addMember(NodeId(1), NodeId(2))        // full span
+        .applyForce(NodeId(3), 0.0, -10000.0);  // vertical load → null-space direction
     return builder;
 }
 
@@ -973,9 +975,9 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractive_HugeDisplacement_AnalysisFail
     builder.addNode(1.0, 0.0, SupportType::RollerX);  // node 2: y2=0, x2 free
     // A = 2.5e-21 m² → k = 200e9 * 2.5e-21 / 1 = 5e-10 N/m (eigenvalue > 1e-10)
     MaterialSpec mat{200e9, "ExtremelySoft"};
-    SectionSpec  sec{2.5e-21, "TinySection"};
+    SectionSpec sec{2.5e-21, "TinySection"};
     builder.addMember(NodeId(1), NodeId(2), mat, sec)
-           .applyForce(NodeId(2), 1.0, 0.0);  // 1 N → d = 2e9 m >> 1e6 threshold
+        .applyForce(NodeId(2), 1.0, 0.0);  // 1 N → d = 2e9 m >> 1e6 threshold
 
     AnalysisOptions options;
     options.checkStability = true;
@@ -1004,15 +1006,16 @@ TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractive_HugeDisplacement_AnalysisFail
 TEST_F(TrussAnalysisFacadeTest, AnalyzeInteractive_RollerYSupport_AnalysisSucceeds) {
     TrussBuilder builder;
     // Node 1 added FIRST → gets DOFs 0(X),1(Y); X is constrained by RollerY
-    builder.addNode(0.0, 3.0, SupportType::RollerY);   // X constrained, Y free
+    builder.addNode(0.0, 3.0, SupportType::RollerY);  // X constrained, Y free
     // Node 2 added SECOND → gets DOFs 2(X),3(Y); both constrained by Pinned
-    builder.addNode(0.0, 0.0, SupportType::Pinned);    // fully fixed
+    builder.addNode(0.0, 0.0, SupportType::Pinned);  // fully fixed
     // Node 3 → free apex
     builder.addNode(3.0, 0.0, SupportType::Free);
-    builder.addMember(NodeId(1), NodeId(2))             // vertical member (stabilises node1 Y)
-        .addMember(NodeId(1), NodeId(3))                // diagonal (stabilises node3)
-        .addMember(NodeId(2), NodeId(3))                // horizontal (stabilises node3 X)
-        .applyForce(NodeId(3), 1000.0, -2000.0);        // arbitrary load at free apex
+    builder
+        .addMember(NodeId(1), NodeId(2))          // vertical member (stabilises node1 Y)
+        .addMember(NodeId(1), NodeId(3))          // diagonal (stabilises node3)
+        .addMember(NodeId(2), NodeId(3))          // horizontal (stabilises node3 X)
+        .applyForce(NodeId(3), 1000.0, -2000.0);  // arbitrary load at free apex
 
     auto result = facade->analyzeInteractive(builder, AnalysisOptions{});
 
@@ -1071,8 +1074,7 @@ TEST_F(TrussAnalysisFacadeTest, ExportResults_WithTrussAutoDetect_Succeeds) {
 
     fs::path outputFile = tempDir / "result_auto.csv";
     ExportOptions options;
-    auto result = facade->exportResults(
-        analysisResult.resultsHandle, outputFile, truss, options);
+    auto result = facade->exportResults(analysisResult.resultsHandle, outputFile, truss, options);
     EXPECT_TRUE(result.success) << result.errorMessage;
     EXPECT_TRUE(fs::exists(outputFile));
 }
@@ -1114,7 +1116,7 @@ TEST_F(TrussAnalysisFacadeTest, FormatValidationErrors_MoreThanFiveWarnings) {
     TrussBuilder builder;
 
     // Two proper support nodes
-    builder.addNode(0.0, 0.0, SupportType::Pinned);   // node 1
+    builder.addNode(0.0, 0.0, SupportType::Pinned);    // node 1
     builder.addNode(10.0, 0.0, SupportType::RollerY);  // node 2
 
     // 6 pairs of coincident nodes (same coordinates → Warning per pair)

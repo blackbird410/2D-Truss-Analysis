@@ -248,7 +248,6 @@ TEST_F(ConsolePresenterTest, DisplayTrussStatistics_OutputsAllFields) {
     ConsolePresenter presenter(mockOutput);
     StubTrussView trussView;
 
-
     // Expect multiple info() calls covering all fields
     EXPECT_CALL(mockOutput, info(_)).Times(::testing::AnyNumber());  // catch-all for unlisted calls
     EXPECT_CALL(mockOutput, info(HasSubstr("Truss Statistics"))).Times(1);

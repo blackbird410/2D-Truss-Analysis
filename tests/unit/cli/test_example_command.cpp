@@ -52,9 +52,9 @@ public:
 
 class ExampleCommandTest : public ::testing::Test {
 protected:
-    SilentOutput                              output;
-    truss::cli::presenters::ConsolePresenter  presenter{output};
-    TrussAnalysisFacade                       realFacade;
+    SilentOutput output;
+    truss::cli::presenters::ConsolePresenter presenter{output};
+    TrussAnalysisFacade realFacade;
 };
 
 // ─────────────────────────────────────────────────────────────────────────────

@@ -74,7 +74,7 @@ protected:
 
     /** Helper: builds an invalid ValidationResult containing an Error issue. */
     static ValidationResult makeInvalidResult(const std::string& category = "Unknown",
-                                               const std::string& message = "Bad structure") {
+                                              const std::string& message = "Bad structure") {
         ValidationResult r;
         r.addIssue(ValidationIssue{ValidationSeverity::Error, category, message});
         return r;
@@ -109,10 +109,10 @@ TEST_F(ValidateCommandMockTest, Execute_ValidationSuccess_VerboseMode_ReturnsZer
 
 TEST_F(ValidateCommandMockTest, Execute_ValidationFails_AllSeverities) {
     ValidationResult r;
-    r.addIssue(ValidationIssue{ValidationSeverity::Fatal,   "Structural", "Fatal issue"});
-    r.addIssue(ValidationIssue{ValidationSeverity::Error,   "Structural", "Error issue"});
+    r.addIssue(ValidationIssue{ValidationSeverity::Fatal, "Structural", "Fatal issue"});
+    r.addIssue(ValidationIssue{ValidationSeverity::Error, "Structural", "Error issue"});
     r.addIssue(ValidationIssue{ValidationSeverity::Warning, "Structural", "Warning issue"});
-    r.addIssue(ValidationIssue{ValidationSeverity::Info,    "Structural", "Info issue"});
+    r.addIssue(ValidationIssue{ValidationSeverity::Info, "Structural", "Info issue"});
 
     ON_CALL(mockFacade, validateFromFile(_)).WillByDefault(Return(r));
 
@@ -177,8 +177,8 @@ TEST_F(ValidateCommandMockTest, Execute_ValidationFails_NoCategory_ShowsGeneralS
 TEST_F(ValidateCommandMockTest, Execute_ValidationFails_MultipleCategories) {
     ValidationResult r;
     r.addIssue(ValidationIssue{ValidationSeverity::Error, "support", "Insufficient supports"});
-    r.addIssue(ValidationIssue{ValidationSeverity::Error, "member",  "Degenerate member"});
-    r.addIssue(ValidationIssue{ValidationSeverity::Error, "load",    "No applied loads"});
+    r.addIssue(ValidationIssue{ValidationSeverity::Error, "member", "Degenerate member"});
+    r.addIssue(ValidationIssue{ValidationSeverity::Error, "load", "No applied loads"});
 
     ON_CALL(mockFacade, validateFromFile(_)).WillByDefault(Return(r));
 

@@ -497,7 +497,9 @@ TEST_F(AnalyzeCommandTest, Execute_VerboseSuccessPath_AllBranchesHit) {
     truss::cli::presenters::ConsolePresenter presenter(output);
 
     // verbose=true with output file → exercises all verbose + export branches
-    AnalyzeCommand cmd(facade, presenter, "test_simple.json",
+    AnalyzeCommand cmd(facade,
+                       presenter,
+                       "test_simple.json",
                        std::make_optional<std::string>("verbose_out.json"),
                        std::make_optional<std::string>("JSON"),
                        /*verbose=*/true);
@@ -533,7 +535,8 @@ TEST_F(AnalyzeCommandTest, Execute_ExportFailsWithBadOutputPath_ReturnsError) {
     truss::cli::presenters::ConsolePresenter presenter(output);
 
     // Use valid truss so analysis succeeds, but output path is unwritable.
-    AnalyzeCommand cmd(facade, presenter,
+    AnalyzeCommand cmd(facade,
+                       presenter,
                        "test_simple.json",
                        std::make_optional<std::string>("/invalid_dir/output.json"),
                        std::make_optional<std::string>("JSON"),

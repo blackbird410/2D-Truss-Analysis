@@ -84,12 +84,12 @@ TEST_F(ConsoleLoggerTest, ColorCodes) {
 TEST_F(ConsoleLoggerTest, ColoredLoggingAllLevels) {
     // With colors enabled, each log call exercises getColorCode() for that level
     ConsoleLogger colorLogger(LogLevel::Trace, true);
-    EXPECT_NO_THROW(colorLogger.trace("trace with color"));    // Trace → \033[37m
-    EXPECT_NO_THROW(colorLogger.debug("debug with color"));    // Debug → \033[36m
-    EXPECT_NO_THROW(colorLogger.info("info with color"));      // Info  → \033[32m (already covered)
-    EXPECT_NO_THROW(colorLogger.warn("warn with color"));      // Warning → \033[33m
-    EXPECT_NO_THROW(colorLogger.error("error with color"));    // Error → \033[31m
-    EXPECT_NO_THROW(colorLogger.critical("critical with color")); // Critical → \033[1;31m
+    EXPECT_NO_THROW(colorLogger.trace("trace with color"));  // Trace → \033[37m
+    EXPECT_NO_THROW(colorLogger.debug("debug with color"));  // Debug → \033[36m
+    EXPECT_NO_THROW(colorLogger.info("info with color"));    // Info  → \033[32m (already covered)
+    EXPECT_NO_THROW(colorLogger.warn("warn with color"));    // Warning → \033[33m
+    EXPECT_NO_THROW(colorLogger.error("error with color"));  // Error → \033[31m
+    EXPECT_NO_THROW(colorLogger.critical("critical with color"));  // Critical → \033[1;31m
 }
 
 TEST_F(ConsoleLoggerTest, AllLogLevels) {
