@@ -83,12 +83,12 @@ endif()
 if(BUILD_TESTING)
     find_package(GTest REQUIRED)
     message(STATUS "Google Test found: ${GTest_VERSION}")
-    
+
     # Manually create gmock targets if not found (Ubuntu 24.04 requires this)
     if(NOT TARGET GTest::gmock)
         find_library(GMOCK_LIBRARY gmock PATHS /usr/lib /usr/local/lib)
         find_library(GMOCK_MAIN_LIBRARY gmock_main PATHS /usr/lib /usr/local/lib)
-        
+
         if(GMOCK_LIBRARY AND NOT GMOCK_MAIN_LIBRARY)
             message(WARNING "gmock found but gmock_main not found; GTest::gmock_main target will not be created")
         elseif(NOT GMOCK_LIBRARY AND GMOCK_MAIN_LIBRARY)
@@ -103,7 +103,7 @@ if(BUILD_TESTING)
             )
             message(STATUS "Created GTest::gmock target: ${GMOCK_LIBRARY}")
         endif()
-        
+
         if(GMOCK_LIBRARY AND GMOCK_MAIN_LIBRARY)
             add_library(GTest::gmock_main UNKNOWN IMPORTED)
             set_target_properties(GTest::gmock_main PROPERTIES
@@ -356,7 +356,7 @@ endif()
 
 if(BUILD_TESTING)
     message(STATUS "Building unit tests")
-    
+
     # GTest integration validation test
     add_executable(test_gtest_integration tests/test_gtest_integration.cpp)
     target_link_libraries(test_gtest_integration PRIVATE GTest::gtest GTest::gtest_main)
@@ -365,11 +365,11 @@ if(BUILD_TESTING)
         TIMEOUT 10
         LABELS "gtest;integration"
     )
-    
+
     # ============================================================================
     # NEW GTEST-BASED TEST TARGETS (Phase 1 migrated tests)
     # ============================================================================
-    
+
     # Unit tests (core functionality tests)
     set(UNIT_TEST_SOURCES
         # Domain layer tests - MODEL
@@ -427,7 +427,7 @@ if(BUILD_TESTING)
         # CLI source files (needed for linking CLI tests)
         ${CLI_SOURCES}
     )
-    
+
     # Conditionally add GUI tests and sources only if BUILD_GUI is enabled
     if(BUILD_GUI)
         list(APPEND UNIT_TEST_SOURCES
@@ -477,9 +477,9 @@ if(BUILD_TESTING)
             tests/unit/gui/state/test_workspace_state.cpp
         )
     endif()
-    
+
     add_executable(unit_tests ${UNIT_TEST_SOURCES})
-    
+
     target_link_libraries(unit_tests PRIVATE
         TrussInterface
         TrussApplication
@@ -492,7 +492,7 @@ if(BUILD_TESTING)
         $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
         $<$<BOOL:${BUILD_GUI}>:Qt6::Svg>
     )
-    
+
     target_include_directories(unit_tests PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/core
@@ -504,14 +504,14 @@ if(BUILD_TESTING)
         ${CMAKE_SOURCE_DIR}/src/gui
         ${CMAKE_SOURCE_DIR}/tests  # For mocks directory
     )
-    
+
     add_test(NAME unit_tests COMMAND unit_tests)
     set_tests_properties(unit_tests PROPERTIES
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         TIMEOUT 30
         LABELS "unit;gtest"
     )
-    
+
     # Integration tests (multi-component workflow tests)
     set(INTEGRATION_TEST_SOURCES
         tests/integration/test_simple_truss_analysis.cpp
@@ -525,16 +525,16 @@ if(BUILD_TESTING)
         # CLI source files needed for integration tests
         ${CLI_SOURCES}
     )
-    
+
     # Conditionally add GUI integration tests only if BUILD_GUI is enabled
     if(BUILD_GUI)
         list(APPEND INTEGRATION_TEST_SOURCES
             tests/integration/test_e2e_workflows.cpp
         )
     endif()
-    
+
     add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
-    
+
     target_link_libraries(integration_tests PRIVATE
         TrussInterface
         TrussCore
@@ -546,20 +546,20 @@ if(BUILD_TESTING)
         GTest::gtest_main
         GTest::gmock
     )
-    
+
     target_include_directories(integration_tests PRIVATE
         ${CMAKE_SOURCE_DIR}/src
         ${CMAKE_SOURCE_DIR}/src/core
         ${CMAKE_SOURCE_DIR}/src/infrastructure/export
         ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
     )
-    
+
     add_test(NAME integration_tests COMMAND integration_tests)
     set_tests_properties(integration_tests PROPERTIES
         TIMEOUT 60
         LABELS "integration;gtest"
     )
-    
+
     # Convenience target to build all new GTest-based tests
     add_custom_target(all_gtest_tests
         DEPENDS unit_tests integration_tests test_gtest_integration
@@ -722,7 +722,7 @@ message(STATUS "Install prefix: ${CMAKE_INSTALL_PREFIX}")
 if(ENABLE_COVERAGE)
     find_program(LCOV lcov)
     find_program(GENHTML genhtml)
-    
+
     if(LCOV AND GENHTML)
         add_custom_target(coverage
             COMMAND ${CMAKE_COMMAND} -E echo "Running tests to generate coverage data..."
@@ -740,7 +740,7 @@ if(ENABLE_COVERAGE)
             DEPENDS unit_tests test_gtest_integration integration_tests
             COMMENT "Generating code coverage report"
         )
-        
+
         add_custom_target(coverage-clean
             COMMAND ${CMAKE_COMMAND} -E remove -f coverage.info coverage_filtered.info
             COMMAND ${CMAKE_COMMAND} -E remove_directory coverage_html
@@ -748,26 +748,84 @@ if(ENABLE_COVERAGE)
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             COMMENT "Cleaning coverage data"
         )
-        
+
         message(STATUS "Coverage targets available: 'make coverage' and 'make coverage-clean'")
     else()
         message(WARNING "lcov or genhtml not found - coverage target unavailable")
     endif()
 endif()
 
-# CPack configuration for Linux packaging
-set(CPACK_GENERATOR "TGZ;DEB")
+# ============================================================================
+# CPACK PACKAGING CONFIGURATION
+# Produces per-component .deb packages and .tar.gz tarballs.
+# Run: cd build && cpack -G DEB
+# ============================================================================
+set(CPACK_GENERATOR "DEB;TGZ")
 set(CPACK_PACKAGE_NAME "2d-truss-analysis")
-set(CPACK_PACKAGE_VENDOR "Civil Engineering Software Solutions")
 set(CPACK_PACKAGE_VERSION "${PROJECT_VERSION}")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Professional 2D truss structural analysis software")
+set(CPACK_PACKAGE_VERSION_MAJOR "${PROJECT_VERSION_MAJOR}")
+set(CPACK_PACKAGE_VERSION_MINOR "${PROJECT_VERSION_MINOR}")
+set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
+    "Professional 2D truss structural analysis software")
+set(CPACK_PACKAGE_DESCRIPTION
+    "A professional-grade 2D truss structural analysis application\n"
+    " built with modern C++20 and Qt6. Features an interactive drawing\n"
+    " canvas, direct stiffness method engine, and clean layered architecture.")
+set(CPACK_PACKAGE_VENDOR "Neil Taison Rigaud")
+set(CPACK_PACKAGE_CONTACT "Neil Taison Rigaud <ntsrigaud14@gmail.com>")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+# Strip installed binaries to reduce package size
+set(CPACK_STRIP_FILES ON)
 
-# Debian package specific settings
-set(CPACK_DEBIAN_PACKAGE_MAINTAINER "Civil Engineering Software Solutions <support@civil-engineering-software-solutions.com>")
+# ---- Component-based packaging ----
+# Produces separate .deb files for cli, gui, and common components.
+set(CPACK_DEB_COMPONENT_INSTALL ON)
+set(CPACK_COMPONENTS_ALL cli gui common)
+set(CPACK_COMPONENT_CLI_DISPLAY_NAME "2D Truss Analysis CLI")
+set(CPACK_COMPONENT_GUI_DISPLAY_NAME "2D Truss Analysis GUI")
+set(CPACK_COMPONENT_COMMON_DISPLAY_NAME "2D Truss Analysis Shared Data")
+set(CPACK_COMPONENT_GUI_DEPENDS common)
+set(CPACK_COMPONENT_CLI_DEPENDS common)
+
+# ---- Debian global settings ----
+set(CPACK_DEBIAN_PACKAGE_MAINTAINER
+    "Neil Taison Rigaud <ntsrigaud14@gmail.com>")
 set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
+set(CPACK_DEBIAN_PACKAGE_HOMEPAGE
+    "https://github.com/blackbird410/2D-Truss-Analysis-cpp")
+# Use dpkg-shlibdeps to auto-detect Qt6 and other .so runtime dependencies.
+# This is version-agnostic and works across Ubuntu 22.04, 24.04, and derivatives.
+set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+
+# ---- CLI component .deb ----
+set(CPACK_DEBIAN_CLI_PACKAGE_NAME "2d-truss-analysis-cli")
+set(CPACK_DEBIAN_CLI_PACKAGE_DESCRIPTION
+    "Command-line tool for 2D truss structural analysis\n"
+    " Analyses 2D truss structures using the displacement (stiffness) method.\n"
+    " Reads JSON and XML project files and exports results in multiple formats.")
+
+# ---- GUI component .deb ----
+set(CPACK_DEBIAN_GUI_PACKAGE_NAME "2d-truss-analysis")
+set(CPACK_DEBIAN_GUI_PACKAGE_DESCRIPTION
+    "Interactive graphical application for 2D truss structural analysis\n"
+    " Full-featured Qt6 GUI for designing, visualising, and analysing 2D truss\n"
+    " structures. Exports results to CSV, JSON, XML, HTML, LaTeX, and plain text.")
+# Extra runtime dep not auto-detected by shlibdeps
+set(CPACK_DEBIAN_GUI_PACKAGE_RECOMMENDS "xdg-utils")
+# Hook scripts update the desktop database and icon cache after install/remove
+set(CPACK_DEBIAN_GUI_PACKAGE_CONTROL_EXTRA
+    "${CMAKE_SOURCE_DIR}/packaging/debian/postinst;"
+    "${CMAKE_SOURCE_DIR}/packaging/debian/postrm")
+
+# ---- Common component .deb ----
+set(CPACK_DEBIAN_COMMON_PACKAGE_NAME "2d-truss-analysis-common")
+set(CPACK_DEBIAN_COMMON_PACKAGE_DESCRIPTION
+    "Shared data files for 2D Truss Analysis\n"
+    " Configuration templates, examples, and documentation shared by the\n"
+    " CLI and GUI components of 2D Truss Analysis.")
 
 include(CPack)
 
@@ -780,14 +838,14 @@ find_package(Doxygen OPTIONAL_COMPONENTS dot)
 if(DOXYGEN_FOUND)
     # Set project description for Doxyfile
     set(PROJECT_DESCRIPTION "Professional 2D truss structural analysis software")
-    
+
     # Configure Doxyfile with project metadata
     configure_file(
         ${CMAKE_SOURCE_DIR}/Doxyfile.in
         ${CMAKE_BINARY_DIR}/Doxyfile
         @ONLY
     )
-    
+
     # Add custom target for generating documentation
     add_custom_target(docs
         COMMAND ${DOXYGEN_EXECUTABLE} ${CMAKE_BINARY_DIR}/Doxyfile
@@ -795,14 +853,14 @@ if(DOXYGEN_FOUND)
         COMMENT "Generating API documentation with Doxygen"
         VERBATIM
     )
-    
+
     # Optional: Add install target for documentation
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/docs/api/html
         DESTINATION share/doc/${PROJECT_NAME}
         OPTIONAL
         COMPONENT documentation
     )
-    
+
     message(STATUS "Doxygen found - 'make docs' target available")
     if(DOXYGEN_DOT_FOUND)
         message(STATUS "  - Graphviz (dot) found - diagrams enabled")
@@ -826,15 +884,15 @@ if(ENABLE_COVERAGE AND LCOV AND GENHTML)
     add_custom_target(coverage-analysis
         COMMAND ${CMAKE_COMMAND} -E echo "=== Phase 7 Coverage Analysis ==="
         COMMAND ${CMAKE_COMMAND} -E echo "Capturing detailed coverage metrics..."
-        COMMAND ${LCOV} --capture --directory . --output-file coverage_analysis.info 
+        COMMAND ${LCOV} --capture --directory . --output-file coverage_analysis.info
                 --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
         COMMAND ${CMAKE_COMMAND} -E echo "Filtering external code..."
-        COMMAND ${LCOV} --remove coverage_analysis.info '/usr/*' '*/build/*' '*/tests/*' 
-                '*/external/*' '*/v1/*' '*/opt/homebrew/*' 
-                --output-file coverage_analysis_filtered.info 
+        COMMAND ${LCOV} --remove coverage_analysis.info '/usr/*' '*/build/*' '*/tests/*'
+                '*/external/*' '*/v1/*' '*/opt/homebrew/*'
+                --output-file coverage_analysis_filtered.info
                 --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,unused
         COMMAND ${CMAKE_COMMAND} -E echo "Generating module-level coverage statistics..."
-        COMMAND ${LCOV} --summary coverage_analysis_filtered.info 
+        COMMAND ${LCOV} --summary coverage_analysis_filtered.info
                 --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         COMMENT "Phase 7: Detailed coverage analysis complete"
@@ -845,7 +903,7 @@ if(ENABLE_COVERAGE AND LCOV AND GENHTML)
     add_custom_target(coverage-dashboard
         COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage dashboard..."
         COMMAND ${CMAKE_COMMAND} -E make_directory coverage_dashboard
-        COMMAND ${GENHTML} coverage_analysis_filtered.info 
+        COMMAND ${GENHTML} coverage_analysis_filtered.info
                 --output-directory coverage_dashboard
                 --title "Phase 7: 2D Truss Analysis Coverage Dashboard"
                 --prefix ${CMAKE_SOURCE_DIR}
