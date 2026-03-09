@@ -391,3 +391,173 @@ TEST_F(TextExporterTest, DocumentStructure) {
     // Check for document footer
     EXPECT_TRUE(content.find("End of Report") != std::string::npos);
 }
+// ============================================================================
+// BRANCH COVERAGE: section-disabled options
+// ============================================================================
+
+TEST_F(TextExporterTest, GeometryDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_geom.txt";
+
+    ExportOptions opts;
+    opts.includeGeometry = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("GEOMETRY"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, PropertiesDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_props.txt";
+
+    ExportOptions opts;
+    opts.includeProperties = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("MATERIAL AND SECTION PROPERTIES"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, LoadsDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_loads.txt";
+
+    ExportOptions opts;
+    opts.includeLoads = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("APPLIED LOADS"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, DisplacementsDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_disp.txt";
+
+    ExportOptions opts;
+    opts.includeDisplacements = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("NODAL DISPLACEMENTS"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, MemberForcesDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_forces.txt";
+
+    ExportOptions opts;
+    opts.includeMemberForces = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("MEMBER FORCES"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, ReactionsDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_reactions.txt";
+
+    ExportOptions opts;
+    opts.includeReactions = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("SUPPORT REACTIONS"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, MetadataDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_meta.txt";
+
+    ExportOptions opts;
+    opts.includeMetadata = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("ANALYSIS METADATA"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, NoLoadsOnNodes_ShowsNoAppliedLoadsMessage) {
+    // Create truss with NO applied forces on any node
+    auto truss = std::make_unique<Truss>("NoLoadTruss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    truss->addMember(n1, n2);
+    // No setAppliedForce → hasLoads will remain false
+
+    AnalysisResults emptyResults{};
+    std::string outputPath = testOutputDir + "/no_node_loads.txt";
+
+    ExportOptions opts;
+    opts.includeLoads = true;
+    opts.includeDisplacements = false;  // avoid empty-vector assertion
+    opts.includeMemberForces = false;
+    opts.includeReactions = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, emptyResults, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_NE(content.find("No applied loads"), std::string::npos);
+}
+
+TEST_F(TextExporterTest, RollerYSupportType_PrintedCorrectly) {
+    // Create truss with a RollerY node to exercise that switch-case branch
+    auto truss = std::make_unique<Truss>("RollerYTruss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerY);
+    truss->addMember(n1, n2);
+
+    AnalysisResults emptyResults{};
+    std::string outputPath = testOutputDir + "/rollery.txt";
+
+    ExportOptions opts;
+    opts.includeGeometry = true;
+    opts.includeProperties = false;
+    opts.includeLoads = false;
+    opts.includeDisplacements = false;
+    opts.includeMemberForces = false;
+    opts.includeReactions = false;
+    opts.includeMetadata = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, emptyResults, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_NE(content.find("Roller-Y"), std::string::npos);
+}
+
+/**
+ * @test Covers text_exporter.cpp line 138-139: default branch ("Unknown")
+ *       in the support-type switch inside the Geometry section.
+ *       We force it by casting an out-of-range integer to SupportType.
+ */
+TEST_F(TextExporterTest, UnknownSupportType_PrintsUnknown) {
+    auto truss = std::make_unique<Truss>("UnknownSupportTruss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    // Inject an out-of-range SupportType value to hit the default branch
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::Free);
+    n2->setSupportType(static_cast<SupportType>(99));  // unknown value
+    truss->addMember(n1, n2);
+
+    AnalysisResults emptyResults{};
+    std::string outputPath = testOutputDir + "/unknown_support.txt";
+
+    ExportOptions opts;
+    opts.includeGeometry = true;
+    opts.includeProperties = false;
+    opts.includeLoads = false;
+    opts.includeDisplacements = false;
+    opts.includeMemberForces = false;
+    opts.includeReactions = false;
+    opts.includeMetadata = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, emptyResults, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_NE(content.find("Unknown"), std::string::npos);
+}
