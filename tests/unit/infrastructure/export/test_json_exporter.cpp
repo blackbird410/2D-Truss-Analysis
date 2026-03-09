@@ -665,3 +665,96 @@ TEST_F(JSONExporterTest, ProperClosingBraces) {
     EXPECT_TRUE(content.find("  }\n}") != std::string::npos)
         << "Should have proper closing brace format (2 spaces, brace, newline, closing brace)";
 }
+
+// ---------------------------------------------------------------------------
+// Disabled-section branch coverage (each flag disabled individually)
+// ---------------------------------------------------------------------------
+
+TEST_F(JSONExporterTest, GeometryDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_geom.json";
+    ExportOptions opts;
+    opts.includeGeometry = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\"geometry\""));
+}
+
+TEST_F(JSONExporterTest, PropertiesDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_props.json";
+    ExportOptions opts;
+    opts.includeProperties = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\"properties\""));
+}
+
+TEST_F(JSONExporterTest, LoadsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_loads.json";
+    ExportOptions opts;
+    opts.includeLoads = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\"loads\""));
+}
+
+TEST_F(JSONExporterTest, MetadataDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_meta.json";
+    ExportOptions opts;
+    opts.includeMetadata = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\"analysis\""));
+}
+
+// Compound-condition false path: include=true but empty results
+TEST_F(JSONExporterTest, DisplacementsEnabled_EmptyResults_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    AnalysisResults emptyResults;
+    std::string outputPath = testOutputDir + "/disp_empty.json";
+    ExportOptions opts;
+    opts.includeDisplacements = true;
+    exporter->exportResults(*truss, emptyResults, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\"displacements\""));
+}
+
+TEST_F(JSONExporterTest, MemberForcesEnabled_EmptyResults_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    AnalysisResults emptyResults;
+    std::string outputPath = testOutputDir + "/forces_empty.json";
+    ExportOptions opts;
+    opts.includeMemberForces = true;
+    exporter->exportResults(*truss, emptyResults, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\"memberForces\""));
+}
+
+TEST_F(JSONExporterTest, ReactionsEnabled_EmptyResults_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    AnalysisResults emptyResults;
+    std::string outputPath = testOutputDir + "/reactions_empty.json";
+    ExportOptions opts;
+    opts.includeReactions = true;
+    exporter->exportResults(*truss, emptyResults, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "\"reactions\""));
+}
+
+TEST_F(JSONExporterTest, NoLoadsOnNodes_EmptyNodalForcesArray) {
+    auto truss = std::make_unique<Truss>("No Load Truss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    auto n3 = truss->addNode(0.5, 0.5, SupportType::Free);
+    truss->addMember(n1, n2);
+    truss->addMember(n1, n3);
+    truss->addMember(n2, n3);
+    AnalysisResults results;
+    std::string outputPath = testOutputDir + "/no_load_nodes.json";
+    ExportOptions opts;
+    opts.includeLoads = true;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    // Section should exist but no nodeId entries (empty for-loop path)
+    EXPECT_TRUE(fileContains(outputPath, "\"nodalForces\""));
+    EXPECT_FALSE(fileContains(outputPath, "\"nodeId\""));
+}
