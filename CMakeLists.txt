@@ -428,44 +428,37 @@ if(BUILD_TESTING)
         ${CLI_SOURCES}
     )
 
-    # Conditionally add GUI tests and sources only if BUILD_GUI is enabled
+    # Conditionally add GUI tests and sources only if BUILD_GUI is enabled.
+    # Only non-display Qt tests are included here (QAbstractItemModel, QObject
+    # controllers). These require Qt6::Core/Qt6::Widgets at compile time, but
+    # initialise QCoreApplication at runtime — no platform plugin is needed,
+    # so this binary runs without a display server in CI.
     if(BUILD_GUI)
         list(APPEND UNIT_TEST_SOURCES
-            # Phase 2: NotificationRail panel tests
-            tests/unit/gui/panels/test_notification_rail.cpp
-            # Phase 2: sources under test
-            src/gui/panels/notification_rail.cpp
-            # Phase 3: Qt Item Model tests
+            # Phase 3: Qt Item Model tests (QAbstractItemModel — no display)
             tests/unit/gui/models/test_node_table_model.cpp
             tests/unit/gui/models/test_member_table_model.cpp
-            tests/unit/gui/models/test_validation_list_model.cpp
             tests/unit/gui/models/test_results_table_model.cpp
             # Phase 3: Qt Item Model sources under test
             src/gui/models/node_table_model.cpp
             src/gui/models/member_table_model.cpp
-            src/gui/models/validation_list_model.cpp
             src/gui/models/results_table_model.cpp
-            # Phase 4: Core Window & Navigation Framework tests
+            # validation_list_model.cpp is compiled here (not the test — that is
+            # in unit_tests_gui_widgets) because main_window_controller.cpp
+            # creates a ValidationListModel instance and needs the symbol.
+            # At runtime the DecorationRole path (which calls QPixmap) is never
+            # exercised by controller tests, so no platform plugin is required.
+            src/gui/models/validation_list_model.cpp
+            # Phase 4: Core Window & Navigation Framework — controller tests
             tests/unit/gui/controllers/test_main_window_controller.cpp
-            tests/unit/gui/widgets/test_truss_canvas_widget.cpp
             # Phase 4: sources under test
             src/gui/controllers/main_window_controller.cpp
-            src/gui/widgets/truss_canvas_widget.cpp
             # Phase 5: Feature Module Implementation — controller tests
             tests/unit/gui/controllers/test_canvas_controller.cpp
             tests/unit/gui/controllers/test_inspector_controller.cpp
             tests/unit/gui/controllers/test_analysis_controller.cpp
             tests/unit/gui/controllers/test_project_controller.cpp
             tests/unit/gui/controllers/test_export_controller.cpp
-            # Phase 5: Feature Module Implementation — panel tests
-            tests/unit/gui/panels/test_inspector_panel.cpp
-            tests/unit/gui/panels/test_analysis_control_bar.cpp
-            tests/unit/gui/panels/test_results_dock_panel.cpp
-            # Phase 5: sources under test — panels
-            src/gui/panels/analysis_options_dialog.cpp
-            src/gui/panels/inspector_panel.cpp
-            src/gui/panels/analysis_control_bar.cpp
-            src/gui/panels/results_dock_panel.cpp
             # Phase 5: sources under test — controllers
             src/gui/controllers/canvas_controller.cpp
             src/gui/controllers/inspector_controller.cpp
@@ -477,6 +470,12 @@ if(BUILD_TESTING)
             tests/unit/gui/state/test_workspace_state.cpp
         )
     endif()
+    # NOTE: Panel tests (notification_rail, analysis_control_bar, inspector_panel,
+    # results_dock_panel), the validation_list_model test (uses QPixmap via
+    # DecorationRole), and the TrussCanvasWidget test are compiled into the
+    # separate unit_tests_gui_widgets binary below. That binary initialises
+    # QApplication and sets QT_QPA_PLATFORM=offscreen so that widget
+    # construction succeeds without a physical display server.
 
     add_executable(unit_tests ${UNIT_TEST_SOURCES})
 
@@ -510,9 +509,83 @@ if(BUILD_TESTING)
         WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
         TIMEOUT 30
         LABELS "unit;gtest"
+        # Belt-and-suspenders: the controller/model sources compile against
+        # Qt6::Widgets (e.g. project_controller.cpp includes QFileDialog), but
+        # the test code only initialises QCoreApplication, so the platform
+        # plugin is never loaded.  The env var is harmless here but ensures
+        # correctness if a future test inadvertently triggers QGuiApplication.
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
     )
 
+    # ============================================================================
+    # GUI WIDGET UNIT TESTS
+    # Tests that instantiate QWidget, QGraphicsView, or any subclass that
+    # requires the Qt platform plugin.  Separated from unit_tests so that
+    # the rest of the unit suite runs with QCoreApplication (no display).
+    # This binary uses QApplication and QT_QPA_PLATFORM=offscreen.
+    # ============================================================================
+    if(BUILD_GUI AND BUILD_TESTING)
+        add_executable(unit_tests_gui_widgets
+            # Phase 2: NotificationRail panel test
+            tests/unit/gui/panels/test_notification_rail.cpp
+            src/gui/panels/notification_rail.cpp
+            # Phase 3: ValidationListModel test (uses QPixmap via DecorationRole)
+            tests/unit/gui/models/test_validation_list_model.cpp
+            src/gui/models/validation_list_model.cpp
+            # Panel tests (Phase 5) — instantiate QWidget subclasses directly
+            tests/unit/gui/panels/test_inspector_panel.cpp
+            tests/unit/gui/panels/test_analysis_control_bar.cpp
+            tests/unit/gui/panels/test_results_dock_panel.cpp
+            src/gui/panels/analysis_options_dialog.cpp
+            src/gui/panels/inspector_panel.cpp
+            src/gui/panels/analysis_control_bar.cpp
+            src/gui/panels/results_dock_panel.cpp
+            # Widget test (Phase 4) — TrussCanvasWidget is a QGraphicsView
+            tests/unit/gui/widgets/test_truss_canvas_widget.cpp
+            src/gui/widgets/truss_canvas_widget.cpp
+            # Model sources required by results_dock_panel (includes model headers)
+            src/gui/models/node_table_model.cpp
+            src/gui/models/member_table_model.cpp
+            src/gui/models/results_table_model.cpp
+        )
+
+        target_link_libraries(unit_tests_gui_widgets PRIVATE
+            TrussCore
+            TrussApplication
+            TrussInterface
+            GTest::gtest
+            GTest::gtest_main
+            GTest::gmock
+            Qt6::Core
+            Qt6::Widgets
+            Qt6::Test
+            Qt6::Svg
+        )
+
+        target_include_directories(unit_tests_gui_widgets PRIVATE
+            ${CMAKE_SOURCE_DIR}/src
+            ${CMAKE_SOURCE_DIR}/src/core
+            ${CMAKE_SOURCE_DIR}/src/application
+            ${CMAKE_SOURCE_DIR}/src/interface
+            ${CMAKE_SOURCE_DIR}/src/gui
+            ${CMAKE_SOURCE_DIR}/tests
+        )
+
+        add_test(NAME unit_tests_gui_widgets COMMAND unit_tests_gui_widgets)
+        set_tests_properties(unit_tests_gui_widgets PROPERTIES
+            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+            TIMEOUT 60
+            LABELS "unit;gui-widget;gtest"
+            # QApplication requires a platform plugin; offscreen satisfies that
+            # requirement without a physical display or X11 server.
+            ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
+        )
+    endif()
+
     # Integration tests (multi-component workflow tests)
+    # test_e2e_workflows.cpp has no Qt UI dependency — it tests domain and
+    # infrastructure layers only.  It is unconditionally included regardless
+    # of BUILD_GUI so that it runs in CLI-only and headless CI configurations.
     set(INTEGRATION_TEST_SOURCES
         tests/integration/test_simple_truss_analysis.cpp
         tests/integration/test_simple_integration.cpp
@@ -522,16 +595,10 @@ if(BUILD_TESTING)
         tests/integration/test_lifecycle_integration.cpp
         tests/integration/test_load_workflow.cpp
         tests/integration/test_facade_adapters_integration.cpp
+        tests/integration/test_e2e_workflows.cpp
         # CLI source files needed for integration tests
         ${CLI_SOURCES}
     )
-
-    # Conditionally add GUI integration tests only if BUILD_GUI is enabled
-    if(BUILD_GUI)
-        list(APPEND INTEGRATION_TEST_SOURCES
-            tests/integration/test_e2e_workflows.cpp
-        )
-    endif()
 
     add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
 
@@ -566,6 +633,15 @@ if(BUILD_TESTING)
         COMMENT "Building all GTest-based tests"
     )
 
+endif()
+
+# Extend all_gtest_tests with the GUI widget test binary once it is defined.
+# The unit_tests_gui_widgets target is created inside BUILD_GUI AND BUILD_TESTING,
+# so we only add the dependency when that target actually exists.
+if(BUILD_GUI AND BUILD_TESTING AND TARGET unit_tests_gui_widgets)
+    if(TARGET all_gtest_tests)
+        add_dependencies(all_gtest_tests unit_tests_gui_widgets)
+    endif()
 endif()
 
 # GUI Integration Tests (GTest framework) - only if Qt and testing are both enabled.
@@ -621,6 +697,9 @@ if(BUILD_GUI AND BUILD_TESTING)
     set_tests_properties(gui_integration_tests PROPERTIES
         TIMEOUT 120
         LABELS "gui;integration;gtest"
+        # QApplication requires a platform plugin; offscreen satisfies that
+        # requirement without a physical display or X11 server.
+        ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
     )
 
     # Add GUI tests to all_gtest_tests if they exist
