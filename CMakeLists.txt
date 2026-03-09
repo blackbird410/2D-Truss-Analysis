@@ -712,6 +712,10 @@ endif()  # BUILD_GUI
 # entry, icon, AppStream metainfo, config templates, docs and examples.
 # The include() activates all install() calls in InstallRules.cmake.
 # ============================================================================
+# Override DOCDIR before GNUInstallDirs computes it from PROJECT_NAME
+# ("TrussAnalysis"). Debian Policy 12.3 requires copyright at
+# /usr/share/doc/<package-name>, where <package-name> = CPACK_PACKAGE_NAME.
+set(CMAKE_INSTALL_DOCDIR "share/doc/2d-truss-analysis")
 include(GNUInstallDirs)
 include(cmake/InstallRules.cmake)
 
