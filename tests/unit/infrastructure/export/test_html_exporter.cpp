@@ -561,3 +561,96 @@ TEST_F(HTMLExporterTest, FooterPresent) {
 TEST_F(HTMLExporterTest, GetFormat) {
     EXPECT_EQ(exporter->getFormat(), truss::ExportFormat::HTML);
 }
+
+// ---------------------------------------------------------------------------
+// Disabled-section branch coverage
+// ---------------------------------------------------------------------------
+
+TEST_F(HTMLExporterTest, GeometryDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_geom.html";
+    ExportOptions opts;
+    opts.includeGeometry = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "<h2>Geometry</h2>"));
+}
+
+TEST_F(HTMLExporterTest, PropertiesDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_props.html";
+    ExportOptions opts;
+    opts.includeProperties = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "<h2>Material and Section Properties</h2>"));
+}
+
+TEST_F(HTMLExporterTest, LoadsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_loads.html";
+    ExportOptions opts;
+    opts.includeLoads = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "<h2>Applied Loads</h2>"));
+}
+
+TEST_F(HTMLExporterTest, DisplacementsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_disp.html";
+    ExportOptions opts;
+    opts.includeDisplacements = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "<h2>Node Displacements</h2>"));
+}
+
+TEST_F(HTMLExporterTest, MemberForcesDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_forces.html";
+    ExportOptions opts;
+    opts.includeMemberForces = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "<h2>Member Forces</h2>"));
+}
+
+TEST_F(HTMLExporterTest, ReactionsDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_react.html";
+    ExportOptions opts;
+    opts.includeReactions = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "<h2>Support Reactions</h2>"));
+}
+
+TEST_F(HTMLExporterTest, MetadataDisabled_SectionOmitted) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_meta.html";
+    ExportOptions opts;
+    opts.includeMetadata = false;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    EXPECT_FALSE(fileContains(outputPath, "<h2>Analysis Metadata</h2>"));
+}
+
+TEST_F(HTMLExporterTest, NoLoadsOnNodes_LoadsSectionEmpty) {
+    auto truss = std::make_unique<Truss>("No Load Truss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    auto n3 = truss->addNode(0.5, 0.5, SupportType::Free);
+    // No applied forces
+    truss->addMember(n1, n2);
+    truss->addMember(n1, n3);
+    truss->addMember(n2, n3);
+    AnalysisResults results;
+    std::string outputPath = testOutputDir + "/no_load_nodes.html";
+    ExportOptions opts;
+    opts.includeLoads = true;
+    exporter->exportResults(*truss, results, outputPath, opts);
+    // Section header should still appear but no force data rows
+    std::string content = readFile(outputPath);
+    EXPECT_NE(content.find("<h2>Applied Loads</h2>"), std::string::npos);
+}
