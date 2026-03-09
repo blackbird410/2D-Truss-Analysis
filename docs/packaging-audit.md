@@ -157,8 +157,8 @@ Flatpak distribution and archived. No `.desktop` file is installed to
 `/usr/share/applications/` by any CMake rule. Without this, the application does not
 appear in GNOME, KDE, or any XDG-compliant application launcher.
 
-**Fix:** Create `packaging/linux/truss-analysis.desktop` using the system binary names
-(`truss-analysis-gui`, `truss-analysis` icon). Install it via CMake.
+**Fix:** Create `packaging/linux/truss-analysis.desktop` using the system binary name
+(`truss-analysis`, the GUI binary). Install it via CMake.
 
 ---
 
@@ -198,11 +198,12 @@ installed to the system; they are statically linked into the final executables.
 ### P2-2 — Binary names violate Linux naming conventions
 
 `TrussAnalysisCLI` and `TrussAnalysisGUI` use PascalCase, which is unusual for Unix
-command-line tools (Debian Policy Manual §10.1). Standard practice is `truss-analysis`
-and `truss-analysis-gui`.
+command-line tools (Debian Policy Manual §10.1). Standard practice is lowercase-hyphenated
+names: `truss-analysis` (GUI primary application) and `truss-analysis-cli` (CLI).
 
-**Fix:** Set `OUTPUT_NAME "truss-analysis"` and `OUTPUT_NAME "truss-analysis-gui"` on
-the respective targets. The internal CMake target names remain unchanged.
+**Fix:** Set `OUTPUT_NAME "truss-analysis"` on `TrussAnalysisGUI` and
+`OUTPUT_NAME "truss-analysis-cli"` on `TrussAnalysisCLI`. The internal CMake target
+names remain unchanged.
 
 ---
 
@@ -335,8 +336,8 @@ cd build && cpack -G DEB
 ```
 /usr/
 ├── bin/
-│   ├── truss-analysis             ← CLI (component: cli)
-│   └── truss-analysis-gui         ← GUI (component: gui)
+│   ├── truss-analysis             ← GUI (component: gui)
+│   └── truss-analysis-cli         ← CLI (component: cli)
 └── share/
     ├── applications/
     │   └── truss-analysis.desktop             ← component: gui
@@ -471,13 +472,13 @@ Push v* tag          →  release.yml
 
 ### 9.2 Key Changes from Current State
 
-| Aspect                  | Before                       | After                                  |
-| ----------------------- | ---------------------------- | -------------------------------------- |
-| Qt6 source              | vcpkg (builds from source)   | `apt install qt6-base-dev qt6-svg-dev` |
-| CI build time           | 60–90 min (OOM/disk failure) | ~12–15 min                             |
-| Push trigger            | Disabled                     | Enabled                                |
-| DEB packaging           | Script stub (no-op)          | Full CPack DEB pipeline                |
-| Binary names in release | `TrussAnalysisCLI`           | `truss-analysis`                       |
+| Aspect                  | Before                       | After                                              |
+| ----------------------- | ---------------------------- | -------------------------------------------------- |
+| Qt6 source              | vcpkg (builds from source)   | `apt install qt6-base-dev qt6-svg-dev`             |
+| CI build time           | 60–90 min (OOM/disk failure) | ~12–15 min                                         |
+| Push trigger            | Disabled                     | Enabled                                            |
+| DEB packaging           | Script stub (no-op)          | Full CPack DEB pipeline                            |
+| Binary names in release | `TrussAnalysisCLI`           | `truss-analysis` (GUI), `truss-analysis-cli` (CLI) |
 
 ### 9.3 vcpkg Binary Caching in CI
 
