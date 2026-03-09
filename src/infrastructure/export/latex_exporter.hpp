@@ -104,7 +104,7 @@ private:
      * @brief Write document closing
      * @param os Output stream
      */
-    [[maybe_unused]] static void writeClosing(std::ostream& os);
+    static void writeClosing(std::ostream& os);
 
     /**
      * @brief Write geometry section (nodes + members)
