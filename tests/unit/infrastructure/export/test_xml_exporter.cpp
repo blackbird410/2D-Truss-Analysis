@@ -701,3 +701,120 @@ TEST_F(XMLExporterTest, ProperClosingElement) {
     EXPECT_TRUE(content.find("</TrussAnalysisResults>\n") != std::string::npos)
         << "File should end with closing root element and newline";
 }
+// ============================================================================
+// BRANCH COVERAGE: section-disabled options
+// ============================================================================
+
+TEST_F(XMLExporterTest, GeometryDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_geom.xml";
+
+    ExportOptions opts;
+    opts.includeGeometry = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("<Geometry>"), std::string::npos);
+}
+
+TEST_F(XMLExporterTest, PropertiesDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_props.xml";
+
+    ExportOptions opts;
+    opts.includeProperties = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("<Properties>"), std::string::npos);
+}
+
+TEST_F(XMLExporterTest, LoadsSectionDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_loads.xml";
+
+    ExportOptions opts;
+    opts.includeLoads = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("<Loads>"), std::string::npos);
+}
+
+TEST_F(XMLExporterTest, DisplacementsDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_disp.xml";
+
+    ExportOptions opts;
+    opts.includeDisplacements = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("<Displacements>"), std::string::npos);
+}
+
+TEST_F(XMLExporterTest, MemberForcesDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_forces.xml";
+
+    ExportOptions opts;
+    opts.includeMemberForces = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("<MemberForces>"), std::string::npos);
+}
+
+TEST_F(XMLExporterTest, ReactionsDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_reactions.xml";
+
+    ExportOptions opts;
+    opts.includeReactions = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("<Reactions>"), std::string::npos);
+}
+
+TEST_F(XMLExporterTest, MetadataDisabled_SectionSkipped) {
+    auto truss = createSimpleTriangleTruss();
+    auto results = analyzeAndGetResults(*truss);
+    std::string outputPath = testOutputDir + "/no_meta.xml";
+
+    ExportOptions opts;
+    opts.includeMetadata = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, results, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    EXPECT_EQ(content.find("<Analysis>"), std::string::npos);
+}
+
+TEST_F(XMLExporterTest, NoLoadsOnNodes_EmptyNodalForcesSection) {
+    // Truss with no applied forces → the inner loop body is never executed
+    auto truss = std::make_unique<Truss>("NoLoadTruss");
+    auto n1 = truss->addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss->addNode(1.0, 0.0, SupportType::RollerX);
+    truss->addMember(n1, n2);
+
+    AnalysisResults emptyResults{};
+    std::string outputPath = testOutputDir + "/no_node_loads.xml";
+
+    ExportOptions opts;
+    opts.includeLoads = true;
+    opts.includeDisplacements = false;
+    opts.includeMemberForces = false;
+    opts.includeReactions = false;
+    ASSERT_TRUE(exporter->exportResults(*truss, emptyResults, outputPath, opts));
+
+    std::string content = readFile(outputPath);
+    // <Loads> section present but no <Force> elements
+    EXPECT_NE(content.find("<NodalForces>"), std::string::npos);
+    EXPECT_EQ(content.find("<Force nodeId="), std::string::npos);
+}
