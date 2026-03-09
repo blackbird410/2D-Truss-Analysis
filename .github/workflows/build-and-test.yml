@@ -113,7 +113,7 @@ jobs:
 
       - name: Verify executables
         run: |
-          for exe in build/truss-analysis-cli build/truss-analysis build/unit_tests build/integration_tests; do
+          for exe in build/truss-analysis-cli build/truss-analysis build/unit_tests build/unit_tests_gui_widgets build/integration_tests; do
             if [ ! -x "$exe" ]; then
               echo "::error::Expected executable not found: $exe"
               exit 1
