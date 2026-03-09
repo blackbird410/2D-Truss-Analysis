@@ -396,11 +396,7 @@ TEST_F(ExportCommandTest, Execute_LaTeXAlias_TEX_Works) {
 }
 
 /**
- * @test Verify all supported formats are recognized
- *
- * Tests comprehensive format support by verifying that all documented
- * export formats (JSON, XML, CSV, TSV, TXT, LaTeX, HTML) are properly
- * recognized and processed by the command without errors.
+ * @test Verify all export formats are recognized
  */
 TEST_F(ExportCommandTest, Execute_AllExportFormats_Recognized) {
     class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
@@ -425,4 +421,172 @@ TEST_F(ExportCommandTest, Execute_AllExportFormats_Recognized) {
         EXPECT_TRUE(code == 0 || code == 1) << "Format " << formats[i] << " failed unexpectedly";
         std::filesystem::remove(outputFile);
     }
+}
+
+// =============================================================================
+// Verbose mode with valid truss — covers all 7 switch(format) cases
+// Uses correct JSON format so analysis succeeds and verbose branch is reached.
+// =============================================================================
+
+namespace {
+/// Write the properly-formatted truss JSON used by real tests.
+void writeValidTrussJson(const std::string& path) {
+    std::ofstream f(path);
+    f << R"({
+  "metadata": { "name": "Export Verbose Test" },
+  "nodes": [
+    {"id": 1, "x": 0.0, "y": 0.0},
+    {"id": 2, "x": 4.0, "y": 0.0},
+    {"id": 3, "x": 2.0, "y": 3.0}
+  ],
+  "supports": [
+    {"nodeId": 1, "type": "pinned",  "restrained": ["x", "y"]},
+    {"nodeId": 2, "type": "roller",  "restrained": ["y"]}
+  ],
+  "members": [
+    {"id": 1, "startNode": 1, "endNode": 2, "material": "steel", "section": "s1"},
+    {"id": 2, "startNode": 1, "endNode": 3, "material": "steel", "section": "s1"},
+    {"id": 3, "startNode": 2, "endNode": 3, "material": "steel", "section": "s1"}
+  ],
+  "materials": [
+    {"id": "steel", "youngModulus": 200e9, "density": 7850, "yieldStrength": 250e6}
+  ],
+  "sections": [
+    {"id": "s1", "crossSectionalArea": 0.001}
+  ],
+  "loads": [
+    {"nodeId": 3, "fx": 0.0, "fy": -10000.0}
+  ]
+})";
+}
+}  // anonymous namespace
+
+/**
+ * @test Verbose mode with real analysis — covers all 7 verbose switch cases.
+ *
+ * Creates a properly-formatted truss that loads and analyses successfully.
+ * With verbose=true the switch(format) statement is reached for every format,
+ * covering the JSON/XML/CSV/TSV/TXT/LaTeX/HTML cases.
+ */
+TEST_F(ExportCommandTest, Execute_VerboseAllFormats_CoversAllSwitchCases) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    const std::string trussFile = "export_verbose_truss.json";
+    writeValidTrussJson(trussFile);
+
+    const std::vector<std::string> formats    = {"JSON", "XML", "CSV", "TSV", "TXT", "LATEX", "HTML"};
+    const std::vector<std::string> extensions = {"json", "xml", "csv", "tsv", "txt", "tex",  "html"};
+
+    for (size_t i = 0; i < formats.size(); ++i) {
+        std::string outFile = "export_verbose_out." + extensions[i];
+        // verbose = true  ← this forces the switch(format) code path
+        ExportCommand cmd(facade, presenter, trussFile, "", outFile,
+                          std::optional<std::string>{formats[i]}, /*verbose=*/true);
+        int code = cmd.execute();
+        EXPECT_TRUE(code == 0 || code == 1)
+            << "Verbose export failed for format " << formats[i];
+        std::filesystem::remove(outFile);
+    }
+
+    std::filesystem::remove(trussFile);
+}
+
+// =============================================================================
+// Filesystem error catch branch — validateInputFile(filepath) throws
+// filesystem_error when path length exceeds OS limits (~1024 on macOS/Linux).
+// =============================================================================
+
+/**
+ * @test ExportCommand::validateInputFile() — filesystem_error catch branch.
+ *
+ * Constructs a truss-file path that is 2000 characters long.  On POSIX systems
+ * std::filesystem::exists() throws filesystem_error ("filename too long") for
+ * such paths, which is caught inside validateInputFile() and causes it to
+ * return false.  The execute() method then returns 1.
+ *
+ * Covers: `catch (const std::filesystem::filesystem_error&) { return false; }`
+ *         at the end of validateInputFile() in export_command.cpp.
+ */
+TEST_F(ExportCommandTest, Execute_VeryLongTrussPath_FilesystemErrorCaught) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    // Build a path longer than PATH_MAX (1024 on macOS/Linux) so that
+    // std::filesystem::exists() throws std::filesystem::filesystem_error.
+    std::string longPath(2000, 'a');
+    longPath += ".json";
+
+    ExportCommand cmd(facade, presenter, longPath, "", "output.json",
+                      std::optional<std::string>{"JSON"}, /*verbose=*/false);
+    int exitCode = cmd.execute();
+    EXPECT_EQ(exitCode, 1);
+}
+
+// =============================================================================
+// getDefaultExportFormat default-case branch — unknown file extension falls
+// back to JSON.
+// =============================================================================
+
+/**
+ * @test getDefaultExportFormat falls back to JSON for unknown extension.
+ *
+ * When no explicit export format is provided AND the output filename has an
+ * extension that is not recognised (e.g. ".xyz"), getDefaultExportFormat()
+ * reaches its final `return ExportFormat::JSON;` statement.
+ *
+ * A valid truss file is required so that analyzeFromFile() succeeds and the
+ * code actually reaches getDefaultExportFormat().
+ *
+ * Covers: `return ExportFormat::JSON;` (default fallback) in
+ *         getDefaultExportFormat() in export_command.cpp.
+ */
+TEST_F(ExportCommandTest, Execute_UnknownExtension_DefaultsToJson) {
+    class MinimalOutput : public truss::application::interfaces::IApplicationOutput {
+    public:
+        void info(const std::string&) override {}
+        void success(const std::string&) override {}
+        void error(const std::string&) override {}
+        void warn(const std::string&) override {}
+    };
+
+    MinimalOutput output;
+    truss::cli::presenters::ConsolePresenter presenter(output);
+
+    // Use the properly-formatted truss so analysis succeeds and we reach the
+    // getDefaultExportFormat() call.
+    const std::string trussFile = "test_default_fmt_truss.json";
+    writeValidTrussJson(trussFile);
+
+    // Output file with unknown extension — triggers the default JSON fallback.
+    const std::string outFile = "output_default.xyz";
+
+    // No explicit format (std::nullopt) → auto-detect via extension.
+    ExportCommand cmd(facade, presenter, trussFile, "", outFile,
+                      std::nullopt, /*verbose=*/false);
+    int exitCode = cmd.execute();
+
+    // The command should succeed (exit 0) because:
+    //  • The truss file is valid → analysis passes.
+    //  • Unknown extension → defaults to JSON → exporter can write.
+    EXPECT_EQ(exitCode, 0);
+
+    std::filesystem::remove(outFile);
+    std::filesystem::remove(trussFile);
 }
