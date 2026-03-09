@@ -1,0 +1,33 @@
+#!/bin/sh
+# packaging/debian/postrm
+#
+# Debian post-removal maintainer script for 2d-truss-analysis (GUI).
+# Runs after the package files are removed.
+#
+# Responsibilities:
+#   - Rebuild the XDG desktop database to remove the app entry from launchers
+#   - Rebuild the hicolor icon cache
+
+set -e
+
+case "$1" in
+    remove|purge)
+        # Update the desktop file database
+        if command -v update-desktop-database >/dev/null 2>&1; then
+            update-desktop-database -q /usr/share/applications || true
+        fi
+
+        # Update the icon theme cache
+        if command -v gtk-update-icon-cache >/dev/null 2>&1; then
+            gtk-update-icon-cache -q -t /usr/share/icons/hicolor || true
+        fi
+        ;;
+    upgrade|failed-upgrade|abort-install|abort-upgrade|disappear)
+        ;;
+    *)
+        echo "postrm called with unknown argument '$1'" >&2
+        exit 1
+        ;;
+esac
+
+exit 0

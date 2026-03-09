@@ -6,10 +6,6 @@
   "license": "MIT",
   "dependencies": [
     {
-      "name": "qtbase",
-      "features": ["widgets"]
-    },
-    {
       "name": "eigen3"
     },
     {

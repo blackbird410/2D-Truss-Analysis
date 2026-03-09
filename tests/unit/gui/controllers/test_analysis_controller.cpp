@@ -22,7 +22,6 @@
 #include "gui/controllers/analysis_controller.hpp"
 #include "mocks/mock_truss_analysis_facade.hpp"
 
-#include <QApplication>
 #include <QCoreApplication>
 #include <QSignalSpy>
 
@@ -40,26 +39,25 @@ using truss::core::analysis::AnalysisOptions;
 using truss::test::MockTrussAnalysisFacade;
 
 // ============================================================
-// QApplication bootstrap
+// QCoreApplication bootstrap
+// AnalysisController is a QObject subclass that manages a background
+// QThread. No widgets or display interaction required. QCoreApplication
+// is sufficient; no Qt platform plugin is loaded in CI.
 // ============================================================
 
 namespace {
-QApplication& ensureQApp() {
+QCoreApplication& ensureQApp() {
     static int s_argc = 1;
     static char s_argv0[] = "unit_tests";
     static char* s_argv[] = {s_argv0, nullptr};
-    static QApplication* s_app = []() -> QApplication* {
-        if (auto* e = qobject_cast<QApplication*>(QCoreApplication::instance()))
-            return e;
-        return new QApplication(s_argc, s_argv);
+    static QCoreApplication* s_app = []() -> QCoreApplication* {
+        if (QCoreApplication::instance())
+            return QCoreApplication::instance();
+        return new QCoreApplication(s_argc, s_argv);
     }();
     return *s_app;
 }
 }  // namespace
-
-// ============================================================
-// Fixture
-// ============================================================
 
 class AnalysisControllerV2Test : public ::testing::Test {
 protected:

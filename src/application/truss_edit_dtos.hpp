@@ -60,7 +60,8 @@ struct MaterialSpec {
 struct SectionSpec {
     double areaM2{0.0};   ///< Cross-sectional area in square meters
     std::string profile;  ///< Section profile description (e.g., "Square", "Circular")
-    static constexpr double pi = 3.14159265358979323846;  ///< Pi constant (avoids moc-incompatible <numbers>)
+    static constexpr double pi =
+        3.14159265358979323846;  ///< Pi constant (avoids moc-incompatible <numbers>)
 
     /**
      * @brief Create circular section from diameter
