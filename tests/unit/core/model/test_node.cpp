@@ -215,3 +215,81 @@ TEST(NodeTest, NegativeCoordinateHandling) {
     EXPECT_NEAR(negNode.getX(), -100.5, 1e-10);
     EXPECT_NEAR(negNode.getY(), -200.3, 1e-10);
 }
+
+// ============================================================================
+// COVERAGE COMPLETENESS — uncovered methods
+// ============================================================================
+
+/**
+ * @test Node default constructor creates a node with id=0 at origin.
+ * Covers Node::Node() (default constructor, node.cpp line 15).
+ */
+TEST(NodeTest, DefaultConstructor_CreatesNodeAtOrigin) {
+    Node defaultNode;
+    EXPECT_EQ(defaultNode.getId(), 0u);
+    EXPECT_NEAR(defaultNode.getX(), 0.0, 1e-10);
+    EXPECT_NEAR(defaultNode.getY(), 0.0, 1e-10);
+}
+
+/**
+ * @test Node::isFree() returns true for Free nodes and false otherwise.
+ * Covers Node::isFree() (node.cpp lines 32-33).
+ */
+TEST(NodeTest, IsFree_ReturnsCorrectValue) {
+    Node freeNode(1, Point2D(0.0, 0.0), SupportType::Free);
+    EXPECT_TRUE(freeNode.isFree());
+
+    Node pinnedNode(2, Point2D(1.0, 0.0), SupportType::Pinned);
+    EXPECT_FALSE(pinnedNode.isFree());
+
+    Node rollerXNode(3, Point2D(2.0, 0.0), SupportType::RollerX);
+    EXPECT_FALSE(rollerXNode.isFree());
+
+    Node rollerYNode(4, Point2D(3.0, 0.0), SupportType::RollerY);
+    EXPECT_FALSE(rollerYNode.isFree());
+}
+
+/**
+ * @test Node::distanceTo(const Point2D&) returns distance to a point.
+ * Covers node.cpp lines 73-74 (Point2D overload, distinct from Node overload).
+ */
+TEST(NodeTest, DistanceTo_Point2D_ReturnsCorrectDistance) {
+    Node node(1, Point2D(0.0, 0.0), SupportType::Free);
+    Point2D target(3.0, 4.0);
+    EXPECT_NEAR(node.distanceTo(target), 5.0, 1e-10);
+
+    // Zero distance
+    Point2D samePoint(0.0, 0.0);
+    EXPECT_NEAR(node.distanceTo(samePoint), 0.0, 1e-10);
+}
+
+/**
+ * @test Node::isCoincidentWith() detects coincident nodes within tolerance.
+ * Covers node.cpp lines 77-78.
+ */
+TEST(NodeTest, IsCoincidentWith_DetectsSamePosition) {
+    Node node1(1, Point2D(1.0, 2.0), SupportType::Free);
+    Node node2(2, Point2D(1.0, 2.0), SupportType::Free);  // same position
+    Node node3(3, Point2D(1.5, 2.5), SupportType::Free);  // different position
+
+    EXPECT_TRUE(node1.isCoincidentWith(node2));   // default tolerance
+    EXPECT_FALSE(node1.isCoincidentWith(node3));  // too far
+
+    // Within custom tight tolerance
+    Node node4(4, Point2D(1.0 + 1e-10, 2.0), SupportType::Free);
+    EXPECT_TRUE(node1.isCoincidentWith(node4, 1e-6));
+    EXPECT_FALSE(node1.isCoincidentWith(node4, 1e-15));
+}
+
+/**
+ * @test Node::operator!=() returns true for nodes with different IDs.
+ * Covers node.cpp lines 108-109.
+ */
+TEST(NodeTest, InequalityOperator_ReturnsTrueForDifferentNodes) {
+    Node nodeA(1, Point2D(0.0, 0.0), SupportType::Free);
+    Node nodeB(2, Point2D(0.0, 0.0), SupportType::Free);  // same position, different ID
+    Node nodeC(1, Point2D(5.0, 5.0), SupportType::Pinned);  // same ID, different pos
+
+    EXPECT_TRUE(nodeA != nodeB);   // different IDs → not equal
+    EXPECT_FALSE(nodeA != nodeC);  // same ID → equal (operator== uses id)
+}
