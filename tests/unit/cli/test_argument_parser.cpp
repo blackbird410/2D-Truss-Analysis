@@ -450,3 +450,56 @@ TEST_F(ArgumentParserTest, Parse_OptionAtEndOfArgs_ValueBecomesTrue) {
 
     freeArgv(argv, static_cast<int>(args.size()));
 }
+
+// ============================================================================
+// GET OPTION TESTS
+// ============================================================================
+
+TEST_F(ArgumentParserTest, GetOption_LongFormPresent_ReturnsValue) {
+    ParsedArgs args;
+    args.options["file"] = "input.json";
+
+    auto result = ArgumentParser::getOption(args, "file", "f");
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, "input.json");
+}
+
+TEST_F(ArgumentParserTest, GetOption_ShortFormPresentLongAbsent_ReturnsShortValue) {
+    ParsedArgs args;
+    args.options["f"] = "input.json";
+
+    auto result = ArgumentParser::getOption(args, "file", "f");
+
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, "input.json");
+}
+
+TEST_F(ArgumentParserTest, GetOption_NeitherFormPresent_ReturnsNullopt) {
+    ParsedArgs args;
+    args.options["output"] = "result.xml";
+
+    auto result = ArgumentParser::getOption(args, "file", "f");
+
+    EXPECT_FALSE(result.has_value());
+}
+
+TEST_F(ArgumentParserTest, GetOption_BothFormsPresent_ReturnsLongFormValue) {
+    ParsedArgs args;
+    args.options["file"] = "long_value.json";
+    args.options["f"] = "short_value.json";
+
+    auto result = ArgumentParser::getOption(args, "file", "f");
+
+    // Long form takes precedence
+    ASSERT_TRUE(result.has_value());
+    EXPECT_EQ(*result, "long_value.json");
+}
+
+TEST_F(ArgumentParserTest, GetOption_EmptyOptions_ReturnsNullopt) {
+    ParsedArgs args;
+
+    auto result = ArgumentParser::getOption(args, "file", "f");
+
+    EXPECT_FALSE(result.has_value());
+}
