@@ -124,11 +124,17 @@ jobs:
       # ----------------------------------------------------------------------
       # Tests
       # ----------------------------------------------------------------------
+      # The unit_tests binary initialises QCoreApplication — no platform
+      # plugin is loaded, no display required. The QT_QPA_PLATFORM env var is
+      # also set in the CTest ENVIRONMENT property as belt-and-suspenders.
       - name: Run unit tests
         run: |
           cd build
           ctest --output-on-failure \
-                --tests-regex "unit_tests" \
+                --tests-regex "^unit_tests$" \
+                --timeout 60 \
+                --parallel $(nproc)
+
       # unit_tests_gui_widgets initialises QApplication; offscreen satisfies
       # the platform plugin requirement without a physical display or X11.
       # QT_QPA_PLATFORM is also encoded in the CTest ENVIRONMENT property.
@@ -146,25 +152,28 @@ jobs:
         run: |
           cd build
           ctest --output-on-failure \
-                --tests-regex "integration_tests" \
+                --tests-regex "^integration_tests$" \
                 --timeout 60 \
                 --parallel $(nproc)
 
+      # gui_integration_tests initialises QApplication; offscreen satisfies
+      # the platform plugin requirement. QT_QPA_PLATFORM is also encoded in
+      # the CTest ENVIRONMENT property for this test.
       - name: Run GUI integration tests (headless)
         env:
           QT_QPA_PLATFORM: offscreen
         run: |
           cd build
-          xvfb-run -a ctest --output-on-failure \
-                            --tests-regex "gui_integration_test" \
-                            --timeout 60 \
-                            --parallel $(nproc)
+          ctest --output-on-failure \
+                --tests-regex "^gui_integration_tests$" \
+                --timeout 120 \
+                --parallel $(nproc)
 
       - name: Run GTest integration tests
         run: |
           cd build
           ctest --output-on-failure \
-                --tests-regex "test_gtest_integration" \
+                --tests-regex "^gtest_integration$" \
                 --timeout 60 \
                 --parallel $(nproc)
 
