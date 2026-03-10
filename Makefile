@@ -307,12 +307,12 @@ docs: ## Generate API documentation (uses ./scripts/generate-docs.sh)
 .PHONY: run-cli
 run-cli: build ## Run CLI application (example command)
 	@echo -e "$(BOLD)Running CLI application...$(RESET)"
-	@$(BUILD_DIR)/TrussAnalysisCLI --help
+	@$(BUILD_DIR)/src/cli/truss-analysis-cli --help
 
 .PHONY: run-gui
 run-gui: build ## Run GUI application
 	@echo -e "$(BOLD)Running GUI application...$(RESET)"
-	@$(BUILD_DIR)/TrussAnalysisGUI
+	@$(BUILD_DIR)/src/gui/truss-analysis
 
 .PHONY: install
 install: build ## Install to system (requires sudo)
@@ -351,10 +351,10 @@ info: ## Show build system information
 	@echo ""
 	@if [ -d $(BUILD_DIR) ]; then \
 		echo -e "$(BOLD)Build Status (Release):$(RESET)"; \
-		if [ -f $(BUILD_DIR)/TrussAnalysisCLI ]; then echo "  CLI:           ✓ built"; else echo "  CLI:           ✗ not built"; fi; \
-		if [ -f $(BUILD_DIR)/TrussAnalysisGUI ]; then echo "  GUI:           ✓ built"; else echo "  GUI:           ✗ not built"; fi; \
-		if [ -f $(BUILD_DIR)/libTrussCore.a ]; then echo "  TrussCore:     ✓ built"; else echo "  TrussCore:     ✗ not built"; fi; \
-		if [ -f $(BUILD_DIR)/libTrussApplication.a ]; then echo "  Application:   ✓ built"; else echo "  Application:   ✗ not built"; fi; \
+		if [ -f $(BUILD_DIR)/src/cli/truss-analysis-cli ]; then echo "  CLI:           ✓ built"; else echo "  CLI:           ✗ not built"; fi; \
+		if [ -f $(BUILD_DIR)/src/gui/truss-analysis ]; then echo "  GUI:           ✓ built"; else echo "  GUI:           ✗ not built"; fi; \
+		if [ -f $(BUILD_DIR)/src/core/libTrussCore.a ]; then echo "  TrussCore:     ✓ built"; else echo "  TrussCore:     ✗ not built"; fi; \
+		if [ -f $(BUILD_DIR)/src/application/libTrussApplication.a ]; then echo "  Application:   ✓ built"; else echo "  Application:   ✗ not built"; fi; \
 	else \
 		echo -e "$(YELLOW)Release build not configured$(RESET)"; \
 	fi
