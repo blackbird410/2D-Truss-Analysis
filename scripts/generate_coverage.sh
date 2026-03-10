@@ -3,14 +3,16 @@
 # 2D Truss Analysis C++ - v3.0.0
 # Automated coverage analysis using gcov/lcov
 
-set -e
+set -euo pipefail
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
 
 # Configuration
-BUILD_DIR="build"
-COVERAGE_DIR="build/coverage"
-REPORT_DIR="docs/testing/coverage-reports"
+BUILD_DIR="${PROJECT_DIR}/build"
+COVERAGE_DIR="${BUILD_DIR}/coverage"
+REPORT_DIR="${PROJECT_DIR}/docs/testing/coverage-reports"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
-NPROC=$(nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
 
 # Colors for output
 RED='\033[0;31m'
@@ -44,32 +46,32 @@ echo ""
 
 # Rebuild with coverage flags
 echo -e "${YELLOW}Rebuilding project with coverage instrumentation...${NC}"
-cd "$BUILD_DIR"
-cmake .. -DCMAKE_BUILD_TYPE=Debug \
-         -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage" \
-         -DCMAKE_EXE_LINKER_FLAGS="--coverage"
-make clean
-make -j$NPROC unit_tests integration_tests
+cmake -S "$PROJECT_DIR" -B "$BUILD_DIR" \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage" \
+    -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+cmake --build "$BUILD_DIR" --target clean
+cmake --build "$BUILD_DIR" --target unit_tests --target integration_tests --parallel
 echo -e "${GREEN}✓ Build complete${NC}"
 echo ""
 
 # Run unit tests
+# Binaries live in per-module subdirectories after the modular CMake refactor.
 echo -e "${YELLOW}Running unit tests...${NC}"
-./unit_tests --gtest_brief=1 || true
+"$BUILD_DIR/tests/unit/unit_tests" --gtest_brief=1 || true
 UNIT_RESULT=$?
 echo -e "${GREEN}✓ Unit tests executed${NC}"
 echo ""
 
 # Run integration tests
 echo -e "${YELLOW}Running integration tests...${NC}"
-./integration_tests --gtest_brief=1 || true
+"$BUILD_DIR/tests/integration/integration_tests" --gtest_brief=1 || true
 INT_RESULT=$?
 echo -e "${GREEN}✓ Integration tests executed${NC}"
 echo ""
 
 # Capture coverage data
 echo -e "${YELLOW}Capturing coverage data...${NC}"
-cd ..
 lcov --capture --directory "$BUILD_DIR" --output-file "$COVERAGE_DIR/coverage.info" \
      --rc branch_coverage=1 \
      --ignore-errors format,inconsistent,mismatch --quiet
@@ -135,8 +137,8 @@ Integration Tests: $([ $INT_RESULT -eq 0 ] && echo "PASSED" || echo "FAILED")
 
 Detailed Report:
 ----------------
-HTML: file://$(pwd)/$COVERAGE_DIR/html/index.html
-Raw:  $(pwd)/$COVERAGE_DIR/coverage_filtered.info
+HTML: file://$COVERAGE_DIR/html/index.html
+Raw:  $COVERAGE_DIR/coverage_filtered.info
 
 EOF
 
@@ -154,7 +156,7 @@ echo -e "${GREEN}Line Coverage:     ${LINE_COVERAGE}%${NC}"
 echo -e "${GREEN}Function Coverage: ${FUNCTION_COVERAGE}%${NC}"
 echo -e "${GREEN}Branch Coverage:   ${BRANCH_COVERAGE}%${NC}"
 echo ""
-echo -e "${BLUE}HTML Report:${NC} file://$(pwd)/$COVERAGE_DIR/html/index.html"
+echo -e "${BLUE}HTML Report:${NC} file://$COVERAGE_DIR/html/index.html"
 echo -e "${BLUE}Text Summary:${NC} $REPORT_DIR/coverage_${TIMESTAMP}.txt"
 echo ""
 

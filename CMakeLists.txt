@@ -4,7 +4,8 @@ project(TrussAnalysis VERSION 3.0.0 LANGUAGES CXX)
 # Export compile commands for tools like clang-tidy
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
-# Set C++ standard
+# Set C++ standard (project-wide default; individual targets also declare
+# cxx_std_20 via target_compile_features for explicit self-documentation).
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 set(CMAKE_CXX_EXTENSIONS OFF)
@@ -14,10 +15,12 @@ if(NOT CMAKE_BUILD_TYPE)
     set(CMAKE_BUILD_TYPE Release)
 endif()
 
-# Compiler-specific options
-# Note: -march=native is intentionally absent — it produces non-portable binaries that
-# cannot be distributed as packages (SIGILL on CPUs older than the build machine).
-# Use -O2 for Release (standard Debian/Ubuntu packaging level) and -O0 -g for Debug.
+# ============================================================================
+# COMPILER FLAGS
+# Note: -march=native is intentionally absent — it produces non-portable
+# binaries (SIGILL on CPUs older than the build machine).
+# Use -O2 for Release (standard Debian/Ubuntu packaging level).
+# ============================================================================
 if(MSVC)
     add_compile_options(/W4 /O2)
 else()
@@ -26,9 +29,11 @@ else()
     add_compile_options("$<$<CONFIG:Debug>:-O0;-g>")
 endif()
 
-# Build options
+# ============================================================================
+# BUILD OPTIONS
+# ============================================================================
 option(ENABLE_COVERAGE "Enable code coverage reporting" OFF)
-option(BUILD_GUI "Build GUI application (requires Qt6)" ON)
+option(BUILD_GUI       "Build GUI application (requires Qt6)" ON)
 
 if(ENABLE_COVERAGE)
     if(CMAKE_CXX_COMPILER_ID MATCHES "GNU|Clang")
@@ -40,11 +45,15 @@ if(ENABLE_COVERAGE)
     endif()
 endif()
 
-# Find required packages
+# ============================================================================
+# PACKAGE DISCOVERY
+# All third-party packages are found here so sub-directories can consume
+# the resulting imported targets without repeating find_package() calls.
+# ============================================================================
 find_package(Eigen3 REQUIRED)
 find_package(nlohmann_json REQUIRED)
 
-# Qt6 is only required if building GUI
+# Qt6 is only required if building the GUI application.
 if(BUILD_GUI)
     find_package(Qt6 REQUIRED COMPONENTS Core Widgets Test Svg)
     message(STATUS "Building with GUI support (Qt6)")
@@ -52,10 +61,9 @@ else()
     message(STATUS "Building CLI only (no Qt6)")
 endif()
 
-# Find tinyxml2 (note: package name in CMake is lowercase)
+# tinyxml2 — try config-mode first, fall back to a Homebrew manual search.
 find_package(tinyxml2 QUIET)
 if(NOT tinyxml2_FOUND)
-    # Try alternative search in Homebrew
     find_library(TINYXML2_LIBRARY tinyxml2 PATHS /opt/homebrew/lib /usr/local/lib)
     find_path(TINYXML2_INCLUDE_DIR tinyxml2.h PATHS /opt/homebrew/include /usr/local/include)
     if(TINYXML2_LIBRARY AND TINYXML2_INCLUDE_DIR)
@@ -70,29 +78,26 @@ if(NOT tinyxml2_FOUND)
     endif()
 endif()
 
-# Enable testing (only when tests are requested)
-# include(CTest) must come before the BUILD_TESTING guard because it is the
-# module that defines the BUILD_TESTING cache variable with its default value
-# of ON.  Any -DBUILD_TESTING=OFF passed on the command line takes precedence.
+# ============================================================================
+# TESTING INFRASTRUCTURE
+# include(CTest) must precede any BUILD_TESTING guard: it is the module that
+# defines the BUILD_TESTING cache variable at its default value (ON).
+# ============================================================================
 include(CTest)
 if(BUILD_TESTING)
     enable_testing()
-endif()
-
-# Find Google Test (for unit testing)
-if(BUILD_TESTING)
     find_package(GTest REQUIRED)
     message(STATUS "Google Test found: ${GTest_VERSION}")
 
-    # Manually create gmock targets if not found (Ubuntu 24.04 requires this)
+    # Manually create gmock targets if not found (Ubuntu 24.04 requires this).
     if(NOT TARGET GTest::gmock)
-        find_library(GMOCK_LIBRARY gmock PATHS /usr/lib /usr/local/lib)
+        find_library(GMOCK_LIBRARY      gmock      PATHS /usr/lib /usr/local/lib)
         find_library(GMOCK_MAIN_LIBRARY gmock_main PATHS /usr/lib /usr/local/lib)
 
         if(GMOCK_LIBRARY AND NOT GMOCK_MAIN_LIBRARY)
-            message(WARNING "gmock found but gmock_main not found; GTest::gmock_main target will not be created")
+            message(WARNING "gmock found but gmock_main not found; GTest::gmock_main will not be created")
         elseif(NOT GMOCK_LIBRARY AND GMOCK_MAIN_LIBRARY)
-            message(WARNING "gmock_main found but gmock not found; neither GTest::gmock nor GTest::gmock_main targets will be created")
+            message(WARNING "gmock_main found but gmock not found; neither target will be created")
         endif()
 
         if(GMOCK_LIBRARY)
@@ -115,686 +120,34 @@ if(BUILD_TESTING)
     endif()
 endif()
 
-# Enable Qt6 automatic MOC, UIC, and RCC (only if building GUI)
-if(BUILD_GUI)
-    set(CMAKE_AUTOMOC ON)
-    set(CMAKE_AUTORCC ON)
-    set(CMAKE_AUTOUIC ON)
+# Qt6 AUTOMOC/AUTORCC/AUTOUIC are intentionally NOT set globally here.
+# They are scoped to the TrussGui and TrussAnalysisGUI targets in
+# src/gui/CMakeLists.txt to prevent unintended processing of other targets.
+
+# ============================================================================
+# SOURCE AND TEST MODULES
+# Each subdirectory owns its own CMakeLists.txt and defines its targets
+# independently.  The root file orchestrates; it does not define targets.
+# Dependency order is: utilities → core → infrastructure → application →
+#                      interface → cli → gui (optional)
+# ============================================================================
+add_subdirectory(src)
+
+if(BUILD_TESTING)
+    add_subdirectory(tests)
 endif()
 
-# ============================================================================
-# UTILITY LAYER (no project dependencies — safe for all layers)
-# ============================================================================
-
-add_library(TrussUtils STATIC
-    src/utilities/string_utils.cpp
-    src/utilities/string_utils.hpp
-    src/utilities/math_utils.hpp
-)
-
-target_include_directories(TrussUtils PUBLIC
-    ${CMAKE_SOURCE_DIR}/src
-)
-
-set_target_properties(TrussUtils PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    POSITION_INDEPENDENT_CODE ON
-)
-
-# Create library for core functionality
-add_library(TrussCore STATIC
-    src/core/application.hpp
-    # Domain model in model/ subdirectory
-    src/core/model/types.hpp
-    src/core/model/node.cpp
-    src/core/model/node.hpp
-    src/core/model/member.cpp
-    src/core/model/member.hpp
-    src/core/model/truss.cpp
-    src/core/model/truss.hpp
-    src/core/model/load.cpp
-    src/core/model/load.hpp
-    # Domain assembly utilities
-    src/core/assembly/truss_assembler.cpp
-    src/core/assembly/truss_assembler.hpp
-    # Domain validation services
-    src/core/validation/truss_validator.cpp
-    src/core/validation/truss_validator.hpp
-    # Phase 2 - Analysis decomposition
-    src/core/analysis/stiffness_assembler.cpp
-    src/core/analysis/stiffness_assembler.hpp
-    src/core/analysis/boundary_condition_handler.cpp
-    src/core/analysis/boundary_condition_handler.hpp
-    src/core/analysis/ilinear_solver.hpp
-    src/core/analysis/direct_solver.cpp
-    src/core/analysis/direct_solver.hpp
-    src/core/analysis/iterative_solver.cpp
-    src/core/analysis/iterative_solver.hpp
-    src/core/analysis/solver_factory.cpp
-    src/core/analysis/solver_factory.hpp
-    src/core/analysis/analysis_orchestrator.cpp
-    src/core/analysis/analysis_orchestrator.hpp
-    # Phase 3 - Infrastructure layer (export subsystem)
-    src/infrastructure/export/export_types.hpp
-    src/infrastructure/export/exporter.hpp
-    src/infrastructure/export/exporter_factory.cpp
-    src/infrastructure/export/exporter_factory.hpp
-    src/infrastructure/export/csv_exporter.cpp
-    src/infrastructure/export/csv_exporter.hpp
-    src/infrastructure/export/json_exporter.cpp
-    src/infrastructure/export/json_exporter.hpp
-    src/infrastructure/export/xml_exporter.cpp
-    src/infrastructure/export/xml_exporter.hpp
-    src/infrastructure/export/html_exporter.cpp
-    src/infrastructure/export/html_exporter.hpp
-    src/infrastructure/export/latex_exporter.cpp
-    src/infrastructure/export/latex_exporter.hpp
-    src/infrastructure/export/text_exporter.cpp
-    src/infrastructure/export/text_exporter.hpp
-    # Phase 4 - Infrastructure layer (logging subsystem)
-    src/infrastructure/logging/logger.hpp
-    src/infrastructure/logging/console_logger.cpp
-    src/infrastructure/logging/console_logger.hpp
-    src/infrastructure/logging/file_logger.cpp
-    src/infrastructure/logging/file_logger.hpp
-    src/infrastructure/logging/logger_factory.cpp
-    src/infrastructure/logging/logger_factory.hpp
-    # Phase 5A - Infrastructure adapters
-    src/infrastructure/adapters/console_output_adapter.cpp
-    src/infrastructure/adapters/console_output_adapter.hpp
-    # Phase 2 (Infrastructure Refactoring) - File I/O subsystem
-    src/infrastructure/io/io_types.hpp
-    src/infrastructure/io/truss_reader.hpp
-    src/infrastructure/io/truss_writer.hpp
-    src/infrastructure/io/json_truss_reader.cpp
-    src/infrastructure/io/json_truss_reader.hpp
-    src/infrastructure/io/json_truss_writer.cpp
-    src/infrastructure/io/json_truss_writer.hpp
-    src/infrastructure/io/xml_truss_reader.cpp
-    src/infrastructure/io/xml_truss_reader.hpp
-    src/infrastructure/io/xml_truss_writer.cpp
-    src/infrastructure/io/xml_truss_writer.hpp
-    src/infrastructure/io/support_type_serializer.cpp
-    src/infrastructure/io/support_type_serializer.hpp
-    src/infrastructure/io/fileio_factory.cpp
-    src/infrastructure/io/fileio_factory.hpp
-)
-
-target_include_directories(TrussCore PUBLIC
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/truss
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/core
-    ${CMAKE_SOURCE_DIR}/src/core/analysis
-    ${CMAKE_SOURCE_DIR}/src/infrastructure/export
-    ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
-    ${CMAKE_SOURCE_DIR}/src/infrastructure/io
-)
-
-target_link_libraries(TrussCore PUBLIC
-    Eigen3::Eigen
-    nlohmann_json::nlohmann_json
-    tinyxml2::tinyxml2
-    TrussUtils
-)
-
-# Set target properties for library
-set_target_properties(TrussCore PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    POSITION_INDEPENDENT_CODE ON
-)
-
-# ============================================================================
-# APPLICATION LAYER (Phase 4 - Facades for Interface Layer)
-# ============================================================================
-
-add_library(TrussApplication STATIC
-    src/application/truss_application_service.cpp
-    src/application/truss_application_service.hpp
-    src/application/analysis_application_service.cpp
-    src/application/analysis_application_service.hpp
-    src/application/material_library_service.cpp
-    src/application/material_library_service.hpp
-)
-
-target_include_directories(TrussApplication PUBLIC
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/application
-)
-
-target_link_libraries(TrussApplication PUBLIC
-    TrussCore
-)
-
-set_target_properties(TrussApplication PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    POSITION_INDEPENDENT_CODE ON
-)
-
-# ============================================================================
-# INTERFACE LAYER (Public API - Facade + Builder patterns)
-# ============================================================================
-
-add_library(TrussInterface STATIC
-    src/interface/truss_builder.cpp
-    src/interface/truss_builder.hpp
-    src/interface/truss_analysis_facade.cpp
-    src/interface/truss_analysis_facade.hpp
-    src/interface/facade_truss_service_adapter.cpp
-    src/interface/facade_truss_service_adapter.hpp
-    src/interface/facade_analysis_service_adapter.cpp
-    src/interface/facade_analysis_service_adapter.hpp
-)
-
-target_include_directories(TrussInterface PUBLIC
-    ${CMAKE_SOURCE_DIR}/src
-    ${CMAKE_SOURCE_DIR}/src/interface
-    ${CMAKE_SOURCE_DIR}/src/infrastructure/export
-    ${CMAKE_SOURCE_DIR}/include
-    ${CMAKE_SOURCE_DIR}/include/truss
-)
-
-target_link_libraries(TrussInterface PUBLIC
-    TrussApplication
-)
-
-set_target_properties(TrussInterface PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    POSITION_INDEPENDENT_CODE ON
-)
-
-# ============================================================================
-# CLI APPLICATION
-# ============================================================================
-
-# CLI source files
-set(CLI_SOURCES
-    src/cli/argument_parser.cpp
-    src/cli/commands/example_command.cpp
-    src/cli/commands/help_command.cpp
-    src/cli/commands/analyze_command.cpp
-    src/cli/commands/validate_command.cpp
-    src/cli/commands/export_command.cpp
-    src/cli/presenters/console_presenter.cpp
-    src/infrastructure/adapters/console_output_adapter.cpp
-)
-
-# Main application CLI executable
-add_executable(TrussAnalysisCLI
-    src/main_app.cpp
-    ${CLI_SOURCES}
-)
-
-target_link_libraries(TrussAnalysisCLI PRIVATE
-    TrussInterface
-    TrussApplication
-    TrussCore
-)
-
-set_target_properties(TrussAnalysisCLI PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    # Lowercase name follows Debian Policy §10.1 and standard Unix conventions.
-    OUTPUT_NAME "truss-analysis-cli"
-)
-
-# Utility: Generate corrected golden masters (optional - only if file exists)
-if(EXISTS ${CMAKE_SOURCE_DIR}/generate_corrected_golden_masters.cpp)
+# Optional utility: generate corrected golden masters (standalone helper tool).
+if(EXISTS "${CMAKE_SOURCE_DIR}/generate_corrected_golden_masters.cpp")
     add_executable(generate_corrected_golden_masters
         generate_corrected_golden_masters.cpp
     )
     target_link_libraries(generate_corrected_golden_masters PRIVATE TrussCore)
+    target_compile_features(generate_corrected_golden_masters PRIVATE cxx_std_20)
 endif()
 
-# ============================================================================
-# UNIT TESTS CONFIGURATION
-# ============================================================================
 
-if(BUILD_TESTING)
-    message(STATUS "Building unit tests")
 
-    # GTest integration validation test
-    add_executable(test_gtest_integration tests/test_gtest_integration.cpp)
-    target_link_libraries(test_gtest_integration PRIVATE GTest::gtest GTest::gtest_main)
-    add_test(NAME gtest_integration COMMAND test_gtest_integration)
-    set_tests_properties(gtest_integration PROPERTIES
-        TIMEOUT 10
-        LABELS "gtest;integration"
-    )
-
-    # ============================================================================
-    # NEW GTEST-BASED TEST TARGETS (Phase 1 migrated tests)
-    # ============================================================================
-
-    # Unit tests (core functionality tests)
-    set(UNIT_TEST_SOURCES
-        # Domain layer tests - MODEL
-        tests/unit/core/model/test_node.cpp
-        tests/unit/core/model/test_member.cpp
-        tests/unit/core/model/test_member_branches.cpp
-        tests/unit/core/model/test_truss.cpp
-        tests/unit/core/model/test_truss_branches.cpp
-        tests/unit/core/model/test_load.cpp
-        tests/unit/core/model/test_stiffness_matrix_bug.cpp
-        # Domain layer tests - ASSEMBLY
-        tests/unit/core/assembly/test_truss_assembler.cpp
-        # Domain layer tests - VALIDATION
-        tests/unit/core/validation/test_truss_validator.cpp
-        tests/unit/core/validation/test_truss_validator_branches.cpp
-        tests/unit/core/validation/test_validation_advanced.cpp
-        # Domain layer tests - ANALYSIS
-        tests/unit/core/analysis/test_stiffness_assembler.cpp
-        tests/unit/core/analysis/test_boundary_condition_handler.cpp
-        tests/unit/core/analysis/test_linear_solvers.cpp
-        tests/unit/core/analysis/test_analysis_orchestrator.cpp
-        tests/unit/core/analysis/test_displacement_sign_check.cpp
-        tests/unit/core/analysis/test_warren_displacement.cpp
-        # Infrastructure layer tests
-        tests/unit/infrastructure/export/test_csv_exporter.cpp
-        tests/unit/infrastructure/export/test_html_exporter.cpp
-        tests/unit/infrastructure/export/test_json_exporter.cpp
-        tests/unit/infrastructure/export/test_latex_exporter.cpp
-        tests/unit/infrastructure/export/test_text_exporter.cpp
-        tests/unit/infrastructure/export/test_xml_exporter.cpp
-        tests/unit/infrastructure/export/test_exporter_factory.cpp
-        tests/unit/infrastructure/export/test_export_advanced.cpp
-        tests/unit/infrastructure/logging/test_logger.cpp
-        tests/unit/infrastructure/logging/test_logger_advanced.cpp
-        tests/unit/infrastructure/io/test_fileio.cpp
-        tests/unit/infrastructure/io/test_fileio_advanced.cpp
-        tests/unit/infrastructure/io/test_support_type_serializer.cpp
-        tests/unit/infrastructure/io/test_json_reader_branches.cpp
-        tests/unit/infrastructure/io/test_xml_reader_branches.cpp
-        tests/unit/infrastructure/adapters/test_console_output_adapter.cpp
-        # Application layer tests (Phase 4)
-        tests/unit/application/test_truss_application_service.cpp
-        tests/unit/application/test_truss_application_service_gui_methods.cpp
-        tests/unit/application/test_truss_application_service_update.cpp
-        tests/unit/application/test_material_library_service.cpp
-        tests/unit/application/test_analysis_application_service.cpp
-        # Interface layer tests (Public API)
-        tests/unit/interface/test_truss_builder.cpp
-        tests/unit/interface/test_truss_analysis_facade.cpp
-        tests/unit/interface/test_facade_truss_service_adapter.cpp
-        tests/unit/interface/test_facade_analysis_service_adapter.cpp
-        # CLI layer tests (Phase 5A & 5B & Phase 6)
-        tests/unit/cli/test_console_presenter.cpp
-        tests/unit/cli/test_help_command.cpp
-        tests/unit/cli/test_argument_parser.cpp
-        tests/unit/cli/test_analyze_command.cpp
-        tests/unit/cli/test_example_command.cpp
-        tests/unit/cli/test_validate_command.cpp
-        tests/unit/cli/test_validate_command_mock.cpp
-        tests/unit/cli/test_export_command.cpp
-        tests/unit/cli/test_export_command_mock.cpp
-        # Utility layer tests
-        tests/unit/utilities/test_math_utils.cpp
-        tests/unit/utilities/test_string_utils.cpp
-        tests/unit/utilities/test_string_utils_branches.cpp
-        # CLI source files (needed for linking CLI tests)
-        ${CLI_SOURCES}
-    )
-
-    # Conditionally add GUI tests and sources only if BUILD_GUI is enabled.
-    # Only non-display Qt tests are included here (QAbstractItemModel, QObject
-    # controllers). These require Qt6::Core/Qt6::Widgets at compile time, but
-    # initialise QCoreApplication at runtime — no platform plugin is needed,
-    # so this binary runs without a display server in CI.
-    if(BUILD_GUI)
-        list(APPEND UNIT_TEST_SOURCES
-            # Phase 3: Qt Item Model tests (QAbstractItemModel — no display)
-            tests/unit/gui/models/test_node_table_model.cpp
-            tests/unit/gui/models/test_member_table_model.cpp
-            tests/unit/gui/models/test_results_table_model.cpp
-            # Phase 3: Qt Item Model sources under test
-            src/gui/models/node_table_model.cpp
-            src/gui/models/member_table_model.cpp
-            src/gui/models/results_table_model.cpp
-            # validation_list_model.cpp is compiled here (not the test — that is
-            # in unit_tests_gui_widgets) because main_window_controller.cpp
-            # creates a ValidationListModel instance and needs the symbol.
-            # At runtime the DecorationRole path (which calls QPixmap) is never
-            # exercised by controller tests, so no platform plugin is required.
-            src/gui/models/validation_list_model.cpp
-            # Phase 4: Core Window & Navigation Framework — controller tests
-            tests/unit/gui/controllers/test_main_window_controller.cpp
-            # Phase 4: sources under test
-            src/gui/controllers/main_window_controller.cpp
-            # Phase 5: Feature Module Implementation — controller tests
-            tests/unit/gui/controllers/test_canvas_controller.cpp
-            tests/unit/gui/controllers/test_inspector_controller.cpp
-            tests/unit/gui/controllers/test_analysis_controller.cpp
-            tests/unit/gui/controllers/test_project_controller.cpp
-            tests/unit/gui/controllers/test_export_controller.cpp
-            # Phase 5: sources under test — controllers
-            src/gui/controllers/canvas_controller.cpp
-            src/gui/controllers/inspector_controller.cpp
-            src/gui/controllers/analysis_controller.cpp
-            src/gui/controllers/project_controller.cpp
-            src/gui/controllers/export_controller.cpp
-            # Phase 6: State Management & Interaction Logic — tests
-            # workspace_state.hpp is header-only; no extra source files required.
-            tests/unit/gui/state/test_workspace_state.cpp
-        )
-    endif()
-    # NOTE: Panel tests (notification_rail, analysis_control_bar, inspector_panel,
-    # results_dock_panel), the validation_list_model test (uses QPixmap via
-    # DecorationRole), and the TrussCanvasWidget test are compiled into the
-    # separate unit_tests_gui_widgets binary below. That binary initialises
-    # QApplication and sets QT_QPA_PLATFORM=offscreen so that widget
-    # construction succeeds without a physical display server.
-
-    add_executable(unit_tests ${UNIT_TEST_SOURCES})
-
-    target_link_libraries(unit_tests PRIVATE
-        TrussInterface
-        TrussApplication
-        TrussCore
-        GTest::gtest
-        GTest::gtest_main
-        GTest::gmock
-        $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
-        $<$<BOOL:${BUILD_GUI}>:Qt6::Widgets>
-        $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
-        $<$<BOOL:${BUILD_GUI}>:Qt6::Svg>
-    )
-
-    target_include_directories(unit_tests PRIVATE
-        ${CMAKE_SOURCE_DIR}/src
-        ${CMAKE_SOURCE_DIR}/src/core
-        ${CMAKE_SOURCE_DIR}/src/application
-        ${CMAKE_SOURCE_DIR}/src/interface
-        ${CMAKE_SOURCE_DIR}/src/infrastructure/export
-        ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
-        ${CMAKE_SOURCE_DIR}/src/infrastructure/io
-        ${CMAKE_SOURCE_DIR}/src/gui
-        ${CMAKE_SOURCE_DIR}/tests  # For mocks directory
-    )
-
-    add_test(NAME unit_tests COMMAND unit_tests)
-    set_tests_properties(unit_tests PROPERTIES
-        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-        TIMEOUT 30
-        LABELS "unit;gtest"
-        # Belt-and-suspenders: the controller/model sources compile against
-        # Qt6::Widgets (e.g. project_controller.cpp includes QFileDialog), but
-        # the test code only initialises QCoreApplication, so the platform
-        # plugin is never loaded.  The env var is harmless here but ensures
-        # correctness if a future test inadvertently triggers QGuiApplication.
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-    )
-
-    # ============================================================================
-    # GUI WIDGET UNIT TESTS
-    # Tests that instantiate QWidget, QGraphicsView, or any subclass that
-    # requires the Qt platform plugin.  Separated from unit_tests so that
-    # the rest of the unit suite runs with QCoreApplication (no display).
-    # This binary uses QApplication and QT_QPA_PLATFORM=offscreen.
-    # ============================================================================
-    if(BUILD_GUI AND BUILD_TESTING)
-        add_executable(unit_tests_gui_widgets
-            # Phase 2: NotificationRail panel test
-            tests/unit/gui/panels/test_notification_rail.cpp
-            src/gui/panels/notification_rail.cpp
-            # Phase 3: ValidationListModel test (uses QPixmap via DecorationRole)
-            tests/unit/gui/models/test_validation_list_model.cpp
-            src/gui/models/validation_list_model.cpp
-            # Panel tests (Phase 5) — instantiate QWidget subclasses directly
-            tests/unit/gui/panels/test_inspector_panel.cpp
-            tests/unit/gui/panels/test_analysis_control_bar.cpp
-            tests/unit/gui/panels/test_results_dock_panel.cpp
-            src/gui/panels/analysis_options_dialog.cpp
-            src/gui/panels/inspector_panel.cpp
-            src/gui/panels/analysis_control_bar.cpp
-            src/gui/panels/results_dock_panel.cpp
-            # Widget test (Phase 4) — TrussCanvasWidget is a QGraphicsView
-            tests/unit/gui/widgets/test_truss_canvas_widget.cpp
-            src/gui/widgets/truss_canvas_widget.cpp
-            # Model sources required by results_dock_panel (includes model headers)
-            src/gui/models/node_table_model.cpp
-            src/gui/models/member_table_model.cpp
-            src/gui/models/results_table_model.cpp
-        )
-
-        target_link_libraries(unit_tests_gui_widgets PRIVATE
-            TrussCore
-            TrussApplication
-            TrussInterface
-            GTest::gtest
-            GTest::gtest_main
-            GTest::gmock
-            Qt6::Core
-            Qt6::Widgets
-            Qt6::Test
-            Qt6::Svg
-        )
-
-        target_include_directories(unit_tests_gui_widgets PRIVATE
-            ${CMAKE_SOURCE_DIR}/src
-            ${CMAKE_SOURCE_DIR}/src/core
-            ${CMAKE_SOURCE_DIR}/src/application
-            ${CMAKE_SOURCE_DIR}/src/interface
-            ${CMAKE_SOURCE_DIR}/src/gui
-            ${CMAKE_SOURCE_DIR}/tests
-        )
-
-        add_test(NAME unit_tests_gui_widgets COMMAND unit_tests_gui_widgets)
-        set_tests_properties(unit_tests_gui_widgets PROPERTIES
-            WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-            TIMEOUT 60
-            LABELS "unit;gui-widget;gtest"
-            # QApplication requires a platform plugin; offscreen satisfies that
-            # requirement without a physical display or X11 server.
-            ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-        )
-    endif()
-
-    # Integration tests (multi-component workflow tests)
-    # test_e2e_workflows.cpp has no Qt UI dependency — it tests domain and
-    # infrastructure layers only.  It is unconditionally included regardless
-    # of BUILD_GUI so that it runs in CLI-only and headless CI configurations.
-    set(INTEGRATION_TEST_SOURCES
-        tests/integration/test_simple_truss_analysis.cpp
-        tests/integration/test_simple_integration.cpp
-        tests/integration/test_working_integration.cpp
-        tests/integration/test_minimal_analysis.cpp
-        tests/integration/test_cli_workflows.cpp
-        tests/integration/test_lifecycle_integration.cpp
-        tests/integration/test_load_workflow.cpp
-        tests/integration/test_facade_adapters_integration.cpp
-        tests/integration/test_e2e_workflows.cpp
-        # CLI source files needed for integration tests
-        ${CLI_SOURCES}
-    )
-
-    add_executable(integration_tests ${INTEGRATION_TEST_SOURCES})
-
-    target_link_libraries(integration_tests PRIVATE
-        TrussInterface
-        TrussCore
-        TrussApplication
-        $<$<BOOL:${BUILD_GUI}>:Qt6::Core>
-        $<$<BOOL:${BUILD_GUI}>:Qt6::Widgets>
-        $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
-        GTest::gtest
-        GTest::gtest_main
-        GTest::gmock
-    )
-
-    target_include_directories(integration_tests PRIVATE
-        ${CMAKE_SOURCE_DIR}/src
-        ${CMAKE_SOURCE_DIR}/src/core
-        ${CMAKE_SOURCE_DIR}/src/infrastructure/export
-        ${CMAKE_SOURCE_DIR}/src/infrastructure/logging
-    )
-
-    add_test(NAME integration_tests COMMAND integration_tests)
-    set_tests_properties(integration_tests PROPERTIES
-        TIMEOUT 60
-        LABELS "integration;gtest"
-    )
-
-    # Convenience target to build all new GTest-based tests
-    add_custom_target(all_gtest_tests
-        DEPENDS unit_tests integration_tests test_gtest_integration
-        COMMENT "Building all GTest-based tests"
-    )
-
-endif()
-
-# Extend all_gtest_tests with the GUI widget test binary once it is defined.
-# The unit_tests_gui_widgets target is created inside BUILD_GUI AND BUILD_TESTING,
-# so we only add the dependency when that target actually exists.
-if(BUILD_GUI AND BUILD_TESTING AND TARGET unit_tests_gui_widgets)
-    if(TARGET all_gtest_tests)
-        add_dependencies(all_gtest_tests unit_tests_gui_widgets)
-    endif()
-endif()
-
-# GUI Integration Tests (GTest framework) - only if Qt and testing are both enabled.
-# This block MUST be guarded by BUILD_TESTING because it links against GTest
-# targets (GTest::gtest, GTest::gmock) that are only discovered when
-# BUILD_TESTING is ON.  Without this guard, configuring with
-# -DBUILD_TESTING=OFF would fail with "target not found" errors.
-if(BUILD_GUI AND BUILD_TESTING)
-    message(STATUS "Building GUI integration tests (GTest)")
-
-    # GUI Integration Tests (GTest + new architecture signal/slot wiring)
-    add_executable(gui_integration_test
-        tests/integration/test_gui_integration.cpp
-        # New-architecture sources under test
-        src/gui/controllers/main_window_controller.cpp
-        src/gui/controllers/canvas_controller.cpp
-        src/gui/controllers/analysis_controller.cpp
-        src/gui/controllers/project_controller.cpp
-        src/gui/controllers/inspector_controller.cpp
-        src/gui/controllers/export_controller.cpp
-        src/gui/models/node_table_model.cpp
-        src/gui/models/member_table_model.cpp
-        src/gui/models/validation_list_model.cpp
-        src/gui/models/results_table_model.cpp
-        src/gui/panels/notification_rail.cpp
-        src/gui/panels/analysis_options_dialog.cpp
-        src/gui/panels/inspector_panel.cpp
-        src/gui/panels/analysis_control_bar.cpp
-        src/gui/panels/results_dock_panel.cpp
-        src/gui/widgets/truss_canvas_widget.cpp
-    )
-
-    target_link_libraries(gui_integration_test PRIVATE
-        TrussApplication
-        TrussCore
-        TrussInterface
-        GTest::gtest
-        GTest::gmock
-        Qt6::Test
-        Qt6::Widgets
-        Qt6::Core
-        Qt6::Svg
-    )
-
-    target_include_directories(gui_integration_test PRIVATE
-        ${CMAKE_SOURCE_DIR}/src
-        ${CMAKE_SOURCE_DIR}/src/gui
-        ${CMAKE_SOURCE_DIR}/src/application
-        ${CMAKE_SOURCE_DIR}/tests
-    )
-
-    add_test(NAME gui_integration_tests COMMAND gui_integration_test)
-    set_tests_properties(gui_integration_tests PROPERTIES
-        TIMEOUT 120
-        LABELS "gui;integration;gtest"
-        # QApplication requires a platform plugin; offscreen satisfies that
-        # requirement without a physical display or X11 server.
-        ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
-    )
-
-    # Add GUI tests to all_gtest_tests if they exist
-    if(TARGET all_gtest_tests)
-        add_dependencies(all_gtest_tests gui_integration_test)
-    endif()
-
-endif()
-
-# Set target properties for CLI executable
-# ============================================================================
-# GUI APPLICATION (Optional - requires Qt6)
-# ============================================================================
-
-if(BUILD_GUI)
-    # GUI executable
-    add_executable(TrussAnalysisGUI
-    src/gui/main.cpp
-    src/gui/main_window.hpp
-    src/gui/main_window.cpp
-    # State
-    src/gui/state/workspace_state.hpp
-    # Interfaces
-    src/gui/interfaces/iconfirmation_provider.hpp
-    # Widgets
-    src/gui/widgets/truss_canvas_widget.hpp
-    src/gui/widgets/truss_canvas_widget.cpp
-    # Panels
-    src/gui/panels/inspector_panel.hpp
-    src/gui/panels/inspector_panel.cpp
-    src/gui/panels/analysis_control_bar.hpp
-    src/gui/panels/analysis_control_bar.cpp
-    src/gui/panels/results_dock_panel.hpp
-    src/gui/panels/results_dock_panel.cpp
-    src/gui/panels/analysis_options_dialog.hpp
-    src/gui/panels/analysis_options_dialog.cpp
-    src/gui/panels/notification_rail.hpp
-    src/gui/panels/notification_rail.cpp
-    # Models
-    src/gui/models/node_table_model.hpp
-    src/gui/models/node_table_model.cpp
-    src/gui/models/member_table_model.hpp
-    src/gui/models/member_table_model.cpp
-    src/gui/models/validation_list_model.hpp
-    src/gui/models/validation_list_model.cpp
-    src/gui/models/results_table_model.hpp
-    src/gui/models/results_table_model.cpp
-    # Controllers
-    src/gui/controllers/main_window_controller.hpp
-    src/gui/controllers/main_window_controller.cpp
-    src/gui/controllers/canvas_controller.hpp
-    src/gui/controllers/canvas_controller.cpp
-    src/gui/controllers/inspector_controller.hpp
-    src/gui/controllers/inspector_controller.cpp
-    src/gui/controllers/analysis_controller.hpp
-    src/gui/controllers/analysis_controller.cpp
-    src/gui/controllers/project_controller.hpp
-    src/gui/controllers/project_controller.cpp
-    src/gui/controllers/export_controller.hpp
-    src/gui/controllers/export_controller.cpp
-    # Theme
-    src/gui/theme_loader.hpp
-    src/gui/theme_loader.cpp
-    # Qt resources (AUTORCC — compiles QSS themes into the binary)
-    src/gui/resources/resources.qrc
-)
-
-target_link_libraries(TrussAnalysisGUI PRIVATE
-    TrussInterface
-    TrussApplication
-    TrussCore
-    Qt6::Core
-    Qt6::Widgets
-    Qt6::Svg
-)
-
-# Set target properties for GUI executable
-set_target_properties(TrussAnalysisGUI PROPERTIES
-    CXX_STANDARD 20
-    CXX_STANDARD_REQUIRED ON
-    # Lowercase name follows Debian Policy §10.1 and standard Unix conventions.
-    OUTPUT_NAME "truss-analysis"
-)
-endif()  # BUILD_GUI
 
 # ============================================================================
 # INSTALL RULES

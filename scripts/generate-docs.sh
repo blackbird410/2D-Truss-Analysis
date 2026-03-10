@@ -7,7 +7,7 @@
 #       The Doxyfile is generated from Doxyfile.in during CMake configuration.
 #
 
-set -e
+set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PROJECT_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
@@ -40,8 +40,7 @@ if [ ! -f "$BUILD_DIR/Doxyfile" ]; then
 fi
 
 # Build documentation target
-cd "$BUILD_DIR"
-cmake --build . --target docs
+cmake --build "$BUILD_DIR" --target docs
 
 echo ""
 echo "Documentation generated successfully!"
