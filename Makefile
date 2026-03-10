@@ -29,10 +29,6 @@ SHELL := /bin/bash
 
 # Prevent Make from treating directories as targets
 MAKEFLAGS += --no-builtin-rules --no-print-directory
-.SUFFIXES:
-
-# Tell Make to ignore CMake's generated Makefiles in build directories
-MAKEFLAGS += --include-dir=.
 
 # Default target
 .DEFAULT_GOAL := help
@@ -50,21 +46,9 @@ BUILD_DIR := build
 BUILD_DEBUG_DIR := build_debug
 BUILD_COVERAGE_DIR := build_coverage
 
-# Detect number of CPU cores for parallel builds
-NPROC := $(shell nproc 2>/dev/null || sysctl -n hw.ncpu 2>/dev/null || echo 4)
-
-# CMake generator (prefer Ninja if available, fallback to Unix Makefiles)
-CMAKE_GENERATOR := $(shell command -v ninja >/dev/null 2>&1 && echo "Ninja" || echo "Unix Makefiles")
-
-# CMake build tool
-ifeq ($(CMAKE_GENERATOR),Ninja)
-    BUILD_TOOL := ninja
-else
-    BUILD_TOOL := $(MAKE) -j$(NPROC)
-endif
-
-# Compiler detection
-CXX ?= $(shell command -v clang++ 2>/dev/null || command -v g++ 2>/dev/null || echo c++)
+# CMake and CTest executables (override in CI via CMAKE=/path/to/cmake)
+CMAKE ?= cmake
+CTEST ?= ctest
 
 # Script paths
 SCRIPT_DIR := scripts
@@ -170,13 +154,13 @@ all: build ## Build everything (alias for 'build')
 .PHONY: build
 build: ## Build release version (optimized, uses ./scripts/build.sh)
 	@echo -e "$(BOLD)Building release version...$(RESET)"
-	@$(BUILD_SCRIPT) --release -j$(NPROC)
+	@$(BUILD_SCRIPT) --release
 	@echo -e "$(GREEN)✓ Build complete$(RESET)"
 
 .PHONY: debug
 debug: ## Build debug version (with symbols)
 	@echo -e "$(BOLD)Building debug version...$(RESET)"
-	@$(BUILD_SCRIPT) --debug -j$(NPROC)
+	@$(BUILD_SCRIPT) --debug
 	@echo -e "$(GREEN)✓ Debug build complete$(RESET)"
 
 .PHONY: rebuild
@@ -228,12 +212,12 @@ test-gui: build ## Run GUI integration tests
 .PHONY: test-verbose
 test-verbose: build ## Run tests with verbose output
 	@echo -e "$(BOLD)Running tests (verbose)...$(RESET)"
-	@cd $(BUILD_DIR) && ctest --verbose --parallel $(NPROC)
+	@$(CTEST) --test-dir $(BUILD_DIR) --verbose --parallel
 
 .PHONY: test-debug
 test-debug: debug ## Run tests in debug mode
 	@echo -e "$(BOLD)Running tests (debug build)...$(RESET)"
-	@cd $(BUILD_DEBUG_DIR) && ctest --output-on-failure --parallel $(NPROC)
+	@$(CTEST) --test-dir $(BUILD_DEBUG_DIR) --output-on-failure --parallel
 
 # ==============================================================================
 # Coverage Targets
@@ -333,7 +317,7 @@ run-gui: build ## Run GUI application
 .PHONY: install
 install: build ## Install to system (requires sudo)
 	@echo -e "$(BOLD)Installing $(PROJECT_NAME)...$(RESET)"
-	@cd $(BUILD_DIR) && sudo cmake --install .
+	@sudo $(CMAKE) --install $(BUILD_DIR)
 	@echo -e "$(GREEN)✓ Installation complete$(RESET)"
 
 .PHONY: install-ubuntu
@@ -351,10 +335,7 @@ info: ## Show build system information
 	@echo -e "$(BOLD)Build System Information$(RESET)"
 	@echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 	@echo -e "$(BOLD)Project:$(RESET)       $(PROJECT_NAME) v$(VERSION)"
-	@echo -e "$(BOLD)Compiler:$(RESET)      $(CXX)"
-	@echo -e "$(BOLD)CPU Cores:$(RESET)     $(NPROC)"
-	@echo -e "$(BOLD)CMake Gen:$(RESET)     $(CMAKE_GENERATOR)"
-	@echo -e "$(BOLD)Build Tool:$(RESET)    $(BUILD_TOOL)"
+	@echo -e "$(BOLD)CMake:$(RESET)         $(shell $(CMAKE) --version | head -1)"
 	@echo ""
 	@echo -e "$(BOLD)Build Directories:$(RESET)"
 	@echo "  Release:       $(BUILD_DIR)"
