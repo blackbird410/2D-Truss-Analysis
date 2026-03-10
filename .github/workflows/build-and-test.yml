@@ -113,7 +113,12 @@ jobs:
 
       - name: Verify executables
         run: |
-          for exe in build/truss-analysis-cli build/truss-analysis build/unit_tests build/unit_tests_gui_widgets build/integration_tests; do
+          for exe in \
+              build/src/cli/truss-analysis-cli \
+              build/src/gui/truss-analysis \
+              build/tests/unit/unit_tests \
+              build/tests/unit/unit_tests_gui_widgets \
+              build/tests/integration/integration_tests; do
             if [ ! -x "$exe" ]; then
               echo "::error::Expected executable not found: $exe"
               exit 1
@@ -129,11 +134,11 @@ jobs:
       # also set in the CTest ENVIRONMENT property as belt-and-suspenders.
       - name: Run unit tests
         run: |
-          cd build
-          ctest --output-on-failure \
+          ctest --test-dir build \
+                --output-on-failure \
                 --tests-regex "^unit_tests$" \
                 --timeout 60 \
-                --parallel $(nproc)
+                --parallel
 
       # unit_tests_gui_widgets initialises QApplication; offscreen satisfies
       # the platform plugin requirement without a physical display or X11.
@@ -142,19 +147,19 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: |
-          cd build
-          ctest --output-on-failure \
+          ctest --test-dir build \
+                --output-on-failure \
                 --tests-regex "^unit_tests_gui_widgets$" \
                 --timeout 60 \
-                --parallel $(nproc)
+                --parallel
 
       - name: Run integration tests
         run: |
-          cd build
-          ctest --output-on-failure \
+          ctest --test-dir build \
+                --output-on-failure \
                 --tests-regex "^integration_tests$" \
                 --timeout 60 \
-                --parallel $(nproc)
+                --parallel
 
       # gui_integration_tests initialises QApplication; offscreen satisfies
       # the platform plugin requirement. QT_QPA_PLATFORM is also encoded in
@@ -163,19 +168,19 @@ jobs:
         env:
           QT_QPA_PLATFORM: offscreen
         run: |
-          cd build
-          ctest --output-on-failure \
+          ctest --test-dir build \
+                --output-on-failure \
                 --tests-regex "^gui_integration_tests$" \
                 --timeout 120 \
-                --parallel $(nproc)
+                --parallel
 
       - name: Run GTest integration tests
         run: |
-          cd build
-          ctest --output-on-failure \
+          ctest --test-dir build \
+                --output-on-failure \
                 --tests-regex "^gtest_integration$" \
                 --timeout 60 \
-                --parallel $(nproc)
+                --parallel
 
       # ----------------------------------------------------------------------
       # Artifacts
@@ -183,10 +188,9 @@ jobs:
       - name: Generate test summary
         if: always()
         run: |
-          cd build
           echo "## Test Results (${{ matrix.build_type }})" >> "$GITHUB_STEP_SUMMARY"
           echo "" >> "$GITHUB_STEP_SUMMARY"
-          TOTAL=$(ctest -N 2>/dev/null | grep "Total Tests:" | awk '{print $3}' || echo "0")
+          TOTAL=$(ctest --test-dir build -N 2>/dev/null | grep "Total Tests:" | awk '{print $3}' || echo "0")
           echo "**Total Tests:** $TOTAL" >> "$GITHUB_STEP_SUMMARY"
 
       - name: Upload test results
@@ -203,8 +207,8 @@ jobs:
         with:
           name: binaries-release
           path: |
-            build/truss-analysis-cli
-            build/truss-analysis
+            build/src/cli/truss-analysis-cli
+            build/src/gui/truss-analysis
           retention-days: 7
 
   # ============================================================================
