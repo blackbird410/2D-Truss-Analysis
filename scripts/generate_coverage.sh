@@ -54,15 +54,16 @@ echo -e "${GREEN}✓ Build complete${NC}"
 echo ""
 
 # Run unit tests
+# Binaries live in per-module subdirectories after the modular CMake refactor.
 echo -e "${YELLOW}Running unit tests...${NC}"
-./unit_tests --gtest_brief=1 || true
+./tests/unit/unit_tests --gtest_brief=1 || true
 UNIT_RESULT=$?
 echo -e "${GREEN}✓ Unit tests executed${NC}"
 echo ""
 
 # Run integration tests
 echo -e "${YELLOW}Running integration tests...${NC}"
-./integration_tests --gtest_brief=1 || true
+./tests/integration/integration_tests --gtest_brief=1 || true
 INT_RESULT=$?
 echo -e "${GREEN}✓ Integration tests executed${NC}"
 echo ""
