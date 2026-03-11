@@ -48,8 +48,7 @@ echo ""
 echo -e "${YELLOW}Rebuilding project with coverage instrumentation...${NC}"
 cmake -S "$PROJECT_DIR" -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=Debug \
-    -DCMAKE_CXX_FLAGS="--coverage -fprofile-arcs -ftest-coverage" \
-    -DCMAKE_EXE_LINKER_FLAGS="--coverage"
+    -DENABLE_COVERAGE=ON
 cmake --build "$BUILD_DIR" --target clean
 cmake --build "$BUILD_DIR" --target unit_tests --target integration_tests --parallel
 echo -e "${GREEN}✓ Build complete${NC}"
