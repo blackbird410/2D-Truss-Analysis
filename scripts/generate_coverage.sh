@@ -50,7 +50,7 @@ cmake -S "$PROJECT_DIR" -B "$BUILD_DIR" \
     -DCMAKE_BUILD_TYPE=Debug \
     -DENABLE_COVERAGE=ON
 cmake --build "$BUILD_DIR" --target clean
-cmake --build "$BUILD_DIR" --target unit_tests --target integration_tests --parallel
+cmake --build "$BUILD_DIR" --target all_gtest_tests --parallel
 echo -e "${GREEN}✓ Build complete${NC}"
 echo ""
 
