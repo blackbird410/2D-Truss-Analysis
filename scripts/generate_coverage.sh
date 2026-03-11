@@ -54,19 +54,14 @@ cmake --build "$BUILD_DIR" --target all_gtest_tests --parallel
 echo -e "${GREEN}✓ Build complete${NC}"
 echo ""
 
-# Run unit tests
-# Binaries live in per-module subdirectories after the modular CMake refactor.
-echo -e "${YELLOW}Running unit tests...${NC}"
-"$BUILD_DIR/tests/unit/unit_tests" --gtest_brief=1 || true
-UNIT_RESULT=$?
-echo -e "${GREEN}✓ Unit tests executed${NC}"
-echo ""
-
-# Run integration tests
-echo -e "${YELLOW}Running integration tests...${NC}"
-"$BUILD_DIR/tests/integration/integration_tests" --gtest_brief=1 || true
-INT_RESULT=$?
-echo -e "${GREEN}✓ Integration tests executed${NC}"
+# Run all registered test suites via ctest.
+# ctest honours each test's WORKING_DIRECTORY and ENVIRONMENT properties
+# (e.g. QT_QPA_PLATFORM=offscreen for widget and GUI integration tests),
+# and automatically includes unit_tests_gui_widgets and gui_integration_test
+# when BUILD_GUI=ON — tests that were previously missing from this script.
+echo -e "${YELLOW}Running all test suites via ctest...${NC}"
+ctest --test-dir "$BUILD_DIR" --output-on-failure && CTEST_RESULT=0 || CTEST_RESULT=$?
+echo -e "${GREEN}✓ Test suites executed${NC}"
 echo ""
 
 # Capture coverage data
@@ -131,8 +126,7 @@ Branch Coverage:   ${BRANCH_COVERAGE}%
 
 Test Results:
 -------------
-Unit Tests:        $([ $UNIT_RESULT -eq 0 ] && echo "PASSED" || echo "FAILED")
-Integration Tests: $([ $INT_RESULT -eq 0 ] && echo "PASSED" || echo "FAILED")
+All Tests (ctest): $([ ${CTEST_RESULT} -eq 0 ] && echo "PASSED" || echo "FAILED")
 
 Detailed Report:
 ----------------
