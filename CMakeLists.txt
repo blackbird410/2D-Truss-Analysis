@@ -184,7 +184,7 @@ if(ENABLE_COVERAGE)
             COMMAND ${CMAKE_COMMAND} -E echo "Generating coverage summary..."
             COMMAND ${LCOV} --summary coverage_filtered.info --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov,mismatch,negative
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            DEPENDS unit_tests test_gtest_integration integration_tests
+            DEPENDS all_gtest_tests
             COMMENT "Generating code coverage report"
         )
 
