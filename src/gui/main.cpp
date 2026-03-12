@@ -32,6 +32,17 @@ truss::infrastructure::logging::LoggerPtr createGuiLogger() {
 }  // namespace
 
 int main(int argc, char* argv[]) {
+    // Force the linker to include qrc_resources.cpp from libTrussGui.a.
+    // Qt's AUTORCC compiles resources.qrc into TrussGui (a static library).
+    // On macOS ld64 and most Unix linkers, object files in a static archive are
+    // only pulled in when they resolve an undefined symbol already referenced
+    // by the executable.  Without this call, qInitResources_resources() is
+    // never referenced, its TU is dead-stripped, and all :/icons/ and
+    // :/themes/ paths fail at runtime.  Q_INIT_RESOURCE must be called at
+    // global function scope — main() satisfies that requirement.
+    // See: https://doc.qt.io/qt-6/resources.html#using-resources-in-a-library
+    Q_INIT_RESOURCE(resources);
+
     // Note: High-DPI support is enabled by default in Qt6
 
     // Enable better font rendering on Linux
