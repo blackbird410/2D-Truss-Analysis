@@ -174,3 +174,66 @@ TEST_F(InspectorPanelTest, ApplyLoadButton_EmitsLoadChangeRequested) {
     // Zero load → loadChangeRequested with {0, 0}
     EXPECT_GE(spy.count(), 1);
 }
+
+// ============================================================
+// populateMaterialLibrary
+// ============================================================
+
+#include "application/material_library_service.hpp"
+#include "core/model/types.hpp"
+
+TEST_F(InspectorPanelTest, PopulateMaterialLibrary_EmptyVectors_DoesNotCrash) {
+    ASSERT_NO_FATAL_FAILURE(panel->populateMaterialLibrary({}, {}));
+}
+
+TEST_F(InspectorPanelTest, PopulateMaterialLibrary_BeforeMemberEditor_StoresPresets) {
+    // Populate before the member-editor page is opened (lazy-init path).
+    truss::application::MaterialPreset steel;
+    steel.name = "Steel";
+    steel.description = "Structural steel";
+    steel.properties.youngModulus = 200e9;
+    steel.properties.density = 7850.0;
+    steel.properties.yieldStrength = 250e6;
+
+    truss::application::SectionPreset circ;
+    circ.name = "50mm Circle";
+    circ.description = "Solid circular cross-section";
+    circ.properties.area = 1.963e-3;
+
+    ASSERT_NO_FATAL_FAILURE(panel->populateMaterialLibrary({steel}, {circ}));
+
+    // Open the member editor — ensureMemberEditorInteractive() should pick up the stored presets.
+    panel->showMemberEditor(makeMember());
+    QApplication::processEvents();
+
+    EXPECT_EQ(panel->currentIndex(), InspectorPanel::kPageMemberEditor);
+
+    // The material combo should now exist and have one entry.
+    auto* matCombo = panel->findChild<QComboBox*>("inspector_materialCombo");
+    ASSERT_NE(matCombo, nullptr);
+    EXPECT_EQ(matCombo->count(), 1);
+    EXPECT_EQ(matCombo->itemText(0), QStringLiteral("Steel"));
+}
+
+TEST_F(InspectorPanelTest, PopulateMaterialLibrary_AfterMemberEditor_RepopulatesCombo) {
+    // Open member editor first (initialises lazy widgets with empty presets).
+    panel->showMemberEditor(makeMember());
+    QApplication::processEvents();
+
+    // The member-editor interactive widgets are now live.
+    // Calling populateMaterialLibrary() should repopulate the combo.
+    truss::application::MaterialPreset aluminium;
+    aluminium.name = "Aluminium";
+    aluminium.description = "Aluminium alloy";
+    aluminium.properties.youngModulus = 70e9;
+    aluminium.properties.density = 2700.0;
+    aluminium.properties.yieldStrength = 270e6;
+
+    ASSERT_NO_FATAL_FAILURE(panel->populateMaterialLibrary({aluminium}, {}));
+    QApplication::processEvents();
+
+    auto* matCombo = panel->findChild<QComboBox*>("inspector_materialCombo");
+    ASSERT_NE(matCombo, nullptr);
+    EXPECT_EQ(matCombo->count(), 1);
+    EXPECT_EQ(matCombo->itemText(0), QStringLiteral("Aluminium"));
+}
