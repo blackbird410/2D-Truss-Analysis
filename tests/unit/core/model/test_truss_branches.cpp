@@ -12,13 +12,15 @@
  * - addMember(NodePtr, NodePtr) null-node throws
  * - removeNode/removeMember null-ptr and not-found branches
  * - getFreeDofs() RollerX-specific branch
- * - getValidationErrors() all four error conditions
+ * - TrussValidator: structural completeness, kinematic stability, and static determinacy error
+ * paths
  * - getBoundingBoxMin/Max on empty truss → {0,0}
  * - getCentroid on empty truss → {0,0}
  * - applyForce / setSupportType on non-existent nodeId → no-op
  * - updateNode  found (true) and not-found (false) paths
  * - updateMember found (true) and not-found (false) paths
- * - isValid() with a zero-length (invalid) member
+ * - TrussValidator::validate() structural validity scenarios (zero-length member, well-formed
+ * truss)
  * - getTotalWeight() with density-carrying members
  * - copy constructor and copy-assignment operator
  * - assignDofNumbers() correctness
@@ -27,6 +29,7 @@
  */
 
 #include "../../../../src/core/model/truss.hpp"
+#include "../../../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 
@@ -194,19 +197,21 @@ TEST(TrussBranchesTest, FreeDofsAllSupportTypesCombined) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// getValidationErrors() – each error condition
+// TrussValidator error paths – structural completeness, kinematic stability,
+// and static determinacy
 // ─────────────────────────────────────────────────────────────────────────────
 
 TEST(TrussBranchesTest, ValidationErrorsOnlyOneNode) {
     Truss truss;
     truss.addNode(0.0, 0.0, SupportType::Pinned);
 
-    auto errors = truss.getValidationErrors();
-    // Expect: "at least 2 nodes" and "at least 1 member" and others
-    EXPECT_GE(errors.size(), 1u);
+    auto result = validation::TrussValidator::validate(truss);
+    const auto& issues = result.getIssues();
+    EXPECT_GE(issues.size(), 1u);
     bool hasNodeError = false;
-    for (const auto& e : errors) {
-        if (e.find("2 nodes") != std::string::npos || e.find("node") != std::string::npos) {
+    for (const auto& issue : issues) {
+        if (issue.message.find("2 nodes") != std::string::npos ||
+            issue.message.find("node") != std::string::npos) {
             hasNodeError = true;
         }
     }
@@ -218,11 +223,12 @@ TEST(TrussBranchesTest, ValidationErrorsTwoNodesNoMembers) {
     truss.addNode(0.0, 0.0, SupportType::Pinned);
     truss.addNode(1.0, 0.0, SupportType::RollerY);
 
-    auto errors = truss.getValidationErrors();
-    EXPECT_GE(errors.size(), 1u);
+    auto result = validation::TrussValidator::validate(truss);
+    const auto& issues = result.getIssues();
+    EXPECT_GE(issues.size(), 1u);
     bool hasMemberError = false;
-    for (const auto& e : errors) {
-        if (e.find("member") != std::string::npos) {
+    for (const auto& issue : issues) {
+        if (issue.message.find("member") != std::string::npos) {
             hasMemberError = true;
         }
     }
@@ -236,11 +242,14 @@ TEST(TrussBranchesTest, ValidationErrorsKinematicallyUnstable) {
     auto n2 = truss.addNode(1.0, 0.0, SupportType::Free);
     truss.addMember(n1, n2, makeMaterial(), makeSection());
 
-    auto errors = truss.getValidationErrors();
+    auto result = validation::TrussValidator::validate(truss);
+    const auto& issues = result.getIssues();
     bool hasStabilityError = false;
-    for (const auto& e : errors) {
-        if (e.find("stable") != std::string::npos || e.find("kinematic") != std::string::npos ||
-            e.find("determinate") != std::string::npos) {
+    for (const auto& issue : issues) {
+        if (issue.message.find("stable") != std::string::npos ||
+            issue.message.find("kinematic") != std::string::npos ||
+            issue.message.find("determinate") != std::string::npos ||
+            issue.message.find("constraint") != std::string::npos) {
             hasStabilityError = true;
         }
     }
@@ -259,14 +268,15 @@ TEST(TrussBranchesTest, ValidationErrorsStaticallyIndeterminate) {
     truss.addMember(n2, n3, makeMaterial(), makeSection());
     truss.addMember(n1, n2, makeMaterial(), makeSection());  // duplicate → 4 members
 
-    auto errors = truss.getValidationErrors();
-    bool hasIndeterminateError = false;
-    for (const auto& e : errors) {
-        if (e.find("determinate") != std::string::npos) {
-            hasIndeterminateError = true;
+    auto result = validation::TrussValidator::validate(truss);
+    const auto& issues = result.getIssues();
+    bool hasIndeterminateIssue = false;
+    for (const auto& issue : issues) {
+        if (issue.message.find("determinate") != std::string::npos) {
+            hasIndeterminateIssue = true;
         }
     }
-    EXPECT_TRUE(hasIndeterminateError);
+    EXPECT_TRUE(hasIndeterminateIssue);
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -410,31 +420,32 @@ TEST(TrussBranchesTest, UpdateMemberNotFoundReturnsFalse) {
 
 TEST(TrussBranchesTest, IsValidWithZeroLengthMemberReturnsFalse) {
     Truss truss;
-    // Two nodes at the exact same position → zero-length member
+    // Two nodes at the exact same position → zero-length member: geometry error → invalid
     auto n1 = truss.addNode(2.0, 3.0);
     auto n2 = truss.addNode(2.0, 3.0);  // same coords
     truss.addMember(n1, n2, makeMaterial(), makeSection());
 
-    EXPECT_FALSE(truss.isValid());
+    EXPECT_FALSE(validation::TrussValidator::validate(truss).isValid());
 }
 
 TEST(TrussBranchesTest, IsValidWithValidMembersReturnsTrue) {
     Truss truss;
-    auto n1 = truss.addNode(0.0, 0.0);
-    auto n2 = truss.addNode(1.0, 0.0);
+    // Pinned + RollerX: 3 constrained DOFs, statically determinate (2n=4 = m+r=1+3)
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::RollerX);
     truss.addMember(n1, n2, makeMaterial(), makeSection());
-    EXPECT_TRUE(truss.isValid());
+    EXPECT_TRUE(validation::TrussValidator::validate(truss).isValid());
 }
 
 TEST(TrussBranchesTest, IsValidEmptyTrussReturnsFalse) {
     Truss truss;
-    EXPECT_FALSE(truss.isValid());
+    EXPECT_FALSE(validation::TrussValidator::validate(truss).isValid());
 }
 
 TEST(TrussBranchesTest, IsValidOneMemberNoMembersReturnsFalse) {
     Truss truss;
     truss.addNode(0.0, 0.0);
-    EXPECT_FALSE(truss.isValid());
+    EXPECT_FALSE(validation::TrussValidator::validate(truss).isValid());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -492,7 +503,10 @@ TEST(TrussBranchesTest, CopyAssignmentReplacesContent) {
 TEST(TrussBranchesTest, SelfAssignmentIsNoOp) {
     Truss truss("Self");
     truss.addNode(0.0, 0.0);
-    truss = truss;  // self-assignment
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wself-assign-overloaded"
+    truss = truss;  // intentional: verifies copy-assignment operator handles self-assignment
+#pragma GCC diagnostic pop
     EXPECT_EQ(truss.getNodeCount(), 1);
     EXPECT_EQ(truss.getName(), "Self");
 }
