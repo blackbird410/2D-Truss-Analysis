@@ -279,3 +279,77 @@ TEST_F(NodeTableModelTest, SetHasResultsIdempotent) {
     model.setHasResults(true);  // no change — no additional signal
     EXPECT_EQ(spy.count(), 1);
 }
+
+// ---------------------------------------------------------------------------
+// DisplayRole — all support type variants (formatSupport coverage)
+// ---------------------------------------------------------------------------
+
+TEST_F(NodeTableModelTest, DisplayRole_SupportFree) {
+    using M = truss::gui::model::NodeTableModel;
+    NodeView n{1, 0.0, 0.0, SupportType::Free};
+    StubTrussView view({n});
+    model.refresh(view);
+
+    EXPECT_EQ(model.data(model.index(0, M::kColSupport)).toString(), QStringLiteral("Free"));
+}
+
+TEST_F(NodeTableModelTest, DisplayRole_SupportRollerX) {
+    using M = truss::gui::model::NodeTableModel;
+    NodeView n{1, 0.0, 0.0, SupportType::RollerX};
+    StubTrussView view({n});
+    model.refresh(view);
+
+    EXPECT_EQ(model.data(model.index(0, M::kColSupport)).toString(), QStringLiteral("Roller X"));
+}
+
+TEST_F(NodeTableModelTest, DisplayRole_SupportRollerY) {
+    using M = truss::gui::model::NodeTableModel;
+    NodeView n{1, 0.0, 0.0, SupportType::RollerY};
+    StubTrussView view({n});
+    model.refresh(view);
+
+    EXPECT_EQ(model.data(model.index(0, M::kColSupport)).toString(), QStringLiteral("Roller Y"));
+}
+
+// ---------------------------------------------------------------------------
+// DisplayRole — displacements and reactions (after setHasResults)
+// ---------------------------------------------------------------------------
+
+TEST_F(NodeTableModelTest, DisplayRole_DyInMillimetres) {
+    using M = truss::gui::model::NodeTableModel;
+    // dy = -0.0035 m → -3.5 mm
+    NodeView n{1, 0.0, 0.0, SupportType::Free, 0.0, 0.0, 0.0, -0.0035};
+    StubTrussView view({n});
+    model.refresh(view);
+    model.setHasResults(true);
+
+    EXPECT_EQ(model.data(model.index(0, M::kColDy)).toString(), QStringLiteral("-3.5000"));
+}
+
+TEST_F(NodeTableModelTest, DisplayRole_RyInKiloNewtons) {
+    using M = truss::gui::model::NodeTableModel;
+    // ry = 25000 N → 25.000 kN
+    NodeView n{1, 0.0, 0.0, SupportType::Pinned, 0.0, 0.0, 0.0, 0.0, 0.0, 25000.0};
+    StubTrussView view({n});
+    model.refresh(view);
+    model.setHasResults(true);
+
+    EXPECT_EQ(model.data(model.index(0, M::kColRy)).toString(), QStringLiteral("25.000"));
+}
+
+// ---------------------------------------------------------------------------
+// ToolTipRole — non-support columns return empty/invalid
+// ---------------------------------------------------------------------------
+
+TEST_F(NodeTableModelTest, ToolTipRole_NonSupportColumn_ReturnsEmpty) {
+    using M = truss::gui::model::NodeTableModel;
+    NodeView n{1, 0.0, 0.0, SupportType::Free};
+    StubTrussView view({n});
+    model.refresh(view);
+
+    // ToolTipRole on kColX (not kColSupport) must return empty/invalid
+    const auto tip = model.data(model.index(0, M::kColX), Qt::ToolTipRole);
+    if (tip.isValid()) {
+        EXPECT_TRUE(tip.toString().isEmpty());
+    }
+}
