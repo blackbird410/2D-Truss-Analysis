@@ -236,20 +236,6 @@ void Truss::setSupportType(NodeId nodeId, SupportType support) {
     }
 }
 
-// DEPRECATED: Primitive validation check. Use TrussValidator for comprehensive validation.
-// Scheduled for removal in v4.0.0.
-bool Truss::isValid() const {
-    // Check minimum requirements
-    if (m_nodes.size() < 2 || m_members.size() < 1) {
-        return false;
-    }
-
-    // Check that all members have valid nodes
-    return std::all_of(m_members.begin(), m_members.end(), [](const auto& member) {
-        return member && member->isValid();
-    });
-}
-
 void Truss::assignDofNumbers() {
     size_t dofIndex = 0;
 
@@ -324,33 +310,6 @@ bool Truss::removeMember(const MemberPtr& member) {
     if (!member)
         return false;
     return removeMember(member->getId());
-}
-
-std::vector<std::string> Truss::getValidationErrors() const {
-    std::vector<std::string> errors;
-
-    if (m_nodes.size() < 2) {
-        errors.push_back("Truss must have at least 2 nodes");
-    }
-
-    if (m_members.size() < 1) {
-        errors.push_back("Truss must have at least 1 member");
-    }
-
-    // Static determinacy: 2n = m + r (where n = nodes, m = members, r = reactions)
-    size_t n = m_nodes.size();
-    size_t m = m_members.size();
-    size_t r = getConstrainedDofs();
-    if (2 * n != m + r) {
-        errors.push_back("Truss is not statically determinate");
-    }
-
-    // Kinematic stability: minimum 3 constraints to prevent rigid body motion
-    if (getConstrainedDofs() < 3) {
-        errors.push_back("Truss is not kinematically stable");
-    }
-
-    return errors;
 }
 
 Point2D Truss::getBoundingBoxMin() const {

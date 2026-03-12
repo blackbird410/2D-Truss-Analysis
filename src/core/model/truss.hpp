@@ -136,12 +136,6 @@ public:
     void applyForce(NodeId nodeId, Real fx, Real fy);
     void setSupportType(NodeId nodeId, SupportType support);
 
-    // Validation
-    [[deprecated("Use TrussValidator::validate() instead. Removal scheduled for v4.0.0")]]
-    bool isValid() const;
-
-    [[maybe_unused]] std::vector<std::string> getValidationErrors() const;
-
     // Analysis preparation
     void assignDofNumbers();
     [[maybe_unused]] size_t getNextNodeId() const { return m_nextNodeId; }

@@ -18,7 +18,7 @@
  * - applyForce / setSupportType on non-existent nodeId → no-op
  * - updateNode  found (true) and not-found (false) paths
  * - updateMember found (true) and not-found (false) paths
- * - isValid() with a zero-length (invalid) member
+ * - TrussValidator::validate() structural validity scenarios (zero-length member, well-formed truss)
  * - getTotalWeight() with density-carrying members
  * - copy constructor and copy-assignment operator
  * - assignDofNumbers() correctness
