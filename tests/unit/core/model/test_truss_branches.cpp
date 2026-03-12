@@ -12,13 +12,15 @@
  * - addMember(NodePtr, NodePtr) null-node throws
  * - removeNode/removeMember null-ptr and not-found branches
  * - getFreeDofs() RollerX-specific branch
- * - TrussValidator: structural completeness, kinematic stability, and static determinacy error paths
+ * - TrussValidator: structural completeness, kinematic stability, and static determinacy error
+ * paths
  * - getBoundingBoxMin/Max on empty truss → {0,0}
  * - getCentroid on empty truss → {0,0}
  * - applyForce / setSupportType on non-existent nodeId → no-op
  * - updateNode  found (true) and not-found (false) paths
  * - updateMember found (true) and not-found (false) paths
- * - TrussValidator::validate() structural validity scenarios (zero-length member, well-formed truss)
+ * - TrussValidator::validate() structural validity scenarios (zero-length member, well-formed
+ * truss)
  * - getTotalWeight() with density-carrying members
  * - copy constructor and copy-assignment operator
  * - assignDofNumbers() correctness
