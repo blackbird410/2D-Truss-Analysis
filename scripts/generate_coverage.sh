@@ -70,9 +70,12 @@ lcov --capture --directory "$BUILD_DIR" --output-file "$COVERAGE_DIR/coverage.in
      --rc branch_coverage=1 \
      --ignore-errors format,inconsistent,mismatch --quiet
 
-# Filter out system headers and test files
+# Filter out system headers, Homebrew-installed Qt framework headers (macOS),
+# and test files.  The /opt/homebrew/* pattern removes Qt*.framework/Headers/
+# paths that lcov picks up on macOS but which are not project code.
 lcov --remove "$COVERAGE_DIR/coverage.info" \
      '/usr/*' \
+     '/opt/homebrew/*' \
      '*/build/*' \
      '*/tests/*' \
      '*/include/gtest/*' \

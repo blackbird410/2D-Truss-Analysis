@@ -115,13 +115,23 @@ endif()
 
 add_executable(unit_tests ${UNIT_TEST_SOURCES})
 
+# When BUILD_GUI=ON the test sources include Qt-dependent models/controllers.
+# Provide a custom main() that creates QCoreApplication on the stack so Qt's
+# destructor runs before any atexit handler (including gcov's .gcda flush).
+# When BUILD_GUI=OFF the binary has no Qt linkage; gtest_main is sufficient.
+if(BUILD_GUI)
+    target_sources(unit_tests PRIVATE test_main.cpp)
+endif()
+
 # TrussCLI is linked PUBLIC through TrussInterface → TrussApplication →
 # TrussInfrastructure → TrussCore, so only TrussCLI needs to be listed.
 # Repeating the transitive deps explicitly causes duplicate .a entries on
 # the linker command line (ld duplicate-library warning on macOS/lld).
 target_link_libraries(unit_tests PRIVATE
     TrussCLI
-    GTest::gtest_main
+    # BUILD_GUI=ON  → custom main() in test_main.cpp; link GTest::gtest only.
+    # BUILD_GUI=OFF → no Qt, no custom main; link GTest::gtest_main as usual.
+    $<IF:$<BOOL:${BUILD_GUI}>,GTest::gtest,GTest::gtest_main>
     GTest::gmock
     $<$<BOOL:${BUILD_GUI}>:TrussGui>
     $<$<BOOL:${BUILD_GUI}>:Qt6::Test>
@@ -145,6 +155,11 @@ set_tests_properties(unit_tests PROPERTIES
     # future test that inadvertently triggers QGuiApplication.
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
 )
+# CMake 4.x restricts set_tests_properties to the directory where the test
+# was defined, so FIXTURES_REQUIRED must be set here (not in the parent).
+if(ENABLE_COVERAGE)
+    set_tests_properties(unit_tests PROPERTIES FIXTURES_REQUIRED gcda_cleanup)
+endif()
 
 # ============================================================================
 # GUI WIDGET UNIT TESTS — QApplication + offscreen platform plugin
@@ -153,6 +168,7 @@ set_tests_properties(unit_tests PROPERTIES
 # ============================================================================
 if(BUILD_GUI)
     add_executable(unit_tests_gui_widgets
+        test_main_gui.cpp  # custom main(): QApplication on stack (see comments in file)
         gui/panels/test_notification_rail.cpp
         gui/models/test_validation_list_model.cpp
         gui/panels/test_inspector_panel.cpp
@@ -164,9 +180,10 @@ if(BUILD_GUI)
     # TrussGui brings in all widget/panel/model/controller sources and
     # transitively supplies TrussInterface, TrussApplication,
     # TrussInfrastructure, and TrussCore.  Qt6::Test adds QSignalSpy.
+    # GTest::gtest (not gtest_main): custom main() is in test_main_gui.cpp.
     target_link_libraries(unit_tests_gui_widgets PRIVATE
         TrussGui
-        GTest::gtest_main
+        GTest::gtest
         GTest::gmock
         Qt6::Test
     )
@@ -185,4 +202,7 @@ if(BUILD_GUI)
         # requirement without a physical display or X11 server.
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
     )
+    if(ENABLE_COVERAGE)
+        set_tests_properties(unit_tests_gui_widgets PROPERTIES FIXTURES_REQUIRED gcda_cleanup)
+    endif()
 endif()

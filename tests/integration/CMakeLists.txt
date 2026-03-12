@@ -44,6 +44,9 @@ set_tests_properties(integration_tests PROPERTIES
     TIMEOUT 60
     LABELS "integration;gtest"
 )
+if(ENABLE_COVERAGE)
+    set_tests_properties(integration_tests PROPERTIES FIXTURES_REQUIRED gcda_cleanup)
+endif()
 
 # ============================================================================
 # GUI INTEGRATION TESTS — QApplication + offscreen platform plugin
@@ -80,4 +83,7 @@ if(BUILD_GUI)
         # requirement without a physical display or X11 server.
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
     )
+    if(ENABLE_COVERAGE)
+        set_tests_properties(gui_integration_tests PROPERTIES FIXTURES_REQUIRED gcda_cleanup)
+    endif()
 endif()
