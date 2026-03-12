@@ -145,6 +145,11 @@ set_tests_properties(unit_tests PROPERTIES
     # future test that inadvertently triggers QGuiApplication.
     ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
 )
+# CMake 4.x restricts set_tests_properties to the directory where the test
+# was defined, so FIXTURES_REQUIRED must be set here (not in the parent).
+if(ENABLE_COVERAGE)
+    set_tests_properties(unit_tests PROPERTIES FIXTURES_REQUIRED gcda_cleanup)
+endif()
 
 # ============================================================================
 # GUI WIDGET UNIT TESTS — QApplication + offscreen platform plugin
@@ -185,4 +190,7 @@ if(BUILD_GUI)
         # requirement without a physical display or X11 server.
         ENVIRONMENT "QT_QPA_PLATFORM=offscreen"
     )
+    if(ENABLE_COVERAGE)
+        set_tests_properties(unit_tests_gui_widgets PROPERTIES FIXTURES_REQUIRED gcda_cleanup)
+    endif()
 endif()
