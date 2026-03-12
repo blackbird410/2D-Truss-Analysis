@@ -102,11 +102,8 @@ TEST(WorkingIntegrationTest, MemorySafeBridgeTrussAnalysis) {
     // Apply load at the center
     truss.applyForce(node3->getId(), Force2D(0.0, -5000.0));
 
-// Verify structure (using deprecated method for backward compatibility testing)
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wdeprecated-declarations"
-    EXPECT_TRUE(truss.isValid());
-#pragma GCC diagnostic pop
+    // Verify truss is valid before analysis
+    EXPECT_TRUE(validation::TrussValidator::validate(truss).isValid());
     EXPECT_EQ(truss.getNodeCount(), 5);
     EXPECT_EQ(truss.getMemberCount(), 7);
 

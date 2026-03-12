@@ -27,6 +27,7 @@
  */
 
 #include "../../../../src/core/model/truss.hpp"
+#include "../../../../src/core/validation/truss_validator.hpp"
 
 #include <gtest/gtest.h>
 
@@ -410,31 +411,32 @@ TEST(TrussBranchesTest, UpdateMemberNotFoundReturnsFalse) {
 
 TEST(TrussBranchesTest, IsValidWithZeroLengthMemberReturnsFalse) {
     Truss truss;
-    // Two nodes at the exact same position → zero-length member
+    // Two nodes at the exact same position → zero-length member: geometry error → invalid
     auto n1 = truss.addNode(2.0, 3.0);
     auto n2 = truss.addNode(2.0, 3.0);  // same coords
     truss.addMember(n1, n2, makeMaterial(), makeSection());
 
-    EXPECT_FALSE(truss.isValid());
+    EXPECT_FALSE(validation::TrussValidator::validate(truss).isValid());
 }
 
 TEST(TrussBranchesTest, IsValidWithValidMembersReturnsTrue) {
     Truss truss;
-    auto n1 = truss.addNode(0.0, 0.0);
-    auto n2 = truss.addNode(1.0, 0.0);
+    // Pinned + RollerX: 3 constrained DOFs, statically determinate (2n=4 = m+r=1+3)
+    auto n1 = truss.addNode(0.0, 0.0, SupportType::Pinned);
+    auto n2 = truss.addNode(1.0, 0.0, SupportType::RollerX);
     truss.addMember(n1, n2, makeMaterial(), makeSection());
-    EXPECT_TRUE(truss.isValid());
+    EXPECT_TRUE(validation::TrussValidator::validate(truss).isValid());
 }
 
 TEST(TrussBranchesTest, IsValidEmptyTrussReturnsFalse) {
     Truss truss;
-    EXPECT_FALSE(truss.isValid());
+    EXPECT_FALSE(validation::TrussValidator::validate(truss).isValid());
 }
 
 TEST(TrussBranchesTest, IsValidOneMemberNoMembersReturnsFalse) {
     Truss truss;
     truss.addNode(0.0, 0.0);
-    EXPECT_FALSE(truss.isValid());
+    EXPECT_FALSE(validation::TrussValidator::validate(truss).isValid());
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
