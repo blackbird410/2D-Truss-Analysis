@@ -1,9 +1,7 @@
 /**
  * @file project_controller.hpp
- * @brief ProjectController (truss::gui::ctrl namespace) replacing the
- *        legacy truss_controllers::ProjectController from Phase 8 onward.
- *
- * Phase 5: Full Q_OBJECT implementation with IConfirmationProvider.
+ * @brief ProjectController — manages project lifecycle via ITrussAnalysisFacade.
+ *        Q_OBJECT controller with IConfirmationProvider for user prompts.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0

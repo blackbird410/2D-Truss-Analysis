@@ -1,9 +1,7 @@
 /**
  * @file analysis_controller.hpp
- * @brief New AnalysisController (truss::gui::ctrl namespace) replacing the
- *        legacy truss_controllers::AnalysisController from Phase 8 onward.
- *
- * Phase 5: Full Q_OBJECT implementation with background QThread worker.
+ * @brief AnalysisController — runs structural analysis via ITrussAnalysisFacade.
+ *        Q_OBJECT controller using a background QThread worker.
  *
  * @author Neil Taison Rigaud
  * @version 3.0.0
