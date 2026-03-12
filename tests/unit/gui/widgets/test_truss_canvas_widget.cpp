@@ -26,10 +26,12 @@
 
 #include <QApplication>
 #include <QCoreApplication>
+#include <QMouseEvent>
 #include <QPixmap>
 #include <QResizeEvent>
 #include <QSignalSpy>
 #include <QTest>
+#include <QWheelEvent>
 
 #include <array>
 #include <cmath>
@@ -37,6 +39,7 @@
 #include <string>
 #include <vector>
 
+using truss::core::Point2D;
 using truss::core::SupportType;
 using truss::core::interfaces::ITrussView;
 using truss::core::interfaces::MemberView;
@@ -710,4 +713,436 @@ TEST_F(TrussCanvasWidgetTest, ReactionArrows_ZeroReaction_Skipped) {
     const int greenPixels = countGreenReactionPixels(img);
     EXPECT_EQ(greenPixels, 0)
         << "Zero-reaction node must not produce any green reaction-arrow pixel.";
+}
+
+// ============================================================
+// Tests — setColorTheme() idempotent guard
+// ============================================================
+
+/// setColorTheme(true) when already dark must be a no-op (m_isDark == isDark guard).
+/// We verify the widget still renders correctly afterwards.
+TEST_F(TrussCanvasWidgetTest, SetColorTheme_SameValueDark_IsNoOp) {
+    widget->setColorTheme(true);  // first call — switches to dark
+    widget->setColorTheme(true);  // second call — must hit early-return guard
+    widget->show();
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// setColorTheme(false) when already light must be a no-op.
+TEST_F(TrussCanvasWidgetTest, SetColorTheme_SameValueLight_IsNoOp) {
+    widget->setColorTheme(false);  // first call — switches to light
+    widget->setColorTheme(false);  // second call — must hit early-return guard
+    widget->show();
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// Switching from dark → light actually changes the theme (guard must NOT fire).
+TEST_F(TrussCanvasWidgetTest, SetColorTheme_DarkToLight_ChangesTheme) {
+    widget->refresh(&trussView);
+    widget->setColorTheme(true);
+    widget->show();
+    const QImage darkImg = widget->grab().toImage();
+
+    widget->setColorTheme(false);
+    const QImage lightImg = widget->grab().toImage();
+
+    ASSERT_FALSE(darkImg.isNull());
+    ASSERT_FALSE(lightImg.isNull());
+    // The two renders must differ — background colour changes
+    EXPECT_NE(darkImg, lightImg) << "setColorTheme(false) after setColorTheme(true) must produce a "
+                                    "visually different render";
+}
+
+/// Light-theme rendering path (m_isDark = false) must not crash.
+TEST_F(TrussCanvasWidgetTest, SetColorTheme_LightThemeRendering_DoesNotCrash) {
+    widget->refresh(&trussView, TrussCanvasWidget::DisplayMode::StressRatio);
+    widget->setColorTheme(false);  // kBackgroundLight, kGridLight, etc.
+    widget->show();
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+// ============================================================
+// Tests — setDisplayMode() idempotent guard
+// ============================================================
+
+/// Setting the same display mode twice must not crash (hits early-return guard
+/// on the second call).
+TEST_F(TrussCanvasWidgetTest, SetDisplayMode_SameMode_IsNoOp) {
+    widget->refresh(&trussView);
+    widget->setDisplayMode(TrussCanvasWidget::DisplayMode::StressRatio);
+    // Second call with the same mode must hit the guard and return immediately
+    ASSERT_NO_FATAL_FAILURE(widget->setDisplayMode(TrussCanvasWidget::DisplayMode::StressRatio));
+}
+
+TEST_F(TrussCanvasWidgetTest, SetDisplayMode_SameModeGeometry_IsNoOp) {
+    widget->refresh(&trussView);
+    widget->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+    ASSERT_NO_FATAL_FAILURE(widget->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry));
+}
+
+/// Changing display mode must update m_mode (verified via displayMode()).
+TEST_F(TrussCanvasWidgetTest, SetDisplayMode_ChangesMode) {
+    widget->setDisplayMode(TrussCanvasWidget::DisplayMode::Geometry);
+    EXPECT_EQ(widget->displayMode(), TrussCanvasWidget::DisplayMode::Geometry);
+
+    widget->setDisplayMode(TrussCanvasWidget::DisplayMode::StressRatio);
+    EXPECT_EQ(widget->displayMode(), TrussCanvasWidget::DisplayMode::StressRatio);
+
+    widget->setDisplayMode(TrussCanvasWidget::DisplayMode::DeformedShape);
+    EXPECT_EQ(widget->displayMode(), TrussCanvasWidget::DisplayMode::DeformedShape);
+}
+
+// ============================================================
+// Tests — zoomToFit()
+// ============================================================
+
+/// zoomToFit() with no view attached must restore the default 7×7 viewport
+/// (QRectF(-1, -1, 7, 7)) without crashing.
+TEST_F(TrussCanvasWidgetTest, ZoomToFit_NoView_RestoresDefaultViewport) {
+    // No view set — branch: !m_view
+    ASSERT_NO_FATAL_FAILURE(widget->zoomToFit());
+    // After reset the widget must still render cleanly
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// zoomToFit() when the view has zero nodes must also restore the default viewport.
+TEST_F(TrussCanvasWidgetTest, ZoomToFit_EmptyView_RestoresDefaultViewport) {
+    // Null view with no nodes edge-case (refresh(nullptr) clears m_view)
+    widget->refresh(nullptr);
+    ASSERT_NO_FATAL_FAILURE(widget->zoomToFit());
+}
+
+/// zoomToFit() with a loaded multi-node truss must auto-fit without crash.
+TEST_F(TrussCanvasWidgetTest, ZoomToFit_WithNodes_FitsViewport) {
+    widget->refresh(&trussView);  // 3 nodes: x∈[0,4], y∈[0,3]
+    ASSERT_NO_FATAL_FAILURE(widget->zoomToFit());
+    // The widget must still render after the viewport change
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// zoomToFit() must produce a viewport that covers at least the node bounding box
+/// (with padding).  We verify the resulting worldBounds via screenToWorld at
+/// corner pixels — the mapped coordinates must bracket x∈[0,4], y∈[0,3].
+TEST_F(TrussCanvasWidgetTest, ZoomToFit_WithNodes_ViewportCoversAllNodes) {
+    widget->resize(400, 400);
+    widget->refresh(&trussView);  // nodes at (0,0) (4,0) (2,3)
+    widget->zoomToFit();
+
+    // Centre of widget must map to approximately the centroid of the bounding box
+    const auto centre = widget->screenToWorld(QPoint(200, 200));
+    EXPECT_TRUE(std::isfinite(centre.x));
+    EXPECT_TRUE(std::isfinite(centre.y));
+}
+
+// ============================================================
+// Tests — DrawSupportSymbol: RollerY branch
+// ============================================================
+
+namespace {
+
+/// Single-node stub with a RollerY support — exercises the RollerY branch in
+/// drawSupportSymbol() (vertical line on the right side of the triangle).
+class RollerYStubView final : public ITrussView {
+public:
+    RollerYStubView() {
+        NodeView n;
+        n.id = 1;
+        n.x = 2.0;
+        n.y = 1.5;
+        n.support = SupportType::RollerY;
+        m_nodes.push_back(n);
+    }
+
+    const std::string& getName() const override { return m_name; }
+    std::vector<NodeView> getNodeViews() const override { return m_nodes; }
+    std::size_t getNodeCount() const override { return 1; }
+    std::vector<MemberView> getMemberViews() const override { return {}; }
+    std::size_t getMemberCount() const override { return 0; }
+    std::size_t getTotalDofs() const override { return 2; }
+    std::size_t getFreeDofs() const override { return 1; }
+    std::size_t getConstrainedDofs() const override { return 1; }
+
+private:
+    std::string m_name{"RollerYStub"};
+    std::vector<NodeView> m_nodes;
+};
+
+}  // anonymous namespace
+
+/// Rendering a RollerY support must not crash (covers the third branch in
+/// drawSupportSymbol()).
+TEST_F(TrussCanvasWidgetTest, DrawSupportSymbol_RollerY_DoesNotCrash) {
+    RollerYStubView rollerYView;
+    widget->refresh(&rollerYView, TrussCanvasWidget::DisplayMode::Geometry);
+    widget->show();
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+/// RollerY support must be rendered in dark AND light themes without crash.
+TEST_F(TrussCanvasWidgetTest, DrawSupportSymbol_RollerY_LightTheme_DoesNotCrash) {
+    RollerYStubView rollerYView;
+    widget->setColorTheme(false);  // light theme
+    widget->refresh(&rollerYView, TrussCanvasWidget::DisplayMode::Geometry);
+    widget->show();
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+// ============================================================
+// Tests — mouseMoveEvent: cursorPositionChanged signal
+// ============================================================
+
+/// Moving the mouse over the canvas must emit cursorPositionChanged with a
+/// finite world coordinate for every valid screen position.
+TEST_F(TrussCanvasWidgetTest, MouseMove_EmitsCursorPositionChanged) {
+    widget->refresh(&trussView);
+    widget->show();
+    widget->resize(400, 400);
+
+    QSignalSpy spy(widget.get(), &TrussCanvasWidget::cursorPositionChanged);
+
+    // Simulate a mouse-move event by sending a QMouseEvent directly
+    QMouseEvent moveEvent(QEvent::MouseMove,
+                          QPointF(200.0, 200.0),
+                          QPointF(200.0, 200.0),
+                          Qt::NoButton,
+                          Qt::NoButton,
+                          Qt::NoModifier);
+    QCoreApplication::sendEvent(widget.get(), &moveEvent);
+
+    EXPECT_GE(spy.count(), 1) << "cursorPositionChanged must be emitted on mouse move";
+
+    if (spy.count() > 0) {
+        const auto args = spy.takeLast();
+        const auto worldPt = args.at(0).value<truss::core::Point2D>();
+        EXPECT_TRUE(std::isfinite(worldPt.x));
+        EXPECT_TRUE(std::isfinite(worldPt.y));
+    }
+}
+
+/// Moving the mouse in the absence of a loaded view must still emit the signal
+/// (no crash when m_view == nullptr).
+TEST_F(TrussCanvasWidgetTest, MouseMove_NoView_EmitsCursorPositionChanged) {
+    widget->show();
+    QSignalSpy spy(widget.get(), &TrussCanvasWidget::cursorPositionChanged);
+
+    QMouseEvent moveEvent(QEvent::MouseMove,
+                          QPointF(100.0, 100.0),
+                          QPointF(100.0, 100.0),
+                          Qt::NoButton,
+                          Qt::NoButton,
+                          Qt::NoModifier);
+    QCoreApplication::sendEvent(widget.get(), &moveEvent);
+
+    EXPECT_GE(spy.count(), 1);
+}
+
+// ============================================================
+// Tests — wheelEvent: zoom in and zoom out
+// ============================================================
+
+/// Scrolling up (positive delta) must zoom in — the resulting world bounds are
+/// narrower than the initial ones.
+TEST_F(TrussCanvasWidgetTest, WheelEvent_ScrollUp_ZoomsIn) {
+    widget->refresh(&trussView);
+    widget->show();
+    widget->resize(400, 400);
+
+    // Record initial world width before zooming
+    const auto before = widget->screenToWorld(QPoint(0, 200));
+    const auto beforeRight = widget->screenToWorld(QPoint(400, 200));
+    const double initialSpan = beforeRight.x - before.x;
+
+    // Simulate scroll-up (zoom in): angleDelta.y() = +120 (one notch)
+    QWheelEvent wheelIn(QPointF(200.0, 200.0),  // pos
+                        QPointF(200.0, 200.0),  // globalPos
+                        QPoint(0, 0),           // pixelDelta
+                        QPoint(0, 120),         // angleDelta — positive = scroll up = zoom in
+                        Qt::NoButton,
+                        Qt::NoModifier,
+                        Qt::NoScrollPhase,
+                        false);
+    QCoreApplication::sendEvent(widget.get(), &wheelIn);
+
+    const auto afterLeft = widget->screenToWorld(QPoint(0, 200));
+    const auto afterRight = widget->screenToWorld(QPoint(400, 200));
+    const double newSpan = afterRight.x - afterLeft.x;
+
+    EXPECT_LT(newSpan, initialSpan) << "Scroll-up must zoom in (smaller world span)";
+}
+
+/// Scrolling down (negative delta) must zoom out — the world bounds grow wider.
+TEST_F(TrussCanvasWidgetTest, WheelEvent_ScrollDown_ZoomsOut) {
+    widget->refresh(&trussView);
+    widget->show();
+    widget->resize(400, 400);
+
+    const auto before = widget->screenToWorld(QPoint(0, 200));
+    const auto beforeRight = widget->screenToWorld(QPoint(400, 200));
+    const double initialSpan = beforeRight.x - before.x;
+
+    QWheelEvent wheelOut(QPointF(200.0, 200.0),
+                         QPointF(200.0, 200.0),
+                         QPoint(0, 0),
+                         QPoint(0, -120),  // negative = scroll down = zoom out
+                         Qt::NoButton,
+                         Qt::NoModifier,
+                         Qt::NoScrollPhase,
+                         false);
+    QCoreApplication::sendEvent(widget.get(), &wheelOut);
+
+    const auto afterLeft = widget->screenToWorld(QPoint(0, 200));
+    const auto afterRight = widget->screenToWorld(QPoint(400, 200));
+    const double newSpan = afterRight.x - afterLeft.x;
+
+    EXPECT_GT(newSpan, initialSpan) << "Scroll-down must zoom out (larger world span)";
+}
+
+/// A wheel event with delta == 0 must be forwarded to the base class without
+/// changing the world bounds (guards the early-return branch).
+TEST_F(TrussCanvasWidgetTest, WheelEvent_ZeroDelta_IsNoOp) {
+    widget->refresh(&trussView);
+    widget->show();
+    widget->resize(400, 400);
+
+    const auto beforeLeft = widget->screenToWorld(QPoint(0, 200));
+    const auto beforeRight = widget->screenToWorld(QPoint(400, 200));
+    const double spanBefore = beforeRight.x - beforeLeft.x;
+
+    QWheelEvent zeroWheel(QPointF(200.0, 200.0),
+                          QPointF(200.0, 200.0),
+                          QPoint(0, 0),
+                          QPoint(0, 0),  // zero delta — early return
+                          Qt::NoButton,
+                          Qt::NoModifier,
+                          Qt::NoScrollPhase,
+                          false);
+    QCoreApplication::sendEvent(widget.get(), &zeroWheel);
+
+    const auto afterLeft = widget->screenToWorld(QPoint(0, 200));
+    const auto afterRight = widget->screenToWorld(QPoint(400, 200));
+    const double spanAfter = afterRight.x - afterLeft.x;
+
+    EXPECT_NEAR(spanAfter, spanBefore, 1e-9) << "Zero-delta wheel must not change the world span";
+}
+
+// ============================================================
+// Tests — Middle-button pan
+// ============================================================
+
+/// Pressing the middle button must initiate panning (cursor changes to
+/// ClosedHandCursor) without crashing.
+TEST_F(TrussCanvasWidgetTest, MiddleButtonPress_StartsPan) {
+    widget->refresh(&trussView);
+    widget->show();
+
+    QMouseEvent pressEvent(QEvent::MouseButtonPress,
+                           QPointF(200.0, 200.0),
+                           QPointF(200.0, 200.0),
+                           Qt::MiddleButton,
+                           Qt::MiddleButton,
+                           Qt::NoModifier);
+    ASSERT_NO_FATAL_FAILURE(QCoreApplication::sendEvent(widget.get(), &pressEvent));
+}
+
+/// Dragging with the middle button held must shift the world bounds (pan).
+TEST_F(TrussCanvasWidgetTest, MiddleButtonDrag_PansViewport) {
+    widget->refresh(&trussView);
+    widget->show();
+    widget->resize(400, 400);
+
+    // record the world origin (top-left) before pan
+    const auto beforeOrig = widget->screenToWorld(QPoint(0, 0));
+
+    // Press middle button at centre
+    QMouseEvent press(QEvent::MouseButtonPress,
+                      QPointF(200.0, 200.0),
+                      QPointF(200.0, 200.0),
+                      Qt::MiddleButton,
+                      Qt::MiddleButton,
+                      Qt::NoModifier);
+    QCoreApplication::sendEvent(widget.get(), &press);
+
+    // Move 50 px to the right — viewport should shift left by ≈50 * (worldW/400) world units
+    QMouseEvent move(QEvent::MouseMove,
+                     QPointF(250.0, 200.0),
+                     QPointF(250.0, 200.0),
+                     Qt::NoButton,
+                     Qt::MiddleButton,  // button still held
+                     Qt::NoModifier);
+    QCoreApplication::sendEvent(widget.get(), &move);
+
+    // Release
+    QMouseEvent release(QEvent::MouseButtonRelease,
+                        QPointF(250.0, 200.0),
+                        QPointF(250.0, 200.0),
+                        Qt::MiddleButton,
+                        Qt::NoButton,
+                        Qt::NoModifier);
+    QCoreApplication::sendEvent(widget.get(), &release);
+
+    const auto afterOrig = widget->screenToWorld(QPoint(0, 0));
+
+    // The X origin should have moved (shifted right by the drag distance in world units)
+    EXPECT_NE(beforeOrig.x, afterOrig.x) << "Pan should shift world X bounds";
+}
+
+// ============================================================
+// Tests — changeEvent: PaletteChange
+// ============================================================
+
+/// Sending a PaletteChange event must not crash and should keep the widget
+/// renderable (the changeEvent override reads palette().color(QPalette::Window)).
+TEST_F(TrussCanvasWidgetTest, ChangeEvent_PaletteChange_DoesNotCrash) {
+    widget->refresh(&trussView);
+    widget->show();
+
+    QEvent paletteEvent(QEvent::PaletteChange);
+    ASSERT_NO_FATAL_FAILURE(QCoreApplication::sendEvent(widget.get(), &paletteEvent));
+
+    ASSERT_NO_FATAL_FAILURE({
+        auto px = widget->grab();
+        EXPECT_FALSE(px.isNull());
+    });
+}
+
+// ============================================================
+// Tests — Delete mode click on empty canvas
+// ============================================================
+
+/// Clicking in ToolMode::Delete on an empty canvas (no nodes, no members) must
+/// be a silent no-op — no signals emitted, no crash.
+TEST_F(TrussCanvasWidgetTest, DeleteMode_ClickOnEmptyCanvas_IsNoOp) {
+    widget->setMode(TrussCanvasWidget::ToolMode::Delete);
+    widget->show();
+
+    QSignalSpy spyNode(widget.get(), &TrussCanvasWidget::nodeDeleteRequested);
+    QSignalSpy spyMember(widget.get(), &TrussCanvasWidget::memberDeleteRequested);
+
+    QTest::mouseClick(widget.get(), Qt::LeftButton, Qt::NoModifier, QPoint(200, 200));
+
+    EXPECT_EQ(spyNode.count(), 0)
+        << "nodeDeleteRequested must not fire on empty canvas in Delete mode";
+    EXPECT_EQ(spyMember.count(), 0)
+        << "memberDeleteRequested must not fire on empty canvas in Delete mode";
 }

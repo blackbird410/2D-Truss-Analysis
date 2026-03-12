@@ -11,6 +11,7 @@
 
 #include "gui/models/member_table_model.hpp"
 
+#include <QBrush>
 #include <QColor>
 #include <QCoreApplication>
 #include <QSignalSpy>
@@ -286,4 +287,192 @@ TEST_F(MemberTableModelTest, ForegroundRole_NotShownBeforeResults) {
 
 TEST_F(MemberTableModelTest, InvalidIndexReturnsInvalidVariant) {
     EXPECT_FALSE(model.data(QModelIndex{}).isValid());
+}
+
+// ---------------------------------------------------------------------------
+// BackgroundRole — semi-transparent tint on kColState (col 11)
+// ---------------------------------------------------------------------------
+
+/// Yielded member: kColState must return a reddish tint (#FF1744 @ alpha ≈ 45).
+TEST_F(MemberTableModelTest, BackgroundRole_Yielded_ReturnsRedTint) {
+    using M = truss::gui::model::MemberTableModel;
+    // yielded=true forces the first branch in BackgroundRole
+    StubTrussView view({makeMember(1,
+                                   200e9,
+                                   1e-4,
+                                   1.0,
+                                   0.0,
+                                   100.0,
+                                   1.0e6,
+                                   0.5,
+                                   /*inTension=*/false,
+                                   /*yielded=*/true)});
+    model.refresh(view);
+    model.setHasResults(true);
+
+    const auto bg = model.data(model.index(0, M::kColState), Qt::BackgroundRole);
+    ASSERT_TRUE(bg.isValid());
+    const QBrush brush = bg.value<QBrush>();
+    const QColor c = brush.color();
+    EXPECT_EQ(c.red(), 0xFF);
+    EXPECT_EQ(c.green(), 0x17);
+    EXPECT_EQ(c.blue(), 0x44);
+}
+
+/// Tension member (not yielded): kColState must return a blue tint (#4FC3F7 @ alpha ≈ 45).
+TEST_F(MemberTableModelTest, BackgroundRole_Tension_ReturnsBlueTint) {
+    using M = truss::gui::model::MemberTableModel;
+    StubTrussView view({makeMember(1,
+                                   200e9,
+                                   1e-4,
+                                   1.0,
+                                   0.0,
+                                   30000.0,
+                                   30.0e6,
+                                   0.12,
+                                   /*inTension=*/true,
+                                   /*yielded=*/false)});
+    model.refresh(view);
+    model.setHasResults(true);
+
+    const auto bg = model.data(model.index(0, M::kColState), Qt::BackgroundRole);
+    ASSERT_TRUE(bg.isValid());
+    const QBrush brush = bg.value<QBrush>();
+    const QColor c = brush.color();
+    EXPECT_EQ(c.red(), 0x4F);
+    EXPECT_EQ(c.green(), 0xC3);
+    EXPECT_EQ(c.blue(), 0xF7);
+}
+
+/// Compression member (not yielded, axialForce < 0): kColState must return an orange tint
+/// (#FF7043 @ alpha ≈ 45).
+TEST_F(MemberTableModelTest, BackgroundRole_Compression_ReturnsOrangeTint) {
+    using M = truss::gui::model::MemberTableModel;
+    // axialForce = -15000 → compression branch (axialForce < -1e-10)
+    StubTrussView view({makeMember(1,
+                                   200e9,
+                                   1e-4,
+                                   1.0,
+                                   0.0,
+                                   -15000.0,
+                                   -15.0e6,
+                                   0.06,
+                                   /*inTension=*/false,
+                                   /*yielded=*/false)});
+    model.refresh(view);
+    model.setHasResults(true);
+
+    const auto bg = model.data(model.index(0, M::kColState), Qt::BackgroundRole);
+    ASSERT_TRUE(bg.isValid());
+    const QBrush brush = bg.value<QBrush>();
+    const QColor c = brush.color();
+    EXPECT_EQ(c.red(), 0xFF);
+    EXPECT_EQ(c.green(), 0x70);
+    EXPECT_EQ(c.blue(), 0x43);
+}
+
+/// BackgroundRole on a non-state column must return an empty (invalid) QVariant.
+TEST_F(MemberTableModelTest, BackgroundRole_NonStateColumn_ReturnsEmpty) {
+    using M = truss::gui::model::MemberTableModel;
+    StubTrussView view({makeMember(1,
+                                   200e9,
+                                   1e-4,
+                                   1.0,
+                                   0.0,
+                                   30000.0,
+                                   30.0e6,
+                                   0.12,
+                                   /*inTension=*/true,
+                                   /*yielded=*/false)});
+    model.refresh(view);
+    model.setHasResults(true);
+
+    // kColId (col 0) is not the state column — must return empty brush
+    const auto bg = model.data(model.index(0, M::kColId), Qt::BackgroundRole);
+    // An empty QVariant or a default-constructed QBrush is acceptable
+    if (bg.isValid()) {
+        EXPECT_EQ(bg.value<QBrush>(), QBrush{});
+    }
+}
+
+/// BackgroundRole before setHasResults(true) must return an invalid QVariant
+/// (results not available — no tint should be shown).
+TEST_F(MemberTableModelTest, BackgroundRole_BeforeResults_ReturnsEmpty) {
+    using M = truss::gui::model::MemberTableModel;
+    StubTrussView view({makeMember(1,
+                                   200e9,
+                                   1e-4,
+                                   1.0,
+                                   0.0,
+                                   30000.0,
+                                   30.0e6,
+                                   0.12,
+                                   /*inTension=*/true,
+                                   /*yielded=*/false)});
+    model.refresh(view);
+    // m_hasResults stays false (setHasResults not called)
+
+    const auto bg = model.data(model.index(0, M::kColState), Qt::BackgroundRole);
+    // Must be invalid — no tint before analysis results arrive
+    EXPECT_FALSE(bg.isValid());
+}
+
+// ---------------------------------------------------------------------------
+// ToolTipRole
+// ---------------------------------------------------------------------------
+
+/// ToolTipRole on kColState after results: must return the stateString (e.g. "Tension").
+TEST_F(MemberTableModelTest, ToolTipRole_StateColumn_AfterResults_ReturnsStateString) {
+    using M = truss::gui::model::MemberTableModel;
+    StubTrussView view({makeMember(1,
+                                   200e9,
+                                   1e-4,
+                                   1.0,
+                                   0.0,
+                                   30000.0,
+                                   30.0e6,
+                                   0.12,
+                                   /*inTension=*/true,
+                                   /*yielded=*/false)});
+    model.refresh(view);
+    model.setHasResults(true);
+
+    const auto tip = model.data(model.index(0, M::kColState), Qt::ToolTipRole);
+    ASSERT_TRUE(tip.isValid());
+    EXPECT_FALSE(tip.toString().isEmpty());
+}
+
+/// ToolTipRole on kColE must return a non-empty description ("Young's Modulus").
+TEST_F(MemberTableModelTest, ToolTipRole_EColumn_ReturnsDescription) {
+    using M = truss::gui::model::MemberTableModel;
+    StubTrussView view({makeMember(1)});
+    model.refresh(view);
+
+    const auto tip = model.data(model.index(0, M::kColE), Qt::ToolTipRole);
+    ASSERT_TRUE(tip.isValid());
+    EXPECT_EQ(tip.toString(), QStringLiteral("Young's Modulus"));
+}
+
+/// ToolTipRole on kColA must return "Cross-sectional area".
+TEST_F(MemberTableModelTest, ToolTipRole_AColumn_ReturnsDescription) {
+    using M = truss::gui::model::MemberTableModel;
+    StubTrussView view({makeMember(1)});
+    model.refresh(view);
+
+    const auto tip = model.data(model.index(0, M::kColA), Qt::ToolTipRole);
+    ASSERT_TRUE(tip.isValid());
+    EXPECT_EQ(tip.toString(), QStringLiteral("Cross-sectional area"));
+}
+
+/// ToolTipRole on an unhandled column (e.g. kColId) must return an empty/invalid QVariant.
+TEST_F(MemberTableModelTest, ToolTipRole_UnhandledColumn_ReturnsEmpty) {
+    using M = truss::gui::model::MemberTableModel;
+    StubTrussView view({makeMember(1)});
+    model.refresh(view);
+
+    const auto tip = model.data(model.index(0, M::kColId), Qt::ToolTipRole);
+    // Either invalid or empty string is acceptable
+    if (tip.isValid()) {
+        EXPECT_TRUE(tip.toString().isEmpty());
+    }
 }

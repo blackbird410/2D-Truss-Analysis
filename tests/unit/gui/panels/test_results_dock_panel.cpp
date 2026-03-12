@@ -9,6 +9,9 @@
  *  - onStateChanged(Empty) disables the result table views.
  *  - onStateChanged(ResultsReady) enables the result table views.
  *  - Clicking the Export button on tab 0 emits exportRequested.
+ *  - setResultsView(nullptr) does not crash.
+ *  - setResultsView(ptr) + switching to stiffness-matrix tab populates the table.
+ *  - onTabChanged(3) with results view populates the stiffness matrix model.
  *
  * @note Models are passed as nullptr; QAbstractItemView::setModel(nullptr)
  *       is valid in Qt and does not crash.  This simplifies fixture setup by
@@ -19,6 +22,7 @@
  * @date 2026-03-04
  */
 
+#include "core/interfaces/ianalysis_results_view.hpp"
 #include "gui/panels/results_dock_panel.hpp"
 #include "gui/state/workspace_state.hpp"
 #include "truss/export/export_format.hpp"
@@ -28,7 +32,9 @@
 #include <QCoreApplication>
 #include <QPushButton>
 #include <QSignalSpy>
+#include <QStandardItemModel>
 #include <QTabWidget>
+#include <QTableView>
 #include <QTest>
 
 #include <gtest/gtest.h>
@@ -152,4 +158,107 @@ TEST_F(ResultsDockPanelTest, ExportButtonOnTab0_EmitsExportRequested) {
     QApplication::processEvents();
 
     EXPECT_EQ(spy.count(), 1);
+}
+
+// ============================================================
+// Minimal IAnalysisResultsView stub
+// ============================================================
+
+namespace {
+
+using truss::core::Real;
+
+class StubResultsView final : public truss::core::interfaces::IAnalysisResultsView {
+public:
+    void setMatrix(std::vector<std::vector<Real>> m) { m_matrix = std::move(m); }
+
+    const std::vector<Real>& getDisplacements() const override { return m_empty; }
+    const std::vector<Real>& getReactions() const override { return m_empty; }
+    const std::vector<Real>& getMemberForces() const override { return m_empty; }
+    const std::vector<Real>& getMemberStresses() const override { return m_empty; }
+    const std::vector<Real>& getUtilizationRatios() const override { return m_empty; }
+    const std::vector<std::vector<Real>>& getStiffnessMatrix() const override { return m_matrix; }
+    bool hasConverged() const override { return true; }
+    int getIterations() const override { return 1; }
+    Real getResidualNorm() const override { return 0.0; }
+    Real getConditionNumber() const override { return 1.0; }
+    size_t getTotalDofs() const override { return 0; }
+    size_t getFreeDofs() const override { return 0; }
+    size_t getConstrainedDofs() const override { return 0; }
+    Real getTotalStrain() const override { return 0.0; }
+    Real getMaxDisplacement() const override { return 0.0; }
+    Real getMaxStress() const override { return 0.0; }
+
+private:
+    std::vector<Real> m_empty;
+    std::vector<std::vector<Real>> m_matrix;
+};
+
+}  // namespace
+
+// ============================================================
+// setResultsView
+// ============================================================
+
+TEST_F(ResultsDockPanelTest, SetResultsView_Nullptr_DoesNotCrash) {
+    ASSERT_NO_FATAL_FAILURE(panel->setResultsView(nullptr));
+}
+
+TEST_F(ResultsDockPanelTest, SetResultsView_ValidPtr_DoesNotCrash) {
+    StubResultsView stub;
+    ASSERT_NO_FATAL_FAILURE(panel->setResultsView(&stub));
+}
+
+// ============================================================
+// Stiffness-matrix tab — lazy population
+// ============================================================
+
+TEST_F(ResultsDockPanelTest, StiffnessTab_WithResults_PopulatesModel) {
+    // Build a 2×2 stiffness matrix stub.
+    StubResultsView stub;
+    stub.setMatrix({{1.0e6, -1.0e6}, {-1.0e6, 1.0e6}});
+    panel->setResultsView(&stub);
+
+    // Switch to the stiffness-matrix tab (index 3).
+    auto* tabs = panel->findChild<QTabWidget*>();
+    ASSERT_NE(tabs, nullptr);
+    tabs->setCurrentIndex(3);
+    QApplication::processEvents();
+
+    // Find the stiffness table view and check its model was swapped in.
+    auto* stiffTable = panel->findChild<QTableView*>("stiffnessMatrixTable");
+    ASSERT_NE(stiffTable, nullptr);
+    ASSERT_NE(stiffTable->model(), nullptr);
+    EXPECT_EQ(stiffTable->model()->rowCount(), 2);
+    EXPECT_EQ(stiffTable->model()->columnCount(), 2);
+}
+
+TEST_F(ResultsDockPanelTest, StiffnessTab_WithoutResults_DoesNotPopulate) {
+    // No results view set — switching to tab 3 must not crash and leaves model empty.
+    auto* tabs = panel->findChild<QTabWidget*>();
+    ASSERT_NE(tabs, nullptr);
+    tabs->setCurrentIndex(3);
+    QApplication::processEvents();
+
+    auto* stiffTable = panel->findChild<QTableView*>("stiffnessMatrixTable");
+    ASSERT_NE(stiffTable, nullptr);
+    // The placeholder model should have 0 rows.
+    EXPECT_EQ(stiffTable->model()->rowCount(), 0);
+}
+
+TEST_F(ResultsDockPanelTest, SetResultsView_WhileOnTab3_PopulatesImmediately) {
+    auto* tabs = panel->findChild<QTabWidget*>();
+    ASSERT_NE(tabs, nullptr);
+    tabs->setCurrentIndex(3);  // navigate there first
+    QApplication::processEvents();
+
+    // Now provide results — should populate immediately.
+    StubResultsView stub;
+    stub.setMatrix({{4.0e6, -4.0e6}, {-4.0e6, 4.0e6}});
+    panel->setResultsView(&stub);
+    QApplication::processEvents();
+
+    auto* stiffTable = panel->findChild<QTableView*>("stiffnessMatrixTable");
+    ASSERT_NE(stiffTable, nullptr);
+    EXPECT_EQ(stiffTable->model()->rowCount(), 2);
 }

@@ -169,7 +169,9 @@ endif()
 if(BUILD_GUI)
     add_executable(unit_tests_gui_widgets
         test_main_gui.cpp  # custom main(): QApplication on stack (see comments in file)
+        gui/test_theme_loader.cpp
         gui/panels/test_notification_rail.cpp
+        gui/panels/test_analysis_options_dialog.cpp
         gui/models/test_validation_list_model.cpp
         gui/panels/test_inspector_panel.cpp
         gui/panels/test_analysis_control_bar.cpp
