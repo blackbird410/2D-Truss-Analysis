@@ -2,66 +2,143 @@
 
 This directory contains all tests for the 2D Truss Analysis project, organized by layer and component using Google Test framework.
 
-**Status:** ✅ 765/766 tests passing (99.87%)  
+**Status:** ✅ 1603/1603 tests passing (100%)  
 **Coverage:** 72%+ line coverage (estimated)  
-**Execution Time:** 148ms total
+**Execution Time:** ~950ms total
 
 ## Directory Structure
 
 ```
 tests/
-├── unit/                    # Unit tests (712 passing, 1 skipped)
-│   ├── core/               # Core model and analysis tests
-│   │   ├── test_node.cpp
-│   │   ├── test_member.cpp
-│   │   ├── test_truss.cpp
-│   │   └── test_analysis_engine.cpp
-│   ├── cli/                # CLI layer tests (29 tests)
-│   │   ├── test_analyze_command.cpp      # AnalyzeCommand tests (11)
-│   │   ├── test_validate_command.cpp     # ValidateCommand tests (8)
-│   │   ├── test_export_command.cpp       # ExportCommand tests (11)
-│   │   ├── test_help_command.cpp         # HelpCommand tests
-│   │   ├── test_console_presenter.cpp    # ConsolePresenter tests
-│   │   └── test_argument_parser.cpp      # ArgumentParser tests (28)
-│   ├── gui/                # GUI layer tests
-│   │   └── test_TrussEditController_Advanced.cpp  # Advanced GUI tests (8)
-│   ├── infrastructure/     # Infrastructure layer tests
-│   │   ├── export/
-│   │   │   └── test_export_advanced.cpp           # Export edge cases (8)
-│   │   ├── io/
-│   │   │   └── test_fileio_advanced.cpp           # FileIO edge cases (7)
-│   │   ├── logging/
-│   │   │   └── test_logger_advanced.cpp           # Logger tests (22)
+├── unit/                    # Unit tests (1533 passing across 2 executables)
+│   ├── application/        # Application layer tests
+│   │   ├── test_analysis_application_service.cpp
+│   │   ├── test_material_library_service.cpp
+│   │   ├── test_truss_application_service.cpp
+│   │   ├── test_truss_application_service_gui_methods.cpp
+│   │   └── test_truss_application_service_update.cpp
+│   ├── cli/                # CLI layer tests
+│   │   ├── test_analyze_command.cpp
+│   │   ├── test_argument_parser.cpp
+│   │   ├── test_console_presenter.cpp
+│   │   ├── test_example_command.cpp
+│   │   ├── test_export_command.cpp
+│   │   ├── test_export_command_mock.cpp
+│   │   ├── test_help_command.cpp
+│   │   ├── test_validate_command.cpp
+│   │   └── test_validate_command_mock.cpp
+│   ├── core/               # Core domain tests
+│   │   ├── analysis/
+│   │   │   ├── test_analysis_orchestrator.cpp
+│   │   │   ├── test_boundary_condition_handler.cpp
+│   │   │   ├── test_displacement_sign_check.cpp
+│   │   │   ├── test_linear_solvers.cpp
+│   │   │   ├── test_stiffness_assembler.cpp
+│   │   │   └── test_warren_displacement.cpp
+│   │   ├── assembly/
+│   │   │   └── test_truss_assembler.cpp
+│   │   ├── model/
+│   │   │   ├── test_load.cpp
+│   │   │   ├── test_member.cpp
+│   │   │   ├── test_member_branches.cpp
+│   │   │   ├── test_node.cpp
+│   │   │   ├── test_stiffness_matrix_bug.cpp
+│   │   │   ├── test_truss.cpp
+│   │   │   └── test_truss_branches.cpp
 │   │   └── validation/
-│   │       └── test_validation_advanced.cpp       # Validation tests (19)
-│   └── application/        # Application layer facade tests
-│       ├── test_truss_application_service.cpp
-│       └── test_analysis_application_service.cpp
+│   │       ├── test_truss_validator.cpp
+│   │       ├── test_truss_validator_branches.cpp
+│   │       └── test_validation_advanced.cpp
+│   ├── gui/                # GUI layer tests (unit_tests_gui_widgets executable)
+│   │   ├── controllers/
+│   │   │   ├── test_analysis_controller.cpp
+│   │   │   ├── test_canvas_controller.cpp
+│   │   │   ├── test_export_controller.cpp
+│   │   │   ├── test_inspector_controller.cpp
+│   │   │   ├── test_main_window_controller.cpp
+│   │   │   └── test_project_controller.cpp
+│   │   ├── models/
+│   │   │   ├── test_member_table_model.cpp
+│   │   │   ├── test_node_table_model.cpp
+│   │   │   ├── test_results_table_model.cpp
+│   │   │   └── test_validation_list_model.cpp
+│   │   ├── panels/
+│   │   │   ├── test_analysis_control_bar.cpp
+│   │   │   ├── test_analysis_options_dialog.cpp
+│   │   │   ├── test_inspector_panel.cpp
+│   │   │   ├── test_notification_rail.cpp
+│   │   │   └── test_results_dock_panel.cpp
+│   │   ├── state/
+│   │   │   └── test_workspace_state.cpp
+│   │   ├── widgets/
+│   │   │   └── test_truss_canvas_widget.cpp
+│   │   └── test_theme_loader.cpp
+│   ├── infrastructure/     # Infrastructure layer tests
+│   │   ├── adapters/
+│   │   │   └── test_console_output_adapter.cpp
+│   │   ├── export/
+│   │   │   ├── test_csv_exporter.cpp
+│   │   │   ├── test_export_advanced.cpp
+│   │   │   ├── test_exporter_factory.cpp
+│   │   │   ├── test_html_exporter.cpp
+│   │   │   ├── test_json_exporter.cpp
+│   │   │   ├── test_latex_exporter.cpp
+│   │   │   ├── test_text_exporter.cpp
+│   │   │   └── test_xml_exporter.cpp
+│   │   ├── io/
+│   │   │   ├── test_fileio.cpp
+│   │   │   ├── test_fileio_advanced.cpp
+│   │   │   ├── test_json_reader_branches.cpp
+│   │   │   ├── test_support_type_serializer.cpp
+│   │   │   └── test_xml_reader_branches.cpp
+│   │   └── logging/
+│   │       ├── test_logger.cpp
+│   │       └── test_logger_advanced.cpp
+│   ├── interface/          # Interface / facade tests
+│   │   ├── test_facade_analysis_service_adapter.cpp
+│   │   ├── test_facade_truss_service_adapter.cpp
+│   │   ├── test_truss_analysis_facade.cpp
+│   │   └── test_truss_builder.cpp
+│   ├── utilities/          # Utility tests
+│   │   ├── test_math_utils.cpp
+│   │   ├── test_string_utils.cpp
+│   │   └── test_string_utils_branches.cpp
+│   ├── test_main.cpp       # unit_tests entry point
+│   └── test_main_gui.cpp   # unit_tests_gui_widgets entry point
 │
-├── integration/             # Integration tests (53 passing)
-│   ├── test_e2e_workflows.cpp           # E2E workflow scenarios (7)
-│   ├── test_cli_integration.cpp         # CLI workflows
-│   ├── test_simple_truss_analysis.cpp   # Analysis workflows
-│   └── test_gui_integration.cpp         # GUI integration
+├── integration/             # Integration tests (67 passing across 2 executables)
+│   ├── test_cli_workflows.cpp
+│   ├── test_e2e_workflows.cpp
+│   ├── test_facade_adapters_integration.cpp
+│   ├── test_gui_integration.cpp
+│   ├── test_lifecycle_integration.cpp
+│   ├── test_load_workflow.cpp
+│   ├── test_minimal_analysis.cpp
+│   ├── test_simple_integration.cpp
+│   ├── test_simple_truss_analysis.cpp
+│   └── test_working_integration.cpp
 │
 ├── fixtures/                # Shared test data and helpers
 │   ├── export_golden/      # Golden master files for export validation
 │   └── test_data/          # JSON/XML test truss structures
 │
-└── test_gtest_integration.cpp  # GTest framework validation
+└── test_gtest_integration.cpp  # GTest framework validation (3 tests)
 ```
 
 ## Test Statistics
 
 ### Overall Metrics
 
-- **Total Tests:** 766 (713 unit + 53 integration)
-- **Passing:** 765 (99.87%)
-- **Skipped:** 1 (golden master validation)
+- **Total Tests:** 1603
+- **Passing:** 1603 (100%)
+- **Skipped:** 0
 - **Failed:** 0
-- **Execution Time:** 148ms total
-  - Unit tests: 143ms (0.20ms avg)
-  - Integration tests: 5ms (0.09ms avg)
+- **Execution Time:** ~950ms total
+  - `unit_tests` (headless): 1391 tests, 224ms
+  - `unit_tests_gui_widgets`: 142 tests, 695ms
+  - `integration_tests`: 54 tests, 9ms
+  - `gui_integration_test`: 13 tests, 19ms
+  - `test_gtest_integration`: 3 tests, <1ms
 
 ### Phase 8 Additions (February 2026)
 
@@ -83,8 +160,8 @@ tests/
   - Layer-isolated tests with comprehensive mocking
   - Fast execution (< 1ms per test typical)
   - Professional documentation standards
-  - 458/459 tests passing (99.8% pass rate)
-- **Target:** `unit_tests` (aggregate executable)
+  - 1391/1391 tests passing (100% pass rate)
+- **Target:** `unit_tests` (headless) and `unit_tests_gui_widgets` (Qt display required)
 
 ### Integration Tests (`tests/integration/`)
 
@@ -108,10 +185,11 @@ tests/
 
 ### CMake Targets
 
-- `test_gtest_integration` - GTest framework validation
-- `unit_tests` - All unit tests (single executable)
-- `integration_tests` - All integration tests (single executable)
-- `all_tests` - Convenience target to build all tests
+- `test_gtest_integration` - GTest framework validation (3 tests)
+- `unit_tests` - Core + CLI + infrastructure + application + interface + utilities tests
+- `unit_tests_gui_widgets` - GUI layer tests (requires Qt display)
+- `integration_tests` - Integration tests (54 tests)
+- `gui_integration_tests` - GUI integration tests (13 tests)
 
 ### CTest Labels
 
@@ -170,4 +248,3 @@ ctest --verbose
 
 - [Phase 1 Step 1.1 - Test Framework Audit](../docs/work-logs/2026-02-05-phase-1-step-1-test-audit.md)
 - [Phase 1 Step 1.2 - GTest Integration](../docs/work-logs/2026-02-05-phase-1-step-2-gtest-integration.md)
-- [Testing Strategy](../docs/refactoring/05-TESTING-STRATEGY.md)
