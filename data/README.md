@@ -49,15 +49,15 @@ To export results for any model:
 
 ```bash
 # CSV format (recommended for spreadsheets)
-./build/TrussAnalysisCLI analyze --file [model.json] \
+./build/src/cli/truss-analysis-cli analyze --file [model.json] \
   -o data/[output].csv --format csv
 
 # JSON format (for programmatic use)
-./build/TrussAnalysisCLI analyze --file [model.json] \
+./build/src/cli/truss-analysis-cli analyze --file [model.json] \
   -o data/[output].json --format json
 
 # XML format (for data interchange)
-./build/TrussAnalysisCLI analyze --file [model.json] \
+./build/src/cli/truss-analysis-cli analyze --file [model.json] \
   -o data/[output].xml --format xml
 ```
 

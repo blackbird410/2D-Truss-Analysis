@@ -48,32 +48,24 @@ This example is provided in two formats:
 - **JSON:** `model.json` - Human-readable JSON format with material/section library references
 - **XML:** `model.xml` - Structured XML format with the same data model
 
-Both formats are fully compatJSON (CSV export)
-./build/TrussAnalysisCLI analyze --file examples/tower-structure/model.json -o data/tower-results.csv --format csv
+Both formats are fully compatible and produce identical analysis results.
+
+## How to Run
+
+```bash
+# Command line analysis with JSON (CSV export)
+./build/src/cli/truss-analysis-cli analyze --file examples/tower-structure/model.json -o data/tower-results.csv --format csv
 
 # Command line analysis with XML (CSV export)
-
-./build/TrussAnalysisCLI analyze --file examples/tower-structure/model.xml -o data/tower-results.csv --format csv
+./build/src/cli/truss-analysis-cli analyze --file examples/tower-structure/model.xml -o data/tower-results.csv --format csv
 
 # Validate the model
-
-./build/TrussAnalysisCLI validate --file examples/tower-structure/model.json
-./build/TrussAnalysisCLI validate --file examples/tower-structure/model.xml
+./build/src/cli/truss-analysis-cli validate --file examples/tower-structure/model.json
+./build/src/cli/truss-analysis-cli validate --file examples/tower-structure/model.xml
 
 # GUI mode
-
-./build/TrussAnalysisGUI
-
+./build/src/gui/truss-analysis
 # Then: File > Open > examples/tower-structure/model.json (or model.xml)
-
-./build/TrussAnalysisCLI analyze --file examples/tower-structure/model.json -o data/tower-results.csv --format csv
-
-# GUI mode
-
-./build/TrussAnalysisGUI
-
-# Then: File > Open > examples/tower-structure/model.json
-
 ```
 
 ## Expected Results
@@ -144,4 +136,7 @@ This example demonstrates:
 - Wind measurement towers
 - Observation towers
 - Utility transmission structures
+
+```
+
 ```

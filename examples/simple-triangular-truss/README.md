@@ -34,17 +34,17 @@ Both formats are fully compatible and produce identical analysis results.
 
 ```bash
 # Command line analysis with JSON (CSV export)
-./build/TrussAnalysisCLI analyze --file examples/simple-triangular-truss/model.json -o data/simple-truss-results.csv --format csv
+./build/src/cli/truss-analysis-cli analyze --file examples/simple-triangular-truss/model.json -o data/simple-truss-results.csv --format csv
 
 # Command line analysis with XML (CSV export)
-./build/TrussAnalysisCLI analyze --file examples/simple-triangular-truss/model.xml -o data/simple-truss-results.csv --format csv
+./build/src/cli/truss-analysis-cli analyze --file examples/simple-triangular-truss/model.xml -o data/simple-truss-results.csv --format csv
 
 # Validate the model
-./build/TrussAnalysisCLI validate --file examples/simple-triangular-truss/model.json
-./build/TrussAnalysisCLI validate --file examples/simple-triangular-truss/model.xml
+./build/src/cli/truss-analysis-cli validate --file examples/simple-triangular-truss/model.json
+./build/src/cli/truss-analysis-cli validate --file examples/simple-triangular-truss/model.xml
 
 # GUI mode
-./build/TrussAnalysisGUI
+./build/src/gui/truss-analysis
 # Then: File > Open > examples/simple-triangular-truss/model.json (or model.xml)
 ```
 
