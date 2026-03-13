@@ -81,11 +81,13 @@ All workflows contained the following problematic configuration:
 ### Fix Strategy: Default Triplet + Improved Caching
 
 **Option A (Implemented): Remove Custom Triplet**
+
 - Use default `x64-linux` triplet (built into vcpkg)
 - No overlay directory needed
 - Simpler, more reliable, follows best practices
 
 **Option B (Not implemented): Create Custom Triplet**
+
 - Would require creating `vcpkg-triplets/x64-linux-pch-off.cmake`
 - Content:
   ```cmake
@@ -107,6 +109,7 @@ All workflows contained the following problematic configuration:
 ### 1. Build and Test Workflow ([build-and-test.yml](../../.github/workflows/build-and-test.yml))
 
 #### Before:
+
 ```yaml
 - name: Setup vcpkg
   run: |
@@ -133,6 +136,7 @@ All workflows contained the following problematic configuration:
 ```
 
 #### After:
+
 ```yaml
 - name: Cache vcpkg
   uses: actions/cache@v4
@@ -146,7 +150,7 @@ All workflows contained the following problematic configuration:
       vcpkg-${{ runner.os }}-
 
 - name: Setup vcpkg
-  if: steps.vcpkg-cache.outputs.cache-hit != 'true'  # ✅ Only clone if not cached
+  if: steps.vcpkg-cache.outputs.cache-hit != 'true' # ✅ Only clone if not cached
   run: |
     git clone https://github.com/microsoft/vcpkg.git "${GITHUB_WORKSPACE}/vcpkg"
     "${GITHUB_WORKSPACE}/vcpkg/bootstrap-vcpkg.sh" -disableMetrics
@@ -170,6 +174,7 @@ All workflows contained the following problematic configuration:
 ```
 
 **Key Improvements:**
+
 - ✅ Removed non-existent triplet configuration
 - ✅ Cache vcpkg directory separately (huge time saver)
 - ✅ Only clone vcpkg if cache misses
@@ -179,6 +184,7 @@ All workflows contained the following problematic configuration:
 ### 2. Coverage Workflow ([coverage.yml](../../.github/workflows/coverage.yml))
 
 Same pattern applied:
+
 - Removed `VCPKG_OVERLAY_TRIPLETS` and `VCPKG_DEFAULT_TRIPLET`
 - Added two-tier caching (vcpkg source + binary packages)
 - Cache key: `vcpkg-binaries-coverage-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}`
@@ -186,6 +192,7 @@ Same pattern applied:
 ### 3. Static Analysis Workflow ([static-analysis.yml](../../.github/workflows/static-analysis.yml))
 
 Same pattern applied:
+
 - Removed custom triplet configuration
 - Improved caching strategy
 - Cache key: `vcpkg-binaries-analysis-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}`
@@ -195,6 +202,7 @@ Same pattern applied:
 ### 4. Release Workflow ([release.yml](../../.github/workflows/release.yml))
 
 Same pattern applied:
+
 - Removed custom triplet configuration
 - Improved caching strategy
 - Cache key: `vcpkg-binaries-release-${{ runner.os }}-${{ hashFiles('vcpkg.json') }}`
@@ -206,6 +214,7 @@ Same pattern applied:
 ### Two-Tier Caching Architecture
 
 #### Tier 1: vcpkg Source Cache
+
 **Purpose:** Cache the vcpkg repository itself (tools, scripts, triplets, ports)
 
 ```yaml
@@ -220,6 +229,7 @@ Same pattern applied:
 ```
 
 **Benefits:**
+
 - Saves ~2-3 minutes cloning vcpkg repo
 - Saves ~30-60 seconds bootstrapping vcpkg
 - Cache invalidated only when `vcpkg.json` changes
@@ -227,6 +237,7 @@ Same pattern applied:
 **Cache Size:** ~50-100 MB
 
 #### Tier 2: Binary Package Cache
+
 **Purpose:** Cache compiled dependencies (Qt, Eigen, etc.)
 
 ```yaml
@@ -242,6 +253,7 @@ Same pattern applied:
 ```
 
 **Benefits:**
+
 - Saves ~10-12 minutes building Qt, Eigen, etc.
 - Per-workflow cache keys prevent conflicts
 - Hierarchical restore-keys maximize cache hits
@@ -250,16 +262,17 @@ Same pattern applied:
 
 ### Performance Impact
 
-| Scenario | Before Fix | After Fix | Improvement |
-|----------|-----------|-----------|-------------|
-| **Cold cache (first run)** | Failed immediately | ~12-15 min | N/A (was broken) |
-| **Warm cache (vcpkg source)** | Failed immediately | ~10-12 min | N/A (was broken) |
-| **Hot cache (vcpkg + binaries)** | Failed immediately | ~3-5 min | N/A (was broken) |
-| **Post-fix cold cache** | - | ~12-15 min | Baseline |
-| **Post-fix warm cache** | - | ~10-12 min | 15-20% faster |
-| **Post-fix hot cache** | - | ~3-5 min | 70-75% faster |
+| Scenario                         | Before Fix         | After Fix  | Improvement      |
+| -------------------------------- | ------------------ | ---------- | ---------------- |
+| **Cold cache (first run)**       | Failed immediately | ~12-15 min | N/A (was broken) |
+| **Warm cache (vcpkg source)**    | Failed immediately | ~10-12 min | N/A (was broken) |
+| **Hot cache (vcpkg + binaries)** | Failed immediately | ~3-5 min   | N/A (was broken) |
+| **Post-fix cold cache**          | -                  | ~12-15 min | Baseline         |
+| **Post-fix warm cache**          | -                  | ~10-12 min | 15-20% faster    |
+| **Post-fix hot cache**           | -                  | ~3-5 min   | 70-75% faster    |
 
 **Expected Cache Hit Rate:**
+
 - First PR push: Cold cache (~12-15 min)
 - Subsequent pushes (same PR): Hot cache (~3-5 min)
 - Weekly scheduled runs: Warm cache (~10-12 min) - vcpkg updates
@@ -269,6 +282,7 @@ Same pattern applied:
 ## Validation
 
 ### Pre-Fix Status
+
 ```bash
 # All workflows failing with:
 Error: Unable to find triplet 'x64-linux-pch-off'
@@ -280,6 +294,7 @@ CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage
 ### Post-Fix Validation
 
 #### 1. Workflow YAML Validation
+
 ```bash
 # VSCode YAML extension: No errors
 # GitHub Actions syntax: Valid
@@ -323,6 +338,7 @@ git push
 #### 3. Expected Workflow Behavior
 
 **build-and-test.yml:**
+
 ```
 ✅ Checkout repository
 ✅ Export GitHub Actions cache variables
@@ -345,6 +361,7 @@ git push
 ```
 
 **coverage.yml:**
+
 ```
 ✅ Same vcpkg setup as build-and-test
 ✅ Configure CMake with ENABLE_COVERAGE=ON
@@ -356,6 +373,7 @@ git push
 ```
 
 **static-analysis.yml:**
+
 ```
 ✅ Format check (no vcpkg needed)
 ✅ clang-tidy (currently disabled - separate issue)
@@ -363,6 +381,7 @@ git push
 ```
 
 **release.yml:**
+
 ```
 ✅ Same vcpkg setup as build-and-test
 ✅ Build Release binaries (CLI + GUI matrix)
@@ -432,6 +451,7 @@ git push
 ### Option B: Create Custom Triplet (Not Implemented)
 
 **Implementation:**
+
 ```bash
 # Create directory structure
 mkdir -p vcpkg-triplets
@@ -454,11 +474,13 @@ git commit -m "Add custom x64-linux-pch-off triplet"
 ```
 
 **Pros:**
+
 - Preserves original intent (disabling PCH)
 - May slightly reduce memory usage during builds
 - Demonstrates custom triplet usage
 
 **Cons:**
+
 - Adds repository files to maintain
 - PCH disabling benefit is marginal in CI (single-shot builds)
 - Custom triplets can break with vcpkg updates
@@ -473,17 +495,19 @@ git commit -m "Add custom x64-linux-pch-off triplet"
   uses: lukka/run-vcpkg@v11
   with:
     vcpkgDirectory: ${{ github.workspace }}/vcpkg
-    vcpkgGitCommitId: '01f602195983451bc83e72f4214af2cbc495aa94'  # From vcpkg.json
-    vcpkgJsonGlob: '**/vcpkg.json'
+    vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94" # From vcpkg.json
+    vcpkgJsonGlob: "**/vcpkg.json"
 ```
 
 **Pros:**
+
 - Official action, well-maintained
 - Built-in caching optimization
 - Handles binary caching automatically
 - Pinned vcpkg version for reproducibility
 
 **Cons:**
+
 - Additional dependency (GitHub Action)
 - Less transparent than manual setup
 - Requires vcpkg.json baseline pinning
@@ -497,6 +521,7 @@ git commit -m "Add custom x64-linux-pch-off triplet"
 ### Issue: Cache miss on every run
 
 **Symptom:**
+
 ```
 Cache not found for input keys: vcpkg-Linux-abc123...
 ```
@@ -504,6 +529,7 @@ Cache not found for input keys: vcpkg-Linux-abc123...
 **Cause:** `vcpkg.json` changed or cache expired (7 days default)
 
 **Solution:**
+
 ```bash
 # Check vcpkg.json hasn't changed
 git diff HEAD~1 vcpkg.json
@@ -515,6 +541,7 @@ git diff HEAD~1 vcpkg.json
 ### Issue: vcpkg install fails for specific package
 
 **Symptom:**
+
 ```
 error: building <package>:x64-linux failed
 ```
@@ -522,6 +549,7 @@ error: building <package>:x64-linux failed
 **Cause:** Port broken or unsupported on Linux
 
 **Solution:**
+
 ```bash
 # Check port supports Linux
 cat vcpkg/ports/<package>/vcpkg.json
@@ -533,6 +561,7 @@ cat vcpkg/ports/<package>/vcpkg.json
 ### Issue: Binary cache not working
 
 **Symptom:**
+
 ```
 All packages installed from source, no cache hits
 ```
@@ -541,6 +570,7 @@ All packages installed from source, no cache hits
 
 **Solution:**
 Verify this step runs **before** vcpkg operations:
+
 ```yaml
 - name: Export GitHub Actions cache variables
   uses: actions/github-script@v7
@@ -553,6 +583,7 @@ Verify this step runs **before** vcpkg operations:
 ### Issue: CMake can't find Ninja
 
 **Symptom:**
+
 ```
 CMake Error: CMake was unable to find a build program corresponding to "Ninja"
 ```
@@ -561,6 +592,7 @@ CMake Error: CMake was unable to find a build program corresponding to "Ninja"
 
 **Solution:**
 Verify system dependencies step includes:
+
 ```yaml
 - name: Install system dependencies
   run: |
@@ -571,6 +603,7 @@ Verify system dependencies step includes:
 ### Issue: Compiler not found
 
 **Symptom:**
+
 ```
 CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage
 ```
@@ -578,6 +611,7 @@ CMake Error: CMAKE_CXX_COMPILER not set, after EnableLanguage
 **Cause:** `build-essential` not installed or vcpkg failed
 
 **Solution:**
+
 ```bash
 # Ensure build-essential installed
 sudo apt-get install -y build-essential
@@ -594,6 +628,7 @@ g++ --version
 ### Phase 2 Improvements
 
 1. **Pin vcpkg version explicitly**
+
    ```yaml
    - name: Setup vcpkg
      run: |
@@ -604,13 +639,15 @@ g++ --version
    ```
 
 2. **Migrate to official vcpkg action**
+
    ```yaml
    - uses: lukka/run-vcpkg@v11
      with:
-       vcpkgGitCommitId: '01f602195983451bc83e72f4214af2cbc495aa94'
+       vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
    ```
 
 3. **Add vcpkg manifest validation**
+
    ```yaml
    - name: Validate vcpkg manifest
      run: |
@@ -619,6 +656,7 @@ g++ --version
    ```
 
 4. **Monitor cache efficiency**
+
    ```yaml
    - name: Report cache statistics
      run: |
@@ -628,6 +666,7 @@ g++ --version
    ```
 
 5. **Separate dependency installation from build**
+
    ```yaml
    # Job 1: Install dependencies (cached)
    dependencies:
@@ -701,9 +740,10 @@ Successfully resolved critical vcpkg configuration failure affecting all CI/CD w
 ✅ Improved vcpkg caching (two-tier strategy)  
 ✅ Added conditional vcpkg setup (only clone if cache misses)  
 ✅ Separated binary package caching per workflow  
-✅ Zero YAML validation errors  
+✅ Zero YAML validation errors
 
 **Impact:**
+
 - Workflows now functional (previously 100% failure rate)
 - 70-75% faster builds on cache hits (~3-5 min vs ~12-15 min)
 - Simpler configuration (no custom triplet maintenance)
@@ -721,6 +761,7 @@ Workflows ready for validation testing on feature branch. Recommend testing with
 **Estimated Time Saved Per CI Run:** 60-70% (hot cache)
 
 **Next Steps:**
+
 1. ✅ Create test branch
 2. ✅ Push changes
 3. ⏳ Validate all workflows pass
