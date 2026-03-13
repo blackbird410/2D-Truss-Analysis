@@ -140,14 +140,14 @@ tests/
   - `gui_integration_test`: 13 tests, 19ms
   - `test_gtest_integration`: 3 tests, <1ms
 
-### Phase 8 Additions (February 2026)
+### Current Coverage Profile
 
-- GUI Layer: +8 tests (rapid operations, error recovery)
-- Export Layer: +8 tests (edge cases, large files)
-- FileIO Layer: +7 tests (concurrent I/O, Unicode)
-- Validation Layer: +19 tests (extreme geometries)
-- Logger Layer: +22 tests (concurrent logging, stress)
-- Integration E2E: +7 tests (complete workflows)
+- GUI Layer: controller, model, and widget behavior tests
+- Export Layer: format consistency and edge-case output tests
+- FileIO Layer: JSON/XML parsing and round-trip integrity tests
+- Validation Layer: geometric, material, determinacy, and stability checks
+- Logger Layer: level filtering and output-path behavior tests
+- Integration E2E: full workflow execution across facade boundaries
 
 ## Test Organization Principles
 
@@ -189,28 +189,13 @@ tests/
 - `unit_tests` - Core + CLI + infrastructure + application + interface + utilities tests
 - `unit_tests_gui_widgets` - GUI layer tests (requires Qt display)
 - `integration_tests` - Integration tests (54 tests)
-- `gui_integration_tests` - GUI integration tests (13 tests)
+- `gui_integration_test` - GUI integration tests (13 tests)
 
 ### CTest Labels
 
 - `unit` - Unit test label (filter with `ctest -L unit`)
 - `integration` - Integration test label (filter with `ctest -L integration`)
 - `gtest` - GTest framework label
-
-## Migration Status
-
-**Current State (Phase 1 Step 1.3):**
-
-- ✅ New directory structure created
-- ✅ Directory documented
-- ⏳ Tests not yet migrated (remains in `tests/unit/`)
-- ⏳ Legacy TestFramework.hpp still present
-
-**Next Step (Phase 1 Step 1.4):**
-
-- Migrate production tests to new structure
-- Create test fixtures as needed
-- Remove legacy tests after migration
 
 ## Test Execution
 
@@ -246,5 +231,5 @@ ctest --verbose
 
 ## References
 
-- [Phase 1 Step 1.1 - Test Framework Audit](../docs/work-logs/2026-02-05-phase-1-step-1-test-audit.md)
-- [Phase 1 Step 1.2 - GTest Integration](../docs/work-logs/2026-02-05-phase-1-step-2-gtest-integration.md)
+- [Testing Architecture](../docs/architecture/testing-architecture.md)
+- [Development Guide](../docs/development/development-guide.md)
