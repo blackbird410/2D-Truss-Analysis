@@ -36,13 +36,19 @@ It covers:
 
 The project installs application binaries and Linux desktop metadata under standard Linux filesystem locations.
 
-| Asset Type         | Installed Location                                                    |
-| ------------------ | --------------------------------------------------------------------- |
-| GUI executable     | /usr/bin/truss-analysis                                               |
-| CLI executable     | /usr/bin/truss-analysis-cli                                           |
-| Desktop entry      | /usr/share/applications/truss-analysis.desktop                        |
-| App icon           | /usr/share/icons/hicolor/scalable/apps/truss-analysis.svg             |
-| AppStream metadata | /usr/share/metainfo/io.github.blackbird410.TrussAnalysis.metainfo.xml |
+| Asset Type                 | Installed Location                                                    |
+| -------------------------- | --------------------------------------------------------------------- |
+| GUI executable             | /usr/bin/truss-analysis                                               |
+| CLI executable             | /usr/bin/truss-analysis-cli                                           |
+| Desktop entry              | /usr/share/applications/truss-analysis.desktop                        |
+| App icon                   | /usr/share/icons/hicolor/scalable/apps/truss-analysis.svg             |
+| AppStream metadata         | /usr/share/metainfo/io.github.blackbird410.TrussAnalysis.metainfo.xml |
+| README / LICENSE           | /usr/share/doc/2d-truss-analysis/                                     |
+| Machine-readable copyright | /usr/share/doc/2d-truss-analysis/copyright                            |
+| Debian changelog           | /usr/share/doc/2d-truss-analysis/changelog.Debian.gz                  |
+| Example project files      | /usr/share/2d-truss-analysis/examples/                                |
+| Config templates           | /etc/2d-truss-analysis/default.json.example                           |
+|                            | /etc/2d-truss-analysis/logging.json.example                           |
 
 ---
 
@@ -50,11 +56,12 @@ The project installs application binaries and Linux desktop metadata under stand
 
 The Debian packaging surface includes:
 
-| File                       | Role                           |
-| -------------------------- | ------------------------------ |
-| packaging/debian/copyright | License and copyright metadata |
-| packaging/debian/postinst  | Post-install integration hook  |
-| packaging/debian/postrm    | Post-remove cleanup hook       |
+| File                       | Role                                                               |
+| -------------------------- | ------------------------------------------------------------------ |
+| packaging/debian/changelog | Debian changelog (compressed at build time to changelog.Debian.gz) |
+| packaging/debian/copyright | Machine-readable license and copyright metadata (DEP-5 format)     |
+| packaging/debian/postinst  | Post-install integration hook                                      |
+| packaging/debian/postrm    | Post-remove cleanup hook                                           |
 
 Package generation is performed through CPack and helper scripts.
 
