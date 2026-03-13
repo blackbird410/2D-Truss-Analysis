@@ -1,0 +1,262 @@
+{
+  "metadata": {
+    "name": "Pratt Truss Bridge",
+    "description": "Single-span 6-panel Pratt truss bridge — 24 m span, 4 m height. Vertical members in compression, diagonal members in tension.",
+    "units": {
+      "length": "meters",
+      "force": "newtons",
+      "modulus": "pascals"
+    }
+  },
+  "nodes": [
+    { "id": 1, "x": 0.0, "y": 0.0, "label": "Left Support" },
+    { "id": 2, "x": 4.0, "y": 0.0, "label": "Bottom 1" },
+    { "id": 3, "x": 8.0, "y": 0.0, "label": "Bottom 2" },
+    { "id": 4, "x": 12.0, "y": 0.0, "label": "Bottom Centre" },
+    { "id": 5, "x": 16.0, "y": 0.0, "label": "Bottom 4" },
+    { "id": 6, "x": 20.0, "y": 0.0, "label": "Bottom 5" },
+    { "id": 7, "x": 24.0, "y": 0.0, "label": "Right Support" },
+    { "id": 8, "x": 0.0, "y": 4.0, "label": "Top Left" },
+    { "id": 9, "x": 4.0, "y": 4.0, "label": "Top 1" },
+    { "id": 10, "x": 8.0, "y": 4.0, "label": "Top 2" },
+    { "id": 11, "x": 12.0, "y": 4.0, "label": "Top Centre" },
+    { "id": 12, "x": 16.0, "y": 4.0, "label": "Top 4" },
+    { "id": 13, "x": 20.0, "y": 4.0, "label": "Top 5" },
+    { "id": 14, "x": 24.0, "y": 4.0, "label": "Top Right" }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "startNode": 1,
+      "endNode": 2,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "BC 1-2"
+    },
+    {
+      "id": 2,
+      "startNode": 2,
+      "endNode": 3,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "BC 2-3"
+    },
+    {
+      "id": 3,
+      "startNode": 3,
+      "endNode": 4,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "BC 3-4"
+    },
+    {
+      "id": 4,
+      "startNode": 4,
+      "endNode": 5,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "BC 4-5"
+    },
+    {
+      "id": 5,
+      "startNode": 5,
+      "endNode": 6,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "BC 5-6"
+    },
+    {
+      "id": 6,
+      "startNode": 6,
+      "endNode": 7,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "BC 6-7"
+    },
+    {
+      "id": 7,
+      "startNode": 8,
+      "endNode": 9,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "TC 8-9"
+    },
+    {
+      "id": 8,
+      "startNode": 9,
+      "endNode": 10,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "TC 9-10"
+    },
+    {
+      "id": 9,
+      "startNode": 10,
+      "endNode": 11,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "TC 10-11"
+    },
+    {
+      "id": 10,
+      "startNode": 11,
+      "endNode": 12,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "TC 11-12"
+    },
+    {
+      "id": 11,
+      "startNode": 12,
+      "endNode": 13,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "TC 12-13"
+    },
+    {
+      "id": 12,
+      "startNode": 13,
+      "endNode": 14,
+      "material": "steel",
+      "section": "wide_flange_200",
+      "label": "TC 13-14"
+    },
+    {
+      "id": 13,
+      "startNode": 1,
+      "endNode": 8,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "End Post L"
+    },
+    {
+      "id": 14,
+      "startNode": 2,
+      "endNode": 9,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Vertical 2"
+    },
+    {
+      "id": 15,
+      "startNode": 3,
+      "endNode": 10,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Vertical 3"
+    },
+    {
+      "id": 16,
+      "startNode": 4,
+      "endNode": 11,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Vertical Centre"
+    },
+    {
+      "id": 17,
+      "startNode": 5,
+      "endNode": 12,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Vertical 5"
+    },
+    {
+      "id": 18,
+      "startNode": 6,
+      "endNode": 13,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Vertical 6"
+    },
+    {
+      "id": 19,
+      "startNode": 7,
+      "endNode": 14,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "End Post R"
+    },
+    {
+      "id": 20,
+      "startNode": 1,
+      "endNode": 9,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Diag L1 (tension)"
+    },
+    {
+      "id": 21,
+      "startNode": 2,
+      "endNode": 10,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Diag L2 (tension)"
+    },
+    {
+      "id": 22,
+      "startNode": 3,
+      "endNode": 11,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Diag L3 (tension)"
+    },
+    {
+      "id": 23,
+      "startNode": 7,
+      "endNode": 13,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Diag R1 (tension)"
+    },
+    {
+      "id": 24,
+      "startNode": 6,
+      "endNode": 12,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Diag R2 (tension)"
+    },
+    {
+      "id": 25,
+      "startNode": 5,
+      "endNode": 11,
+      "material": "steel",
+      "section": "angle_150",
+      "label": "Diag R3 (tension)"
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Structural Steel S355",
+      "youngModulus": 2.0e11,
+      "poissonRatio": 0.3,
+      "density": 7850,
+      "yieldStrength": 3.55e8
+    }
+  ],
+  "sections": [
+    {
+      "id": "wide_flange_200",
+      "name": "HEB 200 Wide Flange (chord)",
+      "crossSectionalArea": 0.00781
+    },
+    {
+      "id": "angle_150",
+      "name": "L150×150×12 Equal Angle (web)",
+      "crossSectionalArea": 0.00347
+    }
+  ],
+  "supports": [
+    { "nodeId": 1, "type": "pinned", "restrained": ["x", "y"] },
+    { "nodeId": 7, "type": "roller", "restrained": ["y"] }
+  ],
+  "loads": [
+    { "nodeId": 2, "fx": 0.0, "fy": -40000.0 },
+    { "nodeId": 3, "fx": 0.0, "fy": -40000.0 },
+    { "nodeId": 4, "fx": 0.0, "fy": -40000.0 },
+    { "nodeId": 5, "fx": 0.0, "fy": -40000.0 },
+    { "nodeId": 6, "fx": 0.0, "fy": -40000.0 }
+  ]
+}
