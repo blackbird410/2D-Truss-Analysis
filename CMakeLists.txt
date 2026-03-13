@@ -322,14 +322,14 @@ else()
 endif()
 
 # ============================================================================
-# Phase 7 Coverage Analysis Enhancement Targets
+# Coverage Analysis Enhancement Targets
 # ============================================================================
 
-# Add enhanced coverage target for Phase 7 analysis with detailed metrics
+# Add enhanced coverage target with detailed metrics
 if(ENABLE_COVERAGE AND LCOV AND GENHTML)
     # Add custom target for detailed coverage analysis
     add_custom_target(coverage-analysis
-        COMMAND ${CMAKE_COMMAND} -E echo "=== Phase 7 Coverage Analysis ==="
+        COMMAND ${CMAKE_COMMAND} -E echo "=== Coverage Analysis ==="
         COMMAND ${CMAKE_COMMAND} -E echo "Capturing detailed coverage metrics..."
         COMMAND ${LCOV} --capture --directory . --output-file coverage_analysis.info
                 --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
@@ -342,7 +342,7 @@ if(ENABLE_COVERAGE AND LCOV AND GENHTML)
         COMMAND ${LCOV} --summary coverage_analysis_filtered.info
                 --rc branch_coverage=1 --ignore-errors inconsistent,format,gcov
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-        COMMENT "Phase 7: Detailed coverage analysis complete"
+        COMMENT "Detailed coverage analysis complete"
         VERBATIM
     )
 
@@ -352,7 +352,7 @@ if(ENABLE_COVERAGE AND LCOV AND GENHTML)
         COMMAND ${CMAKE_COMMAND} -E make_directory coverage_dashboard
         COMMAND ${GENHTML} coverage_analysis_filtered.info
                 --output-directory coverage_dashboard
-                --title "Phase 7: 2D Truss Analysis Coverage Dashboard"
+            --title "2D Truss Analysis Coverage Dashboard"
                 --prefix ${CMAKE_SOURCE_DIR}
                 --rc branch_coverage=1
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -361,7 +361,7 @@ if(ENABLE_COVERAGE AND LCOV AND GENHTML)
         VERBATIM
     )
 
-    message(STATUS "Phase 7 Coverage Targets Added:")
+    message(STATUS "Coverage targets added:")
     message(STATUS "  - make coverage-analysis   : Run analysis with detailed metrics")
     message(STATUS "  - make coverage-dashboard  : Generate dashboard (implies analysis)")
     message(STATUS "  - make coverage            : Original coverage target (existing)")
