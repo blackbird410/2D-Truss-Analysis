@@ -1,7 +1,7 @@
 Format: https://www.debian.org/doc/packaging-manuals/copyright-format/1.0/
 Upstream-Name: 2d-truss-analysis
 Upstream-Contact: Neil Taison Rigaud <ntsrigaud14@gmail.com>
-Source: https://github.com/blackbird410/2D-Truss-Analysis-cpp
+Source: https://github.com/blackbird410/2D-Truss-Analysis
 
 Files: *
 Copyright: 2024-2026 Neil Taison Rigaud (blackbird410)

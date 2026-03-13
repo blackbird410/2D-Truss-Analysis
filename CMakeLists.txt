@@ -242,7 +242,7 @@ set(CPACK_DEBIAN_PACKAGE_MAINTAINER
 set(CPACK_DEBIAN_PACKAGE_SECTION "science")
 set(CPACK_DEBIAN_PACKAGE_PRIORITY "optional")
 set(CPACK_DEBIAN_PACKAGE_HOMEPAGE
-    "https://github.com/blackbird410/2D-Truss-Analysis-cpp")
+    "https://github.com/blackbird410/2D-Truss-Analysis")
 # Use dpkg-shlibdeps to auto-detect Qt6 and other .so runtime dependencies.
 # This is version-agnostic and works across Ubuntu 22.04, 24.04, and derivatives.
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)

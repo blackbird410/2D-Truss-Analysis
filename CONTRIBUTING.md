@@ -18,11 +18,11 @@ Thank you for your interest in contributing to the 2D Truss Analysis project! Th
 
    ```bash
    # Fork the repository on GitHub
-   git clone https://github.com/YOUR_USERNAME/2D-Truss-Analysis-cpp.git
-   cd 2D-Truss-Analysis-cpp
+   git clone https://github.com/YOUR_USERNAME/2D-Truss-Analysis.git
+   cd 2D-Truss-Analysis
 
    # Add upstream remote
-   git remote add upstream https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
+   git remote add upstream https://github.com/blackbird410/2D-Truss-Analysis.git
    ```
 
 2. **Install Dependencies**

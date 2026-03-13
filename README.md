@@ -1,6 +1,6 @@
 # 2D Truss Analysis - Professional Structural Analysis Software
 
-[![Release](https://img.shields.io/github/v/release/blackbird410/2D-Truss-Analysis-cpp)](https://github.com/blackbird410/2D-Truss-Analysis-cpp/releases)
+[![Release](https://img.shields.io/github/v/release/blackbird410/2D-Truss-Analysis)](https://github.com/blackbird410/2D-Truss-Analysis/releases)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
@@ -231,8 +231,8 @@ sudo apt-get update
 sudo apt-get install cmake qt6-base-dev libeigen3-dev build-essential
 
 # Clone the repository
-git clone https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
-cd 2D-Truss-Analysis-cpp
+git clone https://github.com/blackbird410/2D-Truss-Analysis.git
+cd 2D-Truss-Analysis
 
 # Build the project
 cmake -B build -DCMAKE_BUILD_TYPE=Release
