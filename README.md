@@ -408,7 +408,6 @@ ctest --verbose
 - **[Module Structure](docs/architecture/module-structure.md)**: Per-layer component descriptions and test architecture
 - **[GUI Architecture](docs/architecture/gui-architecture.md)**: Qt MVC structure, controllers, signal/slot conventions
 - **[Development Guide](docs/development/development-guide.md)**: Build, test, coverage, and CI/CD workflows
-- **[Work Logs](docs/work-logs/)**: Historical session records
 
 ## Contributing
 
@@ -418,7 +417,6 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 - `fix:` Bug fixes
 - `docs:` Documentation changes
 - `style:` Code style changes
-- `refactor:` Code refactoring
 - `test:` Adding tests
 - `build:` Build system changes
 
@@ -436,7 +434,7 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 - **v2.1.3** (2025-06-30): Code signing integration
 - **v2.1.1** (2025-06-30): Production release with critical fixes
 - **v2.1.0** (2025-06-30): Interactive drawing widget implementation
-- **v2.0.0** (2025-06-29): Major GUI redesign and Qt6 migration
+- **v2.0.0** (2025-06-29): Major GUI redesign and Qt6 architecture update
 
 ## Related Projects
 

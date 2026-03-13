@@ -60,7 +60,7 @@ We use a structured branch naming convention:
 - `bugfix/issue-description` - Bug fixes
 - `hotfix/critical-issue` - Critical production fixes
 - `docs/documentation-update` - Documentation improvements
-- `refactor/component-name` - Code refactoring
+- `maintenance/component-name` - Internal code maintenance
 - `test/test-description` - Adding or improving tests
 
 ### Professional Git Workflow
@@ -111,7 +111,6 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) specifica
 - **fix**: Bug fix
 - **docs**: Documentation only changes
 - **style**: Changes that don't affect meaning (formatting, missing semicolons)
-- **refactor**: Code change that neither fixes a bug nor adds a feature
 - **test**: Adding missing tests or correcting existing tests
 - **build**: Changes that affect the build system or external dependencies
 - **ci**: Changes to CI configuration files and scripts
@@ -125,7 +124,6 @@ feat: add interactive drawing canvas for truss design
 fix: resolve memory leak in analysis engine
 docs: update installation guide for macOS
 style: format code according to project standards
-refactor: extract utility functions to separate module
 test: add unit tests for matrix operations
 build: update CMake configuration for Qt6
 ```
