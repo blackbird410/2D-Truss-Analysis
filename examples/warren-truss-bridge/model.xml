@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Warren Truss Bridge (pure Warren, no verticals) - XML Format
+  Single-span 6-panel Warren truss — 24 m span, 3 m height.
+  Top nodes offset to bottom-chord midpoints; alternating diagonals
+  carry both tension and compression depending on panel position.
+
+  Static determinacy: m=23, r=3, j=13 → m+r=26=2j ✓
+-->
+<truss>
+  <metadata name="Warren Truss Bridge"
+            description="Single-span 6-panel pure Warren truss — 24 m span, 3 m height"/>
+
+  <materials>
+    <material id="steel"
+              youngModulus="2.0e11"
+              poissonRatio="0.3"
+              density="7850"
+              yieldStrength="2.75e8"/>
+  </materials>
+
+  <sections>
+    <section id="channel_120"
+             name="120mm Channel UPN 120"
+             crossSectionalArea="0.00169"/>
+  </sections>
+
+  <nodes>
+    <!-- Bottom chord (y = 0) -->
+    <node id="1"  x="0.0"  y="0.0" label="Left Support"/>
+    <node id="2"  x="4.0"  y="0.0" label="Bottom 1"/>
+    <node id="3"  x="8.0"  y="0.0" label="Bottom 2"/>
+    <node id="4"  x="12.0" y="0.0" label="Bottom Centre"/>
+    <node id="5"  x="16.0" y="0.0" label="Bottom 4"/>
+    <node id="6"  x="20.0" y="0.0" label="Bottom 5"/>
+    <node id="7"  x="24.0" y="0.0" label="Right Support"/>
+    <!-- Top chord (y = 3 m, offset at midpoints) -->
+    <node id="8"  x="2.0"  y="3.0" label="Top 1"/>
+    <node id="9"  x="6.0"  y="3.0" label="Top 2"/>
+    <node id="10" x="10.0" y="3.0" label="Top 3"/>
+    <node id="11" x="14.0" y="3.0" label="Top 4"/>
+    <node id="12" x="18.0" y="3.0" label="Top 5"/>
+    <node id="13" x="22.0" y="3.0" label="Top 6"/>
+  </nodes>
+
+  <members>
+    <!-- Bottom chord -->
+    <member id="1"  startNode="1"  endNode="2"  material="steel" section="channel_120" label="BC 1-2"/>
+    <member id="2"  startNode="2"  endNode="3"  material="steel" section="channel_120" label="BC 2-3"/>
+    <member id="3"  startNode="3"  endNode="4"  material="steel" section="channel_120" label="BC 3-4"/>
+    <member id="4"  startNode="4"  endNode="5"  material="steel" section="channel_120" label="BC 4-5"/>
+    <member id="5"  startNode="5"  endNode="6"  material="steel" section="channel_120" label="BC 5-6"/>
+    <member id="6"  startNode="6"  endNode="7"  material="steel" section="channel_120" label="BC 6-7"/>
+    <!-- Top chord -->
+    <member id="7"  startNode="8"  endNode="9"  material="steel" section="channel_120" label="TC 8-9"/>
+    <member id="8"  startNode="9"  endNode="10" material="steel" section="channel_120" label="TC 9-10"/>
+    <member id="9"  startNode="10" endNode="11" material="steel" section="channel_120" label="TC 10-11"/>
+    <member id="10" startNode="11" endNode="12" material="steel" section="channel_120" label="TC 11-12"/>
+    <member id="11" startNode="12" endNode="13" material="steel" section="channel_120" label="TC 12-13"/>
+    <!-- Diagonals — alternating pattern forms characteristic zigzag -->
+    <member id="12" startNode="1"  endNode="8"  material="steel" section="channel_120" label="Diag 1-8"/>
+    <member id="13" startNode="2"  endNode="8"  material="steel" section="channel_120" label="Diag 2-8"/>
+    <member id="14" startNode="2"  endNode="9"  material="steel" section="channel_120" label="Diag 2-9"/>
+    <member id="15" startNode="3"  endNode="9"  material="steel" section="channel_120" label="Diag 3-9"/>
+    <member id="16" startNode="3"  endNode="10" material="steel" section="channel_120" label="Diag 3-10"/>
+    <member id="17" startNode="4"  endNode="10" material="steel" section="channel_120" label="Diag 4-10"/>
+    <member id="18" startNode="4"  endNode="11" material="steel" section="channel_120" label="Diag 4-11"/>
+    <member id="19" startNode="5"  endNode="11" material="steel" section="channel_120" label="Diag 5-11"/>
+    <member id="20" startNode="5"  endNode="12" material="steel" section="channel_120" label="Diag 5-12"/>
+    <member id="21" startNode="6"  endNode="12" material="steel" section="channel_120" label="Diag 6-12"/>
+    <member id="22" startNode="6"  endNode="13" material="steel" section="channel_120" label="Diag 6-13"/>
+    <member id="23" startNode="7"  endNode="13" material="steel" section="channel_120" label="Diag 7-13"/>
+  </members>
+
+  <supports>
+    <support nodeId="1" type="pinned" restrained="x y"/>
+    <support nodeId="7" type="roller" restrained="y"/>
+  </supports>
+
+  <loads>
+    <load nodeId="8"  fx="0.0" fy="-30000.0"/>
+    <load nodeId="9"  fx="0.0" fy="-30000.0"/>
+    <load nodeId="10" fx="0.0" fy="-30000.0"/>
+    <load nodeId="11" fx="0.0" fy="-30000.0"/>
+    <load nodeId="12" fx="0.0" fy="-30000.0"/>
+    <load nodeId="13" fx="0.0" fy="-30000.0"/>
+  </loads>
+</truss>
