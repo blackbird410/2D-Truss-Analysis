@@ -42,17 +42,17 @@ Both formats are fully compatible and produce identical analysis results.
 
 ```bash
 # Command line analysis with JSON (CSV export)
-./build/TrussAnalysisCLI analyze --file examples/bridge-truss/model.json -o data/bridge-truss-results.csv --format csv
+./build/src/cli/truss-analysis-cli analyze --file examples/bridge-truss/model.json -o data/bridge-truss-results.csv --format csv
 
 # Command line analysis with XML (CSV export)
-./build/TrussAnalysisCLI analyze --file examples/bridge-truss/model.xml -o data/bridge-truss-results.csv --format csv
+./build/src/cli/truss-analysis-cli analyze --file examples/bridge-truss/model.xml -o data/bridge-truss-results.csv --format csv
 
 # Validate the model
-./build/TrussAnalysisCLI validate --file examples/bridge-truss/model.json
-./build/TrussAnalysisCLI validate --file examples/bridge-truss/model.xml
+./build/src/cli/truss-analysis-cli validate --file examples/bridge-truss/model.json
+./build/src/cli/truss-analysis-cli validate --file examples/bridge-truss/model.xml
 
 # GUI mode
-./build/TrussAnalysisGUI
+./build/src/gui/truss-analysis
 # Then: File > Open > examples/bridge-truss/model.json (or model.xml)
 ```
 

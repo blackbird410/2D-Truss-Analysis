@@ -35,12 +35,12 @@ docker compose run --rm truss-dev
 # Option 1: CLI-only (faster, no Qt6)
 cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_GUI=OFF
 cmake --build build -j$(nproc)
-./build/TrussAnalysisCLI --help
+./build/src/cli/truss-analysis-cli --help
 
 # Option 2: Full build with GUI
 cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_GUI=ON
 cmake --build build -j$(nproc)
-./build/TrussAnalysisCLI example
+./build/src/cli/truss-analysis-cli example
 
 # Option 3: Use Make wrapper (after configuring)
 cmake -B build -DBUILD_GUI=OFF  # Configure first
@@ -308,8 +308,8 @@ cd build && ctest --output-on-failure
 cd .. && make test
 
 # 5. Run application
-./build/TrussAnalysisCLI --help
-./build/TrussAnalysisCLI example
+./build/src/cli/truss-analysis-cli --help
+./build/src/cli/truss-analysis-cli example
 
 # 6. Make changes (in host editor, mounted volume reflects changes)
 
@@ -333,7 +333,7 @@ cmake -B build -DCMAKE_BUILD_TYPE=Debug -DBUILD_GUI=OFF \
     -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 echo "Building..."
 cmake --build build -j$(nproc)
-echo "Build complete! Run './build/TrussAnalysisCLI --help' to test."
+echo "Build complete! Run './build/src/cli/truss-analysis-cli --help' to test."
 ```
 
 ### Build Cache Optimization

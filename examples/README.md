@@ -83,15 +83,15 @@ Run analysis and export results to the `data/` directory:
 
 ```bash
 # Simple triangular truss
-./build/TrussAnalysisCLI analyze --file examples/simple-triangular-truss/model.json \
+./build/src/cli/truss-analysis-cli analyze --file examples/simple-triangular-truss/model.json \
   -o data/simple-truss-results.csv --format csv
 
 # Warren bridge
-./build/TrussAnalysisCLI analyze --file examples/bridge-truss/model.json \
+./build/src/cli/truss-analysis-cli analyze --file examples/bridge-truss/model.json \
   -o data/bridge-truss-results.csv --format csv
 
 # Tower structure
-./build/TrussAnalysisCLI analyze --file examples/tower-structure/model.json \
+./build/src/cli/truss-analysis-cli analyze --file examples/tower-structure/model.json \
   -o data/tower-results.csv --format csv
 ```
 
@@ -99,7 +99,7 @@ Run analysis and export results to the `data/` directory:
 
 ```bash
 # Launch the GUI
-./build/TrussAnalysisGUI
+./build/src/gui/truss-analysis
 
 # Then: File > Open > Select example model.json
 ```
