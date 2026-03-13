@@ -404,12 +404,12 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ### Release Workflow
 
-1. Create release branch: `release/v2.2.0`
+1. Create release branch: `release/v3.0.0`
 2. Update version numbers
 3. Update CHANGELOG.md
 4. Create and test release build
-5. Create annotated tag: `git tag -a v2.2.0 -m "Release v2.2.0"`
-6. Push tag: `git push origin v2.2.0`
+5. Create annotated tag: `git tag -a v3.0.0 -m "Release v3.0.0"`
+6. Push tag: `git push origin v3.0.0`
 
 ## Getting Help
 

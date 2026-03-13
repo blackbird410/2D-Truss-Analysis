@@ -5,9 +5,9 @@
 [![Platform](https://img.shields.io/badge/platform-Linux-lightgrey.svg)](https://www.linux.org/)
 [![Qt](https://img.shields.io/badge/Qt-6.9-green.svg)](https://www.qt.io/)
 [![C++](https://img.shields.io/badge/C++-20-blue.svg)](https://isocpp.org/)
-[![Tests](https://img.shields.io/badge/tests-765%20passing%2C%201%20skipped-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-1603%20passing-brightgreen.svg)](tests/)
 
-> **✅ REFACTORING STATUS**: Phase 9 (Final Integration & Hardening) complete! Production-ready v3.0.0 with Docker infrastructure (125MB production image, 1.94GB dev image), comprehensive tests achieving 72%+ coverage, clean layered architecture following SOLID principles, Qt6 MVC architecture in GUI (zero legacy presenters), and complete dependency injection. See [REFACTORING_PROGRESS.md](REFACTORING_PROGRESS.md) for details.
+> **✅ STATUS**: Production-ready v3.0.0 — clean layered C++20/Qt6 architecture, 1603 passing tests, 88.3% line / 91.9% function / 51.8% branch coverage, FHS-compliant Linux packaging, AppStream metainfo for software centre discovery.
 
 A professional-grade 2D truss structural analysis application built with modern C++20 and Qt6, featuring an intuitive interactive drawing interface, robust computational engine, and clean layered architecture following SOLID principles and industry best practices.
 
@@ -114,7 +114,7 @@ The application follows **Clean Architecture** principles with strict layer sepa
 
 - **Model**: Qt Item Models (`NodeTableModel`, `MemberTableModel`, `ResultsTableModel`, `ValidationListModel`) backed by `ITrussView` / `IAnalysisResultsView` read interfaces
 - **View**: Qt6 widgets displaying data (`MainWindow`, `TrussCanvasWidget`, `InspectorPanel`, `ResultsDockPanel`, etc.)
-- **Controller**: `MainWindowController` owns six sub-controllers (`CanvasController`, `InspectorController`, `AnalysisController`, `ProjectController`, `ExportController`, `CanvasController`) and all models; coordinates all user actions through `ITrussAnalysisFacade`
+- **Controller**: `MainWindowController` owns five sub-controllers (`CanvasController`, `InspectorController`, `AnalysisController`, `ProjectController`, `ExportController`) and all models; coordinates all user actions through `ITrussAnalysisFacade`
 
 **Dependency Injection:**
 
@@ -185,7 +185,7 @@ The application follows **Clean Architecture** principles with strict layer sepa
 
 ## Requirements
 
-- CMake 3.16 or higher
+- CMake 3.20 or higher
 - Qt6 (Qt6Core, Qt6Widgets, Qt6Charts)
 - C++20 compatible compiler (GCC 10+, Clang 10+)
 - Eigen3 library for matrix operations
@@ -299,9 +299,7 @@ See [docker/README.md](docker/README.md) for comprehensive Docker usage guide.
 Run the GUI version:
 
 ```bash
-./TrussAnalysisGUI  # On Unix systems
-# or
-TrussAnalysisGUI.exe  # On Windows
+./TrussAnalysisGUI
 ```
 
 ### Command Line Interface
@@ -374,13 +372,13 @@ The GUI layer follows Qt MVC pattern with `ITrussAnalysisFacade` dependency inje
    };
    ```
 
-3. **Write Unit Tests** using mock services:
+3. **Write Unit Tests** using the facade mock:
    ```cpp
    TEST(NewFeatureControllerTest, HandlesAction) {
-       MockTrussApplicationService mockService;
-       NewFeatureController controller(&mockService);
+       MockTrussAnalysisFacade mockFacade;
+       NewFeatureController controller(mockFacade);
        controller.handleUserAction();
-       EXPECT_EQ(mockService.callCount, 1);
+       EXPECT_TRUE(mockFacade.someMethodCalled());
    }
    ```
 
@@ -406,9 +404,11 @@ ctest --verbose
 
 ## Documentation
 
-- **[Refactoring Progress](REFACTORING_PROGRESS.md)**: Track v3.0.0 refactoring status
-- **[Refactoring Documentation](docs/refactoring/)**: Detailed refactoring plans and architecture
-- **[Work Logs](docs/work-logs/)**: Detailed records of major refactoring milestones
+- **[System Overview](docs/architecture/system-overview.md)**: High-level architecture, CMake targets, technology stack
+- **[Module Structure](docs/architecture/module-structure.md)**: Per-layer component descriptions and test architecture
+- **[GUI Architecture](docs/architecture/gui-architecture.md)**: Qt MVC structure, controllers, signal/slot conventions
+- **[Development Guide](docs/development/development-guide.md)**: Build, test, coverage, and CI/CD workflows
+- **[Work Logs](docs/work-logs/)**: Historical session records
 
 ## Contributing
 
@@ -431,7 +431,7 @@ Contributions are welcome! Please follow our [Conventional Commits](https://www.
 
 ## Version History
 
-- **v3.0.0** (In Progress): Professional refactor - Linux-only, SOLID architecture, Google Test
+- **v3.0.0** (2026): Production-ready release — Clean Architecture, Qt6 MVC, SOLID principles, Google Test, 1603 passing tests, 88.3% line coverage
 - **v2.2.0** (2025-06-30): Cross-platform production release with CI/CD
 - **v2.1.3** (2025-06-30): Code signing integration
 - **v2.1.1** (2025-06-30): Production release with critical fixes
