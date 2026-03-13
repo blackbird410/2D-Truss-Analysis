@@ -74,9 +74,9 @@
       <description>
         <p>Production Release v3.0.0</p>
         <ul>
-          <li>Complete Phase 9 refactoring — clean layered C++20 architecture</li>
-          <li>Qt6 MVC GUI with zero legacy presenters</li>
-          <li>765 passing tests, 72%+ code coverage</li>
+          <li>Clean layered C++20 architecture</li>
+          <li>Qt6 MVC GUI with interface-driven controllers and presenters</li>
+          <li>1603 passing tests, 88.3% line / 91.9% function / 51.8% branch coverage</li>
           <li>FHS-compliant Linux packaging with CPack DEB</li>
           <li>AppStream metainfo for software centre discovery</li>
           <li>Dark and light QSS themes</li>
