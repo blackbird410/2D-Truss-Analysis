@@ -305,7 +305,7 @@ if(DOXYGEN_FOUND)
 
     # Optional: Add install target for documentation
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/docs/api/html
-        DESTINATION share/doc/${PROJECT_NAME}
+        DESTINATION "${CMAKE_INSTALL_DOCDIR}"
         OPTIONAL
         COMPONENT documentation
     )
