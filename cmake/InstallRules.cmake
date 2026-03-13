@@ -89,23 +89,56 @@ endif()
 # ============================================================================
 
 install(FILES "${CMAKE_SOURCE_DIR}/config/default.json"
-    DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/truss-analysis"
+    DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/2d-truss-analysis"
     RENAME "default.json.example"
     COMPONENT common
 )
 
 install(FILES "${CMAKE_SOURCE_DIR}/config/logging.json"
-    DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/truss-analysis"
+    DESTINATION "${CMAKE_INSTALL_SYSCONFDIR}/2d-truss-analysis"
     RENAME "logging.json.example"
     COMPONENT common
 )
+
+# ============================================================================
+# Debian changelog (compressed)
+# Debian Policy §12.7 requires changelog.Debian.gz at
+# /usr/share/doc/<package>/changelog.Debian.gz for every binary package.
+# CPack does not auto-compress documentation files, so we do it here.
+# ============================================================================
+set(_CHANGELOG_SRC "${CMAKE_SOURCE_DIR}/packaging/debian/changelog")
+set(_CHANGELOG_COPY "${CMAKE_BINARY_DIR}/changelog.Debian")
+set(_CHANGELOG_GZ   "${CMAKE_BINARY_DIR}/changelog.Debian.gz")
+
+if(EXISTS "${_CHANGELOG_SRC}")
+    # Copy the changelog to the build tree, then compress it in-place.
+    # This avoids passing paths via -D variables in add_custom_command, which
+    # causes VERBATIM double-escaping on Makefile generators (CMake wraps
+    # -DVAR="value" arguments with \" escapes that survive into the variable
+    # value, producing literal quote characters in the path passed to gzip).
+    add_custom_command(
+        OUTPUT  "${_CHANGELOG_GZ}"
+        COMMAND ${CMAKE_COMMAND} -E copy
+                "${_CHANGELOG_SRC}" "${_CHANGELOG_COPY}"
+        COMMAND gzip -9 -n -f "${_CHANGELOG_COPY}"
+        DEPENDS "${_CHANGELOG_SRC}"
+        COMMENT "Compressing Debian changelog"
+        VERBATIM
+    )
+    add_custom_target(compress_changelog ALL DEPENDS "${_CHANGELOG_GZ}")
+
+    install(FILES "${_CHANGELOG_GZ}"
+        DESTINATION "${CMAKE_INSTALL_DOCDIR}"
+        COMPONENT common
+    )
+endif()
 
 # ============================================================================
 # Example project files
 # ============================================================================
 
 install(DIRECTORY "${CMAKE_SOURCE_DIR}/examples/"
-    DESTINATION "${CMAKE_INSTALL_DATADIR}/truss-analysis/examples"
+    DESTINATION "${CMAKE_INSTALL_DATADIR}/2d-truss-analysis/examples"
     COMPONENT common
     FILES_MATCHING
     PATTERN "*.json"

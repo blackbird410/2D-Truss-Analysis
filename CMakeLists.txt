@@ -216,13 +216,17 @@ set(CPACK_PACKAGE_VERSION_PATCH "${PROJECT_VERSION_PATCH}")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY
     "Professional 2D truss structural analysis software")
 set(CPACK_PACKAGE_DESCRIPTION
-    "A professional-grade 2D truss structural analysis application\n"
-    " built with modern C++20 and Qt6. Features an interactive drawing\n"
-    " canvas, direct stiffness method engine, and clean layered architecture.")
+    "A professional-grade 2D truss structural analysis application\n built with modern C++20 and Qt6. Features an interactive drawing\n canvas, direct stiffness method engine, and clean layered architecture.")
 set(CPACK_PACKAGE_VENDOR "Neil Taison Rigaud")
 set(CPACK_PACKAGE_CONTACT "Neil Taison Rigaud <ntsrigaud14@gmail.com>")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_SOURCE_DIR}/README.md")
+# Debian revision suffix appended to upstream version: 3.0.0 -> 3.0.0-1
+set(CPACK_DEBIAN_PACKAGE_RELEASE "1")
+# Use standard Debian file naming: <name>_<version>-<release>_<arch>.deb
+set(CPACK_DEBIAN_FILE_NAME DEB-DEFAULT)
+# Enforce correct file permissions in generated packages (Debian Policy §10.9)
+set(CPACK_DEBIAN_PACKAGE_CONTROL_STRICT_PERMISSION TRUE)
 # Strip installed binaries to reduce package size
 set(CPACK_STRIP_FILES ON)
 
@@ -246,20 +250,18 @@ set(CPACK_DEBIAN_PACKAGE_HOMEPAGE
 # Use dpkg-shlibdeps to auto-detect Qt6 and other .so runtime dependencies.
 # This is version-agnostic and works across Ubuntu 22.04, 24.04, and derivatives.
 set(CPACK_DEBIAN_PACKAGE_SHLIBDEPS ON)
+# common contains only architecture-independent data; disable shlibdeps for it.
+set(CPACK_DEBIAN_COMMON_PACKAGE_SHLIBDEPS OFF)
 
 # ---- CLI component .deb ----
 set(CPACK_DEBIAN_CLI_PACKAGE_NAME "2d-truss-analysis-cli")
 set(CPACK_DEBIAN_CLI_PACKAGE_DESCRIPTION
-    "Command-line tool for 2D truss structural analysis\n"
-    " Analyses 2D truss structures using the displacement (stiffness) method.\n"
-    " Reads JSON and XML project files and exports results in multiple formats.")
+    "Command-line tool for 2D truss structural analysis\n Analyses 2D truss structures using the displacement (stiffness) method.\n Reads JSON and XML project files and exports results in multiple formats.")
 
 # ---- GUI component .deb ----
 set(CPACK_DEBIAN_GUI_PACKAGE_NAME "2d-truss-analysis")
 set(CPACK_DEBIAN_GUI_PACKAGE_DESCRIPTION
-    "Interactive graphical application for 2D truss structural analysis\n"
-    " Full-featured Qt6 GUI for designing, visualising, and analysing 2D truss\n"
-    " structures. Exports results to CSV, JSON, XML, HTML, LaTeX, and plain text.")
+    "Interactive graphical application for 2D truss structural analysis\n Full-featured Qt6 GUI for designing, visualising, and analysing 2D truss\n structures. Exports results to CSV, JSON, XML, HTML, LaTeX, and plain text.")
 # Extra runtime dep not auto-detected by shlibdeps
 set(CPACK_DEBIAN_GUI_PACKAGE_RECOMMENDS "xdg-utils")
 # Hook scripts update the desktop database and icon cache after install/remove
@@ -269,10 +271,10 @@ set(CPACK_DEBIAN_GUI_PACKAGE_CONTROL_EXTRA
 
 # ---- Common component .deb ----
 set(CPACK_DEBIAN_COMMON_PACKAGE_NAME "2d-truss-analysis-common")
+# Architecture: all — this component contains only architecture-independent data.
+set(CPACK_DEBIAN_COMMON_PACKAGE_ARCHITECTURE "all")
 set(CPACK_DEBIAN_COMMON_PACKAGE_DESCRIPTION
-    "Shared data files for 2D Truss Analysis\n"
-    " Configuration templates, examples, and documentation shared by the\n"
-    " CLI and GUI components of 2D Truss Analysis.")
+    "Shared data files for 2D Truss Analysis\n Configuration templates, examples, and documentation shared by the\n CLI and GUI components of 2D Truss Analysis.")
 
 include(CPack)
 
@@ -303,7 +305,7 @@ if(DOXYGEN_FOUND)
 
     # Optional: Add install target for documentation
     install(DIRECTORY ${PROJECT_SOURCE_DIR}/docs/api/html
-        DESTINATION share/doc/${PROJECT_NAME}
+        DESTINATION "${CMAKE_INSTALL_DOCDIR}"
         OPTIONAL
         COMPONENT documentation
     )
