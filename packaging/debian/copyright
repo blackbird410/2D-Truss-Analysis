@@ -3,7 +3,7 @@ Upstream-Name: 2d-truss-analysis
 Upstream-Contact: Neil Taison Rigaud <ntsrigaud14@gmail.com>
 Source: https://github.com/blackbird410/2D-Truss-Analysis
 
-Files: \*
+Files: *
 Copyright: 2024-2026 Neil Taison Rigaud
 License: MIT
 
