@@ -18,11 +18,11 @@ Thank you for your interest in contributing to the 2D Truss Analysis project! Th
 
    ```bash
    # Fork the repository on GitHub
-   git clone https://github.com/YOUR_USERNAME/2D-Truss-Analysis-cpp.git
-   cd 2D-Truss-Analysis-cpp
+   git clone https://github.com/YOUR_USERNAME/2D-Truss-Analysis.git
+   cd 2D-Truss-Analysis
 
    # Add upstream remote
-   git remote add upstream https://github.com/blackbird410/2D-Truss-Analysis-cpp.git
+   git remote add upstream https://github.com/blackbird410/2D-Truss-Analysis.git
    ```
 
 2. **Install Dependencies**
@@ -60,7 +60,7 @@ We use a structured branch naming convention:
 - `bugfix/issue-description` - Bug fixes
 - `hotfix/critical-issue` - Critical production fixes
 - `docs/documentation-update` - Documentation improvements
-- `refactor/component-name` - Code refactoring
+- `maintenance/component-name` - Internal code maintenance
 - `test/test-description` - Adding or improving tests
 
 ### Professional Git Workflow
@@ -111,7 +111,6 @@ We follow [Conventional Commits](https://www.conventionalcommits.org/) specifica
 - **fix**: Bug fix
 - **docs**: Documentation only changes
 - **style**: Changes that don't affect meaning (formatting, missing semicolons)
-- **refactor**: Code change that neither fixes a bug nor adds a feature
 - **test**: Adding missing tests or correcting existing tests
 - **build**: Changes that affect the build system or external dependencies
 - **ci**: Changes to CI configuration files and scripts
@@ -125,7 +124,6 @@ feat: add interactive drawing canvas for truss design
 fix: resolve memory leak in analysis engine
 docs: update installation guide for macOS
 style: format code according to project standards
-refactor: extract utility functions to separate module
 test: add unit tests for matrix operations
 build: update CMake configuration for Qt6
 ```
@@ -404,12 +402,12 @@ We follow [Semantic Versioning](https://semver.org/):
 
 ### Release Workflow
 
-1. Create release branch: `release/v2.2.0`
+1. Create release branch: `release/v3.0.0`
 2. Update version numbers
 3. Update CHANGELOG.md
 4. Create and test release build
-5. Create annotated tag: `git tag -a v2.2.0 -m "Release v2.2.0"`
-6. Push tag: `git push origin v2.2.0`
+5. Create annotated tag: `git tag -a v3.0.0 -m "Release v3.0.0"`
+6. Push tag: `git push origin v3.0.0`
 
 ## Getting Help
 

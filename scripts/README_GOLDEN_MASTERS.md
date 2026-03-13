@@ -7,7 +7,7 @@ This utility generates corrected golden master files for integration testing.
 To build this utility:
 
 ```bash
-cd /path/to/2D-Truss-Analysis-cpp
+cd /path/to/2D-Truss-Analysis
 g++ -std=c++20 -I./include -I./src scripts/generate_golden_masters.cpp -o scripts/generate_golden_masters
 ```
 

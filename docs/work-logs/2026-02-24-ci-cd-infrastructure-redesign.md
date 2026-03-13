@@ -270,6 +270,7 @@ cppcheck \
    - Source browser with highlighting
 
 6. **Codecov Upload:**
+
    ```yaml
    uses: codecov/codecov-action@v4
    with:

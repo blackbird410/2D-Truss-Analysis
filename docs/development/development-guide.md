@@ -11,7 +11,7 @@ This document provides comprehensive information for developers contributing to 
 Our project uses Google Test (GTest) framework with comprehensive mock-based testing for all layers:
 
 - **Framework**: Google Test with GMock for mocking
-- **Coverage**: 458/459 tests passing (99.8% pass rate)
+- **Coverage**: 1603/1603 tests passing (100% pass rate)
 - **Architecture**: Layer-specific test suites with focused mock-based testing
 - **CLI Testing**: Command Pattern tests with simplified output mocking
 - **Integration**: CMake CTest integration with parallel execution
@@ -28,16 +28,21 @@ Our project uses Google Test (GTest) framework with comprehensive mock-based tes
 
 ```
 tests/
-├── TestFramework.hpp           # Core testing framework
-├── run_all_tests.sh           # Shell script test runner
-└── unit/
-    ├── test_Integration.cpp    # Integration test suite
-    ├── test_Member.cpp         # Member class tests
-    ├── test_Truss.cpp          # Truss structure tests
-    ├── test_Node.cpp           # Node functionality tests
-    ├── test_DebugAnalysis.cpp  # Debug analysis tests
-    ├── test_FreeSystemDebug.cpp # Free system analysis
-    └── [other test files]      # Additional specialized tests
+├── unit/
+│   ├── application/        # TrussApplicationService, MaterialLibraryService, etc.
+│   ├── cli/                # CLI command and argument parser tests
+│   ├── core/
+│   │   ├── analysis/       # Orchestrator, solver, stiffness assembler
+│   │   ├── assembly/       # TrussAssembler tests
+│   │   ├── model/          # Node, Member, Truss, Load tests
+│   │   └── validation/     # TrussValidator tests
+│   ├── gui/                # GUI layer tests (Qt: controllers, models, panels, widgets)
+│   ├── infrastructure/     # Export, FileIO, logging tests
+│   ├── interface/          # Facade adapter tests
+│   └── utilities/          # Math and string utility tests
+├── integration/             # End-to-end workflow tests
+├── fixtures/                # Shared test data (golden masters, JSON/XML structures)
+└── test_gtest_integration.cpp  # GTest framework validation
 ```
 
 ### Running Tests
@@ -58,72 +63,60 @@ cd build && ctest --output-on-failure
 cd build && ctest -R test_Integration --verbose
 ```
 
-#### Using Shell Script
+#### Using CTest Directly
 
 ```bash
-# Run all available tests with colored output
-./tests/run_all_tests.sh
+# Run all 5 CTest targets
+cd build && ctest --output-on-failure
 
-# Test discovery and execution summary
-# Provides comprehensive pass/fail statistics
-```
+# Filter by label
+ctest -L unit
+ctest -L integration
 
-#### Manual Test Execution
-
-```bash
-# Build and run individual tests
-cd tests/unit
-g++ -std=c++17 -Wall -Wextra -I../../include -I/usr/include/eigen3 \
-    -o test_integration test_Integration.cpp -L../../build -lTrussCore
-./test_integration
+# Run a specific executable directly
+./build/tests/unit/unit_tests --gtest_filter="TrussTest.*"
+./build/tests/unit/unit_tests_gui_widgets --gtest_filter="CanvasControllerTest.*"
 ```
 
 ### Test Framework Features
 
-#### Assertion Macros
+#### GTest Assertion Macros
 
 ```cpp
-#include "../TestFramework.hpp"
-using namespace truss::testing;
+#include <gtest/gtest.h>
+#include <gmock/gmock.h>
 
 // Basic assertions
-ASSERT_TRUE(condition);
-ASSERT_FALSE(condition);
-ASSERT_EQ(expected, actual);
-ASSERT_NE(value1, value2);
+EXPECT_TRUE(condition);
+EXPECT_FALSE(condition);
+EXPECT_EQ(expected, actual);
+EXPECT_NE(value1, value2);
 
 // Numerical comparisons
-ASSERT_NEAR(expected, actual, tolerance);
-ASSERT_GT(value1, value2);
-ASSERT_LT(value1, value2);
+EXPECT_NEAR(expected, actual, tolerance);
+EXPECT_GT(value1, value2);
+EXPECT_LT(value1, value2);
 
 // Exception handling
-ASSERT_THROWS(expression, exception_type);
-ASSERT_NO_THROW(expression);
+EXPECT_THROW(expression, ExceptionType);
+EXPECT_NO_THROW(expression);
 ```
 
-#### Test Suite Structure
+#### Test Fixture Pattern
 
-```cpp
-int main() {
-    TestFramework framework(true); // verbose output
+````cpp
+class TrussTest : public ::testing::Test {
+protected:
+    void SetUp() override {
+        // Build a minimal valid truss for each test
+    }
+    Truss truss;
+};
 
-    framework.beginSuite("Integration Tests");
-
-    framework.runTest("Simple triangular truss", []() {
-        // Test implementation
-        ASSERT_TRUE(someCondition);
-        ASSERT_NEAR(result, expected, 1e-6);
-    });
-
-    framework.runTest("Error handling", []() {
-        ASSERT_THROWS(invalidOperation(), std::exception);
-    });
-
-    framework.generateReport();
-    return framework.allTestsPassed() ? 0 : 1;
+TEST_F(TrussTest, AddNodeIncreasesCount) {
+    truss.addNode(Node(1, 0.0, 0.0));
+    EXPECT_EQ(truss.getNodeCount(), 1);
 }
-```
 
 ## Build System
 
@@ -163,7 +156,7 @@ make clean-all          # Clean all build artifacts
 # CI/CD targets
 make ci                 # CI pipeline (build + test + format check)
 make ci-full            # Full CI (build + test + coverage + all checks)
-```
+````
 
 **Key Features:**
 
@@ -353,7 +346,6 @@ make ci-full
 **cppcheck Notes:**
 
 - The Makefile `static-analysis` target defines Qt macros (`slots`, `signals`, `Q_OBJECT`, `emit`) to avoid false positives.
-- `src/gui/PlotWidget_corrupted.cpp` is excluded from analysis.
 - Output is written to `cppcheck-report.txt` at the repository root.
 
 **Configuration Files:**

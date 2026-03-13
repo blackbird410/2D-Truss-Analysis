@@ -2,7 +2,7 @@
   "name": "truss-analysis",
   "version": "3.0.0",
   "description": "Professional 2D truss structural analysis software",
-  "homepage": "https://github.com/blackbird410/2D-Truss-Analysis-cpp",
+  "homepage": "https://github.com/blackbird410/2D-Truss-Analysis",
   "license": "MIT",
   "dependencies": [
     {
