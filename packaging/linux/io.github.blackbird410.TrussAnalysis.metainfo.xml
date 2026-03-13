@@ -33,16 +33,20 @@
 
   <screenshots>
     <screenshot type="default">
-      <caption>Main application interface with interactive drawing canvas</caption>
-      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis/main/images/screenshot-main.png</image>
+      <caption>Geometry editor — dark theme with force-coded members and Node Results panel</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis/main/docs/images/gui-geometry-editor.png</image>
     </screenshot>
     <screenshot>
-      <caption>Results display with comprehensive analysis tables</caption>
-      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis/main/images/screenshot-results.png</image>
+      <caption>Member Results table showing axial force, stress, utilisation ratio and state</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis/main/docs/images/gui-analysis-results.png</image>
     </screenshot>
     <screenshot>
-      <caption>Deformed structure visualisation</caption>
-      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis/main/images/screenshot-deformed.png</image>
+      <caption>Deformed shape with global stiffness matrix displayed in the results panel</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis/main/docs/images/gui-deformed-shape.png</image>
+    </screenshot>
+    <screenshot>
+      <caption>Stress ratio view with colour-mapped member utilisation</caption>
+      <image>https://raw.githubusercontent.com/blackbird410/2D-Truss-Analysis/main/docs/images/gui-stress-ratio.png</image>
     </screenshot>
   </screenshots>
 

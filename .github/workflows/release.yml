@@ -148,7 +148,7 @@ jobs:
       # ------------------------------------------------------------------------
       - name: Smoke-test CLI binary
         run: |
-          ./build-package/truss-analysis-cli --help \
+          ./build-package/src/cli/truss-analysis-cli --help \
             || echo "CLI returned non-zero from --help (may be expected)"
 
       # ------------------------------------------------------------------------
