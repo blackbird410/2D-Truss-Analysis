@@ -1,0 +1,48 @@
+Package: 2d-truss-analysis
+Version: 3.0.0-1
+Architecture: amd64
+Maintainer: Neil Taison Rigaud <ntsrigaud14@gmail.com>
+Installed-Size: 1251
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.0), libqt6core6t64 (>= 6.4.0), libqt6gui6t64 (>= 6.1.2), libqt6widgets6t64 (>= 6.3.0), libstdc++6 (>= 13)
+Recommends: xdg-utils
+Filename: pool/main/2/2d-truss-analysis/2d-truss-analysis_3.0.0-1_amd64.deb
+Size: 496738
+MD5sum: d2db0e4ddc80d275a9197ce8abdf2a6b
+SHA1: a1e608b55640d5a215494ff3fc358698d7532f8e
+SHA256: 74bfe3b9382fcca041c9d57e85e778aa0502b8a7f1d7e6c2376177d579322583
+Section: science
+Priority: optional
+Homepage: https://github.com/blackbird410/2D-Truss-Analysis
+Description: Professional 2D truss structural analysis software
+
+Package: 2d-truss-analysis-cli
+Version: 3.0.0-1
+Architecture: amd64
+Maintainer: Neil Taison Rigaud <ntsrigaud14@gmail.com>
+Installed-Size: 899
+Depends: libc6 (>= 2.38), libgcc-s1 (>= 3.0), libstdc++6 (>= 13)
+Filename: pool/main/2/2d-truss-analysis/2d-truss-analysis-cli_3.0.0-1_amd64.deb
+Size: 387000
+MD5sum: 7977ea12a62df6ed61479608b4c3984b
+SHA1: 948602a366e8fa3f385701e32c52e39f7cb219e1
+SHA256: 9928d716f216a9e6d3bbb57e23d97a56de2e59761c0fca43f8e32d4b3abf9cd0
+Section: science
+Priority: optional
+Homepage: https://github.com/blackbird410/2D-Truss-Analysis
+Description: Professional 2D truss structural analysis software
+
+Package: 2d-truss-analysis-common
+Version: 3.0.0-1
+Architecture: all
+Maintainer: Neil Taison Rigaud <ntsrigaud14@gmail.com>
+Installed-Size: 164
+Filename: pool/main/2/2d-truss-analysis/2d-truss-analysis-common_3.0.0-1_all.deb
+Size: 25490
+MD5sum: fca0fa5fe5bdbeffe14f56cb87ff4a0a
+SHA1: a3726aa2114a57a65c209ed87ef0d2500851a5a1
+SHA256: 0b3781d03e4ecd32cd8c903bfb10534f1fc3cf1b33b76860663ebcd669393b1f
+Section: science
+Priority: optional
+Homepage: https://github.com/blackbird410/2D-Truss-Analysis
+Description: Professional 2D truss structural analysis software
+
