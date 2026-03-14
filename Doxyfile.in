@@ -15,7 +15,7 @@
 #
 # Usage:
 #   make docs                      # Generate documentation
-#   open docs/api/html/index.html  # View documentation
+#   open build/docs/api/html/index.html  # View documentation
 #
 # CI Integration:
 #   - Documentation workflow builds on every push to main
@@ -37,7 +37,7 @@ PROJECT_LOGO           =
 # Output Configuration
 # ==============================================================================
 
-OUTPUT_DIRECTORY       = @PROJECT_SOURCE_DIR@/docs/api
+OUTPUT_DIRECTORY       = @CMAKE_BINARY_DIR@/docs/api
 CREATE_SUBDIRS         = NO
 ALLOW_UNICODE_NAMES    = NO
 OUTPUT_LANGUAGE        = English
