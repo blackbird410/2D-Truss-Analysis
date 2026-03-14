@@ -34,13 +34,11 @@ env:
 # ==============================================================================
 
 permissions:
-  contents: read
-  pages: write
-  id-token: write
+  contents: write
 
 # Ensure only one deployment runs at a time
 concurrency:
-  group: "pages"
+  group: "docs-workflow"
   cancel-in-progress: false
 
 # ==============================================================================
@@ -51,6 +49,9 @@ jobs:
   build-documentation:
     name: Build Doxygen Documentation
     runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages-content
+      cancel-in-progress: false
 
     steps:
       # ----------------------------------------------------------------------
@@ -147,18 +148,18 @@ jobs:
 
       - name: Verify HTML output
         run: |
-          if [ ! -f docs/api/html/index.html ]; then
+          if [ ! -f build/docs/api/html/index.html ]; then
             echo "::error::Documentation index.html not found!"
             exit 1
           fi
 
           echo "Documentation generated successfully:"
-          echo "  - HTML files: $(find docs/api/html -name "*.html" | wc -l)"
-          echo "  - Total size: $(du -sh docs/api/html | cut -f1)"
+          echo "  - HTML files: $(find build/docs/api/html -name "*.html" | wc -l)"
+          echo "  - Total size: $(du -sh build/docs/api/html | cut -f1)"
 
           # Check for broken links (basic check)
           if command -v linkchecker &> /dev/null; then
-            linkchecker --check-extern docs/api/html/index.html || true
+            linkchecker --check-extern build/docs/api/html/index.html || true
           fi
 
       # ----------------------------------------------------------------------
@@ -168,46 +169,56 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: doxygen-documentation
-          path: docs/api/html/
+          path: build/docs/api/html/
           retention-days: 90
           if-no-files-found: error
 
-      - name: Upload Pages artifact
+      - name: Checkout gh-pages branch
         if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/checkout@v4
         with:
-          path: docs/api/html/
+          ref: gh-pages
+          path: gh-pages
+          fetch-depth: 0
 
-  # ============================================================================
-  # Deploy to GitHub Pages (Optional)
-  # ============================================================================
+      - name: Publish docs to gh-pages/docs
+        if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
+        run: |
+          mkdir -p gh-pages/docs
+          rsync -a --delete build/docs/api/html/ gh-pages/docs/
 
-  deploy-pages:
-    name: Deploy to GitHub Pages
-    runs-on: ubuntu-22.04
-    needs: build-documentation
-    if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
+      - name: Commit and push docs updates
+        if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
+        run: |
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add docs/
 
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+          if git diff --cached --quiet; then
+            echo "No documentation changes to commit"
+            exit 0
+          fi
 
-    steps:
-      - name: Deploy to GitHub Pages
-        id: deployment
-        uses: actions/deploy-pages@v4
+          git commit -m "docs: publish API documentation from ${GITHUB_SHA}"
 
-      - name: Comment deployment URL on PR
-        if: github.event_name == 'pull_request'
-        uses: actions/github-script@v7
-        with:
-          script: |
-            github.rest.issues.createComment({
-              issue_number: context.issue.number,
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              body: `Documentation deployed to: ${{ steps.deployment.outputs.page_url }}`
-            })
+          for attempt in 1 2 3; do
+            git pull --rebase origin gh-pages
+            if git push origin gh-pages; then
+              exit 0
+            fi
+            echo "Push failed on attempt ${attempt}; retrying..."
+            sleep 2
+          done
+
+          echo "Failed to push documentation updates after retries" >&2
+          exit 1
+
+      - name: Publish docs URL
+        if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
+        run: |
+          echo "Documentation available at: https://blackbird410.github.io/2D-Truss-Analysis/docs/"
+          echo "APT repository expected at: https://blackbird410.github.io/2D-Truss-Analysis/apt/"
 
   # ============================================================================
   # Documentation Quality Check (Optional - for strict enforcement)

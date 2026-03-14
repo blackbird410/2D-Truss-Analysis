@@ -304,7 +304,7 @@ if(DOXYGEN_FOUND)
     )
 
     # Optional: Add install target for documentation
-    install(DIRECTORY ${PROJECT_SOURCE_DIR}/docs/api/html
+    install(DIRECTORY ${CMAKE_BINARY_DIR}/docs/api/html
         DESTINATION "${CMAKE_INSTALL_DOCDIR}"
         OPTIONAL
         COMPONENT documentation
@@ -317,7 +317,7 @@ if(DOXYGEN_FOUND)
         message(STATUS "  - Graphviz (dot) not found - diagrams disabled")
         message(STATUS "    Install graphviz for call graphs and class diagrams")
     endif()
-    message(STATUS "  Output: ${PROJECT_SOURCE_DIR}/docs/api/html/index.html")
+    message(STATUS "  Output: ${CMAKE_BINARY_DIR}/docs/api/html/index.html")
 else()
     message(STATUS "Doxygen not found - 'make docs' target unavailable")
     message(STATUS "  Install doxygen to generate API documentation")

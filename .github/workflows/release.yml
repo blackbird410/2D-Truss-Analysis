@@ -223,6 +223,9 @@ jobs:
     name: Publish APT Repository
     needs: build-and-package
     runs-on: ubuntu-latest
+    concurrency:
+      group: gh-pages-content
+      cancel-in-progress: false
 
     permissions:
       contents: write
@@ -294,4 +297,15 @@ jobs:
           fi
 
           git commit -m "release: publish APT packages for v${{ needs.build-and-package.outputs.version }}"
-          git push origin gh-pages
+
+          for attempt in 1 2 3; do
+            git pull --rebase origin gh-pages
+            if git push origin gh-pages; then
+              exit 0
+            fi
+            echo "Push failed on attempt ${attempt}; retrying..."
+            sleep 2
+          done
+
+          echo "Failed to push APT updates after retries" >&2
+          exit 1
