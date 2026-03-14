@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/io/xml_truss_writer.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/io/xml_truss_writer.hpp">
+<area shape="rect" id="Node000001" title="XML format truss file writer." alt="" coords="116,5,313,75"/>
+<area shape="rect" id="Node000002" href="$fileio__factory_8cpp.html" title="Creates readers and writers based on file format." alt="" coords="5,123,203,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,87,138,124,134,121,171,83"/>
+<area shape="rect" id="Node000003" href="$xml__truss__writer_8cpp.html" title="Writes truss models to XML files." alt="" coords="227,123,424,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="259,83,295,121,291,124,255,87"/>
+</map>

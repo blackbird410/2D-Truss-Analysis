@@ -1,0 +1,5 @@
+<map id="truss::infrastructure::io::XmlTrussReader" name="truss::infrastructure::io::XmlTrussReader">
+<area shape="rect" id="Node000001" title="Reads truss structures from XML format files." alt="" coords="5,93,160,133"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1io_1_1ITrussReader.html" title="Abstract interface for truss file readers (Strategy pattern)" alt="" coords="7,5,158,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="85,59,85,93,80,93,80,59"/>
+</map>

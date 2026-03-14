@@ -1,0 +1,15 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/controllers/export_controller.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/controllers/export_controller.hpp">
+<area shape="rect" id="Node000001" title="Controller mediating export requests from ResultsDockPanel and ITrussAnalysisFacade::exportResults ca..." alt="" coords="171,5,373,75"/>
+<area shape="rect" id="Node000002" href="$export__format_8hpp.html" title="Export format specifications for analysis results." alt="" coords="16,123,163,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="212,77,137,118,134,114,209,73"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="187,130,261,155"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="258,76,238,118,233,116,253,74"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="286,130,357,155"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="291,74,312,116,307,118,286,76"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="381,130,451,155"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="322,73,390,120,387,125,319,77"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,211,83,236"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="81,164,60,200,55,197,76,162"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="107,211,165,236"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="103,162,124,197,120,200,98,164"/>
+</map>

@@ -1,0 +1,11 @@
+<map id="truss::interface::TrussAnalysisFacade::applyNodeLoad" name="truss::interface::TrussAnalysisFacade::applyNodeLoad">
+<area shape="rect" id="Node000001" title="Apply (or replace) an external force on a node." alt="" coords="5,77,221,117"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html#ab6fc4817b819f017f31a8228a1f6f4cb" title="Apply force to node." alt="" coords="269,70,453,125"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,95,256,95,256,100,222,100"/>
+<area shape="rect" id="Node000003" href="$structtruss_1_1application_1_1Result.html#a053316ac5f18e56102eb9a500cb77cf0" title="Construct a failure result carrying an error message." alt="" coords="526,5,661,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="449,67,515,47,516,52,451,72"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1application_1_1TrussApplicationService.html#a10be762095182a928068c15bf18ecc55" title="Check if handle is valid." alt="" coords="501,70,685,125"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="454,95,487,95,487,100,454,100"/>
+<area shape="rect" id="Node000005" href="$structtruss_1_1application_1_1Result.html#a3a31735809021c26f8c9fc0c7a1be351" title="Construct a successful result carrying a value." alt="" coords="526,149,661,189"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="451,122,516,143,515,148,449,127"/>
+</map>

@@ -1,0 +1,29 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/logging/logger_factory.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/logging/logger_factory.hpp">
+<area shape="rect" id="Node000001" title="Factory for creating logger instances." alt="" coords="179,5,378,75"/>
+<area shape="rect" id="Node000002" href="$console__logger_8hpp.html" title="Logs messages to standard output with level filtering." alt="" coords="44,123,191,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,77,150,118,148,113,219,72"/>
+<area shape="rect" id="Node000003" href="$logger_8hpp.html" title="Logger interface (Strategy pattern)." alt="" coords="135,196,225,221"/>
+<area shape="poly" id="edge12_Node000001_Node000003" title=" " alt="" coords="261,76,196,186,191,183,256,74"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="5,269,83,295"/>
+<area shape="poly" id="edge14_Node000001_Node000004" title=" " alt="" coords="179,52,140,61,100,75,64,96,34,124,25,139,20,155,18,191,25,226,35,256,30,257,20,227,13,191,15,154,20,137,30,121,61,92,98,71,138,56,178,46"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="249,196,313,221"/>
+<area shape="poly" id="edge15_Node000001_Node000006" title=" " alt="" coords="282,75,284,182,278,182,277,75"/>
+<area shape="rect" id="Node000008" href="$file__logger_8hpp.html" title="Logs messages to rotating log files." alt="" coords="316,123,433,148"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="315,73,355,111,351,115,311,77"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="436,196,527,221"/>
+<area shape="poly" id="edge13_Node000001_Node000009" title=" " alt="" coords="378,72,415,94,447,121,467,151,478,181,473,183,462,153,443,124,411,98,375,77"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="509,123,571,148"/>
+<area shape="poly" id="edge16_Node000001_Node000011" title=" " alt="" coords="374,72,496,116,495,121,372,77"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="130,147,163,184,159,187,126,150"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="145,146,243,188,241,193,143,150"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="36,196,111,221"/>
+<area shape="poly" id="edge6_Node000002_Node000007" title=" " alt="" coords="112,150,90,186,85,183,108,147"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="159,224,79,265,77,261,157,219"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="151,269,209,295"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="183,222,183,256,177,256,177,222"/>
+<area shape="poly" id="edge8_Node000008_Node000003" title=" " alt="" coords="344,151,225,194,224,189,342,146"/>
+<area shape="poly" id="edge11_Node000008_Node000006" title=" " alt="" coords="361,150,309,190,306,185,358,146"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="393,146,454,186,451,191,390,150"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="338,196,411,221"/>
+<area shape="poly" id="edge10_Node000008_Node000010" title=" " alt="" coords="377,148,377,182,372,182,372,148"/>
+</map>

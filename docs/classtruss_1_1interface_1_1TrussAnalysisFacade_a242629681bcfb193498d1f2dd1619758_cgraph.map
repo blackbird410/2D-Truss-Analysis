@@ -1,0 +1,33 @@
+<map id="truss::interface::TrussAnalysisFacade::validateBuilder" name="truss::interface::TrussAnalysisFacade::validateBuilder">
+<area shape="rect" id="Node000001" title="Validate a builder configuration without building." alt="" coords="5,141,221,181"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aa47af9cfbf450fc2339e9cb738068c26" title="Add a validation issue to the result." alt="" coords="836,281,1039,321"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="148,138,261,83,339,53,426,26,517,9,611,4,658,7,703,16,747,30,789,51,819,71,844,96,866,125,885,155,913,216,930,267,925,268,908,218,880,158,862,128,840,100,815,75,787,55,745,35,702,21,657,13,611,9,518,14,427,31,341,58,264,88,150,143"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1interface_1_1TrussBuilder.html#a2808f7bc8ccba5a157dde2aac8a47e41" title="Build and return the constructed truss." alt="" coords="269,141,476,181"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="222,158,255,158,255,163,222,163"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a4d47b42f7f412a1796f1f1ec7d4417ed" title="Perform comprehensive validation of a truss system." alt="" coords="281,281,464,321"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="153,179,324,272,321,277,150,183"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a18ca9b563ad2f4ff6ca6e23f44322c31" title="Validate boundary conditions Checks: adequate constraints, no over&#45;constraints, valid support types." alt="" coords="534,65,778,120"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="392,279,474,191,496,159,506,145,522,131,533,124,535,129,526,135,510,148,500,162,478,194,396,282"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a5b1cafd9e0f78bcbd046ead8a70ddcfc" title="Validate member connectivity Checks: all members connect valid nodes, no self&#45;loops,..." alt="" coords="524,145,788,185"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="396,278,451,236,486,214,523,194,542,187,544,192,525,199,489,218,454,240,399,283"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a3c01394d83f298ff90554b0847f366c3" title="Validate geometric properties Checks: non&#45;zero member lengths, no duplicate nodes,..." alt="" coords="533,209,779,249"/>
+<area shape="poly" id="edge8_Node000004_Node000007" title=" " alt="" coords="447,278,523,258,558,250,559,255,525,263,449,283"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a598b1c1ff7913ecf52474c245ac12ab2" title="Validate kinematic stability Checks: no mechanisms, adequate constraints to prevent rigid body motion..." alt="" coords="532,273,780,328"/>
+<area shape="poly" id="edge10_Node000004_Node000008" title=" " alt="" coords="464,298,518,298,518,303,464,303"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a7647bc08840457a67447f8722677731c" title="Validate load definitions Checks: loads applied to existing nodes, non&#45;zero loads,..." alt="" coords="546,353,766,393"/>
+<area shape="poly" id="edge12_Node000004_Node000009" title=" " alt="" coords="452,318,525,337,564,347,562,352,523,342,451,323"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#ad904dd34542f341c109c559fbab256df" title="Validate material properties Checks: positive Young&#39;s modulus, positive area, positive density." alt="" coords="535,417,777,457"/>
+<area shape="poly" id="edge14_Node000004_Node000010" title=" " alt="" coords="399,319,454,361,489,383,525,402,544,410,542,415,523,407,486,388,451,366,396,323"/>
+<area shape="rect" id="Node000011" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a1483aca9c9708c8e70fbb37437c9f2b7" title="Validate static determinacy Checks: 2n = m + r equation, proper constraint distribution." alt="" coords="547,481,765,536"/>
+<area shape="poly" id="edge16_Node000004_Node000011" title=" " alt="" coords="389,320,443,392,481,432,525,467,537,473,534,478,523,471,478,436,439,395,385,323"/>
+<area shape="rect" id="Node000012" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a51ed2e1e7fc8d8565e6871432859ce24" title="Validate structural completeness Checks: minimum node count, minimum member count,..." alt="" coords="533,560,779,615"/>
+<area shape="poly" id="edge18_Node000004_Node000012" title=" " alt="" coords="383,320,401,367,430,428,472,492,497,521,526,547,531,551,528,555,522,551,493,525,468,495,426,431,396,369,378,322"/>
+<area shape="poly" id="edge5_Node000005_Node000002" title=" " alt="" coords="766,118,789,131,830,162,866,199,918,268,914,271,861,202,826,166,787,135,763,123"/>
+<area shape="poly" id="edge7_Node000006_Node000002" title=" " alt="" coords="757,182,789,194,852,231,904,270,901,274,849,235,787,199,755,187"/>
+<area shape="poly" id="edge9_Node000007_Node000002" title=" " alt="" coords="741,246,789,258,851,275,849,280,787,263,740,251"/>
+<area shape="poly" id="edge11_Node000008_Node000002" title=" " alt="" coords="780,298,822,298,822,303,780,303"/>
+<area shape="poly" id="edge13_Node000009_Node000002" title=" " alt="" coords="735,350,787,337,846,322,847,327,789,342,737,355"/>
+<area shape="poly" id="edge15_Node000010_Node000002" title=" " alt="" coords="755,414,787,402,849,367,901,328,904,332,852,371,789,407,757,419"/>
+<area shape="poly" id="edge17_Node000011_Node000002" title=" " alt="" coords="763,479,787,467,826,436,861,400,914,331,918,334,866,403,830,440,789,471,766,484"/>
+<area shape="poly" id="edge19_Node000012_Node000002" title=" " alt="" coords="769,558,786,547,812,523,836,497,875,438,904,381,923,333,928,335,909,383,879,441,840,500,816,527,790,551,772,562"/>
+</map>

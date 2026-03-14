@@ -1,0 +1,13 @@
+<map id="truss::application::AnalysisApplicationService::exportResults" name="truss::application::AnalysisApplicationService::exportResults">
+<area shape="rect" id="Node000001" title="Export analysis results to file." alt="" coords="5,149,212,204"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1export___1_1ExporterFactory.html#a6f9d49d1988d781e4b3084194cffecd3" title="Create an exporter for the specified format." alt="" coords="269,5,458,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="143,147,196,108,259,70,272,63,275,68,261,75,199,113,146,151"/>
+<area shape="rect" id="Node000003" href="$structtruss_1_1application_1_1Result.html#a053316ac5f18e56102eb9a500cb77cf0" title="Construct a failure result carrying an error message." alt="" coords="296,85,431,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="205,147,282,125,284,130,207,152"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#aa1760e04834a91569608803dc8975107" title="Get mutable access to analysis results." alt="" coords="260,149,467,204"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="212,174,246,174,246,179,212,179"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a655e3253e2e55f1f04ecaa622b1327d6" title="Check if handle is valid." alt="" coords="260,228,467,283"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="199,202,262,221,260,226,197,207"/>
+<area shape="rect" id="Node000006" href="$structtruss_1_1application_1_1Result.html#a3a31735809021c26f8c9fc0c7a1be351" title="Construct a successful result carrying a value." alt="" coords="296,307,431,347"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="141,202,195,248,261,292,284,302,282,307,259,296,191,252,137,206"/>
+</map>

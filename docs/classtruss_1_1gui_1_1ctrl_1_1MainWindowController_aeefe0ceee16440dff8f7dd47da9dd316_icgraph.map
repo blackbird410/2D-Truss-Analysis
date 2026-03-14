@@ -1,0 +1,5 @@
+<map id="truss::gui::ctrl::MainWindowController::onAnalysisFailed" name="truss::gui::ctrl::MainWindowController::onAnalysisFailed">
+<area shape="rect" id="Node000001" title="Called when a background analysis has failed." alt="" coords="296,5,499,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a0b8dcba80782586833f499f64947e8c7" title="Construct with a mandatory facade reference." alt="" coords="5,5,248,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="282,28,248,28,248,23,282,23"/>
+</map>

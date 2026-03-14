@@ -1,0 +1,19 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/interfaces/iconfirmation_provider.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/interfaces/iconfirmation_provider.hpp">
+<area shape="rect" id="Node000001" title="Interface for confirming destructive operations without modal dialogs in tests." alt="" coords="312,5,512,75"/>
+<area shape="rect" id="Node000002" href="$main__window__controller_8hpp.html" title="Top&#45;level orchestrator controller: owns WorkspaceState, all sub&#45;controllers, and all Qt Item Models." alt="" coords="190,123,402,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="370,86,332,124,328,121,366,83"/>
+<area shape="rect" id="Node000007" href="$project__controller_8hpp.html" title="ProjectController — manages project lifecycle via ITrussAnalysisFacade." alt="" coords="427,123,629,192"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="458,83,496,121,492,124,454,86"/>
+<area shape="rect" id="Node000003" href="$main__window__controller_8cpp.html" title="MainWindowController — owns all sub&#45;controllers, models, and inter&#45;controller signal wiring." alt="" coords="280,240,491,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="333,202,361,238,357,241,329,205"/>
+<area shape="rect" id="Node000004" href="$main__window_8hpp.html" title="MainWindow — top&#45;level application window with full signal/slot wiring." alt="" coords="5,247,256,302"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="238,202,170,249,167,245,235,198"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html" title="Main entry point for the 2D Truss Analysis GUI application." alt="" coords="34,357,227,412"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="133,316,133,357,128,357,128,316"/>
+<area shape="rect" id="Node000006" href="$main__window_8cpp.html" title="New MainWindow full implementation (Phase 6)." alt="" coords="327,357,577,412"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="223,304,375,355,373,360,221,309"/>
+<area shape="poly" id="edge7_Node000007_Node000003" title=" " alt="" coords="477,203,429,242,426,238,474,199"/>
+<area shape="poly" id="edge9_Node000007_Node000006" title=" " alt="" coords="528,206,520,257,505,310,492,336,476,359,472,356,487,333,500,308,515,256,523,205"/>
+<area shape="rect" id="Node000008" href="$project__controller_8cpp.html" title="ProjectController implementation (Phase 5)." alt="" coords="565,240,768,309"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="581,199,628,238,624,242,577,203"/>
+</map>

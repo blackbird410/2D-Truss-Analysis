@@ -1,0 +1,23 @@
+<map id="truss::infrastructure::io::FileIOFactory::detectFormat" name="truss::infrastructure::io::FileIOFactory::detectFormat">
+<area shape="rect" id="Node000001" title="Detect file format from file extension." alt="" coords="765,136,916,191"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1io_1_1FileIOFactory.html#a0f6dcf8c33582fa87cfd238b33d5d806" title="Create a truss reader based on file extension." alt="" coords="550,5,701,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="795,129,757,101,716,74,695,62,697,58,719,69,760,96,798,125"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1infrastructure_1_1io_1_1FileIOFactory.html#a5e9957f1f11b03f8b3d479443f404b2b" title="Create a truss writer based on file extension." alt="" coords="550,84,701,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="751,144,700,132,702,127,752,139"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1application_1_1TrussApplicationService.html#a6af1f0977914627709887f8f6de6d7b6" title="Load truss from file (auto&#45;detects format)" alt="" coords="533,187,717,241"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="752,187,718,195,717,190,751,182"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1application_1_1TrussApplicationService.html#ad643f4ebc3154cd5f62481a287ea8cd2" title="Save truss to file (auto&#45;detects format from extension)" alt="" coords="533,289,717,344"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="793,202,719,256,669,291,666,287,716,252,790,197"/>
+<area shape="poly" id="edge4_Node000004_Node000004" title=" " alt="" coords="661,176,648,168,625,165,606,167,594,172,589,178,589,187,583,187,584,176,591,168,605,162,625,160,650,163,663,171"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a5fa10da6db8404ee3d36a5b0771b67a7" title="Load a truss model from a file (format auto&#45;detected from extension)." alt="" coords="269,150,485,190"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="519,198,485,192,486,187,520,193"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a2c81effdcf97df38420b7d7dfbbe3555" title="Load truss from file without analysis." alt="" coords="269,214,485,254"/>
+<area shape="poly" id="edge8_Node000004_Node000008" title=" " alt="" coords="520,225,486,228,485,223,519,220"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a1c6de78e50caf8f0d723bf7eb24a9e37" title="Complete workflow: load → validate → analyze." alt="" coords="5,118,221,158"/>
+<area shape="poly" id="edge6_Node000005_Node000006" title=" " alt="" coords="256,158,221,154,222,148,256,153"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#aa97d3aa6acb3c93034887c4797f09393" title="Complete workflow: load → validate (no analysis)" alt="" coords="5,182,221,222"/>
+<area shape="poly" id="edge7_Node000005_Node000007" title=" " alt="" coords="256,187,222,192,221,186,256,182"/>
+<area shape="poly" id="edge11_Node000009_Node000009" title=" " alt="" coords="661,278,648,271,625,268,606,270,594,275,589,281,589,289,583,289,584,279,591,270,605,265,625,263,650,266,663,274"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a9fa0047c55817e30411249cdba158866" title="Save a truss model to a file (format auto&#45;detected from extension)." alt="" coords="269,297,485,337"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="519,319,486,319,486,314,519,314"/>
+</map>

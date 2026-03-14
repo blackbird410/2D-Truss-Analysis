@@ -1,0 +1,13 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/logging/file_logger.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/logging/file_logger.hpp">
+<area shape="rect" id="Node000001" title="Logs messages to rotating log files." alt="" coords="116,5,313,75"/>
+<area shape="rect" id="Node000002" href="$file__logger_8cpp.html" title="Logs messages to rotating log files." alt="" coords="5,123,203,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="175,87,138,124,134,121,171,83"/>
+<area shape="rect" id="Node000003" href="$logger__factory_8hpp.html" title="Factory for creating logger instances." alt="" coords="227,123,426,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="259,83,296,121,292,124,255,87"/>
+<area shape="rect" id="Node000004" href="$main_8cpp.html" title="Main entry point for the 2D Truss Analysis GUI application." alt="" coords="10,247,203,302"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="252,201,158,250,155,245,249,196"/>
+<area shape="rect" id="Node000005" href="$logger__factory_8cpp.html" title="Creates logger instances based on configuration." alt="" coords="228,240,425,309"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="329,206,329,240,324,240,324,206"/>
+<area shape="rect" id="Node000006" href="$main__app_8cpp.html" title="CLI entry point for 2D Truss Analysis." alt="" coords="449,247,649,302"/>
+<area shape="poly" id="edge5_Node000003_Node000006" title=" " alt="" coords="405,196,500,245,498,250,403,201"/>
+</map>

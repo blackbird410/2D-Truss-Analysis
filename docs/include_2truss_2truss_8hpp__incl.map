@@ -1,0 +1,38 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/include/truss/truss.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/include/truss/truss.hpp">
+<area shape="rect" id="Node000001" title="Main public API header for 2D Truss Analysis library." alt="" coords="571,5,749,75"/>
+<area shape="rect" id="Node000002" href="$analysis__results_8hpp.html" title="Data structures for analysis results." alt="" coords="165,123,352,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="571,65,322,122,321,117,570,59"/>
+<area shape="rect" id="Node000006" href="$include_2truss_2core_2member_8hpp.html" title="Member class definition &#45; represents a structural member connecting nodes." alt="" coords="5,123,141,148"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="571,58,155,124,154,119,570,53"/>
+<area shape="rect" id="Node000007" href="$include_2truss_2core_2node_8hpp.html" title="Node class definition &#45; represents a point in the truss structure." alt="" coords="376,123,491,148"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="579,77,475,120,473,115,577,72"/>
+<area shape="rect" id="Node000008" href="$include_2truss_2core_2truss_8hpp.html" title="Main Truss structure class &#45; represents complete 2D truss structure." alt="" coords="515,123,629,148"/>
+<area shape="poly" id="edge10_Node000001_Node000008" title=" " alt="" coords="630,77,594,114,590,111,626,73"/>
+<area shape="rect" id="Node000010" href="$include_2truss_2core_2types_8hpp.html" title="Core type definitions for 2D Truss Analysis." alt="" coords="1155,123,1274,148"/>
+<area shape="poly" id="edge14_Node000001_Node000010" title=" " alt="" coords="750,54,1142,119,1141,124,749,59"/>
+<area shape="rect" id="Node000011" href="$analysis__facade_8hpp.html" title="High&#45;level API for performing structural analysis." alt="" coords="867,123,1080,148"/>
+<area shape="poly" id="edge15_Node000001_Node000011" title=" " alt="" coords="750,65,923,116,921,121,749,70"/>
+<area shape="rect" id="Node000012" href="$analysis__options_8hpp.html" title="Configuration options for structural analysis." alt="" coords="894,196,1053,221"/>
+<area shape="poly" id="edge19_Node000001_Node000012" title=" " alt="" coords="750,43,845,50,948,65,1037,87,1071,103,1094,121,1101,133,1101,145,1087,165,1060,181,1029,194,1027,189,1058,176,1083,161,1096,143,1095,134,1090,124,1068,107,1036,92,947,70,845,56,749,48"/>
+<area shape="rect" id="Node000014" href="$export__format_8hpp.html" title="Export format specifications for analysis results." alt="" coords="653,123,843,148"/>
+<area shape="poly" id="edge20_Node000001_Node000014" title=" " alt="" coords="694,73,730,111,726,114,690,77"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="309,196,376,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="274,146,320,185,317,189,270,150"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="233,196,284,221"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="261,148,261,182,256,182,256,148"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="402,196,465,221"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="288,146,393,188,391,193,286,150"/>
+<area shape="poly" id="edge6_Node000006_Node000003" title=" " alt="" coords="117,145,297,192,295,198,116,151"/>
+<area shape="poly" id="edge8_Node000007_Node000003" title=" " alt="" coords="420,150,370,189,367,185,417,146"/>
+<area shape="poly" id="edge9_Node000007_Node000005" title=" " alt="" coords="436,148,436,182,431,182,431,148"/>
+<area shape="poly" id="edge11_Node000008_Node000003" title=" " alt="" coords="536,151,390,196,389,190,534,145"/>
+<area shape="poly" id="edge13_Node000008_Node000005" title=" " alt="" coords="551,150,469,192,467,187,549,146"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="709,196,787,221"/>
+<area shape="poly" id="edge12_Node000008_Node000009" title=" " alt="" coords="601,146,707,188,705,193,599,150"/>
+<area shape="poly" id="edge18_Node000011_Node000009" title=" " alt="" coords="938,151,798,194,797,189,936,145"/>
+<area shape="poly" id="edge16_Node000011_Node000012" title=" " alt="" coords="976,148,976,182,971,182,971,148"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="869,269,928,295"/>
+<area shape="poly" id="edge17_Node000012_Node000013" title=" " alt="" coords="963,223,923,262,919,258,960,219"/>
+<area shape="poly" id="edge21_Node000014_Node000009" title=" " alt="" coords="751,148,751,182,745,182,745,148"/>
+<area shape="poly" id="edge22_Node000014_Node000013" title=" " alt="" coords="762,147,879,258,875,262,758,150"/>
+</map>

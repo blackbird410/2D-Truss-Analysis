@@ -1,0 +1,12 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/application/material_library_service.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/application/material_library_service.hpp">
+<area shape="rect" id="Node000001" title="Material and section property library service." alt="" coords="147,5,359,75"/>
+<area shape="rect" id="Node000002" href="$material__library__service_8cpp.html" title="Provides default materials and cross&#45;section definitions." alt="" coords="5,123,216,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="203,86,154,124,151,120,199,81"/>
+<area shape="rect" id="Node000003" href="$main__window_8cpp.html" title="New MainWindow full implementation (Phase 6)." alt="" coords="129,247,378,302"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,88,256,247,251,247,251,88"/>
+<area shape="rect" id="Node000004" href="$inspector__panel_8hpp.html" title="Context&#45;sensitive inspector panel for node and member property editing." alt="" coords="291,123,469,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="302,82,345,120,341,124,298,86"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="334,203,284,249,280,245,331,200"/>
+<area shape="rect" id="Node000005" href="$inspector__panel_8cpp.html" title="InspectorPanel implementation." alt="" coords="403,240,581,309"/>
+<area shape="poly" id="edge5_Node000004_Node000005" title=" " alt="" coords="424,200,461,238,457,242,421,204"/>
+</map>

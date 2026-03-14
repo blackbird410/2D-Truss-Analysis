@@ -1,0 +1,5 @@
+<map id="truss::interface::TrussAnalysisFacade::isValidTrussHandle" name="truss::interface::TrussAnalysisFacade::isValidTrussHandle">
+<area shape="rect" id="Node000001" title="Check whether a truss handle refers to a live truss instance." alt="" coords="5,13,221,53"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html#a10be762095182a928068c15bf18ecc55" title="Check if handle is valid." alt="" coords="269,5,453,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,30,256,30,256,35,222,35"/>
+</map>

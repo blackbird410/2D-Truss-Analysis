@@ -1,0 +1,7 @@
+<map id="truss::application::MemberUpdateSpec" name="truss::application::MemberUpdateSpec">
+<area shape="rect" id="Node000001" title="Member update specification for material and section changes." alt="" coords="70,108,233,148"/>
+<area shape="rect" id="Node000002" href="$structtruss_1_1application_1_1MaterialSpec.html" title="Material specification for member creation." alt="" coords="5,5,140,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="98,55,139,106,135,110,94,58"/>
+<area shape="rect" id="Node000003" href="$structtruss_1_1application_1_1SectionSpec.html" title="Cross&#45;section specification for member creation." alt="" coords="164,5,299,45"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="210,58,168,110,164,106,206,55"/>
+</map>

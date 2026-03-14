@@ -1,0 +1,6 @@
+<map id="truss::application::TrussApplicationService::saveTruss" name="truss::application::TrussApplicationService::saveTruss">
+<area shape="rect" id="Node000001" title="Save truss to file (auto&#45;detects format from extension)" alt="" coords="269,29,453,84"/>
+<area shape="poly" id="edge2_Node000001_Node000001" title=" " alt="" coords="403,18,388,11,361,8,339,10,325,15,318,21,318,29,313,29,313,19,322,10,338,5,361,3,389,6,405,14"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a9fa0047c55817e30411249cdba158866" title="Save a truss model to a file (format auto&#45;detected from extension)." alt="" coords="5,37,221,77"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,59,222,59,222,54,255,54"/>
+</map>

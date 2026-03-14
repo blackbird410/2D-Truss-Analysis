@@ -1,0 +1,5 @@
+<map id="truss::application::SectionPreset" name="truss::application::SectionPreset">
+<area shape="rect" id="Node000001" title="Section preset descriptor." alt="" coords="44,93,179,133"/>
+<area shape="rect" id="Node000002" href="$structtruss_1_1core_1_1SectionProperties.html" title="Cross&#45;sectional properties for structural members." alt="" coords="5,5,217,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,44,114,93,109,93,109,44"/>
+</map>

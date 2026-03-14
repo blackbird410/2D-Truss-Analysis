@@ -1,0 +1,10 @@
+<map id="truss::gui::ctrl::MainWindowController::trussViewChanged" name="truss::gui::ctrl::MainWindowController::trussViewChanged">
+<area shape="rect" id="Node000001" title="Emitted after model refresh; carries a pointer to the new truss view." alt="" coords="580,37,795,77"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#ae20ff209b16d4337fa019d890e341caa" title="Called when a background analysis has completed successfully." alt="" coords="296,5,532,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="566,46,532,42,533,37,567,41"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a7b6297c4115d34aa3d472f0dfd6148f1" title="Called when the structural model has been modified." alt="" coords="313,69,515,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="567,74,516,80,515,75,566,69"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a0b8dcba80782586833f499f64947e8c7" title="Construct with a mandatory facade reference." alt="" coords="5,37,248,77"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="283,43,249,46,248,41,282,37"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="298,79,248,74,249,68,299,74"/>
+</map>

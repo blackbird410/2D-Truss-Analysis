@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/export/json_exporter.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/export/json_exporter.hpp">
+<area shape="rect" id="Node000001" title="JSON format results exporter." alt="" coords="121,5,319,75"/>
+<area shape="rect" id="Node000002" href="$exporter__factory_8cpp.html" title="Creates result exporters based on output format." alt="" coords="5,123,211,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="179,87,143,124,139,121,176,83"/>
+<area shape="rect" id="Node000003" href="$json__exporter_8cpp.html" title="Exports analysis results to JSON format." alt="" coords="235,123,432,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="265,83,302,121,298,124,261,87"/>
+</map>

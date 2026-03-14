@@ -1,0 +1,28 @@
+var searchData=
+[
+  ['name_0',['name',['../structtruss_1_1core_1_1MaterialProperties.html#a4051ee35c5ad77e9cfaded780caa0e3c',1,'truss::core::MaterialProperties::name'],['../structtruss_1_1application_1_1MaterialSpec.html#a6cb1646e40734c307a7af049546fbc0d',1,'truss::application::MaterialSpec::name'],['../structtruss_1_1application_1_1SectionPreset.html#a552b11e199e020b09cfcbfa86586b791',1,'truss::application::SectionPreset::name'],['../structtruss_1_1application_1_1MaterialPreset.html#a89b329533f3bd44022bd7f3ade4ed82e',1,'truss::application::MaterialPreset::name']]],
+  ['naming_20convention_1',['Branch Naming Convention',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2CONTRIBUTING.html#autotoc_md29',1,'']]],
+  ['new_5fproject_20svg_20open_5ffile_20svg_20save_20svg_2',['new_project.svg open_file.svg save.svg',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2src_2gui_2resources_2icons_2README.html#autotoc_md3',1,'']]],
+  ['nodalforce_3',['NodalForce',['../load_8hpp.html#a57455696893d20bacc2bf868954cfbf9ab8498d2ae8bd510febc1394a6229d335',1,'truss::core']]],
+  ['node_4',['node',['../classtruss_1_1Node.html',1,'truss::Node'],['../classtruss_1_1core_1_1Node.html#a669881da48e6ac7b4186fd5486a04599',1,'truss::core::Node::Node(NodeId id, const Point2D &amp;position, SupportType support=SupportType::Free)'],['../classtruss_1_1core_1_1Node.html#a6a695f490f7e689deabce3520f2fcfb0',1,'truss::core::Node::Node(NodeId id, Real x, Real y)'],['../classtruss_1_1core_1_1Node.html#ae186f300d3949e520023b168c439009a',1,'truss::core::Node::Node()'],['../classtruss_1_1core_1_1Node.html',1,'truss::core::Node']]],
+  ['node_2ecpp_5',['node.cpp',['../node_8cpp.html',1,'']]],
+  ['node_2ehpp_6',['node.hpp',['../src_2core_2model_2node_8hpp.html',1,'(Global Namespace)'],['../include_2truss_2core_2node_8hpp.html',1,'(Global Namespace)']]],
+  ['node_5ftable_5fmodel_2ecpp_7',['node_table_model.cpp',['../node__table__model_8cpp.html',1,'']]],
+  ['node_5ftable_5fmodel_2ehpp_8',['node_table_model.hpp',['../node__table__model_8hpp.html',1,'']]],
+  ['nodedeleterequested_9',['nodeDeleteRequested',['../classtruss_1_1gui_1_1TrussCanvasWidget.html#a3a1f35a368c788017397e63872473411',1,'truss::gui::TrussCanvasWidget']]],
+  ['nodedroprequested_10',['nodeDropRequested',['../classtruss_1_1gui_1_1TrussCanvasWidget.html#aaacffe99b495e1210cdb067deb82d33e',1,'truss::gui::TrussCanvasWidget']]],
+  ['nodedto_11',['NodeDTO',['../structtruss_1_1core_1_1interfaces_1_1NodeDTO.html',1,'truss::core::interfaces']]],
+  ['nodeid_12',['NodeId',['../src_2core_2model_2types_8hpp.html#a38f21b0ed6db3efd0995000b2337dda8',1,'truss::core']]],
+  ['nodepositionchangerequested_13',['nodePositionChangeRequested',['../classtruss_1_1gui_1_1InspectorPanel.html#a609a0dd717dcfcab18e5b296a5d635d4',1,'truss::gui::InspectorPanel']]],
+  ['noderesults_14',['NodeResults',['../structtruss_1_1core_1_1NodeResults.html',1,'truss::core']]],
+  ['nodeselectionchanged_15',['nodeSelectionChanged',['../classtruss_1_1gui_1_1TrussCanvasWidget.html#a517a60b96c85bcd1e936ca535547e023',1,'truss::gui::TrussCanvasWidget']]],
+  ['nodetablemodel_16',['NodeTableModel',['../classtruss_1_1gui_1_1model_1_1NodeTableModel.html',1,'truss::gui::model']]],
+  ['nodeupdatespec_17',['NodeUpdateSpec',['../structtruss_1_1application_1_1NodeUpdateSpec.html',1,'truss::application']]],
+  ['nodeview_18',['NodeView',['../structtruss_1_1core_1_1interfaces_1_1NodeView.html',1,'truss::core::interfaces']]],
+  ['notification_5frail_2ecpp_19',['notification_rail.cpp',['../notification__rail_8cpp.html',1,'']]],
+  ['notification_5frail_2ehpp_20',['notification_rail.hpp',['../notification__rail_8hpp.html',1,'']]],
+  ['notificationdismissed_21',['notificationDismissed',['../classtruss_1_1gui_1_1NotificationRail.html#a8bbd6f37df406325e2208bbe32939393',1,'truss::gui::NotificationRail']]],
+  ['notificationrail_22',['NotificationRail',['../classtruss_1_1gui_1_1NotificationRail.html',1,'truss::gui']]],
+  ['notificationseverity_23',['NotificationSeverity',['../notification__rail_8hpp.html#a97eed1c330cc98abbbadd6cd37c8acec',1,'truss::gui']]],
+  ['numbering_24',['Version Numbering',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2CONTRIBUTING.html#autotoc_md49',1,'']]]
+];

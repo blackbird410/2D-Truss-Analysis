@@ -1,0 +1,5 @@
+<map id="truss::application::TrussApplicationService::hasUnsavedChanges" name="truss::application::TrussApplicationService::hasUnsavedChanges">
+<area shape="rect" id="Node000001" title="Check if truss has unsaved changes." alt="" coords="5,5,189,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html#a10be762095182a928068c15bf18ecc55" title="Check if handle is valid." alt="" coords="237,5,421,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,30,223,30,223,35,190,35"/>
+</map>

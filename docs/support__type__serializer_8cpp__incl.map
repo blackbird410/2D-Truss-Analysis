@@ -1,0 +1,28 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/io/support_type_serializer.cpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/io/support_type_serializer.cpp">
+<area shape="rect" id="Node000001" title="Parses and serializes SupportType string tokens for JSON and XML I/O." alt="" coords="367,5,587,75"/>
+<area shape="rect" id="Node000002" href="$support__type__serializer_8hpp.html" title="Serializes and deserializes SupportType values to and from string." alt="" coords="295,123,474,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="447,77,414,114,410,110,444,73"/>
+<area shape="rect" id="Node000012" href="$io__types_8hpp.html" title="File I/O types, formats, and options for truss file operations." alt="" coords="499,123,641,163"/>
+<area shape="poly" id="edge11_Node000001_Node000012" title=" " alt="" coords="510,73,545,110,541,114,506,77"/>
+<area shape="rect" id="Node000003" href="$src_2core_2model_2types_8hpp.html" title="Core data types and mathematical utilities for truss analysis." alt="" coords="281,211,443,236"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="382,164,372,198,367,197,377,162"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="467,211,526,236"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="413,161,470,200,467,205,410,165"/>
+<area shape="rect" id="Node000004" href="$math__utils_8hpp.html" title="Pure mathematical utility functions with no project dependencies." alt="" coords="5,284,177,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="319,239,149,283,148,278,318,233"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="201,284,304,309"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="346,238,284,279,281,274,343,234"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="329,284,395,309"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="365,236,365,270,359,270,359,236"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="419,284,497,309"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="379,234,433,273,430,278,376,238"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="521,284,584,309"/>
+<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="394,234,510,276,508,281,392,239"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="13,357,76,383"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="86,311,62,347,58,344,81,308"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="100,357,179,383"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="101,308,126,345,122,348,97,311"/>
+<area shape="poly" id="edge13_Node000012_Node000011" title=" " alt="" coords="554,165,519,202,515,199,550,161"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="551,211,637,236"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="578,162,589,197,584,198,573,164"/>
+</map>

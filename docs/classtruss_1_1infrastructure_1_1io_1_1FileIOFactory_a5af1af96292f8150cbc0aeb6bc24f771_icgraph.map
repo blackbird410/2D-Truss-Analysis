@@ -1,0 +1,7 @@
+<map id="truss::infrastructure::io::FileIOFactory::createWriter" name="truss::infrastructure::io::FileIOFactory::createWriter">
+<area shape="rect" id="Node000001" title="Create a truss writer for the specified format." alt="" coords="237,45,388,100"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1io_1_1FileIOFactory.html#a5e9957f1f11b03f8b3d479443f404b2b" title="Create a truss writer based on file extension." alt="" coords="22,5,173,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="223,59,173,49,173,44,224,54"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1TrussApplicationService.html#a443025b745a6b687e3c9efad0a9a0fe6" title="Save truss to file with explicit format." alt="" coords="5,84,189,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="224,91,190,97,189,92,223,86"/>
+</map>

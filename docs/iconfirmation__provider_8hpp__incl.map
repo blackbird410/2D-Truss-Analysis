@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/interfaces/iconfirmation_provider.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/interfaces/iconfirmation_provider.hpp">
+<area shape="rect" id="Node000001" title="Interface for confirming destructive operations without modal dialogs in tests." alt="" coords="21,5,221,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="5,123,120,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="102,76,80,112,75,109,98,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="145,123,215,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="145,73,168,109,163,112,140,76"/>
+</map>

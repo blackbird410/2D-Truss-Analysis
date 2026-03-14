@@ -1,0 +1,5 @@
+<map id="truss::interface::TrussAnalysisFacade::clearTruss" name="truss::interface::TrussAnalysisFacade::clearTruss">
+<area shape="rect" id="Node000001" title="Remove all data associated with a specific truss handle." alt="" coords="5,13,221,53"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html#ad0fa67045612b7b6f738fe12b8873b67" title="Clear/delete truss model." alt="" coords="269,5,453,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,30,256,30,256,35,222,35"/>
+</map>

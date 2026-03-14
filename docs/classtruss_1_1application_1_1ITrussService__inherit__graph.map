@@ -1,0 +1,11 @@
+<map id="truss::application::ITrussService" name="truss::application::ITrussService">
+<area shape="rect" id="Node000001" title="Abstract interface for truss application services." alt="" coords="5,69,140,109"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html" title="Application service for truss model operations." alt="" coords="188,5,372,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="150,63,214,43,215,48,152,68"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1interface_1_1FacadeTrussServiceAdapter.html" title="ITrussService adapter for TrussAnalysisFacade." alt="" coords="193,69,367,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="154,87,193,87,193,92,154,92"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1interface_1_1ITrussAnalysisFacade.html" title="Combined interface for truss and analysis services." alt="" coords="197,133,363,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="152,111,215,131,214,136,150,116"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html" title="Unified facade for truss analysis workflows." alt="" coords="420,133,636,173"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="376,151,420,151,420,156,376,156"/>
+</map>

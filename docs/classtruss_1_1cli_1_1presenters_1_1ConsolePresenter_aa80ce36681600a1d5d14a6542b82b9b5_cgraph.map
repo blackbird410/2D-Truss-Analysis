@@ -1,0 +1,23 @@
+<map id="truss::cli::presenters::ConsolePresenter::displayAnalysisResults" name="truss::cli::presenters::ConsolePresenter::displayAnalysisResults">
+<area shape="rect" id="Node000001" title="Display analysis results via view interface." alt="" coords="5,360,260,415"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a57877f2168e3b5a1be5249e968f2b88b" title="Condition number of the assembled stiffness matrix." alt="" coords="313,5,483,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="140,359,161,300,196,223,244,142,273,104,306,69,310,66,313,70,310,73,277,107,248,145,200,226,166,302,145,361"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#aa94426134b0ad6a7c3f8b9ba2f095777" title="Global nodal displacement vector, indexed by DOF." alt="" coords="313,84,483,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="145,359,171,314,207,258,253,200,306,148,311,144,315,148,310,152,257,203,211,261,175,317,150,361"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#aca7e4f21652fceecb772e589dbddd5c7" title="Maximum nodal displacement magnitude across all nodes." alt="" coords="313,163,483,217"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="157,358,221,294,263,258,307,226,314,222,317,226,309,231,266,263,225,298,161,362"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a5c2385ed98148f286b828801a9e65c01" title="Maximum absolute axial stress across all members." alt="" coords="313,241,483,296"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="192,357,307,305,320,299,322,304,309,310,194,362"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a56041545a4582b8a19cd719a18a30b84" title="Axial force in every member, indexed by member sequence." alt="" coords="313,320,483,375"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="260,365,299,359,300,365,261,371"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a65a562769282f3c9af7277149a160e3e" title="Axial stress in every member, indexed by member sequence." alt="" coords="313,399,483,453"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="261,403,300,409,299,414,260,409"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a31a21a855e390ea576f70d267d04c41f" title="Total elastic strain energy stored in the structure." alt="" coords="313,477,483,532"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="197,412,324,469,322,474,194,417"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#af7bfa45a1be36307d7a6cd58bbbf0a86" title="Utilisation ratio (σ / f_y) for every member, indexed by member sequence." alt="" coords="313,556,483,611"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="161,413,226,476,266,510,309,541,319,547,316,552,307,546,263,514,222,480,158,417"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#af832f79decf45b5f1b62b080882fdda5" title="Whether the solver reached a converged solution." alt="" coords="313,635,483,689"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="150,413,176,457,212,512,257,569,310,620,316,625,313,629,306,624,253,573,208,515,171,460,146,416"/>
+<area shape="rect" id="Node000011" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab3b401bfec9487869b86ff139c08c66c" title="Output informational message." alt="" coords="308,713,488,768"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="145,414,167,472,201,548,249,628,278,665,310,699,315,703,312,707,306,703,274,669,244,631,196,550,162,474,140,416"/>
+</map>

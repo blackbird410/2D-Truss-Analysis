@@ -1,0 +1,5 @@
+<map id="truss::application::TrussApplicationService::markAsSaved" name="truss::application::TrussApplicationService::markAsSaved">
+<area shape="rect" id="Node000001" title="Mark truss as saved (clear modification flag)" alt="" coords="237,5,421,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html#a443025b745a6b687e3c9efad0a9a0fe6" title="Save truss to file with explicit format." alt="" coords="5,5,189,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="223,35,190,35,190,30,223,30"/>
+</map>

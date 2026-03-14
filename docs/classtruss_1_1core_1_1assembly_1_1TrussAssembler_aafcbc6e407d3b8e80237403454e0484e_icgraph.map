@@ -1,0 +1,5 @@
+<map id="truss::core::assembly::TrussAssembler::assembleTruss" name="truss::core::assembly::TrussAssembler::assembleTruss">
+<area shape="rect" id="Node000001" title="Assemble a Truss Domain object from TrussDTO." alt="" coords="237,13,473,53"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html#a76ee8e4ac9adbe7d09f713a486aa5727" title="Load truss from file with explicit format." alt="" coords="5,5,189,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="224,35,189,35,189,30,224,30"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="truss::core::analysis::StiffnessAssembler::assembleAsVector" name="truss::core::analysis::StiffnessAssembler::assembleAsVector">
+<area shape="rect" id="Node000001" title="Assemble stiffness matrix and return as 2D vector (for display)" alt="" coords="5,5,160,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1analysis_1_1StiffnessAssembler.html#a4f2e05dfecc9dd2317626828b4c708a3" title="Assemble the global stiffness matrix for a truss." alt="" coords="208,5,363,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="160,30,194,30,194,35,160,35"/>
+</map>

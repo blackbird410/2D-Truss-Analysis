@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/panels/results_dock_panel.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/panels/results_dock_panel.hpp">
+<area shape="rect" id="Node000001" title="Dockable results panel with tabbed views of analysis output." alt="" coords="159,5,338,75"/>
+<area shape="rect" id="Node000002" href="$main__window_8cpp.html" title="New MainWindow full implementation (Phase 6)." alt="" coords="5,130,255,185"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="206,87,159,132,155,128,202,83"/>
+<area shape="rect" id="Node000003" href="$results__dock__panel_8cpp.html" title="ResultsDockPanel implementation." alt="" coords="279,123,458,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="296,83,335,121,332,124,292,86"/>
+</map>

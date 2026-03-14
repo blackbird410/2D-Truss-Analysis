@@ -1,0 +1,56 @@
+<map id="truss::core::validation::ValidationResult::addIssue" name="truss::core::validation::ValidationResult::addIssue">
+<area shape="rect" id="Node000001" title="Add a validation issue to the result." alt="" coords="1340,325,1543,365"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a18ca9b563ad2f4ff6ca6e23f44322c31" title="Validate boundary conditions Checks: adequate constraints, no over&#45;constraints, valid support types." alt="" coords="1038,435,1282,490"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1396,375,1347,401,1293,426,1262,438,1261,433,1291,422,1345,396,1394,370"/>
+<area shape="rect" id="Node000012" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a242629681bcfb193498d1f2dd1619758" title="Validate a builder configuration without building." alt="" coords="533,533,749,573"/>
+<area shape="poly" id="edge17_Node000001_Node000012" title=" " alt="" coords="1432,380,1413,425,1384,478,1344,529,1320,551,1293,569,1256,587,1217,601,1136,619,1053,626,971,625,892,617,820,604,704,576,705,571,821,599,893,611,971,619,1053,621,1135,614,1216,595,1254,582,1291,564,1317,547,1340,526,1379,475,1408,423,1427,378"/>
+<area shape="rect" id="Node000015" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#aa97d3aa6acb3c93034887c4797f09393" title="Complete workflow: load → validate (no analysis)" alt="" coords="5,455,221,495"/>
+<area shape="poly" id="edge20_Node000001_Node000015" title=" " alt="" coords="1436,379,1420,436,1393,504,1374,539,1352,572,1325,602,1293,626,1240,655,1191,670,1146,675,1101,672,1007,656,952,648,890,645,640,645,567,641,494,628,422,610,354,588,235,539,150,497,152,493,237,534,356,583,424,605,495,623,568,636,640,640,890,640,953,643,1007,651,1102,667,1146,669,1190,665,1238,650,1291,622,1321,598,1347,569,1370,536,1388,502,1415,434,1431,378"/>
+<area shape="rect" id="Node000016" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a5b1cafd9e0f78bcbd046ead8a70ddcfc" title="Validate member connectivity Checks: all members connect valid nodes, no self&#45;loops,..." alt="" coords="1028,515,1292,555"/>
+<area shape="poly" id="edge18_Node000001_Node000016" title=" " alt="" coords="1421,379,1368,443,1333,477,1293,505,1268,517,1266,512,1291,500,1329,473,1364,440,1417,375"/>
+<area shape="rect" id="Node000017" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a3c01394d83f298ff90554b0847f366c3" title="Validate geometric properties Checks: non&#45;zero member lengths, no duplicate nodes,..." alt="" coords="1037,5,1283,45"/>
+<area shape="poly" id="edge21_Node000001_Node000017" title=" " alt="" coords="1430,313,1413,257,1386,188,1345,118,1320,87,1290,59,1272,48,1275,43,1294,55,1324,83,1350,115,1391,186,1419,255,1435,311"/>
+<area shape="rect" id="Node000018" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a598b1c1ff7913ecf52474c245ac12ab2" title="Validate kinematic stability Checks: no mechanisms, adequate constraints to prevent rigid body motion..." alt="" coords="1036,70,1284,125"/>
+<area shape="poly" id="edge23_Node000001_Node000018" title=" " alt="" coords="1423,314,1402,273,1372,226,1335,180,1290,139,1270,127,1272,122,1294,135,1339,176,1376,223,1406,271,1427,311"/>
+<area shape="rect" id="Node000019" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a7647bc08840457a67447f8722677731c" title="Validate load definitions Checks: loads applied to existing nodes, non&#45;zero loads,..." alt="" coords="1050,149,1270,189"/>
+<area shape="poly" id="edge25_Node000001_Node000019" title=" " alt="" coords="1415,316,1362,258,1328,229,1291,204,1265,192,1267,187,1293,199,1331,224,1366,254,1419,313"/>
+<area shape="rect" id="Node000020" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#ad904dd34542f341c109c559fbab256df" title="Validate material properties Checks: positive Young&#39;s modulus, positive area, positive density." alt="" coords="1039,213,1281,253"/>
+<area shape="poly" id="edge27_Node000001_Node000020" title=" " alt="" coords="1395,320,1346,293,1291,268,1255,256,1257,251,1293,263,1348,288,1398,316"/>
+<area shape="rect" id="Node000021" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a1483aca9c9708c8e70fbb37437c9f2b7" title="Validate static determinacy Checks: 2n = m + r equation, proper constraint distribution." alt="" coords="1051,278,1269,333"/>
+<area shape="poly" id="edge29_Node000001_Node000021" title=" " alt="" coords="1326,332,1269,324,1270,318,1327,326"/>
+<area shape="rect" id="Node000022" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a51ed2e1e7fc8d8565e6871432859ce24" title="Validate structural completeness Checks: minimum node count, minimum member count,..." alt="" coords="1037,357,1283,411"/>
+<area shape="poly" id="edge31_Node000001_Node000022" title=" " alt="" coords="1327,364,1283,370,1283,364,1326,358"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a4d47b42f7f412a1796f1f1ec7d4417ed" title="Perform comprehensive validation of a truss system." alt="" coords="797,293,980,333"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1039,432,1027,426,992,405,959,381,908,335,911,331,962,377,995,401,1029,422,1041,427"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a14d09b77f8fc4caee9003f5c1de2c12a" title="Run structural analysis on truss." alt="" coords="538,215,745,270"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="804,292,737,273,738,267,805,287"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a233a0e77a139095b1b1c36158c0a4353" title="Quick validation check (returns only pass/fail)" alt="" coords="555,373,727,413"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="817,340,750,363,708,376,707,371,749,357,815,335"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1application_1_1TrussApplicationService.html#a76ee8e4ac9adbe7d09f713a486aa5727" title="Load truss from file with explicit format." alt="" coords="549,438,733,493"/>
+<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="859,345,810,387,751,428,725,440,723,435,748,423,807,382,855,341"/>
+<area shape="rect" id="Node000011" href="$classtruss_1_1application_1_1TrussApplicationService.html#a443025b745a6b687e3c9efad0a9a0fe6" title="Save truss to file with explicit format." alt="" coords="549,137,733,191"/>
+<area shape="poly" id="edge10_Node000003_Node000011" title=" " alt="" coords="855,286,806,245,748,205,725,194,728,189,751,200,810,240,858,282"/>
+<area shape="poly" id="edge11_Node000003_Node000012" title=" " alt="" coords="874,347,825,425,791,469,751,507,728,523,703,536,701,531,725,519,748,503,787,465,821,422,869,344"/>
+<area shape="rect" id="Node000013" href="$classtruss_1_1application_1_1TrussApplicationService.html#a5e70cf897aa24d53b7cf1d6abead626d" title="Validate truss structure." alt="" coords="549,294,733,349"/>
+<area shape="poly" id="edge12_Node000003_Node000013" title=" " alt="" coords="784,319,733,321,733,316,784,314"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a3a3ba7dbf7a643eaac4106449ad2c208" title="Perform structural analysis on a truss." alt="" coords="269,199,485,239"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="524,235,485,231,486,226,525,229"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#aaa5ed9478a63bd8fe035ba7002673fc8" title="Analyze an existing truss." alt="" coords="269,263,485,303"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="525,263,486,269,485,264,524,258"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a1c6de78e50caf8f0d723bf7eb24a9e37" title="Complete workflow: load → validate → analyze." alt="" coords="5,311,221,351"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="291,245,270,253,206,283,150,313,148,308,203,278,268,248,289,240"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a8645c59378bf7fcccd3bd8ebc162b2d9" title="Complete workflow: build → validate → analyze." alt="" coords="5,215,221,255"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="256,229,222,231,221,225,256,223"/>
+<area shape="rect" id="Node000014" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a69f028ba718cd7dd67762edd191d7943" title="Run the full structural validation suite on a truss." alt="" coords="269,327,485,367"/>
+<area shape="poly" id="edge13_Node000013_Node000014" title=" " alt="" coords="536,334,486,339,485,334,535,329"/>
+<area shape="poly" id="edge14_Node000014_Node000006" title=" " alt="" coords="256,342,221,340,222,335,256,337"/>
+<area shape="poly" id="edge15_Node000014_Node000007" title=" " alt="" coords="289,325,268,317,203,287,148,257,150,252,206,282,270,312,291,320"/>
+<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="324,375,157,457,154,452,322,370"/>
+<area shape="poly" id="edge19_Node000016_Node000003" title=" " alt="" coords="1036,511,1026,505,981,465,943,418,915,372,896,335,901,332,920,369,948,415,985,461,1030,501,1039,506"/>
+<area shape="poly" id="edge22_Node000017_Node000003" title=" " alt="" coords="1037,54,1030,59,1001,85,977,115,938,182,912,245,897,294,892,292,907,244,933,179,973,112,998,82,1026,55,1034,50"/>
+<area shape="poly" id="edge24_Node000018_Node000003" title=" " alt="" coords="1039,133,1030,139,987,176,951,219,922,261,903,295,898,292,918,258,947,216,983,172,1026,135,1037,129"/>
+<area shape="poly" id="edge26_Node000019_Node000003" title=" " alt="" coords="1046,196,1029,204,994,224,962,249,911,295,907,291,958,245,991,220,1027,199,1043,192"/>
+<area shape="poly" id="edge28_Node000020_Node000003" title=" " alt="" coords="1059,259,1029,268,945,296,943,291,1027,263,1058,254"/>
+<area shape="poly" id="edge30_Node000021_Node000003" title=" " alt="" coords="1037,312,980,313,980,308,1037,306"/>
+<area shape="poly" id="edge32_Node000022_Node000003" title=" " alt="" coords="1041,356,966,336,967,331,1042,351"/>
+</map>

@@ -1,0 +1,15 @@
+<map id="truss::core::validation::ValidationResult::getSummary" name="truss::core::validation::ValidationResult::getSummary">
+<area shape="rect" id="Node000001" title="Get human&#45;readable summary of validation results." alt="" coords="1003,69,1231,109"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1analysis_1_1AnalysisOrchestrator.html#a10fb7cd4675b670e61053e219553273c" title="Perform complete structural analysis." alt="" coords="788,62,955,117"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="989,92,955,92,955,87,989,87"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a14d09b77f8fc4caee9003f5c1de2c12a" title="Run structural analysis on truss." alt="" coords="533,62,740,117"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="774,92,740,92,740,87,774,87"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a3a3ba7dbf7a643eaac4106449ad2c208" title="Perform structural analysis on a truss." alt="" coords="269,37,485,77"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="520,78,485,73,486,68,520,72"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#aaa5ed9478a63bd8fe035ba7002673fc8" title="Analyze an existing truss." alt="" coords="269,101,485,141"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="520,106,486,111,485,105,520,101"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a1c6de78e50caf8f0d723bf7eb24a9e37" title="Complete workflow: load → validate → analyze." alt="" coords="5,5,221,45"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="256,45,221,41,222,36,256,40"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a8645c59378bf7fcccd3bd8ebc162b2d9" title="Complete workflow: build → validate → analyze." alt="" coords="5,69,221,109"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="256,75,222,79,221,74,256,69"/>
+</map>

@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/widgets/truss_canvas_widget.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/widgets/truss_canvas_widget.hpp">
+<area shape="rect" id="Node000001" title="Interactive canvas widget for 2D truss geometry visualisation." alt="" coords="156,5,347,75"/>
+<area shape="rect" id="Node000002" href="$main__window_8cpp.html" title="New MainWindow full implementation (Phase 6)." alt="" coords="5,130,255,185"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,86,160,132,156,128,204,82"/>
+<area shape="rect" id="Node000003" href="$truss__canvas__widget_8cpp.html" title="7&#45;step rendering pipeline for TrussCanvasWidget." alt="" coords="279,123,469,192"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="299,83,340,121,336,124,296,86"/>
+</map>

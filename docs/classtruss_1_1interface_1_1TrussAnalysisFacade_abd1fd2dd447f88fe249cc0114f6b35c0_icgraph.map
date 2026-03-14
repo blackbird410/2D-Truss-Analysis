@@ -1,0 +1,5 @@
+<map id="truss::interface::TrussAnalysisFacade::exportResults" name="truss::interface::TrussAnalysisFacade::exportResults">
+<area shape="rect" id="Node000001" title="Export analysis results to file with explicit format." alt="" coords="269,5,485,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a9d141ca13a08482acae6c2b9a496b75b" title="Export analysis results with format auto&#45;detection." alt="" coords="5,5,221,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="256,28,221,28,221,23,256,23"/>
+</map>

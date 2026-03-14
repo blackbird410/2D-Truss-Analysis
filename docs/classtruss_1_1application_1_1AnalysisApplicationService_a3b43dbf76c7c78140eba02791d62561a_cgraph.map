@@ -1,0 +1,20 @@
+<map id="truss::application::AnalysisApplicationService::exportResults" name="truss::application::AnalysisApplicationService::exportResults">
+<area shape="rect" id="Node000001" title="Export results with auto&#45;detected format." alt="" coords="5,71,212,125"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1export___1_1ExporterFactory.html#a00247a5207f0d559acb51310b8be0ab3" title="Detect export format from file extension." alt="" coords="269,5,458,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="211,69,255,58,256,63,213,74"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a674559569a19414a21201fde469d45be" title="Export analysis results to file." alt="" coords="260,180,467,235"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="175,123,287,172,285,177,173,128"/>
+<area shape="rect" id="Node000006" href="$structtruss_1_1application_1_1Result.html#a053316ac5f18e56102eb9a500cb77cf0" title="Construct a failure result carrying an error message." alt="" coords="551,77,685,117"/>
+<area shape="poly" id="edge9_Node000001_Node000006" title=" " alt="" coords="213,95,537,94,537,100,213,100"/>
+<area shape="rect" id="Node000003" href="$namespacetruss_1_1utils_1_1string.html#ab91722ec9f4173168b35377eaded5c9c" title="Returns a copy of s with all ASCII letters converted to lowercase." alt="" coords="551,13,685,53"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="458,30,537,30,537,35,458,35"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1infrastructure_1_1export___1_1ExporterFactory.html#a6f9d49d1988d781e4b3084194cffecd3" title="Create an exporter for the specified format." alt="" coords="523,141,713,196"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="466,189,509,182,510,188,467,194"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="410,178,514,126,536,118,538,123,516,131,413,182"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#aa1760e04834a91569608803dc8975107" title="Get mutable access to analysis results." alt="" coords="515,220,721,275"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="467,221,501,226,501,232,466,226"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a655e3253e2e55f1f04ecaa622b1327d6" title="Check if handle is valid." alt="" coords="515,299,721,353"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="413,232,516,285,530,291,527,296,514,290,411,237"/>
+<area shape="rect" id="Node000009" href="$structtruss_1_1application_1_1Result.html#a3a31735809021c26f8c9fc0c7a1be351" title="Construct a successful result carrying a value." alt="" coords="551,378,685,418"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="386,233,440,299,476,334,516,364,539,375,536,380,513,368,473,338,436,302,382,237"/>
+</map>

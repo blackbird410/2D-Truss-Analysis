@@ -1,0 +1,52 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/boundary_condition_handler.cpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/boundary_condition_handler.cpp">
+<area shape="rect" id="Node000001" title="Applies support constraints to global stiffness matrix." alt="" coords="544,5,780,75"/>
+<area shape="rect" id="Node000002" href="$boundary__condition__handler_8hpp.html" title="Handles boundary condition application for structural analysis." alt="" coords="516,123,666,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="640,77,615,113,610,109,636,74"/>
+<area shape="rect" id="Node000017" title=" " alt="" coords="691,130,776,155"/>
+<area shape="poly" id="edge33_Node000001_Node000017" title=" " alt="" coords="688,74,719,117,715,120,684,77"/>
+<area shape="rect" id="Node000003" href="$src_2core_2model_2truss_8hpp.html" title="Truss class representing the complete structural system." alt="" coords="244,211,383,236"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="525,165,368,209,367,204,524,160"/>
+<area shape="rect" id="Node000005" href="$src_2core_2model_2types_8hpp.html" title="Core data types and mathematical utilities for truss analysis." alt="" coords="350,445,493,471"/>
+<area shape="poly" id="edge30_Node000002_Node000005" title=" " alt="" coords="583,164,437,434,432,432,578,162"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="616,519,718,544"/>
+<area shape="poly" id="edge31_Node000002_Node000009" title=" " alt="" coords="610,161,629,186,648,219,664,256,670,295,670,379,670,505,664,505,664,379,664,296,658,257,644,221,624,189,606,165"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="529,519,592,544"/>
+<area shape="poly" id="edge32_Node000002_Node000012" title=" " alt="" coords="599,162,612,221,619,295,619,379,615,415,604,451,577,508,572,506,599,449,610,414,614,379,614,295,607,222,594,164"/>
+<area shape="rect" id="Node000004" href="$itruss__view_8hpp.html" title="Read&#45;only view interface for Truss data." alt="" coords="238,357,376,397"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="338,234,359,248,379,265,391,286,393,298,390,310,374,333,354,351,351,347,370,330,385,308,387,298,386,288,375,269,356,252,335,238"/>
+<area shape="poly" id="edge25_Node000003_Node000005" title=" " alt="" coords="347,234,381,253,397,266,411,283,427,320,433,361,433,400,429,432,424,431,428,400,428,362,422,322,406,285,393,270,378,257,344,238"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="122,519,199,544"/>
+<area shape="poly" id="edge26_Node000003_Node000011" title=" " alt="" coords="244,233,187,240,128,251,77,266,59,276,46,286,17,331,10,353,8,375,10,397,16,420,41,469,55,485,71,498,109,516,107,521,68,503,51,489,37,472,11,422,5,398,3,375,5,352,13,329,42,282,56,271,75,261,126,246,186,235,244,228"/>
+<area shape="poly" id="edge29_Node000003_Node000012" title=" " alt="" coords="352,234,395,253,436,282,460,309,481,338,516,400,541,459,556,505,551,507,536,461,511,403,476,341,455,312,432,286,392,257,350,239"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="64,445,123,471"/>
+<area shape="poly" id="edge27_Node000003_Node000013" title=" " alt="" coords="245,234,136,253,90,267,74,276,62,286,53,303,48,321,51,361,65,400,81,432,76,435,60,402,46,362,43,321,48,301,58,282,71,272,88,262,135,247,244,229"/>
+<area shape="rect" id="Node000014" href="$src_2core_2model_2member_8hpp.html" title="Member class representing structural elements in the truss." alt="" coords="72,284,176,309"/>
+<area shape="poly" id="edge15_Node000003_Node000014" title=" " alt="" coords="284,239,169,281,167,276,282,234"/>
+<area shape="rect" id="Node000015" href="$src_2core_2model_2node_8hpp.html" title="Node class representing structural joints in the truss." alt="" coords="131,365,214,390"/>
+<area shape="poly" id="edge24_Node000003_Node000015" title=" " alt="" coords="298,238,270,259,241,286,212,321,189,355,184,352,208,318,237,282,267,255,295,234"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="252,284,376,309"/>
+<area shape="poly" id="edge28_Node000003_Node000016" title=" " alt="" coords="316,236,316,270,311,270,311,236"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="336,395,395,435,392,440,333,400"/>
+<area shape="poly" id="edge12_Node000004_Node000011" title=" " alt="" coords="290,400,183,510,179,507,287,396"/>
+<area shape="poly" id="edge14_Node000004_Node000012" title=" " alt="" coords="311,397,319,434,327,453,339,468,517,516,515,521,336,473,323,455,314,436,306,398"/>
+<area shape="poly" id="edge13_Node000004_Node000013" title=" " alt="" coords="257,400,137,444,135,439,255,395"/>
+<area shape="rect" id="Node000006" href="$math__utils_8hpp.html" title="Pure mathematical utility functions with no project dependencies." alt="" coords="333,519,505,544"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="424,471,423,505,417,505,419,471"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="462,468,615,512,614,517,460,473"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="242,519,308,544"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="399,473,312,515,310,510,397,468"/>
+<area shape="poly" id="edge10_Node000005_Node000011" title=" " alt="" coords="380,473,213,518,212,513,379,468"/>
+<area shape="poly" id="edge11_Node000005_Node000012" title=" " alt="" coords="445,468,527,510,524,515,443,473"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="340,592,402,617"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="413,546,389,582,384,579,409,543"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="426,592,505,617"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="429,543,453,579,448,582,425,546"/>
+<area shape="poly" id="edge21_Node000014_Node000005" title=" " alt="" coords="177,301,297,321,353,336,390,355,404,372,414,392,423,431,417,432,409,394,400,375,387,359,351,341,296,326,176,306"/>
+<area shape="poly" id="edge22_Node000014_Node000011" title=" " alt="" coords="115,311,89,340,62,381,52,403,46,426,47,448,55,469,79,495,110,512,107,517,75,499,50,472,42,449,41,425,47,401,57,378,84,337,111,308"/>
+<area shape="poly" id="edge23_Node000014_Node000013" title=" " alt="" coords="125,310,101,432,96,431,120,309"/>
+<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="134,308,161,352,156,354,129,311"/>
+<area shape="poly" id="edge17_Node000015_Node000005" title=" " alt="" coords="205,388,227,395,370,439,368,444,225,400,204,393"/>
+<area shape="poly" id="edge18_Node000015_Node000011" title=" " alt="" coords="174,390,165,505,160,505,169,390"/>
+<area shape="poly" id="edge20_Node000015_Node000012" title=" " alt="" coords="188,388,243,427,279,449,317,468,370,487,413,497,516,516,515,521,412,502,368,492,315,473,277,454,240,432,185,392"/>
+<area shape="poly" id="edge19_Node000015_Node000013" title=" " alt="" coords="163,392,117,437,113,434,159,388"/>
+</map>

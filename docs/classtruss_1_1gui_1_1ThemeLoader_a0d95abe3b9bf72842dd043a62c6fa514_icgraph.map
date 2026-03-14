@@ -1,0 +1,5 @@
+<map id="truss::gui::ThemeLoader::applyTheme" name="truss::gui::ThemeLoader::applyTheme">
+<area shape="rect" id="Node000001" title="Load a QSS file from a Qt resource path, apply it to app, and persist the path to QSettings." alt="" coords="232,5,411,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1ThemeLoader.html#aaf6edb0301de655a2ae09ddd81310b22" title="Restore the theme that was last persisted by applyTheme()." alt="" coords="5,5,184,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="218,28,184,28,184,23,218,23"/>
+</map>

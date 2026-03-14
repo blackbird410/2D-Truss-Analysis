@@ -1,0 +1,25 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/direct_solver.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/direct_solver.hpp">
+<area shape="rect" id="Node000001" title="Direct linear solver using LDLT factorization." alt="" coords="581,5,775,75"/>
+<area shape="rect" id="Node000002" href="$analysis__application__service_8hpp.html" title="Application facade for structural analysis operations." alt="" coords="315,123,556,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="596,83,507,125,505,120,594,78"/>
+<area shape="rect" id="Node000010" href="$direct__solver_8cpp.html" title="Direct linear equation solver using LU decomposition." alt="" coords="581,123,775,192"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="681,89,681,122,675,122,675,89"/>
+<area shape="rect" id="Node000011" href="$solver__factory_8hpp.html" title="Factory for creating linear solver instances." alt="" coords="799,123,994,192"/>
+<area shape="poly" id="edge10_Node000001_Node000011" title=" " alt="" coords="755,79,834,120,832,125,753,83"/>
+<area shape="rect" id="Node000003" href="$analysis__application__service_8cpp.html" title="Application service for truss analysis execution and results." alt="" coords="191,240,431,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="390,204,349,242,346,238,387,200"/>
+<area shape="rect" id="Node000004" href="$truss__analysis__facade_8hpp.html" title="Unified facade for complete truss analysis workflows." alt="" coords="456,240,655,309"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="482,200,522,238,518,242,479,204"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html" title="Main entry point for the 2D Truss Analysis GUI application." alt="" coords="5,372,199,427"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="443,312,324,335,273,344,211,360,167,374,166,369,209,355,272,339,323,330,442,307"/>
+<area shape="rect" id="Node000006" href="$facade__analysis__service__adapter_8cpp.html" title="IAnalysisService adapter implementation backed by TrussAnalysisFacade." alt="" coords="223,357,408,441"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="479,318,397,360,394,355,476,313"/>
+<area shape="rect" id="Node000007" href="$facade__truss__service__adapter_8cpp.html" title="ITrussService adapter implementation backed by TrussAnalysisFacade." alt="" coords="432,365,679,434"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="558,323,558,364,553,364,553,323"/>
+<area shape="rect" id="Node000008" href="$truss__analysis__facade_8cpp.html" title="Implementation of TrussAnalysisFacade unified workflow API." alt="" coords="703,365,901,434"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="636,313,735,362,733,367,634,318"/>
+<area shape="rect" id="Node000009" href="$main__app_8cpp.html" title="CLI entry point for 2D Truss Analysis." alt="" coords="925,372,1125,427"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="669,295,787,322,913,355,958,369,956,374,912,360,786,327,668,301"/>
+<area shape="rect" id="Node000012" href="$solver__factory_8cpp.html" title="Creates linear solvers based on configuration." alt="" coords="799,240,994,309"/>
+<area shape="poly" id="edge11_Node000011_Node000012" title=" " alt="" coords="899,206,899,240,894,240,894,206"/>
+</map>

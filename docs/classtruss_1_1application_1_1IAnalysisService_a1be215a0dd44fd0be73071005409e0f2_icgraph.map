@@ -1,0 +1,11 @@
+<map id="truss::application::IAnalysisService::getResultsView" name="truss::application::IAnalysisService::getResultsView">
+<area shape="rect" id="Node000001" title="Get read&#45;only view of analysis results." alt="" coords="580,62,725,117"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1cli_1_1commands_1_1AnalyzeCommand.html#ae84a3b485919d5e3469ec4282ed875a4" title="Execute the analyze command." alt="" coords="310,5,518,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="566,69,489,48,490,43,568,64"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1cli_1_1commands_1_1ExampleCommand.html#a0e8ea4e6eaa1c4bdd8dc0bd2b356d7f7" title="Execute the command." alt="" coords="307,69,521,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="567,92,521,92,521,87,567,87"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#ae20ff209b16d4337fa019d890e341caa" title="Called when a background analysis has completed successfully." alt="" coords="296,133,532,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="568,115,490,136,489,131,566,110"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a0b8dcba80782586833f499f64947e8c7" title="Construct with a mandatory facade reference." alt="" coords="5,133,248,173"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="282,156,248,156,248,151,282,151"/>
+</map>

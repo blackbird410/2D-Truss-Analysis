@@ -1,0 +1,35 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/io/xml_truss_writer.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/io/xml_truss_writer.hpp">
+<area shape="rect" id="Node000001" title="XML format truss file writer." alt="" coords="647,5,845,75"/>
+<area shape="rect" id="Node000002" href="$truss__writer_8hpp.html" title="Abstract interface for writing truss structures to files." alt="" coords="616,123,743,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="724,76,698,113,694,110,720,73"/>
+<area shape="rect" id="Node000016" title=" " alt="" coords="767,123,859,148"/>
+<area shape="poly" id="edge17_Node000001_Node000016" title=" " alt="" coords="772,73,798,110,794,113,768,76"/>
+<area shape="rect" id="Node000003" href="$truss__dto_8hpp.html" title="Data Transfer Objects for Truss serialization/deserialization." alt="" coords="460,196,603,236"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="659,151,580,192,578,187,656,146"/>
+<area shape="rect" id="Node000013" href="$io__types_8hpp.html" title="File I/O types, formats, and options for truss file operations." alt="" coords="627,203,732,229"/>
+<area shape="poly" id="edge13_Node000002_Node000013" title=" " alt="" coords="682,148,682,189,677,189,677,148"/>
+<area shape="rect" id="Node000015" title=" " alt="" coords="757,203,847,229"/>
+<area shape="poly" id="edge16_Node000002_Node000015" title=" " alt="" coords="699,146,774,194,771,198,696,150"/>
+<area shape="rect" id="Node000004" href="$src_2core_2model_2types_8hpp.html" title="Core data types and mathematical utilities for truss analysis." alt="" coords="331,284,473,309"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="501,238,434,279,431,275,499,234"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="521,357,584,383"/>
+<area shape="poly" id="edge12_Node000003_Node000011" title=" " alt="" coords="537,236,552,343,547,344,531,237"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="569,284,627,309"/>
+<area shape="poly" id="edge11_Node000003_Node000012" title=" " alt="" coords="549,234,581,272,577,275,545,238"/>
+<area shape="rect" id="Node000005" href="$math__utils_8hpp.html" title="Pure mathematical utility functions with no project dependencies." alt="" coords="5,357,177,383"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="353,312,155,357,154,352,351,307"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="201,357,304,383"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="379,312,291,354,288,349,377,307"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="329,357,395,383"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="398,311,378,347,373,344,393,308"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="419,357,497,383"/>
+<area shape="poly" id="edge9_Node000004_Node000010" title=" " alt="" coords="413,308,443,345,438,348,409,311"/>
+<area shape="poly" id="edge10_Node000004_Node000011" title=" " alt="" coords="427,307,517,349,514,354,425,312"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="13,431,76,456"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="86,384,62,421,58,418,81,382"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="100,431,179,456"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="101,382,126,418,122,421,97,385"/>
+<area shape="poly" id="edge15_Node000013_Node000012" title=" " alt="" coords="669,231,622,276,618,273,665,227"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="652,284,739,309"/>
+<area shape="poly" id="edge14_Node000013_Node000014" title=" " alt="" coords="684,228,693,270,688,271,679,229"/>
+</map>

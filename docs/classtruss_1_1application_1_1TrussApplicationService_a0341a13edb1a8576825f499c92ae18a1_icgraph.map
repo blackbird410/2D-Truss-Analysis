@@ -1,0 +1,5 @@
+<map id="truss::application::TrussApplicationService::addMember" name="truss::application::TrussApplicationService::addMember">
+<area shape="rect" id="Node000001" title="Add member connecting two nodes." alt="" coords="269,5,453,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#ab807972e5976bfcb2f541641ccebf073" title="Add a new member connecting two existing nodes." alt="" coords="5,13,221,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,35,222,35,222,30,255,30"/>
+</map>

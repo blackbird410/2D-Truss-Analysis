@@ -1,0 +1,33 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/cli/presenters/console_presenter.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/cli/presenters/console_presenter.hpp">
+<area shape="rect" id="Node000001" title="Console output presenter for CLI." alt="" coords="163,5,360,75"/>
+<area shape="rect" id="Node000002" href="$iapplication__output_8hpp.html" title="Application&#45;level output abstraction." alt="" coords="73,123,260,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="231,77,196,114,192,110,227,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="137,211,196,236"/>
+<area shape="poly" id="edge18_Node000001_Node000003" title=" " alt="" coords="163,60,135,70,108,84,83,102,64,124,57,142,64,161,76,177,91,189,125,207,123,212,88,194,72,180,59,164,52,142,59,121,80,98,105,79,133,65,161,55"/>
+<area shape="rect" id="Node000004" href="$ianalysis__results__view_8hpp.html" title="Read&#45;only view interface for AnalysisResults data." alt="" coords="452,123,652,163"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="359,72,486,116,484,121,358,77"/>
+<area shape="rect" id="Node000013" href="$itruss__view_8hpp.html" title="Read&#45;only view interface for Truss data." alt="" coords="285,123,427,163"/>
+<area shape="poly" id="edge13_Node000001_Node000013" title=" " alt="" coords="295,73,330,110,326,114,291,77"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="169,163,169,197,164,197,164,163"/>
+<area shape="rect" id="Node000005" href="$src_2core_2model_2types_8hpp.html" title="Core data types and mathematical utilities for truss analysis." alt="" coords="285,211,427,236"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="506,165,399,208,397,203,504,160"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="522,284,585,309"/>
+<area shape="poly" id="edge12_Node000004_Node000012" title=" " alt="" coords="555,163,556,270,550,270,550,163"/>
+<area shape="rect" id="Node000006" href="$math__utils_8hpp.html" title="Pure mathematical utility functions with no project dependencies." alt="" coords="107,284,279,309"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="331,238,234,281,231,276,329,234"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="303,284,406,309"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="358,236,358,271,352,270,353,236"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="431,284,497,309"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="375,234,436,274,433,279,372,238"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="5,284,83,309"/>
+<area shape="poly" id="edge10_Node000005_Node000011" title=" " alt="" coords="306,239,97,286,95,281,305,233"/>
+<area shape="poly" id="edge11_Node000005_Node000012" title=" " alt="" coords="389,234,510,277,508,282,387,239"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="114,357,177,383"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="188,311,163,348,158,345,183,308"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="201,357,279,383"/>
+<area shape="poly" id="edge7_Node000006_Node000008" title=" " alt="" coords="203,308,227,344,223,347,199,311"/>
+<area shape="poly" id="edge16_Node000013_Node000003" title=" " alt="" coords="312,165,208,208,206,203,310,160"/>
+<area shape="poly" id="edge14_Node000013_Node000005" title=" " alt="" coords="359,163,359,197,353,197,353,163"/>
+<area shape="poly" id="edge15_Node000013_Node000011" title=" " alt="" coords="331,165,276,201,209,238,151,263,97,282,95,277,150,258,207,234,273,196,328,160"/>
+<area shape="poly" id="edge17_Node000013_Node000012" title=" " alt="" coords="382,161,529,273,526,278,379,165"/>
+</map>

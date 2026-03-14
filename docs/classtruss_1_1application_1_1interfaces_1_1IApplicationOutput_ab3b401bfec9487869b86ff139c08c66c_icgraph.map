@@ -1,0 +1,31 @@
+<map id="truss::application::interfaces::IApplicationOutput::info" name="truss::application::interfaces::IApplicationOutput::info">
+<area shape="rect" id="Node000001" title="Output informational message." alt="" coords="672,120,852,175"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#aa80ce36681600a1d5d14a6542b82b9b5" title="Display analysis results via view interface." alt="" coords="369,84,624,139"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="658,136,624,131,624,126,659,131"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#aaa27d442ff2bff3594e4089fb3fe8b1b" title="Display application header." alt="" coords="373,163,620,203"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="659,164,621,169,620,164,658,159"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#acfde1d38a3ea2d531020a86e2c7e6489" title="Display info message to stdout." alt="" coords="385,227,609,267"/>
+<area shape="poly" id="edge10_Node000001_Node000009" title=" " alt="" coords="700,184,625,218,588,230,586,225,623,213,698,179"/>
+<area shape="rect" id="Node000011" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#a46ef80f1f8cfffc85e6c1626dbc7b0f5" title="Display truss statistics via view interface." alt="" coords="381,5,613,60"/>
+<area shape="poly" id="edge17_Node000001_Node000011" title=" " alt="" coords="704,115,623,74,594,63,596,58,625,69,707,111"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1cli_1_1commands_1_1AnalyzeCommand.html#ae84a3b485919d5e3469ec4282ed875a4" title="Execute the analyze command." alt="" coords="111,42,319,82"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="355,89,319,83,319,78,356,84"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1cli_1_1commands_1_1ExampleCommand.html#a0e8ea4e6eaa1c4bdd8dc0bd2b356d7f7" title="Execute the command." alt="" coords="108,106,321,146"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="356,121,322,123,321,118,356,116"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="382,160,368,152,352,138,343,124,334,110,320,96,297,84,300,80,323,92,339,106,347,121,356,135,371,148,385,155"/>
+<area shape="poly" id="edge6_Node000005_Node000004" title=" " alt="" coords="384,163,313,149,314,143,385,158"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1cli_1_1commands_1_1ExportCommand.html#a6d700028183269d01872f888f34f861e" title="Execute the export command." alt="" coords="115,221,314,261"/>
+<area shape="poly" id="edge7_Node000005_Node000006" title=" " alt="" coords="385,209,314,223,313,218,384,204"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1cli_1_1commands_1_1ValidateCommand.html#a327504147683ed7d0be8ec8522897806" title="Execute the validate command." alt="" coords="110,285,319,325"/>
+<area shape="poly" id="edge8_Node000005_Node000007" title=" " alt="" coords="382,211,371,218,356,231,347,245,339,260,323,275,300,287,298,282,320,270,334,257,343,242,352,227,368,213,379,207"/>
+<area shape="rect" id="Node000008" href="$main__app_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97" title="CLI entry point." alt="" coords="5,260,60,285"/>
+<area shape="poly" id="edge9_Node000005_Node000008" title=" " alt="" coords="360,174,299,175,235,180,171,192,109,211,73,235,46,261,42,258,69,230,107,206,169,186,234,175,299,169,359,169"/>
+<area shape="poly" id="edge11_Node000009_Node000003" title=" " alt="" coords="373,222,367,217,354,202,347,187,342,155,338,125,332,110,320,96,303,84,307,80,323,92,336,108,343,123,348,155,352,185,359,199,371,213,376,218"/>
+<area shape="poly" id="edge12_Node000009_Node000004" title=" " alt="" coords="390,226,368,218,300,183,243,148,246,144,302,179,370,213,392,221"/>
+<area shape="poly" id="edge13_Node000009_Node000006" title=" " alt="" coords="371,247,314,246,314,240,371,242"/>
+<area shape="poly" id="edge14_Node000009_Node000007" title=" " alt="" coords="385,273,314,287,313,282,384,268"/>
+<area shape="rect" id="Node000010" href="$main__app_8cpp.html#a07c1082bc096ad7215aeb2f075e90e77" title="Execute CLI command." alt="" coords="145,349,285,375"/>
+<area shape="poly" id="edge15_Node000009_Node000010" title=" " alt="" coords="451,277,391,309,322,339,280,352,279,347,320,334,389,304,449,272"/>
+<area shape="poly" id="edge16_Node000010_Node000008" title=" " alt="" coords="130,349,107,339,70,314,43,287,47,284,74,310,109,334,132,344"/>
+<area shape="poly" id="edge18_Node000011_Node000003" title=" " alt="" coords="367,49,319,54,318,49,367,43"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="truss::application::TrussApplicationService::removeNode" name="truss::application::TrussApplicationService::removeNode">
+<area shape="rect" id="Node000001" title="Remove node from truss." alt="" coords="269,5,453,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a515476a924b2bcd4d487b24577346c63" title="Remove a node and all members connected to it." alt="" coords="5,13,221,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,35,222,35,222,30,255,30"/>
+</map>

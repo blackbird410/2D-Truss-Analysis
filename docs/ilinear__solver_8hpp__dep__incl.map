@@ -1,0 +1,102 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/ilinear_solver.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/ilinear_solver.hpp">
+<area shape="rect" id="Node000001" title="Interface for linear system solvers." alt="" coords="2115,5,2309,75"/>
+<area shape="rect" id="Node000002" href="$analysis__orchestrator_8hpp.html" title="Orchestrates the structural analysis workflow using decomposed components." alt="" coords="1455,123,1649,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="2102,63,1650,142,1649,136,2101,58"/>
+<area shape="rect" id="Node000036" href="$direct__solver_8hpp.html" title="Direct linear solver using LDLT factorization." alt="" coords="2048,123,2243,192"/>
+<area shape="poly" id="edge50_Node000001_Node000036" title=" " alt="" coords="2188,88,2167,124,2163,121,2183,85"/>
+<area shape="rect" id="Node000038" href="$solver__factory_8hpp.html" title="Factory for creating linear solver instances." alt="" coords="2183,240,2377,309"/>
+<area shape="poly" id="edge59_Node000001_Node000038" title=" " alt="" coords="2241,86,2257,122,2272,184,2280,239,2275,240,2267,185,2252,124,2237,88"/>
+<area shape="rect" id="Node000040" href="$iterative__solver_8hpp.html" title="Iterative linear solver using Conjugate Gradient method." alt="" coords="2317,123,2512,192"/>
+<area shape="poly" id="edge55_Node000001_Node000040" title=" " alt="" coords="2285,79,2357,120,2354,125,2282,84"/>
+<area shape="rect" id="Node000003" href="$analysis__application__service_8hpp.html" title="Application facade for structural analysis operations." alt="" coords="2025,357,2266,427"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="1663,171,1755,195,1802,214,1846,238,1865,255,1875,273,1885,290,1903,307,1962,339,2025,362,2023,367,1960,344,1900,311,1881,294,1871,276,1860,259,1842,242,1800,219,1754,200,1662,176"/>
+<area shape="rect" id="Node000005" href="$truss__analysis__facade_8hpp.html" title="Unified facade for complete truss analysis workflows." alt="" coords="2539,482,2738,551"/>
+<area shape="poly" id="edge49_Node000002_Node000005" title=" " alt="" coords="1664,175,1735,199,1770,217,1802,238,1818,255,1826,272,1833,289,1846,308,1887,349,1922,379,1961,402,2014,424,2089,447,2154,458,2212,460,2267,458,2383,454,2451,459,2529,472,2555,479,2554,485,2527,477,2450,464,2383,460,2268,464,2212,466,2153,463,2088,452,2012,429,1958,407,1919,383,1883,353,1842,311,1828,292,1821,274,1813,258,1798,242,1767,221,1733,204,1662,180"/>
+<area shape="rect" id="Node000011" href="$ianalysis__service_8hpp.html" title="Abstract interface for analysis application services." alt="" coords="1553,240,1788,309"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="1599,200,1638,238,1634,242,1595,204"/>
+<area shape="rect" id="Node000029" href="$analysis__orchestrator_8cpp.html" title="Coordinates truss analysis workflow from assembly to solution." alt="" coords="1335,240,1529,309"/>
+<area shape="poly" id="edge38_Node000002_Node000029" title=" " alt="" coords="1509,204,1469,242,1465,238,1505,200"/>
+<area shape="rect" id="Node000030" href="$analysis__controller_8hpp.html" title="AnalysisController — runs structural analysis via ITrussAnalysisFacade." alt="" coords="524,240,727,309"/>
+<area shape="poly" id="edge39_Node000002_Node000030" title=" " alt="" coords="1441,174,878,243,727,262,727,257,877,237,1440,169"/>
+<area shape="rect" id="Node000032" href="$analysis__control__bar_8hpp.html" title="Toolbar bar for analysis execution controls." alt="" coords="889,240,1076,309"/>
+<area shape="poly" id="edge43_Node000002_Node000032" title=" " alt="" coords="1441,177,1274,204,1089,243,1077,246,1075,240,1087,237,1273,199,1440,171"/>
+<area shape="rect" id="Node000034" href="$analysis__options__dialog_8hpp.html" title="Modal dialog for configuring solver options before analysis." alt="" coords="1100,240,1311,309"/>
+<area shape="poly" id="edge46_Node000002_Node000034" title=" " alt="" coords="1443,198,1307,242,1305,237,1441,193"/>
+<area shape="rect" id="Node000004" href="$analysis__application__service_8cpp.html" title="Application service for truss analysis execution and results." alt="" coords="2972,482,3212,551"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="2280,424,2384,437,2472,443,2623,445,2772,448,2859,456,2961,472,2993,479,2991,485,2959,477,2858,461,2772,453,2623,450,2472,449,2383,442,2279,429"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="2280,424,2407,446,2461,456,2529,472,2552,479,2551,484,2527,477,2460,461,2406,451,2279,429"/>
+<area shape="rect" id="Node000006" href="$main_8cpp.html" title="Main entry point for the 2D Truss Analysis GUI application." alt="" coords="2762,621,2955,676"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="2709,556,2816,619,2813,624,2706,561"/>
+<area shape="rect" id="Node000007" href="$facade__analysis__service__adapter_8cpp.html" title="IAnalysisService adapter implementation backed by TrussAnalysisFacade." alt="" coords="2979,607,3165,691"/>
+<area shape="poly" id="edge6_Node000005_Node000007" title=" " alt="" coords="2741,553,2751,556,2812,571,2860,580,2908,588,2969,604,2980,608,2978,613,2967,609,2907,594,2859,585,2811,576,2750,561,2740,558"/>
+<area shape="rect" id="Node000008" href="$facade__truss__service__adapter_8cpp.html" title="ITrussService adapter implementation backed by TrussAnalysisFacade." alt="" coords="2269,614,2515,683"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="2564,560,2457,616,2455,611,2561,555"/>
+<area shape="rect" id="Node000009" href="$truss__analysis__facade_8cpp.html" title="Implementation of TrussAnalysisFacade unified workflow API." alt="" coords="2540,614,2737,683"/>
+<area shape="poly" id="edge8_Node000005_Node000009" title=" " alt="" coords="2641,565,2641,614,2636,614,2636,565"/>
+<area shape="rect" id="Node000010" href="$main__app_8cpp.html" title="CLI entry point for 2D Truss Analysis." alt="" coords="1139,621,1339,676"/>
+<area shape="poly" id="edge9_Node000005_Node000010" title=" " alt="" coords="2543,558,2528,561,2456,571,2334,583,1997,607,1339,645,1339,639,1996,601,2333,577,2455,566,2528,556,2542,553"/>
+<area shape="poly" id="edge11_Node000011_Node000003" title=" " alt="" coords="1802,305,2025,359,2024,364,1801,310"/>
+<area shape="rect" id="Node000012" href="$analysis__controller_8cpp.html" title="AnalysisController implementation — QThread background worker (Phase 5)." alt="" coords="240,482,443,551"/>
+<area shape="poly" id="edge12_Node000011_Node000012" title=" " alt="" coords="1572,317,1468,360,1427,380,1397,398,1365,415,1322,429,1193,456,1082,466,982,466,889,460,796,454,697,451,585,457,455,477,427,485,425,479,454,472,585,452,697,446,797,448,890,455,983,461,1081,461,1192,450,1321,424,1363,410,1394,394,1425,375,1466,355,1570,312"/>
+<area shape="rect" id="Node000013" href="$facade__analysis__service__adapter_8hpp.html" title="Adapter that exposes TrussAnalysisFacade through IAnalysisService." alt="" coords="2762,475,2947,559"/>
+<area shape="poly" id="edge13_Node000011_Node000013" title=" " alt="" coords="1743,314,1867,373,1940,402,2014,424,2124,446,2218,454,2302,455,2381,450,2461,446,2545,445,2640,453,2751,472,2762,475,2761,480,2750,477,2640,458,2545,451,2461,451,2382,456,2302,460,2218,460,2123,451,2013,429,1938,407,1865,378,1741,319"/>
+<area shape="rect" id="Node000014" href="$itruss__analysis__facade_8hpp.html" title="Abstract interface for TrussAnalysisFacade (for adapters and mocks)" alt="" coords="1479,357,1681,427"/>
+<area shape="poly" id="edge15_Node000011_Node000014" title=" " alt="" coords="1638,322,1609,359,1604,355,1634,319"/>
+<area shape="poly" id="edge14_Node000013_Node000007" title=" " alt="" coords="2936,564,3005,604,3002,609,2934,568"/>
+<area shape="poly" id="edge37_Node000014_Node000005" title=" " alt="" coords="1696,417,1738,424,1858,437,1960,441,2134,439,2218,438,2308,441,2410,451,2529,472,2556,479,2555,484,2527,477,2409,456,2308,446,2218,443,2134,444,1960,447,1857,442,1737,429,1695,422"/>
+<area shape="poly" id="edge28_Node000014_Node000012" title=" " alt="" coords="1465,418,1386,429,1244,441,1123,445,918,440,819,438,714,442,595,454,455,477,427,485,425,479,454,472,594,448,713,437,819,433,918,435,1123,439,1244,436,1385,424,1464,413"/>
+<area shape="poly" id="edge34_Node000014_Node000013" title=" " alt="" coords="1696,417,1738,424,1891,439,2022,443,2138,440,2246,434,2354,431,2469,433,2599,445,2751,472,2762,475,2761,480,2750,477,2599,451,2469,438,2354,436,2246,440,2138,445,2022,448,1891,444,1737,429,1695,423"/>
+<area shape="rect" id="Node000015" href="$analyze__command_8hpp.html" title="Command for file&#45;based truss analysis." alt="" coords="915,482,1115,551"/>
+<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="1466,416,1262,451,1127,477,1103,484,1101,479,1126,472,1261,446,1465,410"/>
+<area shape="rect" id="Node000017" href="$example__command_8hpp.html" title="Example command for running hardcoded truss analysis." alt="" coords="2045,482,2245,551"/>
+<area shape="poly" id="edge19_Node000014_Node000017" title=" " alt="" coords="1695,416,1738,424,1821,437,1886,445,1952,454,2034,472,2059,479,2058,485,2033,477,1951,459,1886,450,1820,442,1737,429,1694,421"/>
+<area shape="rect" id="Node000019" href="$export__command_8hpp.html" title="Command for exporting analysis results to various formats." alt="" coords="467,482,667,551"/>
+<area shape="poly" id="edge22_Node000014_Node000019" title=" " alt="" coords="1465,418,1386,429,1278,439,1186,443,1030,443,955,443,875,448,785,458,679,477,652,484,650,479,678,472,784,453,875,442,955,438,1030,438,1186,438,1278,434,1385,424,1464,412"/>
+<area shape="rect" id="Node000021" href="$validate__command_8hpp.html" title="Command for validating truss structures without analysis." alt="" coords="691,482,891,551"/>
+<area shape="poly" id="edge25_Node000014_Node000021" title=" " alt="" coords="1465,417,1386,429,1250,442,1143,446,1037,454,903,477,877,484,876,479,902,472,1036,448,1143,441,1249,437,1385,424,1464,412"/>
+<area shape="rect" id="Node000023" href="$canvas__controller_8cpp.html" title="CanvasController implementation." alt="" coords="1139,482,1341,551"/>
+<area shape="poly" id="edge29_Node000014_Node000023" title=" " alt="" coords="1475,434,1334,484,1332,479,1473,429"/>
+<area shape="rect" id="Node000024" href="$export__controller_8cpp.html" title="ExportController implementation (Phase 5)." alt="" coords="1365,482,1568,551"/>
+<area shape="poly" id="edge30_Node000014_Node000024" title=" " alt="" coords="1542,438,1500,483,1496,480,1538,435"/>
+<area shape="rect" id="Node000025" href="$inspector__controller_8cpp.html" title="InspectorController implementation." alt="" coords="1592,482,1795,551"/>
+<area shape="poly" id="edge31_Node000014_Node000025" title=" " alt="" coords="1622,435,1664,480,1660,483,1618,438"/>
+<area shape="rect" id="Node000026" href="$main__window__controller_8cpp.html" title="MainWindowController — owns all sub&#45;controllers, models, and inter&#45;controller signal wiring." alt="" coords="5,482,216,551"/>
+<area shape="poly" id="edge32_Node000014_Node000026" title=" " alt="" coords="1465,413,1322,429,1155,440,1013,442,772,435,656,433,532,437,393,451,229,477,199,484,198,479,227,472,392,445,532,432,656,428,772,429,1013,436,1155,434,1321,424,1464,408"/>
+<area shape="rect" id="Node000027" href="$project__controller_8cpp.html" title="ProjectController implementation (Phase 5)." alt="" coords="1819,482,2021,551"/>
+<area shape="poly" id="edge33_Node000014_Node000027" title=" " alt="" coords="1687,429,1828,479,1826,484,1685,434"/>
+<area shape="rect" id="Node000028" href="$facade__truss__service__adapter_8hpp.html" title="Adapter implementing ITrussService through TrussAnalysisFacade public API." alt="" coords="2269,482,2515,551"/>
+<area shape="poly" id="edge35_Node000014_Node000028" title=" " alt="" coords="1696,417,1738,424,1884,440,1998,444,2112,451,2179,459,2258,472,2290,479,2289,485,2257,477,2179,464,2112,456,1998,450,1883,445,1737,429,1695,422"/>
+<area shape="poly" id="edge18_Node000015_Node000010" title=" " alt="" coords="1086,556,1195,619,1192,624,1083,561"/>
+<area shape="rect" id="Node000016" href="$analyze__command_8cpp.html" title="CLI command for truss analysis execution." alt="" coords="915,614,1115,683"/>
+<area shape="poly" id="edge17_Node000015_Node000016" title=" " alt="" coords="1017,565,1017,614,1012,614,1012,565"/>
+<area shape="poly" id="edge21_Node000017_Node000010" title=" " alt="" coords="2048,558,2034,561,1843,598,1651,623,1477,638,1339,646,1339,641,1477,633,1651,617,1842,593,2033,556,2046,553"/>
+<area shape="rect" id="Node000018" href="$example__command_8cpp.html" title="CLI command for generating example truss models." alt="" coords="2045,614,2245,683"/>
+<area shape="poly" id="edge20_Node000017_Node000018" title=" " alt="" coords="2148,565,2148,614,2143,614,2143,565"/>
+<area shape="poly" id="edge24_Node000019_Node000010" title=" " alt="" coords="666,553,679,556,746,569,804,576,903,580,1002,584,1060,591,1127,604,1176,619,1174,624,1126,609,1059,596,1002,589,903,585,803,582,746,574,678,561,664,558"/>
+<area shape="rect" id="Node000020" href="$export__command_8cpp.html" title="CLI command for results export to various formats." alt="" coords="467,614,667,683"/>
+<area shape="poly" id="edge23_Node000019_Node000020" title=" " alt="" coords="569,565,569,614,564,614,564,565"/>
+<area shape="poly" id="edge27_Node000021_Node000010" title=" " alt="" coords="893,553,903,556,966,571,1015,580,1065,589,1127,604,1172,619,1171,624,1126,609,1064,594,1014,585,965,577,902,561,892,558"/>
+<area shape="rect" id="Node000022" href="$validate__command_8cpp.html" title="CLI command for truss structure validation." alt="" coords="691,614,891,683"/>
+<area shape="poly" id="edge26_Node000021_Node000022" title=" " alt="" coords="793,565,793,614,788,614,788,565"/>
+<area shape="poly" id="edge36_Node000028_Node000008" title=" " alt="" coords="2395,565,2395,614,2389,614,2389,565"/>
+<area shape="poly" id="edge40_Node000030_Node000012" title=" " alt="" coords="577,320,383,484,379,480,573,316"/>
+<area shape="poly" id="edge41_Node000030_Node000026" title=" " alt="" coords="539,317,446,360,182,484,180,479,444,355,537,313"/>
+<area shape="rect" id="Node000031" href="$main__window_8cpp.html" title="New MainWindow full implementation (Phase 6)." alt="" coords="615,365,865,419"/>
+<area shape="poly" id="edge42_Node000030_Node000031" title=" " alt="" coords="671,318,716,363,712,366,667,321"/>
+<area shape="poly" id="edge44_Node000032_Node000031" title=" " alt="" coords="901,318,796,367,794,362,898,313"/>
+<area shape="rect" id="Node000033" href="$analysis__control__bar_8cpp.html" title="AnalysisControlBar implementation." alt="" coords="889,357,1076,427"/>
+<area shape="poly" id="edge45_Node000032_Node000033" title=" " alt="" coords="985,323,985,357,980,357,980,323"/>
+<area shape="poly" id="edge47_Node000034_Node000031" title=" " alt="" coords="1087,312,878,360,847,367,846,362,877,355,1086,307"/>
+<area shape="rect" id="Node000035" href="$analysis__options__dialog_8cpp.html" title="AnalysisOptionsDialog implementation." alt="" coords="1101,357,1310,427"/>
+<area shape="poly" id="edge48_Node000034_Node000035" title=" " alt="" coords="1208,323,1208,357,1203,357,1203,323"/>
+<area shape="poly" id="edge51_Node000036_Node000003" title=" " alt="" coords="2148,206,2148,357,2143,357,2143,206"/>
+<area shape="rect" id="Node000037" href="$direct__solver_8cpp.html" title="Direct linear equation solver using LU decomposition." alt="" coords="1913,240,2108,309"/>
+<area shape="poly" id="edge52_Node000036_Node000037" title=" " alt="" coords="2098,203,2052,242,2049,238,2094,199"/>
+<area shape="poly" id="edge53_Node000036_Node000038" title=" " alt="" coords="2197,199,2242,238,2239,242,2193,203"/>
+<area shape="rect" id="Node000039" href="$solver__factory_8cpp.html" title="Creates linear solvers based on configuration." alt="" coords="2291,357,2485,427"/>
+<area shape="poly" id="edge54_Node000038_Node000039" title=" " alt="" coords="2323,318,2358,355,2354,359,2319,321"/>
+<area shape="poly" id="edge56_Node000040_Node000003" title=" " alt="" coords="2421,206,2416,260,2407,287,2391,311,2375,321,2345,333,2264,360,2262,355,2344,328,2373,317,2387,307,2402,285,2411,258,2416,205"/>
+<area shape="poly" id="edge58_Node000040_Node000038" title=" " alt="" coords="2367,203,2321,242,2318,238,2363,199"/>
+<area shape="rect" id="Node000041" href="$iterative__solver_8cpp.html" title="Iterative linear equation solver using conjugate gradient." alt="" coords="2452,240,2647,309"/>
+<area shape="poly" id="edge57_Node000040_Node000041" title=" " alt="" coords="2466,199,2511,238,2508,242,2462,203"/>
+</map>

@@ -1,0 +1,22 @@
+<map id="main" name="main">
+<area shape="rect" id="Node000001" title="CLI entry point." alt="" coords="5,136,60,161"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1logging_1_1LoggerFactory.html#aca9bba13dff35a49813a36cb679ad194" title="Create a console&#45;only logger." alt="" coords="114,5,291,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="44,134,71,106,106,77,127,64,130,69,110,81,75,110,48,138"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#aaa27d442ff2bff3594e4089fb3fe8b1b" title="Display application header." alt="" coords="345,65,592,105"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="60,136,107,121,222,101,332,89,332,95,222,106,109,126,61,141"/>
+<area shape="rect" id="Node000005" href="$main__app_8cpp.html#a07c1082bc096ad7215aeb2f075e90e77" title="Execute CLI command." alt="" coords="133,136,273,161"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="60,146,119,146,119,151,60,151"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1cli_1_1ArgumentParser.html#ace07daad285086de4c06ced996699796" title="Get option value with fallback to short form." alt="" coords="108,186,297,226"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="61,155,131,179,129,184,59,160"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1cli_1_1ArgumentParser.html#a5356fc80d8ba6f18cb25007046d3d3dd" title="Parse command line arguments." alt="" coords="108,250,297,290"/>
+<area shape="poly" id="edge10_Node000001_Node000010" title=" " alt="" coords="44,160,70,198,88,218,110,236,119,242,116,246,106,240,85,222,66,201,39,163"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab3b401bfec9487869b86ff139c08c66c" title="Output informational message." alt="" coords="640,83,820,137"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="592,94,627,97,626,103,592,99"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#ad5cc8982b0b0681a14aa915b5fcf9655" title="Display error message to stderr." alt="" coords="353,193,584,233"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="257,159,372,187,371,192,256,164"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#acfde1d38a3ea2d531020a86e2c7e6489" title="Display info message to stdout." alt="" coords="357,129,581,169"/>
+<area shape="poly" id="edge7_Node000005_Node000008" title=" " alt="" coords="273,146,343,146,343,151,273,151"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab22e87edd1c17f3d00287a8ead429711" title="Output error message." alt="" coords="640,185,820,240"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="584,210,626,210,626,215,584,215"/>
+<area shape="poly" id="edge8_Node000008_Node000004" title=" " alt="" coords="580,129,626,123,627,128,581,135"/>
+</map>

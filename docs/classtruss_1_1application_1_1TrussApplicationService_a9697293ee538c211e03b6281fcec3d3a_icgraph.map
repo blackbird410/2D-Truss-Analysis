@@ -1,0 +1,5 @@
+<map id="truss::application::TrussApplicationService::updateMember" name="truss::application::TrussApplicationService::updateMember">
+<area shape="rect" id="Node000001" title="Update a member&#39;s material and section properties without changing its ID or node connectivity." alt="" coords="269,5,453,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a8b0e53867e44ea4d6dd3de5278131fee" title="Update an existing member&#39;s material and section properties in&#45;place." alt="" coords="5,13,221,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,35,222,35,222,30,255,30"/>
+</map>

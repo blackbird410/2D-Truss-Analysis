@@ -1,0 +1,5 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/interface/facade_analysis_service_adapter.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/interface/facade_analysis_service_adapter.hpp">
+<area shape="rect" id="Node000001" title="Adapter that exposes TrussAnalysisFacade through IAnalysisService." alt="" coords="5,5,191,89"/>
+<area shape="rect" id="Node000002" href="$facade__analysis__service__adapter_8cpp.html" title="IAnalysisService adapter implementation backed by TrussAnalysisFacade." alt="" coords="5,137,191,221"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="101,103,101,137,95,137,95,103"/>
+</map>

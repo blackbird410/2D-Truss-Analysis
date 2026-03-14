@@ -1,0 +1,5 @@
+<map id="truss::gui::interfaces::ModalConfirmProvider" name="truss::gui::interfaces::ModalConfirmProvider">
+<area shape="rect" id="Node000001" title="Production implementation: delegates to QMessageBox::question." alt="" coords="5,93,180,133"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1interfaces_1_1IConfirmationProvider.html" title="Abstract confirmation gate for destructive operations." alt="" coords="7,5,179,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="95,59,95,93,90,93,90,59"/>
+</map>

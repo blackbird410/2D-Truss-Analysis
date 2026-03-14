@@ -1,0 +1,5 @@
+<map id="truss::core::validation::TrussValidator::validateGeometry" name="truss::core::validation::TrussValidator::validateGeometry">
+<area shape="rect" id="Node000001" title="Validate geometric properties Checks: non&#45;zero member lengths, no duplicate nodes,..." alt="" coords="5,5,252,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aa47af9cfbf450fc2339e9cb738068c26" title="Add a validation issue to the result." alt="" coords="300,5,503,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="252,23,286,23,286,28,252,28"/>
+</map>

@@ -1,0 +1,20 @@
+<map id="truss::core::analysis::AnalysisOrchestrator::analyze" name="truss::core::analysis::AnalysisOrchestrator::analyze">
+<area shape="rect" id="Node000001" title="Perform complete structural analysis." alt="" coords="5,108,172,163"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#afdf79624fac11dbc3d9f51743c9c791e" title="Get human&#45;readable summary of validation results." alt="" coords="220,86,448,126"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="172,123,206,119,206,124,172,128"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#add2bfca8d7786e7c5b08b518695b5d49" title="Check if any error&#45;level issues exist." alt="" coords="771,29,976,69"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="140,106,219,72,356,29,413,16,467,7,521,3,580,3,723,14,780,24,780,29,722,20,580,9,522,9,468,13,414,21,358,35,221,77,142,111"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aaae916da83bae9e975cb799033a3e5da" title="Check if any fatal&#45;level issues exist." alt="" coords="774,144,973,184"/>
+<area shape="poly" id="edge9_Node000001_Node000006" title=" " alt="" coords="172,136,760,157,760,162,172,141"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#a9e94b0ce853774ecb015cd9c8d87e055" title="Check if any warning&#45;level issues exist." alt="" coords="496,201,723,241"/>
+<area shape="poly" id="edge10_Node000001_Node000007" title=" " alt="" coords="157,161,221,180,355,202,482,214,482,219,354,208,219,185,156,166"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#afd3cda2d6702bcbcad21d1383efe462f" title="Count issues by severity level." alt="" coords="1024,116,1275,156"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="448,108,1011,128,1010,133,448,113"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aef9acf35327678e6ab31234d4ca5b970" title="Check if truss passes all critical validations." alt="" coords="516,29,703,69"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="430,84,502,69,503,74,431,89"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="703,46,757,46,757,52,703,52"/>
+<area shape="poly" id="edge6_Node000004_Node000006" title=" " alt="" coords="658,67,815,136,813,141,656,72"/>
+<area shape="poly" id="edge5_Node000005_Node000003" title=" " alt="" coords="939,67,1073,109,1071,114,937,72"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="973,151,1010,147,1011,153,973,156"/>
+<area shape="poly" id="edge11_Node000007_Node000003" title=" " alt="" coords="723,218,845,211,911,204,975,193,1034,177,1088,158,1090,163,1035,183,977,198,912,209,846,217,723,224"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="truss::interface::ITrussAnalysisFacade::validateFromFile" name="truss::interface::ITrussAnalysisFacade::validateFromFile">
+<area shape="rect" id="Node000001" title="Complete workflow: load → validate (no analysis)" alt="" coords="263,5,501,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1cli_1_1commands_1_1ValidateCommand.html#a327504147683ed7d0be8ec8522897806" title="Execute the validate command." alt="" coords="5,5,215,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="249,28,215,28,215,23,249,23"/>
+</map>

@@ -1,0 +1,5 @@
+<map id="truss::application::TrussApplicationService::updateNode" name="truss::application::TrussApplicationService::updateNode">
+<area shape="rect" id="Node000001" title="Update a node&#39;s position without changing its ID or index." alt="" coords="269,5,453,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#ab8768e1fe4586edfb18f9f1616bbcd49" title="Update an existing node&#39;s position in&#45;place." alt="" coords="5,13,221,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,35,222,35,222,30,255,30"/>
+</map>

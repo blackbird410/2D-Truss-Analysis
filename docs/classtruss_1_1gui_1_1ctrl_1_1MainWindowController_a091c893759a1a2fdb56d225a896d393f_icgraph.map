@@ -1,0 +1,19 @@
+<map id="truss::gui::ctrl::MainWindowController::setState" name="truss::gui::ctrl::MainWindowController::setState">
+<area shape="rect" id="Node000001" title="Replace the workspace state and emit stateChanged if it changed." alt="" coords="580,133,783,173"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#ae20ff209b16d4337fa019d890e341caa" title="Called when a background analysis has completed successfully." alt="" coords="296,5,532,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="642,127,591,92,531,60,500,48,501,43,533,55,593,88,645,123"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#aeefe0ceee16440dff8f7dd47da9dd316" title="Called when a background analysis has failed." alt="" coords="313,69,515,109"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="583,133,497,112,499,107,584,127"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#ac10d84d9eab632e8241f58681a662983" title="Called when background analysis starts (from AnalysisController)." alt="" coords="308,133,520,173"/>
+<area shape="poly" id="edge5_Node000001_Node000005" title=" " alt="" coords="567,156,520,156,520,151,567,151"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a2041d0222905a6bc4ff6e3f9c9d52946" title="Called when the project has been saved successfully." alt="" coords="313,197,515,237"/>
+<area shape="poly" id="edge7_Node000001_Node000006" title=" " alt="" coords="584,179,499,200,497,195,583,174"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a7b6297c4115d34aa3d472f0dfd6148f1" title="Called when the structural model has been modified." alt="" coords="313,261,515,301"/>
+<area shape="poly" id="edge9_Node000001_Node000007" title=" " alt="" coords="645,184,593,219,533,252,501,264,500,259,531,247,591,214,642,179"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a0b8dcba80782586833f499f64947e8c7" title="Construct with a mandatory facade reference." alt="" coords="5,133,248,173"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="318,52,297,60,221,98,159,136,156,131,219,93,295,55,316,47"/>
+<area shape="poly" id="edge4_Node000004_Node000003" title=" " alt="" coords="311,115,218,136,216,131,309,110"/>
+<area shape="poly" id="edge6_Node000005_Node000003" title=" " alt="" coords="294,156,248,156,248,151,294,151"/>
+<area shape="poly" id="edge8_Node000006_Node000003" title=" " alt="" coords="309,197,216,176,218,171,311,192"/>
+<area shape="poly" id="edge10_Node000007_Node000003" title=" " alt="" coords="316,260,295,252,219,214,156,176,159,171,221,209,297,247,318,255"/>
+</map>

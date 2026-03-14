@@ -1,0 +1,5 @@
+<map id="truss::core::Member::getIntersectionPoint" name="truss::core::Member::getIntersectionPoint">
+<area shape="rect" id="Node000001" title="Get the intersection point with another member." alt="" coords="5,5,167,45"/>
+<area shape="rect" id="Node000002" href="$namespacetruss_1_1utils_1_1math.html#a9f66fc5df59d7087e078c5460af0a305" title="Returns true if the absolute value of value is below tolerance." alt="" coords="215,5,347,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="167,23,201,23,201,28,167,28"/>
+</map>

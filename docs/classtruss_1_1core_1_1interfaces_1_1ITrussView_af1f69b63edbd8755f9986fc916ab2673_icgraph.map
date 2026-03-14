@@ -1,0 +1,5 @@
+<map id="truss::core::interfaces::ITrussView::getNodeViews" name="truss::core::interfaces::ITrussView::getNodeViews">
+<area shape="rect" id="Node000001" title="Snapshot of all node data for read&#45;only consumption." alt="" coords="237,5,437,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1model_1_1NodeTableModel.html#a86bb6bcc8a1cb378e76199a653a8a5fd" title="Replace the cached node rows with data from view." alt="" coords="5,5,189,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="224,28,189,28,189,23,224,23"/>
+</map>

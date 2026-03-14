@@ -1,0 +1,9 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/models/validation_list_model.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/models/validation_list_model.hpp">
+<area shape="rect" id="Node000001" title="Qt Item Model providing validation issues for QListView." alt="" coords="267,5,461,75"/>
+<area shape="rect" id="Node000002" href="$main__window__controller_8cpp.html" title="MainWindowController — owns all sub&#45;controllers, models, and inter&#45;controller signal wiring." alt="" coords="5,123,216,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="279,83,186,125,184,120,277,78"/>
+<area shape="rect" id="Node000003" href="$main__window_8cpp.html" title="New MainWindow full implementation (Phase 6)." alt="" coords="239,130,489,185"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="367,89,367,130,361,130,361,89"/>
+<area shape="rect" id="Node000004" href="$validation__list__model_8cpp.html" title="Implementation of ValidationListModel." alt="" coords="513,123,706,192"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="449,78,539,120,536,125,447,83"/>
+</map>

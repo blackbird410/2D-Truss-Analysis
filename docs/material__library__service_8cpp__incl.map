@@ -1,0 +1,30 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/application/material_library_service.cpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/application/material_library_service.cpp">
+<area shape="rect" id="Node000001" title="Provides default materials and cross&#45;section definitions." alt="" coords="590,5,801,75"/>
+<area shape="rect" id="Node000002" href="$material__library__service_8hpp.html" title="Material and section property library service." alt="" coords="506,123,714,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="666,77,632,114,628,110,663,73"/>
+<area shape="rect" id="Node000014" title=" " alt="" coords="739,123,825,148"/>
+<area shape="poly" id="edge14_Node000001_Node000014" title=" " alt="" coords="729,73,764,111,760,114,725,77"/>
+<area shape="rect" id="Node000003" href="$src_2core_2model_2types_8hpp.html" title="Core data types and mathematical utilities for truss analysis." alt="" coords="307,196,481,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="576,151,443,194,441,189,574,145"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="521,269,584,295"/>
+<area shape="poly" id="edge13_Node000002_Node000010" title=" " alt="" coords="598,150,579,171,563,197,556,227,554,256,549,256,550,226,558,195,575,168,595,147"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="573,196,647,221"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="613,148,613,182,607,182,607,148"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="671,196,730,221"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="626,146,677,185,673,189,623,150"/>
+<area shape="rect" id="Node000013" title=" " alt="" coords="755,196,879,221"/>
+<area shape="poly" id="edge12_Node000002_Node000013" title=" " alt="" coords="644,145,771,189,769,194,642,151"/>
+<area shape="rect" id="Node000004" href="$math__utils_8hpp.html" title="Pure mathematical utility functions with no project dependencies." alt="" coords="5,269,177,295"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="346,224,154,269,153,264,345,219"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="201,269,304,295"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="372,224,289,265,287,261,370,219"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="329,269,395,295"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="391,223,375,258,370,256,386,221"/>
+<area shape="rect" id="Node000009" title=" " alt="" coords="419,269,497,295"/>
+<area shape="poly" id="edge8_Node000003_Node000009" title=" " alt="" coords="407,220,441,257,437,261,403,223"/>
+<area shape="poly" id="edge9_Node000003_Node000010" title=" " alt="" coords="421,219,515,261,513,266,418,224"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="13,343,76,368"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="86,296,62,333,58,330,81,294"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="100,343,179,368"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="101,294,126,330,122,333,97,297"/>
+</map>

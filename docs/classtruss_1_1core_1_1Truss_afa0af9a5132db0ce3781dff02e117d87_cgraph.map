@@ -1,0 +1,7 @@
+<map id="truss::core::Truss::getConstrainedDofs" name="truss::core::Truss::getConstrainedDofs">
+<area shape="rect" id="Node000001" title="Number of constrained degrees of freedom (DOFs eliminated by supports)." alt="" coords="5,37,164,77"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1Truss.html#a33033f843a719d2a5f097258ffeb2e5e" title="Number of unconstrained (free) degrees of freedom." alt="" coords="212,5,343,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="164,42,198,36,199,41,165,47"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1core_1_1Truss.html#a95ba6d49e840d0869ca4b264f80a014f" title="Total number of degrees of freedom (2 per node)." alt="" coords="212,69,343,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="165,68,199,74,198,79,164,73"/>
+</map>

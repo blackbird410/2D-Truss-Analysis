@@ -1,0 +1,7 @@
+<map id="truss::application::ITrussService::validateTruss" name="truss::application::ITrussService::validateTruss">
+<area shape="rect" id="Node000001" title="Run the full structural validation suite on a truss." alt="" coords="547,5,756,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a7b6297c4115d34aa3d472f0dfd6148f1" title="Called when the structural model has been modified." alt="" coords="296,5,499,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="533,28,499,28,499,23,533,23"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a0b8dcba80782586833f499f64947e8c7" title="Construct with a mandatory facade reference." alt="" coords="5,5,248,45"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="282,28,248,28,248,23,282,23"/>
+</map>

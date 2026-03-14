@@ -1,0 +1,13 @@
+<map id="truss::core::validation::ValidationResult::getSummary" name="truss::core::validation::ValidationResult::getSummary">
+<area shape="rect" id="Node000001" title="Get human&#45;readable summary of validation results." alt="" coords="5,5,233,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#afd3cda2d6702bcbcad21d1383efe462f" title="Count issues by severity level." alt="" coords="769,33,1020,73"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="234,15,459,9,591,11,722,19,790,28,789,33,721,24,591,16,460,14,234,21"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aef9acf35327678e6ab31234d4ca5b970" title="Check if truss passes all critical validations." alt="" coords="281,33,468,73"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="234,35,268,39,267,44,233,41"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#add2bfca8d7786e7c5b08b518695b5d49" title="Check if any error&#45;level issues exist." alt="" coords="516,33,721,73"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="468,51,502,51,502,56,468,56"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aaae916da83bae9e975cb799033a3e5da" title="Check if any fatal&#45;level issues exist." alt="" coords="519,97,718,137"/>
+<area shape="poly" id="edge5_Node000003_Node000005" title=" " alt="" coords="452,71,530,91,528,96,451,76"/>
+<area shape="poly" id="edge4_Node000004_Node000002" title=" " alt="" coords="721,51,755,51,755,56,721,56"/>
+<area shape="poly" id="edge6_Node000005_Node000002" title=" " alt="" coords="705,95,794,74,795,79,706,100"/>
+</map>

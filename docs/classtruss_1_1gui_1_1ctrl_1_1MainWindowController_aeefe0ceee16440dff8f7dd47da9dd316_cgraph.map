@@ -1,0 +1,9 @@
+<map id="truss::gui::ctrl::MainWindowController::onAnalysisFailed" name="truss::gui::ctrl::MainWindowController::onAnalysisFailed">
+<area shape="rect" id="Node000001" title="Called when a background analysis has failed." alt="" coords="5,37,208,77"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a5eacc90686e5a7eda624bed661ce99a3" title="Emitted after a successful analysis with a pointer to the results view." alt="" coords="256,5,483,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="208,42,242,38,243,43,208,48"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a091c893759a1a2fdb56d225a896d393f" title="Replace the workspace state and emit stateChanged if it changed." alt="" coords="268,69,471,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="208,67,255,73,254,78,208,72"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#afcbd69ae3a21d05a7d3e643c7c9703ba" title="Emitted whenever the workspace state transitions to a new value." alt="" coords="531,69,733,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="471,87,517,87,517,92,471,92"/>
+</map>

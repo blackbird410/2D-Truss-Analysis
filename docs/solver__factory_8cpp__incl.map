@@ -1,0 +1,18 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/solver_factory.cpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/solver_factory.cpp">
+<area shape="rect" id="Node000001" title="Creates linear solvers based on configuration." alt="" coords="135,5,329,75"/>
+<area shape="rect" id="Node000002" href="$solver__factory_8hpp.html" title="Factory for creating linear solver instances." alt="" coords="161,123,303,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="235,75,235,109,229,109,229,75"/>
+<area shape="rect" id="Node000003" href="$direct__solver_8hpp.html" title="Direct linear solver using LDLT factorization." alt="" coords="5,196,139,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="207,150,112,193,110,188,205,146"/>
+<area shape="rect" id="Node000004" href="$ilinear__solver_8hpp.html" title="Interface for linear system solvers." alt="" coords="163,269,301,295"/>
+<area shape="poly" id="edge6_Node000002_Node000004" title=" " alt="" coords="225,150,208,182,203,201,204,221,219,256,214,259,199,222,198,201,203,180,221,147"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="336,343,413,368"/>
+<area shape="poly" id="edge9_Node000002_Node000006" title=" " alt="" coords="304,146,346,163,364,177,380,195,394,229,397,265,393,301,386,330,380,329,387,300,391,265,388,230,375,197,361,181,343,168,302,150"/>
+<area shape="rect" id="Node000007" href="$iterative__solver_8hpp.html" title="Iterative linear solver using Conjugate Gradient method." alt="" coords="214,196,365,221"/>
+<area shape="poly" id="edge7_Node000002_Node000007" title=" " alt="" coords="244,147,273,183,269,187,239,150"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="99,219,194,261,192,266,97,224"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="181,343,283,368"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="235,295,235,329,229,329,229,295"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="256,292,340,334,338,339,254,297"/>
+<area shape="poly" id="edge8_Node000007_Node000004" title=" " alt="" coords="282,223,252,260,248,257,278,220"/>
+</map>

@@ -1,0 +1,68 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/export/exporter_factory.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/export/exporter_factory.hpp">
+<area shape="rect" id="Node000001" title="Factory for creating results exporters." alt="" coords="535,5,742,75"/>
+<area shape="rect" id="Node000002" href="$analysis__application__service_8hpp.html" title="Application facade for structural analysis operations." alt="" coords="261,240,502,309"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="589,86,544,125,418,242,414,238,541,121,586,82"/>
+<area shape="rect" id="Node000004" href="$truss__analysis__facade_8hpp.html" title="Unified facade for complete truss analysis workflows." alt="" coords="270,365,469,434"/>
+<area shape="poly" id="edge38_Node000001_Node000004" title=" " alt="" coords="628,89,612,138,587,197,555,256,515,311,481,342,443,367,440,362,478,338,511,308,551,254,583,194,607,137,623,87"/>
+<area shape="rect" id="Node000010" href="$ianalysis__service_8hpp.html" title="Abstract interface for analysis application services." alt="" coords="641,123,876,192"/>
+<area shape="poly" id="edge9_Node000001_Node000010" title=" " alt="" coords="686,83,725,121,722,124,682,86"/>
+<area shape="rect" id="Node000028" href="$exporter__factory_8cpp.html" title="Creates result exporters based on output format." alt="" coords="900,123,1105,192"/>
+<area shape="poly" id="edge37_Node000001_Node000028" title=" " alt="" coords="756,75,901,121,899,126,754,81"/>
+<area shape="rect" id="Node000003" href="$analysis__application__service_8cpp.html" title="Application service for truss analysis execution and results." alt="" coords="5,365,245,434"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="300,317,197,367,194,362,298,313"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="379,323,375,365,370,364,374,322"/>
+<area shape="rect" id="Node000005" href="$main_8cpp.html" title="Main entry point for the 2D Truss Analysis GUI application." alt="" coords="273,504,466,559"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="372,448,372,504,367,504,367,448"/>
+<area shape="rect" id="Node000006" href="$facade__analysis__service__adapter_8cpp.html" title="IAnalysisService adapter implementation backed by TrussAnalysisFacade." alt="" coords="762,489,947,573"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="469,436,481,439,556,455,615,462,675,470,750,487,763,491,761,496,749,492,674,475,614,468,555,460,479,444,468,441"/>
+<area shape="rect" id="Node000007" href="$facade__truss__service__adapter_8cpp.html" title="ITrussService adapter implementation backed by TrussAnalysisFacade." alt="" coords="491,497,738,566"/>
+<area shape="poly" id="edge6_Node000004_Node000007" title=" " alt="" coords="447,438,552,494,550,499,444,443"/>
+<area shape="rect" id="Node000008" href="$truss__analysis__facade_8cpp.html" title="Implementation of TrussAnalysisFacade unified workflow API." alt="" coords="51,497,248,566"/>
+<area shape="poly" id="edge7_Node000004_Node000008" title=" " alt="" coords="302,444,208,499,205,494,299,439"/>
+<area shape="rect" id="Node000009" href="$main__app_8cpp.html" title="CLI entry point for 2D Truss Analysis." alt="" coords="2339,504,2539,559"/>
+<area shape="poly" id="edge8_Node000004_Node000009" title=" " alt="" coords="465,435,480,439,563,451,659,460,882,468,1135,468,1403,463,1671,458,1925,458,2148,466,2244,474,2327,487,2379,501,2377,507,2326,492,2244,480,2148,471,1925,463,1671,464,1403,468,1135,473,882,473,658,465,562,456,480,444,464,440"/>
+<area shape="poly" id="edge10_Node000010_Node000002" title=" " alt="" coords="636,199,492,242,491,237,635,194"/>
+<area shape="rect" id="Node000011" href="$analysis__controller_8cpp.html" title="AnalysisController implementation — QThread background worker (Phase 5)." alt="" coords="3011,365,3213,434"/>
+<area shape="poly" id="edge11_Node000010_Node000011" title=" " alt="" coords="890,189,1022,207,1133,217,1324,225,1514,226,1625,229,1756,237,1946,249,2108,256,2382,266,2514,275,2654,291,2813,317,2999,355,3027,362,3025,367,2998,360,2812,322,2654,297,2513,281,2382,272,2107,261,1946,255,1756,243,1625,235,1514,231,1323,230,1133,223,1021,212,890,195"/>
+<area shape="rect" id="Node000012" href="$facade__analysis__service__adapter_8hpp.html" title="Adapter that exposes TrussAnalysisFacade through IAnalysisService." alt="" coords="763,357,949,441"/>
+<area shape="poly" id="edge12_Node000010_Node000012" title=" " alt="" coords="780,204,842,356,837,358,775,206"/>
+<area shape="rect" id="Node000013" href="$itruss__analysis__facade_8hpp.html" title="Abstract interface for TrussAnalysisFacade (for adapters and mocks)" alt="" coords="1541,240,1744,309"/>
+<area shape="poly" id="edge14_Node000010_Node000013" title=" " alt="" coords="890,189,1073,218,1252,239,1542,264,1541,270,1252,245,1072,223,889,195"/>
+<area shape="poly" id="edge13_Node000012_Node000006" title=" " alt="" coords="858,455,858,489,852,489,853,455"/>
+<area shape="poly" id="edge36_Node000013_Node000004" title=" " alt="" coords="1527,283,1285,293,983,309,692,331,572,345,481,360,453,367,452,362,479,355,571,340,691,326,983,304,1285,287,1527,277"/>
+<area shape="poly" id="edge27_Node000013_Node000011" title=" " alt="" coords="1758,278,2448,312,2798,334,2924,345,2999,355,3027,362,3026,367,2998,360,2923,350,2797,340,2448,318,1758,284"/>
+<area shape="poly" id="edge33_Node000013_Node000012" title=" " alt="" coords="1528,284,1409,292,1267,307,1113,329,962,360,950,363,949,358,961,355,1112,323,1266,301,1409,287,1527,278"/>
+<area shape="rect" id="Node000014" href="$analyze__command_8hpp.html" title="Command for file&#45;based truss analysis." alt="" coords="2563,365,2763,434"/>
+<area shape="poly" id="edge15_Node000013_Node000014" title=" " alt="" coords="1758,274,1916,279,2115,292,2333,316,2444,333,2551,355,2578,362,2577,367,2550,360,2443,339,2333,322,2114,298,1916,285,1758,279"/>
+<area shape="rect" id="Node000016" href="$example__command_8hpp.html" title="Example command for running hardcoded truss analysis." alt="" coords="2787,365,2987,434"/>
+<area shape="poly" id="edge18_Node000013_Node000016" title=" " alt="" coords="1758,278,1994,288,2287,304,2570,327,2686,340,2775,355,2803,362,2802,367,2774,360,2686,345,2569,332,2287,310,1994,293,1758,283"/>
+<area shape="rect" id="Node000018" href="$export__command_8hpp.html" title="Command for exporting analysis results to various formats." alt="" coords="2115,365,2315,434"/>
+<area shape="poly" id="edge21_Node000013_Node000018" title=" " alt="" coords="1758,288,1923,315,2103,355,2128,362,2126,367,2102,360,1921,320,1757,293"/>
+<area shape="rect" id="Node000020" href="$validate__command_8hpp.html" title="Command for validating truss structures without analysis." alt="" coords="2339,365,2539,434"/>
+<area shape="poly" id="edge24_Node000013_Node000020" title=" " alt="" coords="1758,279,1877,288,2020,302,2174,324,2327,355,2354,362,2352,367,2326,360,2174,330,2019,308,1876,293,1757,284"/>
+<area shape="rect" id="Node000022" href="$canvas__controller_8cpp.html" title="CanvasController implementation." alt="" coords="973,365,1176,434"/>
+<area shape="poly" id="edge28_Node000013_Node000022" title=" " alt="" coords="1528,294,1366,321,1189,360,1164,367,1163,362,1187,355,1365,315,1527,289"/>
+<area shape="rect" id="Node000023" href="$export__controller_8cpp.html" title="ExportController implementation (Phase 5)." alt="" coords="1200,365,1403,434"/>
+<area shape="poly" id="edge29_Node000013_Node000023" title=" " alt="" coords="1537,316,1416,360,1396,367,1394,362,1414,355,1535,311"/>
+<area shape="rect" id="Node000024" href="$inspector__controller_8cpp.html" title="InspectorController implementation." alt="" coords="1427,365,1629,434"/>
+<area shape="poly" id="edge30_Node000013_Node000024" title=" " alt="" coords="1604,321,1562,366,1558,362,1600,317"/>
+<area shape="rect" id="Node000025" href="$main__window__controller_8cpp.html" title="MainWindowController — owns all sub&#45;controllers, models, and inter&#45;controller signal wiring." alt="" coords="1653,365,1864,434"/>
+<area shape="poly" id="edge31_Node000013_Node000025" title=" " alt="" coords="1686,317,1729,362,1725,366,1682,321"/>
+<area shape="rect" id="Node000026" href="$project__controller_8cpp.html" title="ProjectController implementation (Phase 5)." alt="" coords="1888,365,2091,434"/>
+<area shape="poly" id="edge32_Node000013_Node000026" title=" " alt="" coords="1753,311,1877,355,1897,362,1896,367,1875,360,1751,316"/>
+<area shape="rect" id="Node000027" href="$facade__truss__service__adapter_8hpp.html" title="Adapter implementing ITrussService through TrussAnalysisFacade public API." alt="" coords="493,365,739,434"/>
+<area shape="poly" id="edge34_Node000013_Node000027" title=" " alt="" coords="1528,282,1373,289,1179,303,966,326,753,360,720,367,719,362,751,355,965,321,1179,298,1373,284,1528,277"/>
+<area shape="poly" id="edge17_Node000014_Node000009" title=" " alt="" coords="2594,443,2485,506,2483,502,2591,439"/>
+<area shape="rect" id="Node000015" href="$analyze__command_8cpp.html" title="CLI command for truss analysis execution." alt="" coords="2563,497,2763,566"/>
+<area shape="poly" id="edge16_Node000014_Node000015" title=" " alt="" coords="2665,448,2665,497,2660,497,2660,448"/>
+<area shape="poly" id="edge20_Node000016_Node000009" title=" " alt="" coords="2786,441,2775,444,2713,459,2663,468,2614,477,2551,492,2507,507,2505,501,2550,487,2613,471,2662,463,2712,454,2774,439,2784,436"/>
+<area shape="rect" id="Node000017" href="$example__command_8cpp.html" title="CLI command for generating example truss models." alt="" coords="2787,497,2987,566"/>
+<area shape="poly" id="edge19_Node000016_Node000017" title=" " alt="" coords="2889,448,2889,497,2884,497,2884,448"/>
+<area shape="poly" id="edge23_Node000018_Node000009" title=" " alt="" coords="2286,439,2395,502,2392,506,2283,443"/>
+<area shape="rect" id="Node000019" href="$export__command_8cpp.html" title="CLI command for results export to various formats." alt="" coords="1891,497,2091,566"/>
+<area shape="poly" id="edge22_Node000018_Node000019" title=" " alt="" coords="2146,443,2050,499,2047,494,2143,439"/>
+<area shape="poly" id="edge26_Node000020_Node000009" title=" " alt="" coords="2441,448,2441,504,2436,504,2436,448"/>
+<area shape="rect" id="Node000021" href="$validate__command_8cpp.html" title="CLI command for truss structure validation." alt="" coords="2115,497,2315,566"/>
+<area shape="poly" id="edge25_Node000020_Node000021" title=" " alt="" coords="2370,443,2274,499,2271,494,2367,439"/>
+<area shape="poly" id="edge35_Node000027_Node000007" title=" " alt="" coords="618,448,618,497,612,496,613,448"/>
+</map>

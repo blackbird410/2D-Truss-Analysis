@@ -1,0 +1,5 @@
+<map id="truss::application::AnalysisApplicationService::clearResults" name="truss::application::AnalysisApplicationService::clearResults">
+<area shape="rect" id="Node000001" title="Clear analysis results." alt="" coords="269,5,476,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a83ef29a3b03466528366bd214caa3b73" title="Clear specific analysis results." alt="" coords="5,13,221,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="255,35,222,35,222,30,255,30"/>
+</map>

@@ -1,0 +1,52 @@
+<map id="truss::cli::commands::ExampleCommand::execute" name="truss::cli::commands::ExampleCommand::execute">
+<area shape="rect" id="Node000001" title="Execute the command." alt="" coords="5,597,219,637"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussBuilder.html#ae06a3d127a31604ae39270b8088a69bb" title="Add a member connecting two nodes." alt="" coords="291,237,497,277"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="114,596,128,535,155,451,175,407,200,363,229,322,265,287,277,278,280,283,268,291,234,325,204,366,180,409,160,453,133,537,119,597"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1interface_1_1TrussBuilder.html#a8a1babdcb4dc7b1362fa9c20e76304ed" title="Add a node to the truss." alt="" coords="291,301,497,341"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="117,596,134,546,164,479,207,410,234,378,265,351,277,343,280,347,268,355,238,382,211,413,169,482,139,548,122,597"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1interface_1_1ITrussAnalysisFacade.html#a1cc026ad04f1c13e02d187e8d0b77508" title="Complete workflow: build → validate → analyze." alt="" coords="269,365,519,405"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="121,595,142,557,173,508,215,457,265,414,275,408,278,413,268,419,219,461,178,511,146,559,125,598"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1interface_1_1TrussBuilder.html#adfdd9c2eedd37307f1cb4755bb100240" title="Apply a force to a node." alt="" coords="291,453,497,493"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="133,595,190,548,227,523,266,502,284,495,286,500,268,507,230,528,194,552,137,599"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#aa80ce36681600a1d5d14a6542b82b9b5" title="Display analysis results via view interface." alt="" coords="267,517,521,572"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="190,594,273,573,274,578,192,599"/>
+<area shape="rect" id="Node000017" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#ad5cc8982b0b0681a14aa915b5fcf9655" title="Display error message to stderr." alt="" coords="279,725,509,765"/>
+<area shape="poly" id="edge17_Node000001_Node000017" title=" " alt="" coords="141,635,198,673,268,710,287,718,286,723,266,715,195,677,138,639"/>
+<area shape="rect" id="Node000019" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#aaa27d442ff2bff3594e4089fb3fe8b1b" title="Display application header." alt="" coords="271,597,517,637"/>
+<area shape="poly" id="edge19_Node000001_Node000019" title=" " alt="" coords="219,614,257,614,257,619,219,619"/>
+<area shape="rect" id="Node000020" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#acfde1d38a3ea2d531020a86e2c7e6489" title="Display info message to stdout." alt="" coords="282,661,506,701"/>
+<area shape="poly" id="edge21_Node000001_Node000020" title=" " alt="" coords="202,634,293,655,292,660,200,639"/>
+<area shape="rect" id="Node000021" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#a9f420fc1d7fc7b2ba2111795c4878f90" title="Display success message to stdout." alt="" coords="269,789,519,829"/>
+<area shape="poly" id="edge23_Node000001_Node000021" title=" " alt="" coords="129,635,184,704,224,742,268,774,280,781,278,786,265,779,220,746,180,708,125,638"/>
+<area shape="rect" id="Node000023" href="$classtruss_1_1application_1_1IAnalysisService.html#a1be215a0dd44fd0be73071005409e0f2" title="Get read&#45;only view of analysis results." alt="" coords="321,853,467,908"/>
+<area shape="poly" id="edge25_Node000001_Node000023" title=" " alt="" coords="124,636,144,678,175,733,217,790,241,816,268,838,309,860,307,865,265,843,238,820,213,793,171,736,139,680,119,638"/>
+<area shape="rect" id="Node000024" href="$classtruss_1_1interface_1_1TrussBuilder.html#ae64a859eb8f3b3894b2d7c70ea7d2453" title="Set the name of the truss." alt="" coords="291,933,497,973"/>
+<area shape="poly" id="edge26_Node000001_Node000024" title=" " alt="" coords="120,636,135,693,163,770,183,810,207,850,235,887,268,919,280,927,277,931,265,923,231,890,203,853,178,813,158,772,130,694,115,638"/>
+<area shape="poly" id="edge5_Node000005_Node000005" title=" " alt="" coords="345,453,342,443,350,434,367,428,394,426,425,429,441,436,439,441,423,434,394,431,368,433,353,438,347,444,350,451"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a57877f2168e3b5a1be5249e968f2b88b" title="Condition number of the assembled stiffness matrix." alt="" coords="575,5,744,60"/>
+<area shape="poly" id="edge7_Node000006_Node000007" title=" " alt="" coords="507,515,519,503,539,475,551,448,559,422,562,396,558,343,546,291,533,238,528,184,530,156,537,128,549,99,567,70,568,68,573,71,572,73,554,101,542,129,535,157,533,184,539,237,551,290,563,342,567,396,564,423,556,450,543,478,523,506,510,519"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#aa94426134b0ad6a7c3f8b9ba2f095777" title="Global nodal displacement vector, indexed by DOF." alt="" coords="575,84,744,139"/>
+<area shape="poly" id="edge8_Node000006_Node000008" title=" " alt="" coords="506,515,519,503,535,481,546,459,556,416,554,373,545,330,536,286,533,242,541,196,552,172,567,148,568,147,573,150,572,152,556,175,546,197,538,242,542,286,550,329,559,372,561,416,551,461,540,483,523,506,510,519"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#aca7e4f21652fceecb772e589dbddd5c7" title="Maximum nodal displacement magnitude across all nodes." alt="" coords="575,163,744,217"/>
+<area shape="poly" id="edge9_Node000006_Node000009" title=" " alt="" coords="506,515,519,503,541,469,550,435,550,402,545,369,539,335,538,300,546,264,567,227,568,225,573,229,572,230,551,266,544,300,545,334,550,368,555,402,555,436,546,471,523,506,509,519"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a5c2385ed98148f286b828801a9e65c01" title="Maximum absolute axial stress across all members." alt="" coords="575,241,744,296"/>
+<area shape="poly" id="edge10_Node000006_Node000010" title=" " alt="" coords="505,515,519,503,536,479,544,455,546,431,544,407,543,358,551,332,567,306,569,304,573,307,571,309,556,334,549,358,549,407,551,431,549,456,541,481,523,506,508,519"/>
+<area shape="rect" id="Node000011" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a56041545a4582b8a19cd719a18a30b84" title="Axial force in every member, indexed by member sequence." alt="" coords="575,320,744,375"/>
+<area shape="poly" id="edge11_Node000006_Node000011" title=" " alt="" coords="503,515,520,503,532,489,538,475,543,446,548,416,555,400,567,384,570,381,574,385,571,388,560,403,554,417,549,447,543,476,536,492,523,507,506,519"/>
+<area shape="rect" id="Node000012" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a65a562769282f3c9af7277149a160e3e" title="Axial stress in every member, indexed by member sequence." alt="" coords="575,399,744,453"/>
+<area shape="poly" id="edge12_Node000006_Node000012" title=" " alt="" coords="493,515,520,502,544,483,568,462,576,458,579,462,571,467,547,487,523,507,496,520"/>
+<area shape="rect" id="Node000013" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a31a21a855e390ea576f70d267d04c41f" title="Total elastic strain energy stored in the structure." alt="" coords="575,477,744,532"/>
+<area shape="poly" id="edge13_Node000006_Node000013" title=" " alt="" coords="521,523,561,517,562,522,522,528"/>
+<area shape="rect" id="Node000014" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#af7bfa45a1be36307d7a6cd58bbbf0a86" title="Utilisation ratio (σ / f_y) for every member, indexed by member sequence." alt="" coords="575,556,744,611"/>
+<area shape="poly" id="edge14_Node000006_Node000014" title=" " alt="" coords="522,561,562,566,561,572,521,566"/>
+<area shape="rect" id="Node000015" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#af832f79decf45b5f1b62b080882fdda5" title="Whether the solver reached a converged solution." alt="" coords="575,635,744,689"/>
+<area shape="poly" id="edge15_Node000006_Node000015" title=" " alt="" coords="495,570,523,582,547,601,571,620,582,626,579,631,568,624,544,605,520,587,493,575"/>
+<area shape="rect" id="Node000016" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab3b401bfec9487869b86ff139c08c66c" title="Output informational message." alt="" coords="569,713,749,768"/>
+<area shape="poly" id="edge16_Node000006_Node000016" title=" " alt="" coords="506,570,523,583,536,597,543,612,549,641,554,670,560,684,571,699,576,703,572,707,567,702,556,687,549,672,544,642,538,614,531,600,520,587,503,574"/>
+<area shape="rect" id="Node000018" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab22e87edd1c17f3d00287a8ead429711" title="Output error message." alt="" coords="569,792,749,847"/>
+<area shape="poly" id="edge18_Node000017_Node000018" title=" " alt="" coords="478,762,522,774,561,785,559,791,521,779,476,767"/>
+<area shape="poly" id="edge20_Node000019_Node000016" title=" " alt="" coords="498,634,523,646,539,659,548,672,557,685,571,699,579,704,576,709,568,703,553,689,544,675,535,663,520,651,495,639"/>
+<area shape="poly" id="edge22_Node000020_Node000016" title=" " alt="" coords="484,698,556,715,555,720,483,703"/>
+<area shape="rect" id="Node000022" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#a67a7a0fb09e822777f4392f8eface41f" title="Output success message." alt="" coords="569,871,749,925"/>
+<area shape="poly" id="edge24_Node000021_Node000022" title=" " alt="" coords="478,826,522,839,584,863,582,868,520,845,477,831"/>
+</map>

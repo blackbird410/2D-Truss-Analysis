@@ -1,0 +1,5 @@
+<map id="truss::interface::TrussBuilder::addMember" name="truss::interface::TrussBuilder::addMember">
+<area shape="rect" id="Node000001" title="Add a member with default material/section." alt="" coords="5,5,212,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussBuilder.html#ae06a3d127a31604ae39270b8088a69bb" title="Add a member connecting two nodes." alt="" coords="260,5,467,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="212,23,246,23,246,28,212,28"/>
+</map>

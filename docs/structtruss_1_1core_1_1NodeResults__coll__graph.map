@@ -1,0 +1,7 @@
+<map id="truss::core::NodeResults" name="truss::core::NodeResults">
+<area shape="rect" id="Node000001" title="Analysis results for a single node." alt="" coords="77,93,257,119"/>
+<area shape="rect" id="Node000002" href="$structtruss_1_1core_1_1Point2D.html" title="2D Point structure" alt="" coords="5,5,155,31"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="103,38,156,91,153,95,99,42"/>
+<area shape="rect" id="Node000003" href="$structtruss_1_1core_1_1Force2D.html" title="2D Force vector" alt="" coords="179,5,330,31"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="246,44,227,71,193,96,190,91,223,67,242,41"/>
+</map>

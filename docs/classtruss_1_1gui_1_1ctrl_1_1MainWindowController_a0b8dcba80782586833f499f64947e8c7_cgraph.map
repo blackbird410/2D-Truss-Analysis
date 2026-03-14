@@ -1,0 +1,36 @@
+<map id="truss::gui::ctrl::MainWindowController::MainWindowController" name="truss::gui::ctrl::MainWindowController::MainWindowController">
+<area shape="rect" id="Node000001" title="Construct with a mandatory facade reference." alt="" coords="5,309,248,349"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#ae20ff209b16d4337fa019d890e341caa" title="Called when a background analysis has completed successfully." alt="" coords="296,149,532,189"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="147,306,210,253,251,223,295,198,311,191,313,196,297,203,254,228,213,257,151,310"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#afcbd69ae3a21d05a7d3e643c7c9703ba" title="Emitted whenever the workspace state transitions to a new value." alt="" coords="855,402,1057,442"/>
+<area shape="poly" id="edge21_Node000001_Node000007" title=" " alt="" coords="148,347,174,373,209,404,251,433,297,454,373,474,452,485,532,488,610,485,686,478,756,467,871,443,873,448,757,473,686,483,611,491,532,494,451,490,372,479,295,459,248,437,206,408,170,377,144,351"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#aeefe0ceee16440dff8f7dd47da9dd316" title="Called when a background analysis has failed." alt="" coords="313,277,515,317"/>
+<area shape="poly" id="edge8_Node000001_Node000009" title=" " alt="" coords="248,312,299,307,300,312,249,318"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#ac10d84d9eab632e8241f58681a662983" title="Called when background analysis starts (from AnalysisController)." alt="" coords="308,405,520,445"/>
+<area shape="poly" id="edge11_Node000001_Node000010" title=" " alt="" coords="178,346,297,390,323,398,321,403,295,395,176,351"/>
+<area shape="rect" id="Node000011" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a2041d0222905a6bc4ff6e3f9c9d52946" title="Called when the project has been saved successfully." alt="" coords="313,341,515,381"/>
+<area shape="poly" id="edge13_Node000001_Node000011" title=" " alt="" coords="249,340,300,345,299,351,248,345"/>
+<area shape="rect" id="Node000012" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a7b6297c4115d34aa3d472f0dfd6148f1" title="Called when the structural model has been modified." alt="" coords="313,213,515,253"/>
+<area shape="poly" id="edge15_Node000001_Node000012" title=" " alt="" coords="176,306,295,262,321,254,323,259,297,267,178,311"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1IAnalysisService.html#a1be215a0dd44fd0be73071005409e0f2" title="Get read&#45;only view of analysis results." alt="" coords="621,5,766,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="445,146,506,109,579,70,606,59,608,63,581,75,508,114,447,151"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1application_1_1ITrussService.html#a55b5c4213bdc03e8454dbf9a66f42530" title="Obtain a read&#45;only view of the truss for rendering / export." alt="" coords="589,149,798,189"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="532,166,575,166,575,171,532,171"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a5eacc90686e5a7eda624bed661ce99a3" title="Emitted after a successful analysis with a pointer to the results view." alt="" coords="580,213,807,253"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="503,186,593,207,592,212,502,191"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a091c893759a1a2fdb56d225a896d393f" title="Replace the workspace state and emit stateChanged if it changed." alt="" coords="592,341,795,381"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="517,187,534,199,547,215,555,231,559,264,563,296,569,312,582,327,586,331,583,335,578,331,565,314,557,298,553,265,550,233,543,218,530,203,514,191"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a2022d00bf6eb6365447777b14959c374" title="Emitted after model refresh; carries a pointer to the new truss view." alt="" coords="586,85,801,125"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="502,146,592,125,593,130,503,151"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="780,378,857,396,856,401,779,383"/>
+<area shape="poly" id="edge9_Node000009_Node000005" title=" " alt="" coords="502,274,592,253,593,258,503,279"/>
+<area shape="poly" id="edge10_Node000009_Node000006" title=" " alt="" coords="503,314,593,335,592,340,502,319"/>
+<area shape="poly" id="edge12_Node000010_Node000006" title=" " alt="" coords="502,402,592,381,593,386,503,407"/>
+<area shape="poly" id="edge14_Node000011_Node000006" title=" " alt="" coords="516,358,578,358,578,363,516,363"/>
+<area shape="poly" id="edge16_Node000012_Node000004" title=" " alt="" coords="502,210,592,189,593,194,503,215"/>
+<area shape="poly" id="edge17_Node000012_Node000005" title=" " alt="" coords="516,230,566,230,566,235,516,235"/>
+<area shape="poly" id="edge18_Node000012_Node000006" title=" " alt="" coords="511,250,534,263,550,279,558,295,566,311,582,327,591,332,588,337,578,331,562,315,554,298,546,282,530,267,509,255"/>
+<area shape="poly" id="edge19_Node000012_Node000008" title=" " alt="" coords="509,210,530,199,546,183,554,168,562,151,578,135,588,129,591,133,582,139,566,154,558,170,550,187,534,203,511,215"/>
+<area shape="rect" id="Node000013" href="$classtruss_1_1application_1_1ITrussService.html#a71c30c1c3db318ea225809daeb8e6942" title="Run the full structural validation suite on a truss." alt="" coords="589,277,798,317"/>
+<area shape="poly" id="edge20_Node000012_Node000013" title=" " alt="" coords="503,250,593,271,592,276,502,255"/>
+</map>

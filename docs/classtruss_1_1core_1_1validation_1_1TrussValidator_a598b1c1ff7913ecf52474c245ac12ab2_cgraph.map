@@ -1,0 +1,5 @@
+<map id="truss::core::validation::TrussValidator::validateKinematicStability" name="truss::core::validation::TrussValidator::validateKinematicStability">
+<area shape="rect" id="Node000001" title="Validate kinematic stability Checks: no mechanisms, adequate constraints to prevent rigid body motion..." alt="" coords="5,5,253,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aa47af9cfbf450fc2339e9cb738068c26" title="Add a validation issue to the result." alt="" coords="301,13,504,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="254,30,288,30,288,35,254,35"/>
+</map>

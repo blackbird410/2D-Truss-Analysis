@@ -1,0 +1,5 @@
+<map id="truss::infrastructure::export_::ExporterFactory::detectFormat" name="truss::infrastructure::export_::ExporterFactory::detectFormat">
+<area shape="rect" id="Node000001" title="Detect export format from file extension." alt="" coords="5,5,195,60"/>
+<area shape="rect" id="Node000002" href="$namespacetruss_1_1utils_1_1string.html#ab91722ec9f4173168b35377eaded5c9c" title="Returns a copy of s with all ASCII letters converted to lowercase." alt="" coords="243,13,377,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="195,30,229,30,229,35,195,35"/>
+</map>

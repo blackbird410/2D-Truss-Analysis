@@ -1,0 +1,27 @@
+var searchData=
+[
+  ['parse_0',['parse',['../classtruss_1_1cli_1_1ArgumentParser.html#a5356fc80d8ba6f18cb25007046d3d3dd',1,'truss::cli::ArgumentParser']]],
+  ['parsedargs_1',['ParsedArgs',['../structtruss_1_1cli_1_1ParsedArgs.html',1,'truss::cli']]],
+  ['parsesupporttype_2',['parseSupportType',['../namespacetruss_1_1infrastructure_1_1io.html#a7dd6c24c73a90b39eb9ee80b43e36366',1,'truss::infrastructure::io']]],
+  ['phase_3',['phase',['../structtruss_1_1gui_1_1state_1_1WorkspaceState.html#ac832528b8358880e90380e578e0adcab',1,'truss::gui::state::WorkspaceState']]],
+  ['phase_207_20placeholder_20directory_4',['icons/ — Phase 7 placeholder directory',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2src_2gui_2resources_2icons_2README.html',1,'']]],
+  ['phase_207_20styling_20ui_20consistency_20enforcement_5',['SVG toolbar icons are added in Phase 7 (Styling &amp; UI Consistency Enforcement).',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2src_2gui_2resources_2icons_2README.html#autotoc_md1',1,'']]],
+  ['pi_6',['pi',['../structtruss_1_1application_1_1SectionSpec.html#a35dcd5ef86280c8c07d9ea8270edc09a',1,'truss::application::SectionSpec']]],
+  ['pinned_7',['Pinned',['../src_2core_2model_2types_8hpp.html#ad2316d5ce0285405580918a71b87e2d7a3c5e891bff07947cbae2fda89162df9f',1,'truss::core']]],
+  ['placeholder_20directory_8',['icons/ — Phase 7 placeholder directory',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2src_2gui_2resources_2icons_2README.html',1,'']]],
+  ['point2d_9',['Point2D',['../structtruss_1_1core_1_1Point2D.html',1,'truss::core']]],
+  ['populatemateriallibrary_10',['populateMaterialLibrary',['../classtruss_1_1gui_1_1InspectorPanel.html#a82ae0b33673351e6a02c229a2159ae94',1,'truss::gui::InspectorPanel']]],
+  ['pr_20template_11',['PR Template',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2CONTRIBUTING.html#autotoc_md45',1,'']]],
+  ['precision_12',['precision',['../structtruss_1_1infrastructure_1_1export___1_1ExportOptions.html#aaf9dd3d19c867c273290b73249db1679',1,'truss::infrastructure::export_::ExportOptions']]],
+  ['prerequisites_13',['Prerequisites',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2CONTRIBUTING.html#autotoc_md26',1,'']]],
+  ['prettyprint_14',['prettyPrint',['../structtruss_1_1infrastructure_1_1io_1_1FileIOOptions.html#a66b076b990885fd08ad94eb60f3ea56f',1,'truss::infrastructure::io::FileIOOptions']]],
+  ['process_15',['Release Process',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2CONTRIBUTING.html#autotoc_md48',1,'']]],
+  ['professional_20git_20workflow_16',['Professional Git Workflow',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2CONTRIBUTING.html#autotoc_md30',1,'']]],
+  ['profile_17',['profile',['../structtruss_1_1application_1_1SectionSpec.html#a14fd217844271430d65ee6c03df9f416',1,'truss::application::SectionSpec']]],
+  ['project_5fcontroller_2ecpp_18',['project_controller.cpp',['../project__controller_8cpp.html',1,'']]],
+  ['project_5fcontroller_2ehpp_19',['project_controller.hpp',['../project__controller_8hpp.html',1,'']]],
+  ['projectcontroller_20',['ProjectController',['../classtruss_1_1gui_1_1ctrl_1_1ProjectController.html',1,'truss::gui::ctrl']]],
+  ['projectname_21',['projectName',['../structtruss_1_1gui_1_1state_1_1WorkspaceState.html#a98ebe6b005a12cded98ee552f88194e4',1,'truss::gui::state::WorkspaceState']]],
+  ['projects_22',['Related Projects',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2README.html#autotoc_md22',1,'']]],
+  ['pull_20request_20guidelines_23',['Pull Request Guidelines',['../md__2home_2runner_2work_22D-Truss-Analysis_22D-Truss-Analysis_2CONTRIBUTING.html#autotoc_md43',1,'']]]
+];

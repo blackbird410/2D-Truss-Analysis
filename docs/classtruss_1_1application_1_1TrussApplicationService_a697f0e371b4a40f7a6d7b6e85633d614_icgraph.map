@@ -1,0 +1,9 @@
+<map id="truss::application::TrussApplicationService::createTruss" name="truss::application::TrussApplicationService::createTruss">
+<area shape="rect" id="Node000001" title="Create a new empty truss model." alt="" coords="533,30,717,85"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#ab44eaec50d8e5602d590540d27237492" title="Create a new empty truss." alt="" coords="269,5,485,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="519,46,485,42,486,37,520,41"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#abc3a5533c4233e87dc9951c1dcffd266" title="Create a new empty truss model and register it with this service." alt="" coords="269,69,485,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="520,74,486,78,485,73,519,68"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a8645c59378bf7fcccd3bd8ebc162b2d9" title="Complete workflow: build → validate → analyze." alt="" coords="5,69,221,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="256,92,221,92,221,87,256,87"/>
+</map>

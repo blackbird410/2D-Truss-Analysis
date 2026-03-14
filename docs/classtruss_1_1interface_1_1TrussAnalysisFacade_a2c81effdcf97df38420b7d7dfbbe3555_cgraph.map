@@ -1,0 +1,12 @@
+<map id="truss::interface::TrussAnalysisFacade::loadTrussOnly" name="truss::interface::TrussAnalysisFacade::loadTrussOnly">
+<area shape="rect" id="Node000001" title="Load truss from file without analysis." alt="" coords="5,49,221,89"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1TrussApplicationService.html#a6af1f0977914627709887f8f6de6d7b6" title="Load truss from file (auto&#45;detects format)" alt="" coords="269,41,453,96"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="222,66,256,66,256,71,222,71"/>
+<area shape="poly" id="edge5_Node000002_Node000002" title=" " alt="" coords="319,41,320,31,327,22,341,17,361,15,386,18,399,26,397,30,384,23,361,20,342,22,330,27,325,33,325,41"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1infrastructure_1_1io_1_1FileIOFactory.html#a6a20a62a4a27dcadeb44243c586d5e9e" title="Detect file format from file extension." alt="" coords="501,5,652,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="453,51,487,45,488,50,454,56"/>
+<area shape="rect" id="Node000005" href="$structtruss_1_1application_1_1Result.html#a053316ac5f18e56102eb9a500cb77cf0" title="Construct a failure result carrying an error message." alt="" coords="509,85,644,125"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="454,81,496,89,495,94,453,87"/>
+<area shape="rect" id="Node000004" href="$namespacetruss_1_1infrastructure_1_1io.html#a34eac675136061d3f285a2ece9c4b71b" title="Detect file format from extension." alt="" coords="700,13,860,53"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="652,30,686,30,686,35,652,35"/>
+</map>

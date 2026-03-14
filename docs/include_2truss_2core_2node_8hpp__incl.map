@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/include/truss/core/node.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/include/truss/core/node.hpp">
+<area shape="rect" id="Node000001" title="Node class definition &#45; represents a point in the truss structure." alt="" coords="5,5,184,75"/>
+<area shape="rect" id="Node000002" title=" " alt="" coords="17,123,84,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="81,76,64,111,60,109,76,74"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="109,123,171,148"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="113,74,131,109,126,111,109,76"/>
+</map>

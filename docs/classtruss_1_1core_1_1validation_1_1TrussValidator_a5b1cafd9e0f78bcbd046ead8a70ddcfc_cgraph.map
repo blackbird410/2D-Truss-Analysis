@@ -1,0 +1,5 @@
+<map id="truss::core::validation::TrussValidator::validateConnectivity" name="truss::core::validation::TrussValidator::validateConnectivity">
+<area shape="rect" id="Node000001" title="Validate member connectivity Checks: all members connect valid nodes, no self&#45;loops,..." alt="" coords="5,5,269,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aa47af9cfbf450fc2339e9cb738068c26" title="Add a validation issue to the result." alt="" coords="317,5,520,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="269,23,303,23,303,28,269,28"/>
+</map>

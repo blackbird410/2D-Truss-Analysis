@@ -1,0 +1,5 @@
+<map id="truss::core::validation::TrussValidator::validateLoads" name="truss::core::validation::TrussValidator::validateLoads">
+<area shape="rect" id="Node000001" title="Validate load definitions Checks: loads applied to existing nodes, non&#45;zero loads,..." alt="" coords="5,5,225,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#aa47af9cfbf450fc2339e9cb738068c26" title="Add a validation issue to the result." alt="" coords="273,5,476,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="226,23,260,23,260,28,226,28"/>
+</map>

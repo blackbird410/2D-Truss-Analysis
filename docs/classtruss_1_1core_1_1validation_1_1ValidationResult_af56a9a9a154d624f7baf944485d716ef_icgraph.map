@@ -1,0 +1,5 @@
+<map id="truss::core::validation::ValidationResult::getIssues" name="truss::core::validation::ValidationResult::getIssues">
+<area shape="rect" id="Node000001" title="Get all validation issues." alt="" coords="204,13,411,53"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1model_1_1ValidationListModel.html#a8a9583ac0160e59a695aab3c9e5d81ce" title="Replace the cached issues with the contents of result." alt="" coords="5,5,156,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="190,35,157,35,157,30,190,30"/>
+</map>

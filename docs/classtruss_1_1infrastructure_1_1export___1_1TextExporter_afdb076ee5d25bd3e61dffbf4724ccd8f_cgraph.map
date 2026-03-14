@@ -1,0 +1,9 @@
+<map id="truss::infrastructure::export_::TextExporter::exportResults" name="truss::infrastructure::export_::TextExporter::exportResults">
+<area shape="rect" id="Node000001" title="Export analysis results to text file." alt="" coords="5,84,175,139"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#aa94426134b0ad6a7c3f8b9ba2f095777" title="Global nodal displacement vector, indexed by DOF." alt="" coords="223,5,392,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="165,81,217,62,219,67,167,86"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#a56041545a4582b8a19cd719a18a30b84" title="Axial force in every member, indexed by member sequence." alt="" coords="223,84,392,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="175,109,209,109,209,114,175,114"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1core_1_1interfaces_1_1IAnalysisResultsView.html#afbc9558fa7feac5334ee622f3ef5f1f3" title="Support reaction force vector, indexed by constrained DOF." alt="" coords="223,163,392,217"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="167,136,219,155,217,160,165,141"/>
+</map>

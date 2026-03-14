@@ -1,0 +1,5 @@
+<map id="truss::core::interfaces::ITrussView::getMemberViews" name="truss::core::interfaces::ITrussView::getMemberViews">
+<area shape="rect" id="Node000001" title="Snapshot of all member data for read&#45;only consumption." alt="" coords="257,5,477,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1model_1_1MemberTableModel.html#aeb15410edbf081533930f16b58b0d3d9" title="Replace the cached member rows with data from view." alt="" coords="5,5,209,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="244,28,210,28,210,23,244,23"/>
+</map>

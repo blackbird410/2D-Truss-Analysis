@@ -1,0 +1,9 @@
+<map id="truss::infrastructure::io::FileIOFactory::createReader" name="truss::infrastructure::io::FileIOFactory::createReader">
+<area shape="rect" id="Node000001" title="Create a truss reader based on file extension." alt="" coords="5,45,156,100"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1io_1_1FileIOFactory.html#a9f0eb9afcaafe171216e44f4ed63b50a" title="Create a truss reader for the specified format." alt="" coords="204,5,355,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,55,190,48,191,53,157,60"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1infrastructure_1_1io_1_1FileIOFactory.html#a6a20a62a4a27dcadeb44243c586d5e9e" title="Detect file format from file extension." alt="" coords="204,84,355,139"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="157,85,191,91,190,97,156,90"/>
+<area shape="rect" id="Node000004" href="$namespacetruss_1_1infrastructure_1_1io.html#a34eac675136061d3f285a2ece9c4b71b" title="Detect file format from extension." alt="" coords="403,91,563,131"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="355,109,389,109,389,114,355,114"/>
+</map>

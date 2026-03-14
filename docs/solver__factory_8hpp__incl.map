@@ -1,0 +1,16 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/solver_factory.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/analysis/solver_factory.hpp">
+<area shape="rect" id="Node000001" title="Factory for creating linear solver instances." alt="" coords="135,5,329,75"/>
+<area shape="rect" id="Node000002" href="$direct__solver_8hpp.html" title="Direct linear solver using LDLT factorization." alt="" coords="5,123,139,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="176,77,105,118,102,113,173,72"/>
+<area shape="rect" id="Node000003" href="$ilinear__solver_8hpp.html" title="Interface for linear system solvers." alt="" coords="163,196,301,221"/>
+<area shape="poly" id="edge5_Node000001_Node000003" title=" " alt="" coords="216,76,204,111,202,129,204,147,219,183,214,185,199,149,197,129,199,109,211,74"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="336,269,413,295"/>
+<area shape="poly" id="edge8_Node000001_Node000005" title=" " alt="" coords="327,73,357,94,380,121,392,156,395,193,391,228,385,257,380,256,386,227,390,193,387,157,375,124,353,98,324,77"/>
+<area shape="rect" id="Node000006" href="$iterative__solver_8hpp.html" title="Iterative linear solver using Conjugate Gradient method." alt="" coords="214,123,365,148"/>
+<area shape="poly" id="edge6_Node000001_Node000006" title=" " alt="" coords="255,73,277,109,273,112,250,76"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="99,146,194,188,192,193,97,150"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="181,269,283,295"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="235,222,235,256,229,256,229,222"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="256,219,340,261,338,265,254,224"/>
+<area shape="poly" id="edge7_Node000006_Node000003" title=" " alt="" coords="282,150,252,187,248,183,278,147"/>
+</map>

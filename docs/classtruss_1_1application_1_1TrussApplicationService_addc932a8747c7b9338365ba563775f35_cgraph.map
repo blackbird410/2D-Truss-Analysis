@@ -1,0 +1,9 @@
+<map id="truss::application::TrussApplicationService::removeMember" name="truss::application::TrussApplicationService::removeMember">
+<area shape="rect" id="Node000001" title="Remove member from truss." alt="" coords="5,70,189,125"/>
+<area shape="rect" id="Node000002" href="$structtruss_1_1application_1_1Result.html#a053316ac5f18e56102eb9a500cb77cf0" title="Construct a failure result carrying an error message." alt="" coords="262,5,397,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="185,67,251,47,252,52,187,72"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1TrussApplicationService.html#a10be762095182a928068c15bf18ecc55" title="Check if handle is valid." alt="" coords="237,70,421,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="190,95,223,95,223,100,190,100"/>
+<area shape="rect" id="Node000004" href="$structtruss_1_1application_1_1Result.html#a3a31735809021c26f8c9fc0c7a1be351" title="Construct a successful result carrying a value." alt="" coords="262,149,397,189"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="187,122,252,143,251,148,185,127"/>
+</map>

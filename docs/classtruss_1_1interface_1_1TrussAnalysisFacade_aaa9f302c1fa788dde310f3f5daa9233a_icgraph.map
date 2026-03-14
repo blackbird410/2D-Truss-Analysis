@@ -1,0 +1,7 @@
+<map id="truss::interface::TrussAnalysisFacade::getTrussMutable" name="truss::interface::TrussAnalysisFacade::getTrussMutable">
+<area shape="rect" id="Node000001" title="Obtain a mutable reference to the underlying domain Truss object." alt="" coords="269,37,485,77"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a1c6de78e50caf8f0d723bf7eb24a9e37" title="Complete workflow: load → validate → analyze." alt="" coords="5,5,221,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="256,45,221,41,222,36,256,40"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a8645c59378bf7fcccd3bd8ebc162b2d9" title="Complete workflow: build → validate → analyze." alt="" coords="5,69,221,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,75,222,79,221,74,256,69"/>
+</map>

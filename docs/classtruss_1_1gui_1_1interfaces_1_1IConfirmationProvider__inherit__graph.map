@@ -1,0 +1,7 @@
+<map id="truss::gui::interfaces::IConfirmationProvider" name="truss::gui::interfaces::IConfirmationProvider">
+<area shape="rect" id="Node000001" title="Abstract confirmation gate for destructive operations." alt="" coords="5,37,177,77"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1interfaces_1_1AutoConfirmProvider.html" title="Test double: always returns a fixed result without UI interaction." alt="" coords="230,5,395,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,40,230,35,230,40,192,46"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1gui_1_1interfaces_1_1ModalConfirmProvider.html" title="Production implementation: delegates to QMessageBox::question." alt="" coords="225,69,400,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="192,69,226,74,225,79,191,74"/>
+</map>

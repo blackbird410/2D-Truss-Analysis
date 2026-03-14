@@ -1,0 +1,5 @@
+<map id="truss::gui::model::MemberTableModel::refresh" name="truss::gui::model::MemberTableModel::refresh">
+<area shape="rect" id="Node000001" title="Replace the cached member rows with data from view." alt="" coords="5,5,209,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1interfaces_1_1ITrussView.html#ac7f17d5587235d9ec8ef5908ed19e088" title="Snapshot of all member data for read&#45;only consumption." alt="" coords="257,5,477,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="210,23,244,23,244,28,210,28"/>
+</map>

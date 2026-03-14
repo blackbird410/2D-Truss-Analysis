@@ -1,0 +1,18 @@
+<map id="truss::application::AnalysisApplicationService::isValidResultsHandle" name="truss::application::AnalysisApplicationService::isValidResultsHandle">
+<area shape="rect" id="Node000001" title="Check if handle is valid." alt="" coords="797,63,1004,118"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#aa084f7b0b7a747d575b41959aa29150d" title="Export analysis results with explicit format." alt="" coords="269,5,485,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="794,63,749,53,612,37,485,30,486,25,613,32,750,48,795,57"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a674559569a19414a21201fde469d45be" title="Export analysis results to file." alt="" coords="538,63,745,118"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="784,93,745,93,745,88,784,88"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#abeb98d60044df4dceda53278f8c3454c" title="Check if results handle is valid." alt="" coords="533,143,749,183"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="789,124,715,145,713,140,788,119"/>
+<area shape="poly" id="edge6_Node000003_Node000002" title=" " alt="" coords="524,64,458,48,460,43,525,59"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a6445c9c62e61e11c0cc49ffb617a4630" title="Export analysis results to file (auto&#45;detect format from extension)" alt="" coords="269,69,485,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="524,93,485,93,486,87,524,87"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#abd1fd2dd447f88fe249cc0114f6b35c0" title="Export analysis results to file with explicit format." alt="" coords="269,133,485,173"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="525,121,463,136,462,131,524,116"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a3b43dbf76c7c78140eba02791d62561a" title="Export results with auto&#45;detected format." alt="" coords="274,198,481,253"/>
+<area shape="poly" id="edge7_Node000003_Node000007" title=" " alt="" coords="544,127,535,133,520,146,512,159,502,173,487,187,465,200,463,196,484,183,498,170,507,157,516,143,532,129,541,122"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a9d141ca13a08482acae6c2b9a496b75b" title="Export analysis results with format auto&#45;detection." alt="" coords="5,133,221,173"/>
+<area shape="poly" id="edge5_Node000005_Node000006" title=" " alt="" coords="256,156,221,156,221,151,256,151"/>
+</map>

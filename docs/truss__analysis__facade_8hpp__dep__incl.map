@@ -1,0 +1,13 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/interface/truss_analysis_facade.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/interface/truss_analysis_facade.hpp">
+<area shape="rect" id="Node000001" title="Unified facade for complete truss analysis workflows." alt="" coords="456,5,655,75"/>
+<area shape="rect" id="Node000002" href="$main_8cpp.html" title="Main entry point for the 2D Truss Analysis GUI application." alt="" coords="5,137,199,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="443,67,330,93,211,125,168,140,166,135,209,120,329,88,442,61"/>
+<area shape="rect" id="Node000003" href="$facade__analysis__service__adapter_8cpp.html" title="IAnalysisService adapter implementation backed by TrussAnalysisFacade." alt="" coords="223,123,408,207"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="479,83,397,125,394,120,476,79"/>
+<area shape="rect" id="Node000004" href="$facade__truss__service__adapter_8cpp.html" title="ITrussService adapter implementation backed by TrussAnalysisFacade." alt="" coords="432,130,679,199"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="558,88,558,130,553,130,553,88"/>
+<area shape="rect" id="Node000005" href="$truss__analysis__facade_8cpp.html" title="Implementation of TrussAnalysisFacade unified workflow API." alt="" coords="703,130,901,199"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="636,78,735,127,733,132,634,83"/>
+<area shape="rect" id="Node000006" href="$main__app_8cpp.html" title="CLI entry point for 2D Truss Analysis." alt="" coords="925,137,1125,192"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="669,61,787,87,913,120,958,135,956,140,912,125,786,92,668,66"/>
+</map>

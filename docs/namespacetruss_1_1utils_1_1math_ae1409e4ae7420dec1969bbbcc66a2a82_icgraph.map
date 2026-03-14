@@ -1,0 +1,5 @@
+<map id="truss::utils::math::radiansToDegrees" name="truss::utils::math::radiansToDegrees">
+<area shape="rect" id="Node000001" title="Converts an angle from radians to degrees." alt="" coords="205,5,352,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1Member.html#a7cd6d30a4ac6ca9f860fcd8012a24d02" title="Angle with respect to X&#45;axis (degrees)" alt="" coords="5,5,157,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="191,28,158,28,158,23,191,23"/>
+</map>

@@ -1,0 +1,17 @@
+<map id="truss::cli::presenters::ConsolePresenter::displayTrussStatistics" name="truss::cli::presenters::ConsolePresenter::displayTrussStatistics">
+<area shape="rect" id="Node000001" title="Display truss statistics via view interface." alt="" coords="5,190,237,245"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1interfaces_1_1ITrussView.html#a7b144443204ce258ea9e94b668f202bf" title="Number of constrained degrees of freedom (DOFs eliminated by supports)." alt="" coords="285,5,520,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="141,188,200,121,240,86,284,55,297,48,299,53,287,60,243,90,204,125,145,192"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1core_1_1interfaces_1_1ITrussView.html#a69c7f4f8e9bcc6479255ce8ff17cf435" title="Number of unconstrained (free) degrees of freedom." alt="" coords="310,69,495,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="161,187,218,152,284,119,304,111,306,116,286,124,221,157,164,192"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1core_1_1interfaces_1_1ITrussView.html#a9f92016e40b83026de8e3a47c4cb068b" title="Number of members currently in the truss." alt="" coords="293,133,512,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="237,188,300,174,301,179,238,194"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1core_1_1interfaces_1_1ITrussView.html#ae78476a1312d57130fd13e78cf208527" title="Display name of the truss model." alt="" coords="319,197,486,237"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="238,215,306,215,306,220,238,220"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1core_1_1interfaces_1_1ITrussView.html#a79663ad6aa72ad7bd04369c66d56053c" title="Number of nodes currently in the truss." alt="" coords="303,261,502,301"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="238,241,301,256,300,261,237,246"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1core_1_1interfaces_1_1ITrussView.html#a96e5e0de0c4be6edbc44f4c072759be4" title="Total number of degrees of freedom (2 per node)." alt="" coords="309,325,497,365"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="164,243,221,278,286,311,306,318,304,323,284,316,218,282,161,247"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab3b401bfec9487869b86ff139c08c66c" title="Output informational message." alt="" coords="313,390,493,445"/>
+<area shape="poly" id="edge7_Node000001_Node000008" title=" " alt="" coords="146,243,205,309,244,344,287,375,302,383,299,388,284,380,241,348,202,313,142,247"/>
+</map>

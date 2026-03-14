@@ -1,0 +1,13 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/adapters/console_output_adapter.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/adapters/console_output_adapter.hpp">
+<area shape="rect" id="Node000001" title="Adapter bridging Application output to Infrastructure logging." alt="" coords="94,5,365,75"/>
+<area shape="rect" id="Node000002" href="$iapplication__output_8hpp.html" title="Application&#45;level output abstraction." alt="" coords="5,123,192,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="187,77,136,116,132,112,184,73"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="200,211,259,236"/>
+<area shape="poly" id="edge6_Node000001_Node000003" title=" " alt="" coords="232,75,232,197,227,197,227,75"/>
+<area shape="rect" id="Node000004" href="$logger_8hpp.html" title="Logger interface (Strategy pattern)." alt="" coords="267,130,421,155"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="270,73,322,118,318,122,266,77"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="132,161,200,201,197,206,129,165"/>
+<area shape="poly" id="edge5_Node000004_Node000003" title=" " alt="" coords="329,158,259,205,256,201,326,153"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="305,211,383,236"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="347,156,347,197,341,197,341,156"/>
+</map>

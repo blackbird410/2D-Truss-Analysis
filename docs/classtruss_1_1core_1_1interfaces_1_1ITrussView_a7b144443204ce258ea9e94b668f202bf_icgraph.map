@@ -1,0 +1,7 @@
+<map id="truss::core::interfaces::ITrussView::getConstrainedDofs" name="truss::core::interfaces::ITrussView::getConstrainedDofs">
+<area shape="rect" id="Node000001" title="Number of constrained degrees of freedom (DOFs eliminated by supports)." alt="" coords="541,13,776,53"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#a46ef80f1f8cfffc85e6c1626dbc7b0f5" title="Display truss statistics via view interface." alt="" coords="261,5,493,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="527,35,494,35,494,30,527,30"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1cli_1_1commands_1_1AnalyzeCommand.html#ae84a3b485919d5e3469ec4282ed875a4" title="Execute the analyze command." alt="" coords="5,13,213,53"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="248,35,214,35,214,30,248,30"/>
+</map>

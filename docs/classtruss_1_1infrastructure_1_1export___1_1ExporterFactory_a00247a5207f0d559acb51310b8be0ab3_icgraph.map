@@ -1,0 +1,7 @@
+<map id="truss::infrastructure::export_::ExporterFactory::detectFormat" name="truss::infrastructure::export_::ExporterFactory::detectFormat">
+<area shape="rect" id="Node000001" title="Detect export format from file extension." alt="" coords="269,34,459,89"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a9d141ca13a08482acae6c2b9a496b75b" title="Export analysis results with format auto&#45;detection." alt="" coords="5,5,221,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="256,48,221,44,222,38,256,43"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a3b43dbf76c7c78140eba02791d62561a" title="Export results with auto&#45;detected format." alt="" coords="10,70,217,125"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="256,79,217,85,216,80,255,74"/>
+</map>

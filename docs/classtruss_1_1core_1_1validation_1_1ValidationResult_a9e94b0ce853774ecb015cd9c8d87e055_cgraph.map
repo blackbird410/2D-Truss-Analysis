@@ -1,0 +1,5 @@
+<map id="truss::core::validation::ValidationResult::hasWarnings" name="truss::core::validation::ValidationResult::hasWarnings">
+<area shape="rect" id="Node000001" title="Check if any warning&#45;level issues exist." alt="" coords="5,5,232,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1ValidationResult.html#afd3cda2d6702bcbcad21d1383efe462f" title="Count issues by severity level." alt="" coords="280,5,531,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="232,23,266,23,266,28,232,28"/>
+</map>

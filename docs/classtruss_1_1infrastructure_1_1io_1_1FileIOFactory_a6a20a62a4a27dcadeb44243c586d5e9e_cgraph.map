@@ -1,0 +1,5 @@
+<map id="truss::infrastructure::io::FileIOFactory::detectFormat" name="truss::infrastructure::io::FileIOFactory::detectFormat">
+<area shape="rect" id="Node000001" title="Detect file format from file extension." alt="" coords="5,5,156,60"/>
+<area shape="rect" id="Node000002" href="$namespacetruss_1_1infrastructure_1_1io.html#a34eac675136061d3f285a2ece9c4b71b" title="Detect file format from extension." alt="" coords="204,13,364,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="156,30,190,30,190,35,156,35"/>
+</map>

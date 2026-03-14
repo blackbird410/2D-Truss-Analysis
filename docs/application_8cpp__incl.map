@@ -1,0 +1,11 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/application.cpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/core/application.cpp">
+<area shape="rect" id="Node000001" title="Core application lifecycle management." alt="" coords="33,5,273,60"/>
+<area shape="rect" id="Node000002" href="$application_8hpp.html" title="Core application management class." alt="" coords="28,108,151,133"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,62,108,99,104,95,132,58"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="175,108,262,133"/>
+<area shape="poly" id="edge4_Node000001_Node000005" title=" " alt="" coords="175,58,204,95,199,99,171,62"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,181,83,207"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="84,135,61,171,56,168,80,132"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="107,181,165,207"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="99,132,123,168,119,171,95,135"/>
+</map>

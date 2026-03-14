@@ -1,0 +1,20 @@
+<map id="truss::cli::commands::ValidateCommand::execute" name="truss::cli::commands::ValidateCommand::execute">
+<area shape="rect" id="Node000001" title="Execute the validate command." alt="" coords="5,141,215,181"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#ad5cc8982b0b0681a14aa915b5fcf9655" title="Display error message to stderr." alt="" coords="273,13,503,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="136,138,192,100,262,62,281,55,283,59,264,67,195,104,139,143"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#aaa27d442ff2bff3594e4089fb3fe8b1b" title="Display application header." alt="" coords="265,77,511,117"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="197,138,287,117,288,122,198,143"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#acfde1d38a3ea2d531020a86e2c7e6489" title="Display info message to stdout." alt="" coords="276,141,500,181"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="215,158,262,158,262,163,215,163"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1cli_1_1presenters_1_1ConsolePresenter.html#a9f420fc1d7fc7b2ba2111795c4878f90" title="Display success message to stdout." alt="" coords="263,205,513,245"/>
+<area shape="poly" id="edge7_Node000001_Node000007" title=" " alt="" coords="198,178,288,199,287,204,197,183"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1interface_1_1ITrussAnalysisFacade.html#a7c46d4b436cc0251686a3b314c5742fe" title="Complete workflow: load → validate (no analysis)" alt="" coords="269,269,507,309"/>
+<area shape="poly" id="edge9_Node000001_Node000009" title=" " alt="" coords="139,178,195,217,264,254,283,262,281,267,262,259,192,221,136,183"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab22e87edd1c17f3d00287a8ead429711" title="Output error message." alt="" coords="561,5,741,60"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="504,30,548,30,548,35,504,35"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#ab3b401bfec9487869b86ff139c08c66c" title="Output informational message." alt="" coords="561,101,741,156"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="512,109,548,113,548,119,511,114"/>
+<area shape="poly" id="edge6_Node000006_Node000005" title=" " alt="" coords="500,144,547,139,548,144,501,150"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html#a67a7a0fb09e822777f4392f8eface41f" title="Output success message." alt="" coords="561,197,741,252"/>
+<area shape="poly" id="edge8_Node000007_Node000008" title=" " alt="" coords="514,222,548,222,548,227,514,227"/>
+</map>

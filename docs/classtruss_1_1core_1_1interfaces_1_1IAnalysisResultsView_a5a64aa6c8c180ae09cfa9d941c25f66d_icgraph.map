@@ -1,0 +1,5 @@
+<map id="truss::core::interfaces::IAnalysisResultsView::getFreeDofs" name="truss::core::interfaces::IAnalysisResultsView::getFreeDofs">
+<area shape="rect" id="Node000001" title="Number of unconstrained (free) degrees of freedom." alt="" coords="252,5,421,60"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1gui_1_1model_1_1ResultsTableModel.html#a553c5274dfe2948a20d9134c89d1d204" title="Populate rows from view." alt="" coords="5,13,204,53"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="238,35,204,35,204,30,238,30"/>
+</map>

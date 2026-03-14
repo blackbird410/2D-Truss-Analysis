@@ -1,0 +1,15 @@
+<map id="truss::gui::ctrl::MainWindowController::onTrussModified" name="truss::gui::ctrl::MainWindowController::onTrussModified">
+<area shape="rect" id="Node000001" title="Called when the structural model has been modified." alt="" coords="5,133,208,173"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1ITrussService.html#a55b5c4213bdc03e8454dbf9a66f42530" title="Obtain a read&#45;only view of the truss for rendering / export." alt="" coords="265,5,474,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="132,131,187,93,255,55,273,47,275,52,257,60,190,97,135,135"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a5eacc90686e5a7eda624bed661ce99a3" title="Emitted after a successful analysis with a pointer to the results view." alt="" coords="256,69,483,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="189,131,273,110,274,115,190,136"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a091c893759a1a2fdb56d225a896d393f" title="Replace the workspace state and emit stateChanged if it changed." alt="" coords="268,133,471,173"/>
+<area shape="poly" id="edge3_Node000001_Node000004" title=" " alt="" coords="208,151,254,151,254,156,208,156"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#a2022d00bf6eb6365447777b14959c374" title="Emitted after model refresh; carries a pointer to the new truss view." alt="" coords="262,197,477,237"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="190,171,274,191,273,197,189,176"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1application_1_1ITrussService.html#a71c30c1c3db318ea225809daeb8e6942" title="Run the full structural validation suite on a truss." alt="" coords="265,261,474,301"/>
+<area shape="poly" id="edge6_Node000001_Node000007" title=" " alt="" coords="135,171,190,209,257,247,275,254,273,259,255,252,187,214,132,176"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1gui_1_1ctrl_1_1MainWindowController.html#afcbd69ae3a21d05a7d3e643c7c9703ba" title="Emitted whenever the workspace state transitions to a new value." alt="" coords="531,133,733,173"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="471,151,517,151,517,156,471,156"/>
+</map>

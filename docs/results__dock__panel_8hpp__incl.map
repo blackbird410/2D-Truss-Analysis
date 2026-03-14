@@ -1,0 +1,18 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/panels/results_dock_panel.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/panels/results_dock_panel.hpp">
+<area shape="rect" id="Node000001" title="Dockable results panel with tabbed views of analysis output." alt="" coords="219,5,398,75"/>
+<area shape="rect" id="Node000002" href="$workspace__state_8hpp.html" title="Workspace state value types for GUI state management." alt="" coords="57,123,211,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="251,77,180,118,178,113,249,73"/>
+<area shape="rect" id="Node000006" href="$export__format_8hpp.html" title="Export format specifications for analysis results." alt="" coords="235,123,382,163"/>
+<area shape="poly" id="edge5_Node000001_Node000006" title=" " alt="" coords="311,75,311,108,306,108,306,75"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="407,130,485,155"/>
+<area shape="poly" id="edge8_Node000001_Node000008" title=" " alt="" coords="356,73,421,120,418,124,353,77"/>
+<area shape="rect" id="Node000003" title=" " alt="" coords="5,211,76,236"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="113,165,67,204,64,199,110,161"/>
+<area shape="rect" id="Node000004" title=" " alt="" coords="101,211,167,236"/>
+<area shape="poly" id="edge3_Node000002_Node000004" title=" " alt="" coords="137,163,137,197,131,197,131,163"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="191,211,250,236"/>
+<area shape="poly" id="edge4_Node000002_Node000005" title=" " alt="" coords="157,161,199,199,196,203,153,165"/>
+<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="289,165,246,203,242,199,286,161"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="274,211,351,236"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="312,163,314,197,309,197,307,163"/>
+</map>

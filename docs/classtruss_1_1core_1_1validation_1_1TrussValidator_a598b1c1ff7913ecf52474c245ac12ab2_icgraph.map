@@ -1,0 +1,31 @@
+<map id="truss::core::validation::TrussValidator::validateKinematicStability" name="truss::core::validation::TrussValidator::validateKinematicStability">
+<area shape="rect" id="Node000001" title="Validate kinematic stability Checks: no mechanisms, adequate constraints to prevent rigid body motion..." alt="" coords="1028,234,1276,289"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a4d47b42f7f412a1796f1f1ec7d4417ed" title="Perform comprehensive validation of a truss system." alt="" coords="797,241,980,281"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="1014,264,980,264,980,259,1014,259"/>
+<area shape="rect" id="Node000003" href="$classtruss_1_1application_1_1AnalysisApplicationService.html#a14d09b77f8fc4caee9003f5c1de2c12a" title="Run structural analysis on truss." alt="" coords="538,47,745,102"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="863,232,814,174,782,144,748,117,726,104,728,100,751,112,786,139,818,170,867,229"/>
+<area shape="rect" id="Node000008" href="$classtruss_1_1core_1_1validation_1_1TrussValidator.html#a233a0e77a139095b1b1c36158c0a4353" title="Quick validation check (returns only pass/fail)" alt="" coords="555,205,727,245"/>
+<area shape="poly" id="edge7_Node000002_Node000008" title=" " alt="" coords="783,249,727,240,728,235,784,243"/>
+<area shape="rect" id="Node000009" href="$classtruss_1_1application_1_1TrussApplicationService.html#a76ee8e4ac9adbe7d09f713a486aa5727" title="Load truss from file with explicit format." alt="" coords="549,270,733,325"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="784,279,734,287,733,281,784,274"/>
+<area shape="rect" id="Node000010" href="$classtruss_1_1application_1_1TrussApplicationService.html#a443025b745a6b687e3c9efad0a9a0fe6" title="Save truss to file with explicit format." alt="" coords="549,349,733,403"/>
+<area shape="poly" id="edge9_Node000002_Node000010" title=" " alt="" coords="844,291,750,340,723,351,721,346,748,335,841,286"/>
+<area shape="rect" id="Node000011" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a242629681bcfb193498d1f2dd1619758" title="Validate a builder configuration without building." alt="" coords="533,428,749,468"/>
+<area shape="poly" id="edge10_Node000002_Node000011" title=" " alt="" coords="869,295,820,357,787,390,751,418,727,430,725,426,748,414,784,386,816,354,865,291"/>
+<area shape="rect" id="Node000012" href="$classtruss_1_1application_1_1TrussApplicationService.html#a5e70cf897aa24d53b7cf1d6abead626d" title="Validate truss structure." alt="" coords="549,126,733,181"/>
+<area shape="poly" id="edge11_Node000002_Node000012" title=" " alt="" coords="836,237,748,196,718,183,720,178,750,191,838,233"/>
+<area shape="rect" id="Node000004" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a3a3ba7dbf7a643eaac4106449ad2c208" title="Perform structural analysis on a truss." alt="" coords="269,69,485,109"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="525,84,486,86,485,81,524,78"/>
+<area shape="rect" id="Node000007" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#aaa5ed9478a63bd8fe035ba7002673fc8" title="Analyze an existing truss." alt="" coords="269,5,485,45"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="524,56,484,48,485,43,525,50"/>
+<area shape="rect" id="Node000005" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a1c6de78e50caf8f0d723bf7eb24a9e37" title="Complete workflow: load → validate → analyze." alt="" coords="5,133,221,173"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="282,115,197,136,196,131,280,110"/>
+<area shape="rect" id="Node000006" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a8645c59378bf7fcccd3bd8ebc162b2d9" title="Complete workflow: build → validate → analyze." alt="" coords="5,69,221,109"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="256,92,221,92,221,87,256,87"/>
+<area shape="rect" id="Node000013" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#a69f028ba718cd7dd67762edd191d7943" title="Run the full structural validation suite on a truss." alt="" coords="269,133,485,173"/>
+<area shape="poly" id="edge12_Node000012_Node000013" title=" " alt="" coords="536,156,485,156,485,151,536,151"/>
+<area shape="poly" id="edge13_Node000013_Node000005" title=" " alt="" coords="256,156,221,156,221,151,256,151"/>
+<area shape="poly" id="edge14_Node000013_Node000006" title=" " alt="" coords="280,133,196,112,197,107,282,127"/>
+<area shape="rect" id="Node000014" href="$classtruss_1_1interface_1_1TrussAnalysisFacade.html#aa97d3aa6acb3c93034887c4797f09393" title="Complete workflow: load → validate (no analysis)" alt="" coords="5,197,221,237"/>
+<area shape="poly" id="edge15_Node000013_Node000014" title=" " alt="" coords="282,179,197,200,196,195,280,174"/>
+</map>

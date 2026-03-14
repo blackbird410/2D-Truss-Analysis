@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/cli/commands/example_command.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/cli/commands/example_command.hpp">
+<area shape="rect" id="Node000001" title="Example command for running hardcoded truss analysis." alt="" coords="117,5,317,75"/>
+<area shape="rect" id="Node000002" href="$example__command_8cpp.html" title="CLI command for generating example truss models." alt="" coords="5,123,205,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="177,87,140,124,136,121,173,83"/>
+<area shape="rect" id="Node000003" href="$main__app_8cpp.html" title="CLI entry point for 2D Truss Analysis." alt="" coords="229,130,429,185"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="262,83,306,128,302,132,258,87"/>
+</map>

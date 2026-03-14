@@ -1,0 +1,31 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/logging/logger_factory.cpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/infrastructure/logging/logger_factory.cpp">
+<area shape="rect" id="Node000001" title="Creates logger instances based on configuration." alt="" coords="180,5,377,75"/>
+<area shape="rect" id="Node000002" href="$logger__factory_8hpp.html" title="Factory for creating logger instances." alt="" coords="207,123,350,148"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="281,75,281,109,276,109,276,75"/>
+<area shape="rect" id="Node000003" href="$console__logger_8hpp.html" title="Logs messages to standard output with level filtering." alt="" coords="44,196,191,221"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="254,150,157,193,155,188,252,146"/>
+<area shape="rect" id="Node000004" href="$logger_8hpp.html" title="Logger interface (Strategy pattern)." alt="" coords="135,269,225,295"/>
+<area shape="poly" id="edge13_Node000002_Node000004" title=" " alt="" coords="273,150,198,259,194,256,268,147"/>
+<area shape="rect" id="Node000005" title=" " alt="" coords="5,343,83,368"/>
+<area shape="poly" id="edge15_Node000002_Node000005" title=" " alt="" coords="207,147,104,167,61,181,34,198,24,212,19,228,17,264,25,299,35,329,30,331,19,300,12,264,14,227,20,210,30,194,59,176,103,161,206,142"/>
+<area shape="rect" id="Node000007" title=" " alt="" coords="249,269,313,295"/>
+<area shape="poly" id="edge16_Node000002_Node000007" title=" " alt="" coords="282,148,284,256,278,256,276,149"/>
+<area shape="rect" id="Node000009" href="$file__logger_8hpp.html" title="Logs messages to rotating log files." alt="" coords="316,196,433,221"/>
+<area shape="poly" id="edge8_Node000002_Node000009" title=" " alt="" coords="296,146,349,185,346,190,293,150"/>
+<area shape="rect" id="Node000010" title=" " alt="" coords="436,269,527,295"/>
+<area shape="poly" id="edge14_Node000002_Node000010" title=" " alt="" coords="349,146,400,163,425,177,447,194,468,224,479,255,474,257,463,226,443,198,422,181,398,168,347,151"/>
+<area shape="rect" id="Node000012" title=" " alt="" coords="509,196,571,221"/>
+<area shape="poly" id="edge17_Node000002_Node000012" title=" " alt="" coords="321,145,496,193,495,198,320,151"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="130,220,163,257,159,261,126,223"/>
+<area shape="poly" id="edge6_Node000003_Node000007" title=" " alt="" coords="145,219,243,261,241,266,143,224"/>
+<area shape="rect" id="Node000008" title=" " alt="" coords="36,269,111,295"/>
+<area shape="poly" id="edge7_Node000003_Node000008" title=" " alt="" coords="112,223,90,259,85,256,108,220"/>
+<area shape="poly" id="edge4_Node000004_Node000005" title=" " alt="" coords="159,297,79,339,77,334,157,292"/>
+<area shape="rect" id="Node000006" title=" " alt="" coords="151,343,209,368"/>
+<area shape="poly" id="edge5_Node000004_Node000006" title=" " alt="" coords="183,295,183,329,177,329,177,295"/>
+<area shape="poly" id="edge9_Node000009_Node000004" title=" " alt="" coords="344,224,225,267,224,262,342,219"/>
+<area shape="poly" id="edge12_Node000009_Node000007" title=" " alt="" coords="361,223,309,263,306,259,358,219"/>
+<area shape="poly" id="edge10_Node000009_Node000010" title=" " alt="" coords="393,219,454,259,451,264,390,224"/>
+<area shape="rect" id="Node000011" title=" " alt="" coords="338,269,411,295"/>
+<area shape="poly" id="edge11_Node000009_Node000011" title=" " alt="" coords="377,222,377,256,372,256,372,222"/>
+</map>

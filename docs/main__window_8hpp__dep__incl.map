@@ -1,0 +1,7 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/main_window.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/gui/main_window.hpp">
+<area shape="rect" id="Node000001" title="MainWindow — top&#45;level application window with full signal/slot wiring." alt="" coords="99,5,350,60"/>
+<area shape="rect" id="Node000002" href="$main_8cpp.html" title="Main entry point for the 2D Truss Analysis GUI application." alt="" coords="5,108,199,163"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="184,71,136,110,132,106,180,67"/>
+<area shape="rect" id="Node000003" href="$main__window_8cpp.html" title="New MainWindow full implementation (Phase 6)." alt="" coords="223,108,472,163"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="269,67,317,106,314,110,266,71"/>
+</map>

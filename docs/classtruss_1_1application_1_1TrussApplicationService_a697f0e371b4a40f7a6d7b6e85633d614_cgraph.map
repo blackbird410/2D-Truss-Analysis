@@ -1,0 +1,7 @@
+<map id="truss::application::TrussApplicationService::createTruss" name="truss::application::TrussApplicationService::createTruss">
+<area shape="rect" id="Node000001" title="Create a new empty truss model." alt="" coords="5,30,189,85"/>
+<area shape="rect" id="Node000002" href="$structtruss_1_1application_1_1Result.html#a053316ac5f18e56102eb9a500cb77cf0" title="Construct a failure result carrying an error message." alt="" coords="237,5,372,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="189,40,223,35,224,40,190,46"/>
+<area shape="rect" id="Node000003" href="$structtruss_1_1application_1_1Result.html#a3a31735809021c26f8c9fc0c7a1be351" title="Construct a successful result carrying a value." alt="" coords="237,69,372,109"/>
+<area shape="poly" id="edge2_Node000001_Node000003" title=" " alt="" coords="190,69,224,74,223,80,189,74"/>
+</map>

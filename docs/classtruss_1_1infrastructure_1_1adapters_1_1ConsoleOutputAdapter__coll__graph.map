@@ -1,0 +1,5 @@
+<map id="truss::infrastructure::adapters::ConsoleOutputAdapter" name="truss::infrastructure::adapters::ConsoleOutputAdapter">
+<area shape="rect" id="Node000001" title="Console output adapter using Infrastructure logging." alt="" coords="5,108,248,148"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1application_1_1interfaces_1_1IApplicationOutput.html" title="Output abstraction for application messages." alt="" coords="37,5,217,60"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="129,74,129,108,124,108,124,74"/>
+</map>

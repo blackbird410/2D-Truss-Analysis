@@ -1,0 +1,38 @@
+<map id="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/application/interfaces/iapplication_output.hpp" name="/home/runner/work/2D&#45;Truss&#45;Analysis/2D&#45;Truss&#45;Analysis/src/application/interfaces/iapplication_output.hpp">
+<area shape="rect" id="Node000001" title="Application&#45;level output abstraction." alt="" coords="832,5,1080,75"/>
+<area shape="rect" id="Node000002" href="$console__presenter_8hpp.html" title="Console output presenter for CLI." alt="" coords="677,123,875,192"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="894,84,830,125,827,120,891,80"/>
+<area shape="rect" id="Node000015" href="$console__output__adapter_8hpp.html" title="Adapter bridging Application output to Infrastructure logging." alt="" coords="1001,123,1271,192"/>
+<area shape="poly" id="edge18_Node000001_Node000015" title=" " alt="" coords="1021,80,1085,120,1082,125,1018,84"/>
+<area shape="rect" id="Node000003" href="$analyze__command_8hpp.html" title="Command for file&#45;based truss analysis." alt="" coords="5,240,205,309"/>
+<area shape="poly" id="edge2_Node000002_Node000003" title=" " alt="" coords="664,173,456,200,336,219,218,243,206,245,205,240,217,237,335,214,455,195,663,168"/>
+<area shape="rect" id="Node000006" href="$example__command_8hpp.html" title="Example command for running hardcoded truss analysis." alt="" coords="229,240,429,309"/>
+<area shape="poly" id="edge5_Node000002_Node000006" title=" " alt="" coords="665,187,442,243,430,246,429,241,441,237,663,182"/>
+<area shape="rect" id="Node000008" href="$export__command_8hpp.html" title="Command for exporting analysis results to various formats." alt="" coords="453,240,653,309"/>
+<area shape="poly" id="edge8_Node000002_Node000008" title=" " alt="" coords="700,201,620,242,617,237,698,196"/>
+<area shape="rect" id="Node000010" href="$help__command_8hpp.html" title="Help command for displaying CLI usage information." alt="" coords="899,240,1099,309"/>
+<area shape="poly" id="edge11_Node000002_Node000010" title=" " alt="" coords="854,196,935,237,932,242,852,201"/>
+<area shape="rect" id="Node000012" href="$validate__command_8hpp.html" title="Command for validating truss structures without analysis." alt="" coords="1173,240,1373,309"/>
+<area shape="poly" id="edge14_Node000002_Node000012" title=" " alt="" coords="889,182,1174,248,1172,253,888,187"/>
+<area shape="rect" id="Node000014" href="$console__presenter_8cpp.html" title="Formats data for console output display." alt="" coords="677,240,875,309"/>
+<area shape="poly" id="edge17_Node000002_Node000014" title=" " alt="" coords="779,206,779,240,773,240,773,206"/>
+<area shape="rect" id="Node000004" href="$analyze__command_8cpp.html" title="CLI command for truss analysis execution." alt="" coords="5,357,205,427"/>
+<area shape="poly" id="edge3_Node000003_Node000004" title=" " alt="" coords="108,323,108,357,103,357,103,323"/>
+<area shape="rect" id="Node000005" href="$main__app_8cpp.html" title="CLI entry point for 2D Truss Analysis." alt="" coords="677,365,877,419"/>
+<area shape="poly" id="edge4_Node000003_Node000005" title=" " alt="" coords="219,307,345,325,444,331,543,336,666,355,696,362,695,367,665,360,542,342,444,336,345,330,219,312"/>
+<area shape="poly" id="edge7_Node000006_Node000005" title=" " alt="" coords="443,307,556,331,666,355,693,362,691,367,665,360,555,336,442,312"/>
+<area shape="rect" id="Node000007" href="$example__command_8cpp.html" title="CLI command for generating example truss models." alt="" coords="229,357,429,427"/>
+<area shape="poly" id="edge6_Node000006_Node000007" title=" " alt="" coords="332,323,332,357,327,357,327,323"/>
+<area shape="poly" id="edge10_Node000008_Node000005" title=" " alt="" coords="632,313,728,362,725,367,629,318"/>
+<area shape="rect" id="Node000009" href="$export__command_8cpp.html" title="CLI command for results export to various formats." alt="" coords="453,357,653,427"/>
+<area shape="poly" id="edge9_Node000008_Node000009" title=" " alt="" coords="556,323,556,357,551,357,551,323"/>
+<area shape="poly" id="edge13_Node000010_Node000005" title=" " alt="" coords="923,318,829,367,826,362,921,313"/>
+<area shape="rect" id="Node000011" href="$help__command_8cpp.html" title="CLI command for displaying usage information." alt="" coords="901,357,1101,427"/>
+<area shape="poly" id="edge12_Node000010_Node000011" title=" " alt="" coords="1002,323,1003,357,998,357,997,323"/>
+<area shape="poly" id="edge16_Node000012_Node000005" title=" " alt="" coords="1160,311,1155,312,1081,327,1022,336,964,345,890,360,862,367,861,362,889,355,963,339,1022,330,1080,322,1154,307,1159,306"/>
+<area shape="rect" id="Node000013" href="$validate__command_8cpp.html" title="CLI command for truss structure validation." alt="" coords="1173,357,1373,427"/>
+<area shape="poly" id="edge15_Node000012_Node000013" title=" " alt="" coords="1276,323,1276,357,1271,357,1271,323"/>
+<area shape="poly" id="edge20_Node000015_Node000005" title=" " alt="" coords="1144,206,1138,260,1129,288,1113,311,1087,333,1061,347,1036,353,1011,354,955,352,924,354,890,360,863,367,862,362,889,355,924,348,955,347,1010,349,1035,347,1060,342,1084,329,1109,308,1124,285,1133,259,1138,205"/>
+<area shape="rect" id="Node000016" href="$console__output__adapter_8cpp.html" title="Adapts logger interface for application output abstraction." alt="" coords="1397,240,1667,309"/>
+<area shape="poly" id="edge19_Node000015_Node000016" title=" " alt="" coords="1265,193,1417,237,1416,242,1264,198"/>
+</map>

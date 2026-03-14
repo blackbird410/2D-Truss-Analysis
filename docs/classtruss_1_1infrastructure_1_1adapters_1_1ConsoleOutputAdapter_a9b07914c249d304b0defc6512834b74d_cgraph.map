@@ -1,0 +1,5 @@
+<map id="truss::infrastructure::adapters::ConsoleOutputAdapter::info" name="truss::infrastructure::adapters::ConsoleOutputAdapter::info">
+<area shape="rect" id="Node000001" title="Output informational message." alt="" coords="5,5,280,45"/>
+<area shape="rect" id="Node000002" href="$classtruss_1_1infrastructure_1_1logging_1_1ILogger.html#aaf9c798030b58b9da9b73f203c72322e" title="Log an info message." alt="" coords="328,5,495,45"/>
+<area shape="poly" id="edge1_Node000001_Node000002" title=" " alt="" coords="280,23,314,23,314,28,280,28"/>
+</map>
