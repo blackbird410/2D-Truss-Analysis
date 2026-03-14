@@ -15,17 +15,17 @@ The Validation layer resides in `src/core/validation/` and is compiled into the 
 │                    VALIDATION LAYER                          │
 │                                                              │
 │                     TrussValidator                           │
-│                   (all methods static)                        │
+│                   (all methods static)                       │
 │                                                              │
 │   validate()                   isValid()                     │
-│      │                                                        │
-│      ├─ validateStructuralCompleteness()                      │
-│      ├─ validateGeometry()                                    │
-│      ├─ validateMaterials()                                   │
-│      ├─ validateBoundaryConditions()                          │
-│      ├─ validateStaticDeterminacy()                           │
-│      ├─ validateKinematicStability()                          │
-│      ├─ validateLoads()                                       │
+│      │                                                       │
+│      ├─ validateStructuralCompleteness()                     │
+│      ├─ validateGeometry()                                   │
+│      ├─ validateMaterials()                                  │
+│      ├─ validateBoundaryConditions()                         │
+│      ├─ validateStaticDeterminacy()                          │
+│      ├─ validateKinematicStability()                         │
+│      ├─ validateLoads()                                      │
 │      └─ validateConnectivity()                               │
 │                │                                             │
 │                ▼                                             │
