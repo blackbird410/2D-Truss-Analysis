@@ -1,0 +1,7 @@
+Origin: 2D Truss Analysis
+Label: 2D Truss Analysis
+Suite: stable
+Codename: stable
+Architectures: amd64 all
+Components: main
+Description: 2D Truss Analysis APT repository
