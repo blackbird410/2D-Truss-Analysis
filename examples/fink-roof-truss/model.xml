@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Fink Roof Truss - XML Format
+  20 m span Fink (fan) roof truss — ridge height 5 m.
+  Classic residential/industrial pitched roof truss with king post 
+  and Pratt-style Fink diagonal web pattern.
+
+  Static determinacy: m=13, r=3, j=8 → m+r=16=2j ✓
+-->
+<truss>
+  <metadata name="Fink Roof Truss"
+            description="20 m span Fink roof truss — ridge 5 m, GL28h timber"/>
+
+  <materials>
+    <material id="timber"
+              youngModulus="1.285e10"
+              poissonRatio="0.3"
+              density="480"
+              yieldStrength="2.8e7"/>
+  </materials>
+
+  <sections>
+    <section id="rafter_120"
+             name="120x200 mm Rafter"
+             crossSectionalArea="0.024"/>
+    <section id="chord_100"
+             name="100x175 mm Bottom Chord"
+             crossSectionalArea="0.0175"/>
+    <section id="web_75"
+             name="75x150 mm Web Member"
+             crossSectionalArea="0.01125"/>
+  </sections>
+
+  <nodes>
+    <!-- Bottom chord (y = 0) -->
+    <node id="1" x="0.0"  y="0.0" label="Left Bearing"/>
+    <node id="2" x="5.0"  y="0.0" label="Bottom Chord L"/>
+    <node id="3" x="10.0" y="0.0" label="Bottom Chord Centre"/>
+    <node id="4" x="15.0" y="0.0" label="Bottom Chord R"/>
+    <node id="5" x="20.0" y="0.0" label="Right Bearing"/>
+    <!-- Top chord (sloped) -->
+    <node id="6" x="5.0"  y="2.5" label="Left Rafter Interior"/>
+    <node id="7" x="10.0" y="5.0" label="Ridge"/>
+    <node id="8" x="15.0" y="2.5" label="Right Rafter Interior"/>
+  </nodes>
+
+  <members>
+    <!-- Top chord (rafters) -->
+    <member id="1"  startNode="1" endNode="6" material="timber" section="rafter_120" label="Left Rafter 1"/>
+    <member id="2"  startNode="6" endNode="7" material="timber" section="rafter_120" label="Left Rafter 2"/>
+    <member id="3"  startNode="7" endNode="8" material="timber" section="rafter_120" label="Right Rafter 1"/>
+    <member id="4"  startNode="8" endNode="5" material="timber" section="rafter_120" label="Right Rafter 2"/>
+    <!-- Bottom chord (tie beams) -->
+    <member id="5"  startNode="1" endNode="2" material="timber" section="chord_100"  label="Bottom Chord 1"/>
+    <member id="6"  startNode="2" endNode="3" material="timber" section="chord_100"  label="Bottom Chord 2"/>
+    <member id="7"  startNode="3" endNode="4" material="timber" section="chord_100"  label="Bottom Chord 3"/>
+    <member id="8"  startNode="4" endNode="5" material="timber" section="chord_100"  label="Bottom Chord 4"/>
+    <!-- Web: verticals and Fink diagonals -->
+    <member id="9"  startNode="2" endNode="6" material="timber" section="web_75"     label="Vertical L"/>
+    <member id="10" startNode="3" endNode="7" material="timber" section="web_75"     label="King Post"/>
+    <member id="11" startNode="4" endNode="8" material="timber" section="web_75"     label="Vertical R"/>
+    <member id="12" startNode="2" endNode="7" material="timber" section="web_75"     label="Fink Diagonal L"/>
+    <member id="13" startNode="4" endNode="7" material="timber" section="web_75"     label="Fink Diagonal R"/>
+  </members>
+
+  <supports>
+    <support nodeId="1" type="pinned" restrained="x y"/>
+    <support nodeId="5" type="roller" restrained="y"/>
+  </supports>
+
+  <loads>
+    <load nodeId="6" fx="0.0" fy="-40000.0"/>
+    <load nodeId="7" fx="0.0" fy="-20000.0"/>
+    <load nodeId="8" fx="0.0" fy="-40000.0"/>
+  </loads>
+</truss>

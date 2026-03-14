@@ -1,6 +1,7 @@
 # C++ build artifacts
 build/
 build_*/
+install/
 *.o
 *.obj
 *.so
@@ -14,7 +15,7 @@ CMakeCache.txt
 CMakeFiles/
 CMakeScripts/
 Testing/
-Makefile
+# Makefile
 cmake_install.cmake
 install_manifest.txt
 compile_commands.json
@@ -65,6 +66,13 @@ Thumbs.db
 *.err
 *.bak
 
+# Test artifacts and results
+test_results.*
+test_analysis
+test_export
+tests/unit/test_*
+!tests/unit/test_*.cpp
+
 # Package/Distribution
 *.dmg
 *.pkg
@@ -78,6 +86,8 @@ Thumbs.db
 docs/_build/
 docs/html/
 docs/latex/
+docs/api/html/
+docs/api/latex/
 *.pdf
 !docs/*.pdf
 
@@ -86,12 +96,17 @@ docs/latex/
 *.gcno
 *.gcda
 coverage.info
+coverage_filtered.info
+coverage_html/
+coverage_dashboard/
 coverage/
 
 # Static Analysis
-.clang-tidy
+# .clang-tidy
 .cppcheck
 scan-build/
+_codeql_*/
+_codeql_detected_source_root
 
 # Performance profiling
 *.perf
@@ -186,6 +201,8 @@ build.ninja
 *.old
 
 # Package managers
+node_modules/
+package-lock.json
 conan.lock
 conaninfo.txt
 conanbuildinfo.*
@@ -194,3 +211,10 @@ conanbuildinfo.*
 *.memcheck
 *.valgrind
 *.dSYM/
+generate*_golden_masters
+test_csv_exporter_standalone
+validate_*_golden_master
+test_*_exporter
+test_json
+test_xml
+/cppcheck-report.txt

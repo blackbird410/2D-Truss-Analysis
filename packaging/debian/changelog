@@ -1,0 +1,16 @@
+2d-truss-analysis (3.0.0-1) unstable; urgency=medium
+
+  * Production release v3.0.0.
+  * Clean layered C++20 architecture with strict separation of domain,
+    infrastructure, application, interface, and presentation layers.
+  * Qt6 MVC GUI with interface-driven controllers and presenters.
+  * Direct stiffness method (displacement method) analysis engine with
+    LDLT factorization via Eigen3.
+  * 1603 passing tests; 88.3% line coverage, 91.9% function coverage.
+  * FHS-compliant Linux packaging with CPack DEB for GUI, CLI, and
+    common components.
+  * AppStream metainfo for software centre discovery.
+  * Multi-format export: CSV, JSON, XML, HTML, LaTeX, and plain text.
+  * Dark and light QSS themes.
+
+ -- Neil Taison Rigaud <ntsrigaud14@gmail.com>  Sun, 08 Mar 2026 00:00:00 +0000

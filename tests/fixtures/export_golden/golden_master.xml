@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TrussAnalysisResults>
+  <Project>
+    <Name>Golden Master Test Truss</Name>
+    <ExportTime>2026-02-20 19:06:48</ExportTime>
+    <Version>3.0.0</Version>
+  </Project>
+  <Geometry>
+    <Nodes>
+      <Node id="1">
+        <X>0.000000</X>
+        <Y>0.000000</Y>
+        <SupportType>1</SupportType>
+      </Node>
+      <Node id="2">
+        <X>4.000000</X>
+        <Y>0.000000</Y>
+        <SupportType>2</SupportType>
+      </Node>
+      <Node id="3">
+        <X>2.000000</X>
+        <Y>3.000000</Y>
+        <SupportType>0</SupportType>
+      </Node>
+    </Nodes>
+    <Members>
+      <Member id="1">
+        <StartNode>1</StartNode>
+        <EndNode>2</EndNode>
+        <Length>4.000000</Length>
+      </Member>
+      <Member id="2">
+        <StartNode>1</StartNode>
+        <EndNode>3</EndNode>
+        <Length>3.605551</Length>
+      </Member>
+      <Member id="3">
+        <StartNode>2</StartNode>
+        <EndNode>3</EndNode>
+        <Length>3.605551</Length>
+      </Member>
+    </Members>
+  </Geometry>
+  <Properties>
+    <Members>
+      <Member id="1">
+        <YoungModulus>200000000000.000000</YoungModulus>
+        <YieldStrength>250000000.000000</YieldStrength>
+        <Density>7850.000000</Density>
+        <Area>0.000100</Area>
+      </Member>
+      <Member id="2">
+        <YoungModulus>200000000000.000000</YoungModulus>
+        <YieldStrength>250000000.000000</YieldStrength>
+        <Density>7850.000000</Density>
+        <Area>0.000100</Area>
+      </Member>
+      <Member id="3">
+        <YoungModulus>200000000000.000000</YoungModulus>
+        <YieldStrength>250000000.000000</YieldStrength>
+        <Density>7850.000000</Density>
+        <Area>0.000100</Area>
+      </Member>
+    </Members>
+  </Properties>
+  <Loads>
+    <NodalForces>
+      <Force nodeId="3">
+        <Fx>0.000000</Fx>
+        <Fy>-15000.000000</Fy>
+      </Force>
+    </NodalForces>
+  </Loads>
+  <Displacements>
+    <Values>
+      <Displacement dof="0">0.000000</Displacement>
+      <Displacement dof="1">0.000000</Displacement>
+      <Displacement dof="2">0.001000</Displacement>
+      <Displacement dof="3">0.000000</Displacement>
+      <Displacement dof="4">0.000500</Displacement>
+      <Displacement dof="5">-0.002286</Displacement>
+    </Values>
+    <MaxDisplacement>0.002340</MaxDisplacement>
+  </Displacements>
+  <MemberForces>
+    <Values>
+      <Force memberId="1" type="Tension">5000.000000</Force>
+      <Force memberId="2" type="Compression">-9013.878189</Force>
+      <Force memberId="3" type="Compression">-9013.878189</Force>
+    </Values>
+  </MemberForces>
+  <Reactions>
+    <Values>
+      <Reaction dof="0">-0.000000</Reaction>
+      <Reaction dof="1">7500.000000</Reaction>
+      <Reaction dof="2">7500.000000</Reaction>
+    </Values>
+  </Reactions>
+  <Analysis>
+    <Converged>true</Converged>
+    <Iterations>0</Iterations>
+    <TotalDofs>6</TotalDofs>
+    <FreeDofs>3</FreeDofs>
+    <MaxStress>90138781.886600</MaxStress>
+  </Analysis>
+</TrussAnalysisResults>

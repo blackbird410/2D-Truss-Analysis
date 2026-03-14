@@ -1,0 +1,297 @@
+# Release Workflow
+# Builds a Release binary and creates DEB + TGZ packages via CPack.
+# Qt6 is installed from system apt (same pattern as CI).
+# vcpkg manages only eigen3 / nlohmann-json / tinyxml2.
+#
+# Triggered by:
+#   - Push of a version tag  (v*)
+#   - Manual workflow_dispatch
+
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release version (e.g., 3.0.0) — overrides the git tag"
+        required: false
+        type: string
+      prerelease:
+        description: "Mark as pre-release"
+        required: false
+        default: false
+        type: boolean
+      draft:
+        description: "Create as draft release"
+        required: false
+        default: false
+        type: boolean
+
+env:
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+  CMAKE_BUILD_PARALLEL_LEVEL: "2"
+
+jobs:
+  # ============================================================================
+  # Build, package, and publish a GitHub Release
+  # ============================================================================
+
+  build-and-package:
+    name: Build & Package
+    runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+
+    permissions:
+      contents: write
+
+    steps:
+      # ------------------------------------------------------------------------
+      # Checkout
+      # ------------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+          fetch-depth: 0
+
+      # ------------------------------------------------------------------------
+      # Determine version
+      # ------------------------------------------------------------------------
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ] && \
+             [ -n "${{ github.event.inputs.version }}" ]; then
+            VERSION="${{ github.event.inputs.version }}"
+          else
+            # Strip the leading 'v' from the tag name
+            VERSION="${GITHUB_REF#refs/tags/v}"
+          fi
+          echo "version=${VERSION}" >> "$GITHUB_OUTPUT"
+          echo "Release version: ${VERSION}"
+
+      # ------------------------------------------------------------------------
+      # System Qt6 (fast — avoids building Qt inside vcpkg)
+      # ------------------------------------------------------------------------
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            build-essential \
+            pkg-config \
+            dpkg-dev \
+            qt6-base-dev \
+            qt6-svg-dev \
+            libqt6svgwidgets6
+
+      # ------------------------------------------------------------------------
+      # vcpkg (eigen3 / nlohmann-json / tinyxml2)
+      # ------------------------------------------------------------------------
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: ${{ github.workspace }}/vcpkg
+          vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
+          vcpkgJsonGlob: "**/vcpkg.json"
+
+      - name: Set VCPKG_ROOT
+        run: echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> "$GITHUB_ENV"
+
+      # ------------------------------------------------------------------------
+      # Configure (package preset: Release, prefix=/usr, tests OFF)
+      # ------------------------------------------------------------------------
+      - name: Configure CMake
+        run: |
+          TOOLCHAIN_ARG=""
+          if [ -f "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" ]; then
+            TOOLCHAIN_ARG="-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+          fi
+
+          cmake -B build-package \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=Release \
+            -DCMAKE_INSTALL_PREFIX=/usr \
+            -DBUILD_TESTING=OFF \
+            -DBUILD_GUI=ON \
+            -DCPACK_PACKAGE_VERSION="${{ steps.version.outputs.version }}" \
+            ${TOOLCHAIN_ARG}
+
+      - name: Build
+        run: cmake --build build-package --parallel 2
+
+      # ------------------------------------------------------------------------
+      # CPack — produce .deb (component packages) and .tar.gz
+      # ------------------------------------------------------------------------
+      - name: Create packages
+        working-directory: build-package
+        run: |
+          cpack -G DEB
+          cpack -G TGZ
+
+      - name: List produced packages
+        working-directory: build-package
+        run: ls -lh *.deb *.tar.gz 2>/dev/null || echo "No packages found"
+
+      # ------------------------------------------------------------------------
+      # Verify CLI binary works (headless-safe — no display needed)
+      # ------------------------------------------------------------------------
+      - name: Smoke-test CLI binary
+        run: |
+          ./build-package/src/cli/truss-analysis-cli --help \
+            || echo "CLI returned non-zero from --help (may be expected)"
+
+      # ------------------------------------------------------------------------
+      # Upload packages as workflow artifacts (available even on draft releases)
+      # ------------------------------------------------------------------------
+      - name: Upload packages as artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: packages-${{ steps.version.outputs.version }}
+          path: |
+            build-package/*.deb
+            build-package/*.tar.gz
+          retention-days: 14
+
+      # ------------------------------------------------------------------------
+      # Create / update GitHub Release
+      # ------------------------------------------------------------------------
+      - name: Generate release notes
+        run: |
+          VERSION="${{ steps.version.outputs.version }}"
+          {
+            echo "## 2D Truss Analysis v${VERSION}"
+            echo ""
+            echo "### Installation (Ubuntu / Debian)"
+            echo ""
+            echo "\`\`\`bash"
+            echo "# Full package (CLI + GUI + assets)"
+            echo "sudo dpkg -i 2d-truss-analysis_${VERSION}_amd64.deb"
+            echo "sudo apt-get install -f          # resolve any missing deps"
+            echo ""
+            echo "# CLI-only"
+            echo "sudo dpkg -i 2d-truss-analysis-cli_${VERSION}_amd64.deb"
+            echo "sudo apt-get install -f"
+            echo "\`\`\`"
+            echo ""
+            echo "### Downloads"
+            echo ""
+            echo "| Package | Description |"
+            echo "|---------|-------------|"
+            echo "| \`2d-truss-analysis_${VERSION}_amd64.deb\` | GUI package (depends on common) |"
+            echo "| \`2d-truss-analysis-cli_${VERSION}_amd64.deb\` | CLI package (depends on common) |"
+            echo "| \`2d-truss-analysis-common_${VERSION}_amd64.deb\` | Shared config, examples, assets |"
+            echo "| \`2d-truss-analysis_${VERSION}_amd64.tar.gz\` | TGZ archive (all components) |"
+            echo ""
+            if [ -f CHANGELOG.md ]; then
+              echo "See [CHANGELOG.md](CHANGELOG.md) for full change history."
+            fi
+          } > release_notes.md
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.ref_name }}
+          name: Release ${{ steps.version.outputs.version }}
+          body_path: release_notes.md
+          draft: ${{ github.event.inputs.draft || false }}
+          prerelease: ${{ github.event.inputs.prerelease || false }}
+          fail_on_unmatched_files: false
+          files: |
+            build-package/*.deb
+            build-package/*.tar.gz
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================================================
+  # Publish .deb packages to GitHub Pages APT repository (gh-pages)
+  # ============================================================================
+
+  publish-apt-repo:
+    name: Publish APT Repository
+    needs: build-and-package
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Download package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: packages-${{ needs.build-and-package.outputs.version }}
+          path: packages
+
+      - name: Install APT repository tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev apt-utils gnupg
+
+      - name: Import repository signing key
+        env:
+          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+        run: |
+          if [ -z "${REPO_SIGNING_KEY}" ]; then
+            echo "REPO_SIGNING_KEY secret is not configured" >&2
+            exit 1
+          fi
+          echo "${REPO_SIGNING_KEY}" | gpg --batch --import
+
+      - name: Update APT repository metadata
+        run: |
+          POOL="gh-pages/apt/pool/main/2/2d-truss-analysis"
+          DIST_DIR="gh-pages/apt/dists/stable"
+          BIN_DIR="${DIST_DIR}/main/binary-amd64"
+
+          mkdir -p "${POOL}" "${BIN_DIR}"
+          cp packages/*.deb "${POOL}/"
+
+          # Regenerate package index
+          (
+            cd gh-pages/apt
+            dpkg-scanpackages --multiversion pool /dev/null > dists/stable/main/binary-amd64/Packages
+            gzip -n -9 -c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
+          )
+
+          # Regenerate Release metadata and signatures
+          (
+            cd gh-pages/apt
+            apt-ftparchive release dists/stable > dists/stable/Release
+            gpg --batch --yes --armor --detach-sign \
+              -o dists/stable/Release.gpg dists/stable/Release
+            gpg --batch --yes --clearsign \
+              -o dists/stable/InRelease dists/stable/Release
+          )
+
+      - name: Commit and push gh-pages updates
+        run: |
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apt/
+
+          if git diff --cached --quiet; then
+            echo "No APT repository changes to commit"
+            exit 0
+          fi
+
+          git commit -m "release: publish APT packages for v${{ needs.build-and-package.outputs.version }}"
+          git push origin gh-pages

@@ -1,0 +1,74 @@
+# Container Structure Test Configuration
+# Tests the structure and contents of the Docker container
+# Run with: container-structure-test test --image truss-analysis:latest --config tests/container-test.yaml
+
+schemaVersion: "2.0.0"
+
+# Test that required files exist in the container
+fileExistenceTests:
+  - name: "CLI binary exists"
+    path: "/usr/local/bin/TrussAnalysisCLI"
+    shouldExist: true
+    permissions: "-rwxr-xr-x"
+
+  - name: "Data input directory exists"
+    path: "/data/input"
+    shouldExist: true
+    isDirectory: true
+
+  - name: "Data output directory exists"
+    path: "/data/output"
+    shouldExist: true
+    isDirectory: true
+
+# Test that commands work correctly
+commandTests:
+  - name: "Help command works"
+    command: "TrussAnalysisCLI"
+    args: ["--help"]
+    exitCode: 0
+
+  - name: "Binary is executable"
+    command: "/usr/local/bin/TrussAnalysisCLI"
+    args: ["--help"]
+    exitCode: 0
+
+  - name: "Non-root user"
+    command: "whoami"
+    expectedOutput: ["truss"]
+    exitCode: 0
+
+  - name: "Working directory is /data"
+    command: "pwd"
+    expectedOutput: ["/data"]
+    exitCode: 0
+
+# Test container metadata
+metadataTest:
+  labels:
+    - key: "org.opencontainers.image.title"
+      value: "2D Truss Analysis"
+    
+    - key: "org.opencontainers.image.version"
+      value: "3.0.0"
+    
+    - key: "org.opencontainers.image.licenses"
+      value: "MIT"
+    
+    - key: "org.opencontainers.image.description"
+      value: "Professional 2D truss structural analysis tool (CLI)"
+    
+    - key: "org.opencontainers.image.authors"
+      value: "Neil Taison Rigaud <ntsrigaud14@gmail.com>"
+
+  # Verify non-root user
+  user: "truss"
+  
+  # Verify working directory
+  workdir: "/data"
+  
+  # Verify entrypoint
+  entrypoint: ["TrussAnalysisCLI"]
+  
+  # Verify default command
+  cmd: ["--help"]

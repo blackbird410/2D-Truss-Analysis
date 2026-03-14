@@ -1,0 +1,231 @@
+# CI — Build and Test
+# Qt6 is installed from the system apt repository (qt6-base-dev, qt6-svg-dev).
+# vcpkg manages only the three lightweight deps: eigen3, nlohmann-json, tinyxml2.
+# This keeps CI fast (~15 min) and avoids the disk-space exhaustion caused by
+# building Qt from source inside vcpkg.
+
+name: CI
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+  workflow_dispatch:
+    inputs:
+      build_type:
+        description: "Build configuration"
+        required: false
+        default: "both"
+        type: choice
+        options:
+          - Debug
+          - Release
+          - both
+
+env:
+  VCPKG_BINARY_SOURCES: "clear;x-gha,readwrite"
+  CMAKE_BUILD_PARALLEL_LEVEL: "2"
+
+jobs:
+  # ============================================================================
+  # Build and Test Job
+  # ============================================================================
+
+  build-and-test:
+    name: Build & Test (${{ matrix.build_type }})
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        build_type: [Debug, Release]
+      fail-fast: false
+
+    steps:
+      # ----------------------------------------------------------------------
+      # Checkout
+      # ----------------------------------------------------------------------
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      # ----------------------------------------------------------------------
+      # Install System Dependencies (Qt6 from apt — fast, no vcpkg build)
+      # ----------------------------------------------------------------------
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            build-essential \
+            pkg-config \
+            dpkg-dev \
+            qt6-base-dev \
+            qt6-svg-dev \
+            libqt6svgwidgets6 \
+            libgtest-dev \
+            libgmock-dev \
+            xvfb
+
+      # ----------------------------------------------------------------------
+      # vcpkg (eigen3 / nlohmann-json / tinyxml2 only — Qt NOT in vcpkg.json)
+      # ----------------------------------------------------------------------
+      - name: Export GitHub Actions cache environment variables
+        uses: actions/github-script@v7
+        with:
+          script: |
+            core.exportVariable('ACTIONS_CACHE_URL', process.env.ACTIONS_CACHE_URL || '');
+            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env.ACTIONS_RUNTIME_TOKEN || '');
+
+      - name: Setup vcpkg
+        uses: lukka/run-vcpkg@v11
+        with:
+          vcpkgDirectory: ${{ github.workspace }}/vcpkg
+          vcpkgGitCommitId: "01f602195983451bc83e72f4214af2cbc495aa94"
+          vcpkgJsonGlob: "**/vcpkg.json"
+
+      - name: Set VCPKG_ROOT
+        run: |
+          echo "VCPKG_ROOT=${GITHUB_WORKSPACE}/vcpkg" >> "$GITHUB_ENV"
+
+      # ----------------------------------------------------------------------
+      # Build
+      # ----------------------------------------------------------------------
+      - name: Configure CMake
+        run: |
+          TOOLCHAIN_ARG=""
+          if [ -f "${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake" ]; then
+            TOOLCHAIN_ARG="-DCMAKE_TOOLCHAIN_FILE=${VCPKG_ROOT}/scripts/buildsystems/vcpkg.cmake"
+          fi
+
+          cmake -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DBUILD_TESTING=ON \
+            -DBUILD_GUI=ON \
+            -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+            ${TOOLCHAIN_ARG}
+
+      - name: Build all targets
+        run: cmake --build build --parallel 2
+
+      - name: Verify executables
+        run: |
+          for exe in \
+              build/src/cli/truss-analysis-cli \
+              build/src/gui/truss-analysis \
+              build/tests/unit/unit_tests \
+              build/tests/unit/unit_tests_gui_widgets \
+              build/tests/integration/integration_tests; do
+            if [ ! -x "$exe" ]; then
+              echo "::error::Expected executable not found: $exe"
+              exit 1
+            fi
+            echo "✓ $exe"
+          done
+
+      # ----------------------------------------------------------------------
+      # Tests
+      # ----------------------------------------------------------------------
+      # The unit_tests binary initialises QCoreApplication — no platform
+      # plugin is loaded, no display required. The QT_QPA_PLATFORM env var is
+      # also set in the CTest ENVIRONMENT property as belt-and-suspenders.
+      - name: Run unit tests
+        run: |
+          ctest --test-dir build \
+                --output-on-failure \
+                --tests-regex "^unit_tests$" \
+                --timeout 60 \
+                --parallel
+
+      # unit_tests_gui_widgets initialises QApplication; offscreen satisfies
+      # the platform plugin requirement without a physical display or X11.
+      # QT_QPA_PLATFORM is also encoded in the CTest ENVIRONMENT property.
+      - name: Run GUI widget unit tests (headless)
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          ctest --test-dir build \
+                --output-on-failure \
+                --tests-regex "^unit_tests_gui_widgets$" \
+                --timeout 60 \
+                --parallel
+
+      - name: Run integration tests
+        run: |
+          ctest --test-dir build \
+                --output-on-failure \
+                --tests-regex "^integration_tests$" \
+                --timeout 60 \
+                --parallel
+
+      # gui_integration_tests initialises QApplication; offscreen satisfies
+      # the platform plugin requirement. QT_QPA_PLATFORM is also encoded in
+      # the CTest ENVIRONMENT property for this test.
+      - name: Run GUI integration tests (headless)
+        env:
+          QT_QPA_PLATFORM: offscreen
+        run: |
+          ctest --test-dir build \
+                --output-on-failure \
+                --tests-regex "^gui_integration_tests$" \
+                --timeout 120 \
+                --parallel
+
+      - name: Run GTest integration tests
+        run: |
+          ctest --test-dir build \
+                --output-on-failure \
+                --tests-regex "^gtest_integration$" \
+                --timeout 60 \
+                --parallel
+
+      # ----------------------------------------------------------------------
+      # Artifacts
+      # ----------------------------------------------------------------------
+      - name: Generate test summary
+        if: always()
+        run: |
+          echo "## Test Results (${{ matrix.build_type }})" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          TOTAL=$(ctest --test-dir build -N 2>/dev/null | grep "Total Tests:" | awk '{print $3}' || echo "0")
+          echo "**Total Tests:** $TOTAL" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Upload test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-results-${{ matrix.build_type }}
+          path: build/Testing/
+          retention-days: 7
+
+      - name: Upload release binaries
+        if: matrix.build_type == 'Release'
+        uses: actions/upload-artifact@v4
+        with:
+          name: binaries-release
+          path: |
+            build/src/cli/truss-analysis-cli
+            build/src/gui/truss-analysis
+          retention-days: 7
+
+  # ============================================================================
+  # Summary gate — fails the overall check if any build_type failed
+  # ============================================================================
+
+  build-summary:
+    name: Build Summary
+    runs-on: ubuntu-22.04
+    needs: build-and-test
+    if: always()
+
+    steps:
+      - name: Check build status
+        run: |
+          if [ "${{ needs.build-and-test.result }}" != "success" ]; then
+            echo "::error::One or more build configurations failed"
+            exit 1
+          fi
+          echo "All build configurations passed"

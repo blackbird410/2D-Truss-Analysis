@@ -1,0 +1,160 @@
+/**
+ * @file types.hpp
+ * @brief Core data types and mathematical utilities for truss analysis.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
+
+#pragma once
+
+#include "utilities/math_utils.hpp"
+
+#include <Eigen/Dense>
+
+#include <cstdint>
+#include <memory>
+#include <vector>
+
+namespace truss::core {
+
+// Type aliases for better readability
+using Real = double;             ///< Floating-point scalar type used throughout the analysis
+using Index = std::size_t;       ///< Index type for DOF and container offsets
+using NodeId = std::uint32_t;    ///< Unique identifier for truss nodes
+using MemberId = std::uint32_t;  ///< Unique identifier for truss members
+using LoadId = std::uint32_t;    ///< Unique identifier for load cases
+
+// Eigen type aliases
+using Vector2d = Eigen::Vector2d;  ///< 2-element column vector (double)
+using Vector3d = Eigen::Vector3d;  ///< 3-element column vector (double)
+using Matrix2d = Eigen::Matrix2d;  ///< 2×2 dense matrix (double)
+using MatrixXd = Eigen::MatrixXd;  ///< Dynamic-size dense matrix (double)
+using VectorXd = Eigen::VectorXd;  ///< Dynamic-size column vector (double)
+
+/**
+ * @brief 2D Point structure
+ */
+struct Point2D {
+    Real x{0.0};  ///< X coordinate (metres, X+ rightward)
+    Real y{0.0};  ///< Y coordinate (metres, Y+ upward)
+
+    Point2D() = default;
+    Point2D(Real x_val, Real y_val) : x(x_val), y(y_val) {}
+
+    Point2D operator+(const Point2D& other) const { return {x + other.x, y + other.y}; }
+
+    Point2D operator-(const Point2D& other) const { return {x - other.x, y - other.y}; }
+
+    Point2D operator*(Real scalar) const { return {x * scalar, y * scalar}; }
+
+    Real distance(const Point2D& other) const {
+        Real dx = x - other.x;
+        Real dy = y - other.y;
+        return std::sqrt((dx * dx) + (dy * dy));
+    }
+
+    Vector2d toEigen() const { return {x, y}; }
+};
+
+/**
+ * @brief 2D Force vector
+ */
+struct Force2D {
+    Real fx{0.0};  ///< Force component in X direction
+    Real fy{0.0};  ///< Force component in Y direction
+
+    Force2D() = default;
+    Force2D(Real fx_val, Real fy_val) : fx(fx_val), fy(fy_val) {}
+
+    Force2D operator+(const Force2D& other) const { return {fx + other.fx, fy + other.fy}; }
+
+    Force2D operator-(const Force2D& other) const { return {fx - other.fx, fy - other.fy}; }
+
+    Force2D operator*(Real scalar) const { return {fx * scalar, fy * scalar}; }
+
+    Real magnitude() const { return std::sqrt((fx * fx) + (fy * fy)); }
+
+    Vector2d toEigen() const { return {fx, fy}; }
+};
+
+/**
+ * @brief Support constraint types
+ *
+ * IMPORTANT: In 2D structural mechanics, a pinned support restrains BOTH translational DOFs.
+ * Directional constraints are represented by roller supports.
+ * Do NOT introduce directional pinning (e.g., PinnedX, PinnedY) - this is mechanically invalid.
+ */
+enum class SupportType {
+    Free,     ///< No constraint (2 DOFs free)
+    Pinned,   ///< Pin support: Fixed in both X and Y directions (0 DOFs free, 2 reactions)
+    RollerX,  ///< Roller allowing movement in X direction (1 DOF free: X, 1 reaction: Y)
+    RollerY   ///< Roller allowing movement in Y direction (1 DOF free: Y, 1 reaction: X)
+};
+
+/**
+ * @brief Material properties for structural members
+ */
+struct MaterialProperties {
+    Real youngModulus{200e9};      ///< Young's modulus (Pa)
+    Real density{7850.0};          ///< Material density (kg/m³)
+    Real yieldStrength{250e6};     ///< Yield strength (Pa)
+    Real ultimateStrength{400e6};  ///< Ultimate tensile strength (Pa)
+    std::string name{"Steel"};     ///< Material name
+
+    MaterialProperties() = default;
+    MaterialProperties(Real E, Real rho, Real fy, Real fu, std::string materialName)
+        : youngModulus(E), density(rho), yieldStrength(fy), ultimateStrength(fu),
+          name(std::move(materialName)) {}
+};
+
+/**
+ * @brief Cross-sectional properties for structural members
+ */
+struct SectionProperties {
+    Real area{1e-4};                     ///< Cross-sectional area (m²)
+    Real momentOfInertia{1e-8};          ///< Second moment of area (m⁴)
+    Real shearArea{1e-4};                ///< Effective shear area (m²)
+    std::string designation{"Default"};  ///< Section designation
+
+    SectionProperties() = default;
+    SectionProperties(Real A, Real I, Real As, std::string desig)
+        : area(A), momentOfInertia(I), shearArea(As), designation(std::move(desig)) {}
+};
+
+/**
+ * @brief Analysis results for a single member
+ */
+struct MemberResults {
+    Real axialForce{0.0};        ///< Axial force (positive = tension)
+    Real axialStress{0.0};       ///< Axial stress
+    Real utilizationRatio{0.0};  ///< Stress/yield stress ratio
+    bool inTension{false};       ///< True if member is in tension
+    bool yielded{false};         ///< True if member has yielded
+
+    MemberResults() = default;
+};
+
+/**
+ * @brief Analysis results for a single node
+ */
+struct NodeResults {
+    Point2D displacement{0.0, 0.0};  ///< Nodal displacement
+    Force2D reaction{0.0, 0.0};      ///< Support reaction forces
+
+    NodeResults() = default;
+};
+
+/**
+ * @brief Constants and tolerances for numerical analysis
+ */
+namespace Constants {
+constexpr Real ZERO_TOLERANCE = 1e-12;         ///< Tolerance for zero comparisons (dimensionless)
+constexpr Real GEOMETRY_TOLERANCE = 1e-9;      ///< Tolerance for geometric coincidence checks (m)
+constexpr Real FORCE_TOLERANCE = 1e-6;         ///< Tolerance for force magnitude checks (N)
+constexpr Real DISPLACEMENT_TOLERANCE = 1e-9;  ///< Tolerance for displacement checks (m)
+constexpr Real DEFAULT_YOUNG_MODULUS = 200e9;  ///< Default Young's modulus — structural steel (Pa)
+constexpr Real DEFAULT_AREA = 1e-4;            ///< Default cross-sectional area — 1 cm² (m²)
+}  // namespace Constants
+
+}  // namespace truss::core

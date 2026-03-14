@@ -1,0 +1,177 @@
+/**
+ * @file latex_exporter.hpp
+ * @brief LaTeX format results exporter.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ */
+
+#pragma once
+
+#include "export_types.hpp"
+#include "exporter.hpp"
+
+#include <chrono>
+#include <filesystem>
+#include <iomanip>
+#include <sstream>
+
+namespace truss::infrastructure::export_ {
+
+// Import types from core namespace
+using core::Real;
+using core::interfaces::IAnalysisResultsView;
+using core::interfaces::ITrussView;
+
+/**
+ * @brief LaTeX format exporter
+ *
+ * Exports analysis results to LaTeX format suitable for inclusion in
+ * technical documents. Produces a complete LaTeX document with tabular
+ * environments for structured data.
+ *
+ * CRITICAL: This implementation follows the corrected 8-section export contract.
+ * ALL 8 sections MUST be included to maintain semantic equivalence with
+ * CSV, JSON, XML, and HTML exporters. LaTeX is just another presentation layer.
+ *
+ * 8-Section Contract (MANDATORY):
+ * 1. Project metadata
+ * 2. Geometry (nodes + members)
+ * 3. Material properties (placeholder until domain model implements)
+ * 4. Applied loads (placeholder until domain model implements)
+ * 5. Displacements
+ * 6. Member forces
+ * 7. Reactions (MANDATORY for equilibrium verification)
+ * 8. Analysis metadata
+ *
+ * LaTeX Output Structure:
+ * @verbatim
+ * - Complete document with \documentclass, \begin{document}, \end{document}
+ * - Tabular environments for data tables
+ * - Section headings with \section{}
+ * - Proper escaping of special LaTeX characters
+ * - Floating-point values formatted according to ExportOptions
+ * @endverbatim
+ */
+class LaTeXExporter : public IResultsExporter {
+public:
+    /**
+     * @brief Construct a LaTeX exporter
+     */
+    LaTeXExporter() = default;
+
+    /**
+     * @brief Virtual destructor
+     */
+    ~LaTeXExporter() override = default;
+
+    /**
+     * @brief Export analysis results to LaTeX file
+     * @param truss The analyzed truss structure
+     * @param results Analysis results
+     * @param filePath Output file path
+     * @param options Export options (precision, sections to include)
+     * @return true if export successful, false otherwise
+     */
+    bool exportResults(const ITrussView& truss,
+                       const IAnalysisResultsView& results,
+                       const std::filesystem::path& filePath,
+                       const ExportOptions& options = ExportOptions{}) override;
+
+    /**
+     * @brief Get the last error message
+     * @return Error message (empty if no error)
+     */
+    std::string getLastError() const override { return m_lastError; }
+
+    /**
+     * @brief Get the export format
+     * @return ExportFormat::LaTeX
+     */
+    ExportFormat getFormat() const override { return ExportFormat::LaTeX; }
+
+private:
+    std::string m_lastError;
+
+    /**
+     * @brief Write LaTeX document preamble
+     * @param os Output stream
+     * @param truss Truss structure being documented
+     */
+    static void writePreamble(std::ostream& os, const ITrussView& truss);
+
+    /**
+     * @brief Write document closing
+     * @param os Output stream
+     */
+    static void writeClosing(std::ostream& os);
+
+    /**
+     * @brief Write geometry section (nodes + members)
+     * @param os Output stream
+     * @param truss Truss structure
+     * @param options Export formatting options
+     */
+    static void
+    writeGeometrySection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+
+    /**
+     * @brief Write material properties section
+     * @param os Output stream
+     * @param truss Truss structure
+     * @param options Export formatting options
+     */
+    static void
+    writePropertiesSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+
+    /**
+     * @brief Write applied loads section
+     * @param os Output stream
+     * @param truss Truss structure
+     * @param options Export formatting options
+     */
+    static void
+    writeLoadsSection(std::ostream& os, const ITrussView& truss, const ExportOptions& options);
+
+    /**
+     * @brief Write displacements section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
+     */
+    static void writeDisplacementsSection(std::ostream& os,
+                                          const IAnalysisResultsView& results,
+                                          const ExportOptions& options);
+
+    /**
+     * @brief Write member forces section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
+     */
+    static void writeMemberForcesSection(std::ostream& os,
+                                         const IAnalysisResultsView& results,
+                                         const ExportOptions& options);
+
+    /**
+     * @brief Write reactions section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
+     */
+    static void writeReactionsSection(std::ostream& os,
+                                      const IAnalysisResultsView& results,
+                                      const ExportOptions& options);
+
+    /**
+     * @brief Write analysis metadata section
+     * @param os Output stream
+     * @param results Analysis results
+     * @param options Export formatting options
+     */
+    static void writeMetadataSection(std::ostream& os,
+                                     const IAnalysisResultsView& results,
+                                     const ExportOptions& options);
+};
+
+}  // namespace truss::infrastructure::export_

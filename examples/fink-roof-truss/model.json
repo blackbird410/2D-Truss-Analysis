@@ -1,0 +1,163 @@
+{
+  "metadata": {
+    "name": "Fink Roof Truss",
+    "description": "20 m span Fink (fan) roof truss — ridge height 5 m. Classic residential/industrial pitched roof configuration with Pratt-style web.",
+    "units": {
+      "length": "meters",
+      "force": "newtons",
+      "modulus": "pascals"
+    }
+  },
+  "nodes": [
+    { "id": 1, "x": 0.0, "y": 0.0, "label": "Left Bearing" },
+    { "id": 2, "x": 5.0, "y": 0.0, "label": "Bottom Chord L" },
+    { "id": 3, "x": 10.0, "y": 0.0, "label": "Bottom Chord Centre" },
+    { "id": 4, "x": 15.0, "y": 0.0, "label": "Bottom Chord R" },
+    { "id": 5, "x": 20.0, "y": 0.0, "label": "Right Bearing" },
+    { "id": 6, "x": 5.0, "y": 2.5, "label": "Left Rafter Interior" },
+    { "id": 7, "x": 10.0, "y": 5.0, "label": "Ridge" },
+    { "id": 8, "x": 15.0, "y": 2.5, "label": "Right Rafter Interior" }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "startNode": 1,
+      "endNode": 6,
+      "material": "timber",
+      "section": "rafter_120",
+      "label": "Left Rafter 1"
+    },
+    {
+      "id": 2,
+      "startNode": 6,
+      "endNode": 7,
+      "material": "timber",
+      "section": "rafter_120",
+      "label": "Left Rafter 2"
+    },
+    {
+      "id": 3,
+      "startNode": 7,
+      "endNode": 8,
+      "material": "timber",
+      "section": "rafter_120",
+      "label": "Right Rafter 1"
+    },
+    {
+      "id": 4,
+      "startNode": 8,
+      "endNode": 5,
+      "material": "timber",
+      "section": "rafter_120",
+      "label": "Right Rafter 2"
+    },
+    {
+      "id": 5,
+      "startNode": 1,
+      "endNode": 2,
+      "material": "timber",
+      "section": "chord_100",
+      "label": "Bottom Chord 1"
+    },
+    {
+      "id": 6,
+      "startNode": 2,
+      "endNode": 3,
+      "material": "timber",
+      "section": "chord_100",
+      "label": "Bottom Chord 2"
+    },
+    {
+      "id": 7,
+      "startNode": 3,
+      "endNode": 4,
+      "material": "timber",
+      "section": "chord_100",
+      "label": "Bottom Chord 3"
+    },
+    {
+      "id": 8,
+      "startNode": 4,
+      "endNode": 5,
+      "material": "timber",
+      "section": "chord_100",
+      "label": "Bottom Chord 4"
+    },
+    {
+      "id": 9,
+      "startNode": 2,
+      "endNode": 6,
+      "material": "timber",
+      "section": "web_75",
+      "label": "Vertical L"
+    },
+    {
+      "id": 10,
+      "startNode": 3,
+      "endNode": 7,
+      "material": "timber",
+      "section": "web_75",
+      "label": "King Post"
+    },
+    {
+      "id": 11,
+      "startNode": 4,
+      "endNode": 8,
+      "material": "timber",
+      "section": "web_75",
+      "label": "Vertical R"
+    },
+    {
+      "id": 12,
+      "startNode": 2,
+      "endNode": 7,
+      "material": "timber",
+      "section": "web_75",
+      "label": "Fink Diagonal L"
+    },
+    {
+      "id": 13,
+      "startNode": 4,
+      "endNode": 7,
+      "material": "timber",
+      "section": "web_75",
+      "label": "Fink Diagonal R"
+    }
+  ],
+  "materials": [
+    {
+      "id": "timber",
+      "name": "Structural Timber GL28h",
+      "youngModulus": 1.285e10,
+      "poissonRatio": 0.3,
+      "density": 480,
+      "yieldStrength": 2.8e7
+    }
+  ],
+  "sections": [
+    {
+      "id": "rafter_120",
+      "name": "120×200 mm Rafter",
+      "crossSectionalArea": 0.024
+    },
+    {
+      "id": "chord_100",
+      "name": "100×175 mm Bottom Chord",
+      "crossSectionalArea": 0.0175
+    },
+    {
+      "id": "web_75",
+      "name": "75×150 mm Web Member",
+      "crossSectionalArea": 0.01125
+    }
+  ],
+  "supports": [
+    { "nodeId": 1, "type": "pinned", "restrained": ["x", "y"] },
+    { "nodeId": 5, "type": "roller", "restrained": ["y"] }
+  ],
+  "loads": [
+    { "nodeId": 6, "fx": 0.0, "fy": -40000.0 },
+    { "nodeId": 7, "fx": 0.0, "fy": -20000.0 },
+    { "nodeId": 8, "fx": 0.0, "fy": -40000.0 }
+  ]
+}

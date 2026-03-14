@@ -1,26 +1,19 @@
 {
   "name": "truss-analysis",
-  "version": "2.2.0",
+  "version": "3.0.0",
   "description": "Professional 2D truss structural analysis software",
-  "homepage": "https://github.com/blackbird410/2D-Truss-Analysis-cpp",
+  "homepage": "https://github.com/blackbird410/2D-Truss-Analysis",
   "license": "MIT",
   "dependencies": [
     {
-      "name": "qt6",
-      "features": [
-        "core",
-        "widgets"
-      ]
+      "name": "eigen3"
     },
     {
-      "name": "eigen3"
+      "name": "nlohmann-json"
+    },
+    {
+      "name": "tinyxml2"
     }
   ],
-  "builtin-baseline": "2024.04.26",
-  "overrides": [
-    {
-      "name": "qt6",
-      "version": "6.5.0"
-    }
-  ]
+  "builtin-baseline": "01f602195983451bc83e72f4214af2cbc495aa94"
 }

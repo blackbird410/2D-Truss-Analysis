@@ -1,167 +1,177 @@
 /**
  * @file main_app.cpp
- * @brief Main application for 2D Truss Analysis
- * @author Civil Engineering Software Solutions
- * @version 2.0.0
+ * @brief CLI entry point for 2D Truss Analysis.
+ * @version 3.0.0
+ * @date 2026-02-24
+ * @author Neil Taison Rigaud
+ *
+ * Implements Command Pattern with dependency injection.
+ * Wires Application services to CLI commands and dispatches execution.
+ *
+ * Phase 5A.2+5A.4: Updated to wire IApplicationOutput through DI chain.
  */
 
-#include "AnalysisEngine.hpp"
-#include "Truss.hpp"
-#include "Logger.hpp"
-#include <iostream>
-#include <fstream>
-#include <string>
+// Infrastructure Layer includes
+#include "infrastructure/adapters/console_output_adapter.hpp"
+#include "infrastructure/logging/logger_factory.hpp"
 
-using namespace truss::core;
+// Interface Layer includes
+#include "interface/truss_analysis_facade.hpp"
 
-void printHeader() {
-    std::cout << "=================================================\n";
-    std::cout << "       2D Truss Analysis Software v2.0.0       \n";
-    std::cout << "   Civil Engineering Software Solutions         \n";
-    std::cout << "=================================================\n\n";
-}
+// CLI Layer includes
+#include "cli/argument_parser.hpp"
+#include "cli/commands/analyze_command.hpp"
+#include "cli/commands/example_command.hpp"
+#include "cli/commands/export_command.hpp"
+#include "cli/commands/help_command.hpp"
+#include "cli/commands/icommand.hpp"
+#include "cli/commands/validate_command.hpp"
 
-void printUsage() {
-    std::cout << "Usage:\n";
-    std::cout << "  TrussAnalysis [options]\n\n";
-    std::cout << "Options:\n";
-    std::cout << "  -h, --help     Show this help message\n";
-    std::cout << "  -v, --verbose  Enable verbose output\n";
-    std::cout << "  -e, --example  Run example analysis\n\n";
-}
+#include <map>
+#include <memory>
+#include <vector>
 
-void runExampleAnalysis(bool verbose = false) {
-    try {
-        std::cout << "Running example truss analysis...\n\n";
-        
-        // Create example truss
-        Truss truss("Example Truss");
-        
-        // Add nodes
-        auto node1 = truss.addNode(0.0, 0.0, SupportType::Pinned);   // Fixed support (X,Y constrained)
-        auto node2 = truss.addNode(4.0, 0.0, SupportType::PinnedY);  // Roller support (Y constrained)
-        auto node3 = truss.addNode(2.0, 3.0, SupportType::Free);     // Free node
-        
-        // Define material properties (steel)
-        MaterialProperties steel;
-        steel.youngModulus = 200e9; // Pa
-        steel.density = 7850;       // kg/m³
-        steel.yieldStrength = 250e6; // Pa
-        steel.name = "Steel S355";
-
-        // Define section properties
-        SectionProperties section;
-        section.area = 2e-3;        // m² (20 cm²)
-        section.designation = "L50x50x5";
-
-        // Add members to stabilize as determinate structure
-        truss.addMember(node1, node2, steel, section);
-        truss.addMember(node1, node3, steel, section);
-        truss.addMember(node2, node3, steel, section);
-        
-        // Apply loads
-        truss.applyForce(node3->getId(), Force2D(0.0, -50000.0));   // 50 kN downward
-        
-        // Display truss information
-        auto stats = truss.getStatistics();
-        std::cout << "Truss Statistics:\n";
-        std::cout << "  Nodes: " << stats.totalNodes << "\n";
-        std::cout << "  Members: " << stats.totalMembers << "\n";
-        std::cout << "  Total length: " << stats.totalLength << " m\n";
-        std::cout << "  Total weight: " << stats.totalWeight << " kg\n";
-        std::cout << "  Free DOFs: " << stats.freeDofs << "\n";
-        std::cout << "  Constrained DOFs: " << stats.constrainedDofs << "\n\n";
-        
-        // Set up analysis options
-        AnalysisOptions options;
-        options.verbose = verbose;
-        options.useDirectSolver = true;
-        options.computeReactions = true;
-        
-        // Perform analysis
-        AnalysisEngine engine(options);
-        
-        std::cout << "Performing structural analysis...\n";
-        auto results = engine.analyze(truss);
-        
-        // Display results
-        std::cout << "\nAnalysis Results:\n";
-        std::cout << "  Converged: " << (results.converged ? "Yes" : "No") << "\n";
-        std::cout << "  Maximum displacement: " << results.maxDisplacement * 1000 << " mm\n";
-        std::cout << "  Maximum stress: " << results.maxStress / 1e6 << " MPa\n";
-        std::cout << "  Total strain energy: " << results.totalStrain << " J\n";
-        std::cout << "  Matrix condition number: " << results.conditionNumber << "\n\n";
-        
-        // Display member forces
-        std::cout << "Member Forces:\n";
-        const auto& members = truss.getMembers();
-        for (size_t i = 0; i < members.size(); ++i) {
-            Real force = results.memberForces[i];
-            Real stress = results.memberStresses[i];
-            Real utilization = results.utilizationRatios[i];
-            
-            std::cout << "  Member " << (i+1) 
-                     << ": Force = " << force/1000 << " kN"
-                     << ", Stress = " << stress/1e6 << " MPa"
-                     << ", Utilization = " << utilization*100 << "%"
-                     << (force > 0 ? " (Tension)" : " (Compression)")
-                     << "\n";
-        }
-        
-        // Display node displacements
-        std::cout << "\nNode Displacements:\n";
-        const auto& nodes = truss.getNodes();
-        for (size_t i = 0; i < nodes.size(); ++i) {
-            Index dofX = nodes[i]->getDofX();
-            Index dofY = nodes[i]->getDofY();
-            Real dispX = results.displacements[dofX] * 1000; // mm
-            Real dispY = results.displacements[dofY] * 1000; // mm
-            
-            std::cout << "  Node " << (i+1) 
-                     << ": (" << dispX << ", " << dispY << ") mm\n";
-        }
-        
-        std::cout << "\nAnalysis completed successfully!\n";
-        
-    } catch (const std::exception& e) {
-        std::cerr << "Analysis failed: " << e.what() << "\n";
+/**
+ * @brief Execute CLI command
+ *
+ * @param args Parsed command line arguments
+ * @param commands Map of registered commands
+ * @param presenter Presenter for error messages
+ * @return Exit code (0 = success)
+ */
+int executeCommand(const truss::cli::ParsedArgs& args,
+                   std::map<std::string, std::unique_ptr<truss::cli::commands::ICommand>>& commands,
+                   const truss::cli::presenters::ConsolePresenter& presenter) {
+    auto it = commands.find(args.commandName);
+    if (it == commands.end()) {
+        presenter.displayError("Unknown command '" + args.commandName + "'");
+        presenter.displayInfo("Run 'TrussAnalysisCLI help' for available commands.");
+        return 1;
     }
+
+    return it->second->execute();
 }
 
+/**
+ * @brief CLI entry point
+ *
+ * Wires dependencies and dispatches command execution:
+ * 1. Creates Infrastructure logger and output adapter
+ * 2. Creates Interface layer facade (encapsulates application services)
+ * 3. Parses command-line arguments
+ * 4. Registers commands with dependency injection
+ * 5. Routes to appropriate command and executes
+ *
+ * Phase 2A: Updated to use TrussAnalysisFacade instead of raw application services
+ */
 int main(int argc, char* argv[]) {
-    printHeader();
-    
-    bool verbose = false;
-    bool runExample = false;
-    bool showHelp = false;
-    
-    // Parse command line arguments
-    for (int i = 1; i < argc; ++i) {
-        std::string arg = argv[i];
-        if (arg == "-h" || arg == "--help") {
-            showHelp = true;
-        } else if (arg == "-v" || arg == "--verbose") {
-            verbose = true;
-        } else if (arg == "-e" || arg == "--example") {
-            runExample = true;
-        }
+    // Create Infrastructure dependencies (innermost layer)
+    auto logger = truss::infrastructure::logging::LoggerFactory::createConsoleLogger(
+        truss::infrastructure::logging::LogLevel::Info,
+        true  // enable colors
+    );
+
+    // Create Application output adapter (bridges layers)
+    truss::infrastructure::adapters::ConsoleOutputAdapter consoleOutput(*logger);
+
+    // Create presenter with output dependency (CLI layer)
+    truss::cli::presenters::ConsolePresenter presenter(consoleOutput);
+    presenter.displayHeader();
+
+    // Create Interface layer facade (encapsulates Application services)
+    truss::interface::TrussAnalysisFacade facade;
+
+    // Parse command-line arguments
+    truss::cli::ParsedArgs args = truss::cli::ArgumentParser::parse(argc, argv);
+
+    // Create command registry
+    std::map<std::string, std::unique_ptr<truss::cli::commands::ICommand>> commands;
+    std::vector<truss::cli::commands::ICommand*> commandPtrs;
+
+    // Register commands with dependency injection
+
+    // ExampleCommand (always available)
+    auto exampleCmd = std::make_unique<truss::cli::commands::ExampleCommand>(
+        facade, presenter, args.verbose  // Use parsed verbose flag
+    );
+    commandPtrs.push_back(exampleCmd.get());
+    commands["example"] = std::move(exampleCmd);
+
+    // AnalyzeCommand (create placeholder for help, actual implementation conditionally)
+    auto inputFileOpt = truss::cli::ArgumentParser::getOption(args, "file", "f");
+
+    if (inputFileOpt.has_value() && args.commandName == "analyze") {
+        std::string inputFile = inputFileOpt.value();
+
+        auto outputFileOpt = truss::cli::ArgumentParser::getOption(args, "output", "o");
+        auto formatOpt = truss::cli::ArgumentParser::getOption(args, "format", "f");
+
+        auto analyzeCmd = std::make_unique<truss::cli::commands::AnalyzeCommand>(
+            facade, presenter, inputFile, outputFileOpt, formatOpt, args.verbose);
+        commandPtrs.push_back(analyzeCmd.get());
+        commands["analyze"] = std::move(analyzeCmd);
+    } else {
+        // Create placeholder for help display (will show error if executed without proper args)
+        auto analyzeCmd = std::make_unique<truss::cli::commands::AnalyzeCommand>(
+            facade,
+            presenter,
+            "",  // Empty file will trigger validation error with helpful message
+            std::nullopt,
+            std::nullopt,
+            false  // Default verbose for help display
+        );
+        commandPtrs.push_back(analyzeCmd.get());
+        commands["analyze"] = std::move(analyzeCmd);
     }
-    
-    if (showHelp) {
-        printUsage();
-        return 0;
+
+    // ValidateCommand (create placeholder for help, actual implementation conditionally)
+    if (inputFileOpt.has_value() && args.commandName == "validate") {
+        std::string inputFile = inputFileOpt.value();
+
+        auto validateCmd = std::make_unique<truss::cli::commands::ValidateCommand>(
+            facade, presenter, inputFile, args.verbose);
+        commandPtrs.push_back(validateCmd.get());
+        commands["validate"] = std::move(validateCmd);
+    } else {
+        // Create placeholder for help display
+        auto validateCmd = std::make_unique<truss::cli::commands::ValidateCommand>(
+            facade, presenter, "", args.verbose  // Use parsed verbose flag
+        );
+        commandPtrs.push_back(validateCmd.get());
+        commands["validate"] = std::move(validateCmd);
     }
-    
-    if (runExample) {
-        runExampleAnalysis(verbose);
-        return 0;
+
+    // ExportCommand (create placeholder for help, actual implementation conditionally)
+    auto trussFileOpt = truss::cli::ArgumentParser::getOption(args, "truss", "t");
+    auto resultsFileOpt = truss::cli::ArgumentParser::getOption(args, "results", "r");
+    auto exportOutputOpt = truss::cli::ArgumentParser::getOption(args, "output", "o");
+
+    if (trussFileOpt.has_value() && resultsFileOpt.has_value() && exportOutputOpt.has_value() &&
+        args.commandName == "export") {
+        std::string trussFile = trussFileOpt.value();
+        std::string resultsFile = resultsFileOpt.value();
+        std::string exportOutput = exportOutputOpt.value();
+
+        auto exportFormatOpt = truss::cli::ArgumentParser::getOption(args, "format", "f");
+
+        auto exportCmd = std::make_unique<truss::cli::commands::ExportCommand>(
+            facade, presenter, trussFile, resultsFile, exportOutput, exportFormatOpt, args.verbose);
+        commandPtrs.push_back(exportCmd.get());
+        commands["export"] = std::move(exportCmd);
+    } else {
+        // Create placeholder for help display
+        auto exportCmd = std::make_unique<truss::cli::commands::ExportCommand>(
+            facade, presenter, "", "", "", std::nullopt, args.verbose  // Use parsed verbose flag
+        );
+        commandPtrs.push_back(exportCmd.get());
+        commands["export"] = std::move(exportCmd);
     }
-    
-    // Default behavior - show usage
-    std::cout << "Welcome to 2D Truss Analysis Software!\n\n";
-    printUsage();
-    
-    std::cout << "Quick start: Run './TrussAnalysis -e' to see an example analysis.\n\n";
-    
-    return 0;
+
+    // HelpCommand (always available)
+    auto helpCmd = std::make_unique<truss::cli::commands::HelpCommand>(presenter, commandPtrs);
+    commandPtrs.push_back(helpCmd.get());
+    commands["help"] = std::move(helpCmd);
+
+    // Route and execute
+    return executeCommand(args, commands, presenter);
 }

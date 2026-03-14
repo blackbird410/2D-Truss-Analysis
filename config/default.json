@@ -1,0 +1,20 @@
+{
+  "application": {
+    "name": "2D Truss Analysis",
+    "version": "3.0.0"
+  },
+  "analysis": {
+    "defaultSolverType": "direct",
+    "toleranceIterativeSolver": 1e-8,
+    "maxIterationsIterativeSolver": 10000
+  },
+  "logging": {
+    "level": "info",
+    "format": "timestamp | level | message"
+  },
+  "export": {
+    "defaultFormat": "json",
+    "includeCoordinates": true,
+    "includeForcesAndDisplacements": true
+  }
+}

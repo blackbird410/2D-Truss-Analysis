@@ -1,0 +1,126 @@
+{
+  "version": 6,
+  "cmakeMinimumRequired": {
+    "major": 3,
+    "minor": 20,
+    "patch": 0
+  },
+
+  "configurePresets": [
+    {
+      "name": "base",
+      "hidden": true,
+      "description": "Base settings shared by all presets",
+      "binaryDir": "${sourceDir}/build",
+      "cacheVariables": {
+        "CMAKE_EXPORT_COMPILE_COMMANDS": "ON"
+      }
+    },
+    {
+      "name": "vcpkg",
+      "hidden": true,
+      "description": "Use vcpkg toolchain if the submodule is present",
+      "toolchainFile": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake",
+      "condition": {
+        "type": "exists",
+        "path": "${sourceDir}/vcpkg/scripts/buildsystems/vcpkg.cmake"
+      }
+    },
+
+    {
+      "name": "default",
+      "displayName": "Release (Development)",
+      "description": "Optimised release build for local development and testing",
+      "inherits": ["base", "vcpkg"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "BUILD_TESTING": "OFF",
+        "BUILD_GUI": "ON"
+      }
+    },
+
+    {
+      "name": "debug",
+      "displayName": "Debug",
+      "description": "Debug build with full test suite enabled",
+      "inherits": ["base", "vcpkg"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "ON",
+        "BUILD_GUI": "ON"
+      }
+    },
+
+    {
+      "name": "debug-no-gui",
+      "displayName": "Debug (CLI only)",
+      "description": "Debug build, CLI only, for headless/server environments",
+      "inherits": ["base", "vcpkg"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Debug",
+        "BUILD_TESTING": "ON",
+        "BUILD_GUI": "OFF"
+      }
+    },
+
+    {
+      "name": "package",
+      "displayName": "Release (Package)",
+      "description": "Production release build for creating distributable packages.\nInstall prefix set to /usr so that CPack produces FHS-compliant paths.\nDo NOT use this preset for interactive development.",
+      "inherits": ["base", "vcpkg"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "/usr",
+        "BUILD_TESTING": "OFF",
+        "BUILD_GUI": "ON",
+        "VCPKG_BUILD_TYPE": "release"
+      }
+    },
+
+    {
+      "name": "package-cli-only",
+      "displayName": "Release (CLI package only)",
+      "description": "Production release build for the CLI-only Debian package",
+      "inherits": ["base", "vcpkg"],
+      "cacheVariables": {
+        "CMAKE_BUILD_TYPE": "Release",
+        "CMAKE_INSTALL_PREFIX": "/usr",
+        "BUILD_TESTING": "OFF",
+        "BUILD_GUI": "OFF",
+        "VCPKG_BUILD_TYPE": "release"
+      }
+    }
+  ],
+
+  "buildPresets": [
+    {
+      "name": "default",
+      "configurePreset": "default",
+      "description": "Build the default (Release) configuration"
+    },
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "description": "Build the Debug configuration"
+    },
+    {
+      "name": "package",
+      "configurePreset": "package",
+      "description": "Build the package configuration"
+    }
+  ],
+
+  "testPresets": [
+    {
+      "name": "debug",
+      "configurePreset": "debug",
+      "description": "Run all tests in the Debug configuration",
+      "output": {
+        "outputOnFailure": true
+      },
+      "execution": {
+        "timeout": 120
+      }
+    }
+  ]
+}

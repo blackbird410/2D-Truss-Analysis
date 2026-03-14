@@ -1,0 +1,93 @@
+{
+  "metadata": {
+    "name": "Simple Triangular Truss",
+    "description": "Basic three-node triangular truss for learning",
+    "units": {
+      "length": "meters",
+      "force": "newtons",
+      "modulus": "pascals"
+    }
+  },
+  "nodes": [
+    {
+      "id": 1,
+      "x": 0.0,
+      "y": 0.0,
+      "label": "Base Left"
+    },
+    {
+      "id": 2,
+      "x": 2.0,
+      "y": 0.0,
+      "label": "Base Right"
+    },
+    {
+      "id": 3,
+      "x": 1.0,
+      "y": 1.732,
+      "label": "Apex"
+    }
+  ],
+  "members": [
+    {
+      "id": 1,
+      "startNode": 1,
+      "endNode": 2,
+      "material": "steel",
+      "section": "tube_50x50",
+      "label": "Base"
+    },
+    {
+      "id": 2,
+      "startNode": 1,
+      "endNode": 3,
+      "material": "steel",
+      "section": "tube_50x50",
+      "label": "Left Leg"
+    },
+    {
+      "id": 3,
+      "startNode": 2,
+      "endNode": 3,
+      "material": "steel",
+      "section": "tube_50x50",
+      "label": "Right Leg"
+    }
+  ],
+  "materials": [
+    {
+      "id": "steel",
+      "name": "Structural Steel",
+      "youngModulus": 2.0e11,
+      "poissonRatio": 0.3,
+      "density": 7850
+    }
+  ],
+  "sections": [
+    {
+      "id": "tube_50x50",
+      "name": "50x50mm Tube",
+      "crossSectionalArea": 0.000954
+    }
+  ],
+  "supports": [
+    {
+      "nodeId": 1,
+      "type": "pinned",
+      "restrained": ["x", "y"]
+    },
+    {
+      "nodeId": 2,
+      "type": "roller",
+      "restrained": ["y"]
+    }
+  ],
+  "loads": [
+    {
+      "nodeId": 3,
+      "fx": 0.0,
+      "fy": -10000.0,
+      "label": "Vertical Load"
+    }
+  ]
+}

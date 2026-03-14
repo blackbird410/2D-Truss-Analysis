@@ -1,4 +1,0 @@
-/Users/neil/dev/repos/2D_Truss_Analysis/build_test/CMakeFiles/TrussCore.dir
-/Users/neil/dev/repos/2D_Truss_Analysis/build_test/CMakeFiles/test_analysis.dir
-/Users/neil/dev/repos/2D_Truss_Analysis/build_test/CMakeFiles/edit_cache.dir
-/Users/neil/dev/repos/2D_Truss_Analysis/build_test/CMakeFiles/rebuild_cache.dir

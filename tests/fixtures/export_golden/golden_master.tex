@@ -1,0 +1,230 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{2D Truss Analysis Results\\Golden Master Test Truss}
+\author{Civil Engineering Software Solutions}
+\date{2026-02-20 19:06:48}
+
+\begin{document}
+
+\maketitle
+
+\section{Project Metadata}
+
+\begin{itemize}
+  \item \textbf{Project Name:} Golden Master Test Truss
+  \item \textbf{Generated:} 2026-02-20 19:06:48
+  \item \textbf{Software:} 2D Truss Analysis v3.0.0
+  \item \textbf{Nodes:} 3
+  \item \textbf{Members:} 3
+\end{itemize}
+
+\section{Geometry}
+
+\subsection{Nodes}
+
+\begin{longtable}{cccc}
+\toprule
+Node ID & X (m) & Y (m) & Support Type \\
+\midrule
+\endfirsthead
+
+\multicolumn{4}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\toprule
+Node ID & X (m) & Y (m) & Support Type \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{4}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+1 & 0.000000 & 0.000000 & 1 \\
+2 & 4.000000 & 0.000000 & 2 \\
+3 & 2.000000 & 3.000000 & 0 \\
+\end{longtable}
+
+\subsection{Members}
+
+\begin{longtable}{cccc}
+\toprule
+Member ID & Start Node & End Node & Length (m) \\
+\midrule
+\endfirsthead
+
+\multicolumn{4}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\toprule
+Member ID & Start Node & End Node & Length (m) \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{4}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+1 & 1 & 2 & 4.000000 \\
+2 & 1 & 3 & 3.605551 \\
+3 & 2 & 3 & 3.605551 \\
+\end{longtable}
+
+\section{Material and Section Properties}
+
+\begin{longtable}{ccccc}
+\toprule
+Member ID & E (Pa) & Yield Strength (Pa) & Density (kg/m³) & Area (m²) \\
+\midrule
+\endfirsthead
+
+\multicolumn{5}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\toprule
+Member ID & E (Pa) & Yield Strength (Pa) & Density (kg/m³) & Area (m²) \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{5}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+1 & 200000000000.000000 & 250000000.000000 & 7850.000000 & 0.000100 \\
+2 & 200000000000.000000 & 250000000.000000 & 7850.000000 & 0.000100 \\
+3 & 200000000000.000000 & 250000000.000000 & 7850.000000 & 0.000100 \\
+\end{longtable}
+
+\section{Applied Loads}
+
+\begin{longtable}{ccc}
+\toprule
+Node ID & Fx (N) & Fy (N) \\
+\midrule
+\endfirsthead
+
+\multicolumn{3}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\toprule
+Node ID & Fx (N) & Fy (N) \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{3}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+3 & 0.000000 & -15000.000000 \\
+\end{longtable}
+
+\section{Nodal Displacements}
+
+\begin{longtable}{cc}
+\toprule
+DOF & Displacement (m) \\
+\midrule
+\endfirsthead
+
+\multicolumn{2}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\toprule
+DOF & Displacement (m) \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{2}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+0 & 0.000000 \\
+1 & 0.000000 \\
+2 & 0.001000 \\
+3 & 0.000000 \\
+4 & 0.000500 \\
+5 & -0.002286 \\
+\end{longtable}
+
+\textbf{Maximum Displacement:} 0.002340 m
+
+\section{Member Forces}
+
+\begin{longtable}{ccc}
+\toprule
+Member ID & Axial Force (N) & Type \\
+\midrule
+\endfirsthead
+
+\multicolumn{3}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\toprule
+Member ID & Axial Force (N) & Type \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{3}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+1 & 5000.000000 & Tension \\
+2 & -9013.878189 & Compression \\
+3 & -9013.878189 & Compression \\
+\end{longtable}
+
+\section{Support Reactions}
+
+\begin{longtable}{cc}
+\toprule
+DOF & Reaction Force (N) \\
+\midrule
+\endfirsthead
+
+\multicolumn{2}{c}{{\tablename\ \thetable{} -- continued from previous page}} \\
+\toprule
+DOF & Reaction Force (N) \\
+\midrule
+\endhead
+
+\midrule
+\multicolumn{2}{r}{{Continued on next page}} \\
+\endfoot
+
+\bottomrule
+\endlastfoot
+
+0 & -0.000000 \\
+1 & 7500.000000 \\
+2 & 7500.000000 \\
+\end{longtable}
+
+\section{Analysis Metadata}
+
+\begin{tabular}{ll}
+\toprule
+Property & Value \\
+\midrule
+Converged & Yes \\
+Iterations & 0 \\
+Total DOFs & 6 \\
+Free DOFs & 3 \\
+Max Displacement & 0.002340 m \\
+Max Stress & 90138781.886600 Pa \\
+\bottomrule
+\end{tabular}
+
+
+\end{document}
