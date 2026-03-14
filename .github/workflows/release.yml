@@ -42,6 +42,8 @@ jobs:
   build-and-package:
     name: Build & Package
     runs-on: ubuntu-22.04
+    outputs:
+      version: ${{ steps.version.outputs.version }}
 
     permissions:
       contents: write
@@ -212,3 +214,84 @@ jobs:
             build-package/*.tar.gz
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # ============================================================================
+  # Publish .deb packages to GitHub Pages APT repository (gh-pages)
+  # ============================================================================
+
+  publish-apt-repo:
+    name: Publish APT Repository
+    needs: build-and-package
+    runs-on: ubuntu-22.04
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout gh-pages branch
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages
+
+      - name: Download package artifacts
+        uses: actions/download-artifact@v4
+        with:
+          name: packages-${{ needs.build-and-package.outputs.version }}
+          path: packages
+
+      - name: Install APT repository tooling
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y dpkg-dev apt-utils gnupg
+
+      - name: Import repository signing key
+        env:
+          REPO_SIGNING_KEY: ${{ secrets.REPO_SIGNING_KEY }}
+        run: |
+          if [ -z "${REPO_SIGNING_KEY}" ]; then
+            echo "REPO_SIGNING_KEY secret is not configured" >&2
+            exit 1
+          fi
+          echo "${REPO_SIGNING_KEY}" | gpg --batch --import
+
+      - name: Update APT repository metadata
+        run: |
+          POOL="gh-pages/apt/pool/main/2/2d-truss-analysis"
+          DIST_DIR="gh-pages/apt/dists/stable"
+          BIN_DIR="${DIST_DIR}/main/binary-amd64"
+
+          mkdir -p "${POOL}" "${BIN_DIR}"
+          cp packages/*.deb "${POOL}/"
+
+          # Regenerate package index
+          (
+            cd gh-pages/apt
+            dpkg-scanpackages --multiversion pool /dev/null > dists/stable/main/binary-amd64/Packages
+            gzip -n -9 -c dists/stable/main/binary-amd64/Packages > dists/stable/main/binary-amd64/Packages.gz
+          )
+
+          # Regenerate Release metadata and signatures
+          (
+            cd gh-pages/apt
+            apt-ftparchive release dists/stable > dists/stable/Release
+            gpg --batch --yes --armor --detach-sign \
+              -o dists/stable/Release.gpg dists/stable/Release
+            gpg --batch --yes --clearsign \
+              -o dists/stable/InRelease dists/stable/Release
+          )
+
+      - name: Commit and push gh-pages updates
+        run: |
+          cd gh-pages
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add apt/
+
+          if git diff --cached --quiet; then
+            echo "No APT repository changes to commit"
+            exit 0
+          fi
+
+          git commit -m "release: publish APT packages for v${{ needs.build-and-package.outputs.version }}"
+          git push origin gh-pages
