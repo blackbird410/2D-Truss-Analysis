@@ -147,18 +147,18 @@ jobs:
 
       - name: Verify HTML output
         run: |
-          if [ ! -f build/docs/html/index.html ]; then
+          if [ ! -f docs/api/html/index.html ]; then
             echo "::error::Documentation index.html not found!"
             exit 1
           fi
 
           echo "Documentation generated successfully:"
-          echo "  - HTML files: $(find build/docs/html -name "*.html" | wc -l)"
-          echo "  - Total size: $(du -sh build/docs/html | cut -f1)"
+          echo "  - HTML files: $(find docs/api/html -name "*.html" | wc -l)"
+          echo "  - Total size: $(du -sh docs/api/html | cut -f1)"
 
           # Check for broken links (basic check)
           if command -v linkchecker &> /dev/null; then
-            linkchecker --check-extern build/docs/html/index.html || true
+            linkchecker --check-extern docs/api/html/index.html || true
           fi
 
       # ----------------------------------------------------------------------
@@ -168,7 +168,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: doxygen-documentation
-          path: build/docs/html/
+          path: docs/api/html/
           retention-days: 90
           if-no-files-found: error
 
@@ -176,7 +176,7 @@ jobs:
         if: github.ref == 'refs/heads/main' || github.event.inputs.deploy_pages == 'true'
         uses: actions/upload-pages-artifact@v3
         with:
-          path: build/docs/html/
+          path: docs/api/html/
 
   # ============================================================================
   # Deploy to GitHub Pages (Optional)
