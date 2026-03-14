@@ -41,7 +41,7 @@ jobs:
 
   build-and-package:
     name: Build & Package
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
     outputs:
       version: ${{ steps.version.outputs.version }}
 
@@ -222,7 +222,7 @@ jobs:
   publish-apt-repo:
     name: Publish APT Repository
     needs: build-and-package
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-latest
 
     permissions:
       contents: write
